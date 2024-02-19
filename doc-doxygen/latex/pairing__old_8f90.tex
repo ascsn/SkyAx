@@ -1,0 +1,306 @@
+\hypertarget{pairing__old_8f90}{}\subsection{pairing\+\_\+old.\+f90 File Reference}
+\label{pairing__old_8f90}\index{pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{pairing__old_8f90_a05b69f5283ced21de8af97403a9f9c2c}{pairol} (e, gw, ph, nz, nmax, gp, eferm, delta, partnm, iter, ipair, eps, iab)
+\item 
+real(8) function \hyperlink{pairing__old_8f90_a434bd6ba9fa05b19a1064003777cf149}{parnm} (e, gw, ph, nmax, delta, elam, ipair)
+\item 
+subroutine \hyperlink{pairing__old_8f90_a5ce6ee556df99741e0e4eadbe7b9c542}{bcslip} (spen, ph, nspd, nspg, npart, gpair, delta, xlam, xlam2, vv2, vln, epair, ecorr, entot, erspln, suv2rs, ilipng, iftest)
+\item 
+subroutine \hyperlink{pairing__old_8f90_a24a61029685989315857958523df49bd}{eqdef} (spen, ph, nspd, nspg, npart, gpair, delta, xlam, xlam2, vv2in, vv2out, erspln, suv2rs, iftest, ilipng, iterv2, epsv2, epsdv2, dampin, f1, f2, f3)
+\item 
+real(8) function \hyperlink{pairing__old_8f90_ab37f71472eaedec7d3acc55dd2d1a93f}{gavrg} (ibcs, iz, in, iprot, rhosc, n1, n2, xmeff, a0)
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Function/\+Subroutine Documentation}
+\index{pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}!bcslip@{bcslip}}
+\index{bcslip@{bcslip}!pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}}
+\paragraph[{\texorpdfstring{bcslip(spen, ph, nspd, nspg, npart, gpair, delta, xlam, xlam2, vv2, vln, epair, ecorr, entot, erspln, suv2rs, ilipng, iftest)}{bcslip(spen, ph, nspd, nspg, npart, gpair, delta, xlam, xlam2, vv2, vln, epair, ecorr, entot, erspln, suv2rs, ilipng, iftest)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine bcslip (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(npsid), intent(in)}]{spen, }
+\item[{real(8), dimension(npsid), intent(in)}]{ph, }
+\item[{integer, intent(in)}]{nspd, }
+\item[{integer, intent(in)}]{nspg, }
+\item[{integer, intent(in)}]{npart, }
+\item[{real(8), intent(in)}]{gpair, }
+\item[{real(8), intent(inout)}]{delta, }
+\item[{real(8), intent(inout)}]{xlam, }
+\item[{real(8), intent(inout)}]{xlam2, }
+\item[{real(8), dimension(npsid), intent(inout)}]{vv2, }
+\item[{real(8), dimension(npsid), intent(out)}]{vln, }
+\item[{real(8), intent(out)}]{epair, }
+\item[{real(8), intent(out)}]{ecorr, }
+\item[{real(8), intent(out)}]{entot, }
+\item[{real(8), intent(out)}]{erspln, }
+\item[{real(8), intent(out)}]{suv2rs, }
+\item[{integer, intent(in)}]{ilipng, }
+\item[{integer, intent(in)}]{iftest}
+\end{DoxyParamCaption}
+)}\hypertarget{pairing__old_8f90_a5ce6ee556df99741e0e4eadbe7b9c542}{}\label{pairing__old_8f90_a5ce6ee556df99741e0e4eadbe7b9c542}
+
+
+Routine to solve the Lipkin-\/\+Nogami or B\+CS equations. . 
+
+
+\begin{DoxyItemize}
+\item gap equation\+: \[ 0 = \texttt{f1} = \texttt{delta}-\texttt{gpair}\cdot \sum(uv) \]
+\item particle number\+: \[ 0 = \texttt{f2} = \sum(2v^2)-n \]
+\item particle number fluctuation\+: \[ 0 = \texttt{f3} = \texttt{xlam2}-\texttt{gpair}/4 \cdot (\sum(u^3\cdot v)\sum(v^3* \cdot u)-\sum(u^4*\cdot v^4))/ ((\sum(u^2\cdot v^2))^2 - \sum(u^4 \cdot v^4)) \] Particle number fluctiation is ommited for B\+CS. The 3 equations are solved by Newton\textquotesingle{}s method. The matrix of derivatives is computed by finite differences.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em spen} & R\+E\+A\+L(8), array, takes single particle energies. \\
+\hline
+\mbox{\tt in}  & {\em ph} & R\+E\+A\+L(8), array, takes the multiplicities of the single particle levels. \\
+\hline
+\mbox{\tt in}  & {\em nspd} & I\+N\+T\+E\+G\+ER, takes lowest level in pairing. \\
+\hline
+\mbox{\tt in}  & {\em nspg} & I\+N\+T\+E\+G\+ER, takes highest level in pairing. \\
+\hline
+\mbox{\tt in}  & {\em npart} & I\+N\+T\+E\+G\+ER, takes the particle number. \\
+\hline
+\mbox{\tt in}  & {\em gpair} & R\+E\+A\+L(8), takes the pairing strength. \\
+\hline
+\mbox{\tt in,out}  & {\em delta} & R\+E\+A\+L(8), takes first guess of pairing gap and returns final pairing gap. \\
+\hline
+\mbox{\tt in,out}  & {\em xlam} & R\+E\+A\+L(8), takes first guess for Fermi energy and returns final Fermi energy. \\
+\hline
+\mbox{\tt in,out}  & {\em xlam2} & R\+E\+A\+L(8), takes the initial value for fluctuation constraint and returns final value. \\
+\hline
+\mbox{\tt in,out}  & {\em vv2} & R\+E\+A\+L(8), array, takes guess for internal occupation probabilities and returns final values. \\
+\hline
+\mbox{\tt out}  & {\em vln} & R\+E\+A\+L(8), array, returns occupation probabilities for external observables. \\
+\hline
+\mbox{\tt out}  & {\em epair} & R\+E\+A\+L(8), returns naive pairing energy , $ - \texttt{delta}^2/\texttt{gpair} $. \\
+\hline
+\mbox{\tt out}  & {\em ecorr} & R\+E\+A\+L(8), returns consistent pairing energy as correction for the hf energy\+: \[-\texttt{delta}^2/\texttt{gpair}-\texttt{gpair}\sum{v^4-v^2}-4\cdot \texttt{xlam2} \sum_(uv)^2= -(4*\texttt{xlam2}-\texttt{gpair})\sum_(uv)^2 \] \\
+\hline
+\mbox{\tt out}  & {\em entot} & R\+E\+A\+L(8), returns total s.\+q.\+p. energy (= s.\+p. sum -\/ g $\ast$ {\ttfamily npart/2} for normal state). \\
+\hline
+\mbox{\tt out}  & {\em erspln} & R\+E\+A\+L(8), takes Skyrme response energy for \textquotesingle{}lambda\+\_\+2\textquotesingle{}, needed for Skyrme H.\+F. codes, to be provided in a separte routine. In all other cases set to 0.\+0 . \\
+\hline
+\mbox{\tt out}  & {\em suv2rs} & R\+E\+A\+L(8), $ u^2\cdot v^2 $ from Skyrme response routine, for normalization. In all other cases set to one. \\
+\hline
+\mbox{\tt in}  & {\em ilipng} & I\+N\+T\+E\+G\+ER, switch Lipkin-\/\+Nogami (=1) and B\+CS (=0). \\
+\hline
+\mbox{\tt in}  & {\em iftest} & I\+N\+T\+E\+G\+ER, switch for testprints. \\
+\hline
+\end{DoxyParams}
+\index{pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}!eqdef@{eqdef}}
+\index{eqdef@{eqdef}!pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}}
+\paragraph[{\texorpdfstring{eqdef(spen, ph, nspd, nspg, npart, gpair, delta, xlam, xlam2, vv2in, vv2out, erspln, suv2rs, iftest, ilipng, iterv2, epsv2, epsdv2, dampin, f1, f2, f3)}{eqdef(spen, ph, nspd, nspg, npart, gpair, delta, xlam, xlam2, vv2in, vv2out, erspln, suv2rs, iftest, ilipng, iterv2, epsv2, epsdv2, dampin, f1, f2, f3)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine eqdef (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(npsid), intent(in)}]{spen, }
+\item[{real(8), dimension(npsid), intent(in)}]{ph, }
+\item[{integer, intent(in)}]{nspd, }
+\item[{integer, intent(in)}]{nspg, }
+\item[{integer, intent(in)}]{npart, }
+\item[{real(8), intent(in)}]{gpair, }
+\item[{real(8), intent(in)}]{delta, }
+\item[{real(8), intent(in)}]{xlam, }
+\item[{real(8), intent(in)}]{xlam2, }
+\item[{real(8), dimension(npsid), intent(in)}]{vv2in, }
+\item[{real(8), dimension(npsid), intent(out)}]{vv2out, }
+\item[{real(8), intent(in)}]{erspln, }
+\item[{real(8), intent(in)}]{suv2rs, }
+\item[{integer, intent(in)}]{iftest, }
+\item[{integer, intent(in)}]{ilipng, }
+\item[{integer, intent(in)}]{iterv2, }
+\item[{real(8), intent(in)}]{epsv2, }
+\item[{real(8), intent(in)}]{epsdv2, }
+\item[{real(8), intent(in)}]{dampin, }
+\item[{real(8), intent(out)}]{f1, }
+\item[{real(8), intent(out)}]{f2, }
+\item[{real(8), intent(out)}]{f3}
+\end{DoxyParamCaption}
+)}\hypertarget{pairing__old_8f90_a24a61029685989315857958523df49bd}{}\label{pairing__old_8f90_a24a61029685989315857958523df49bd}
+
+
+Routine to compute the three pairing equations, as explained in the header of {\ttfamily bcslip}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em spen} & R\+E\+A\+L(8), array, takes single particle energies. \\
+\hline
+\mbox{\tt in}  & {\em ph} & R\+E\+A\+L(8), array, takes the multiplicities of the single particle levels. \\
+\hline
+\mbox{\tt in}  & {\em nspd} & I\+N\+T\+E\+G\+ER, takes lowest level in pairing. \\
+\hline
+\mbox{\tt in}  & {\em nspg} & I\+N\+T\+E\+G\+ER, takes highest level in pairing. \\
+\hline
+\mbox{\tt in}  & {\em npart} & I\+N\+T\+E\+G\+ER, takes the particle number. \\
+\hline
+\mbox{\tt in}  & {\em gpair} & R\+E\+A\+L(8), takes the pairing strength. \\
+\hline
+\mbox{\tt in,out}  & {\em delta} & R\+E\+A\+L(8), takes first guess of pairing gap and returns final pairing gap. \\
+\hline
+\mbox{\tt in,out}  & {\em xlam} & R\+E\+A\+L(8), takes first guess for Fermi energy and returns final Fermi energy. \\
+\hline
+\mbox{\tt in,out}  & {\em xlam2} & R\+E\+A\+L(8), takes the initial value for fluctuation constraint and returns final value. \\
+\hline
+\mbox{\tt in}  & {\em vv2in} & R\+E\+A\+L(8), array, takes the initial internal occupation probabilities. \\
+\hline
+\mbox{\tt out}  & {\em vv2out} & R\+E\+A\+L(8), array, returns the new occupation weights. \\
+\hline
+\mbox{\tt out}  & {\em erspln} & R\+E\+A\+L(8), takes Skyrme response energy for \textquotesingle{}lambda\+\_\+2\textquotesingle{}, needed for Skyrme H.\+F. codes, to be provided in a separte routine. In all other cases set to 0.\+0 . \\
+\hline
+\mbox{\tt out}  & {\em suv2rs} & R\+E\+A\+L(8), $ u^2\cdot v^2 $ from Skyrme response routine, for normalization. In all other cases set to one. \\
+\hline
+\mbox{\tt in}  & {\em ilipng} & I\+N\+T\+E\+G\+ER, switch Lipkin-\/\+Nogami (=1) and B\+CS (=0). \\
+\hline
+\mbox{\tt in}  & {\em iftest} & I\+N\+T\+E\+G\+ER, takes switch for testprints. \\
+\hline
+\mbox{\tt in}  & {\em iterv2} & I\+N\+T\+E\+G\+ER, takes max.\+nr. iterations in {\ttfamily vv2}. \\
+\hline
+\mbox{\tt in}  & {\em epsv2} & R\+E\+A\+L(8), takes precision on {\ttfamily vv2}. \\
+\hline
+\mbox{\tt in}  & {\em epsdv2} & R\+E\+A\+L(8), takes limit on change of energy in determining {\ttfamily vv2}. \\
+\hline
+\mbox{\tt in}  & {\em dampin} & R\+E\+A\+L(8), takes general reduction of the step, top stabilize. \\
+\hline
+\mbox{\tt out}  & {\em f1} & R\+E\+A\+L(8), returns gap equation. \\
+\hline
+\mbox{\tt out}  & {\em f2} & R\+E\+A\+L(8), returns particle number condition. \\
+\hline
+\mbox{\tt out}  & {\em f3} & R\+E\+A\+L(8), returns particle number fluctuation. \\
+\hline
+\end{DoxyParams}
+\index{pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}!gavrg@{gavrg}}
+\index{gavrg@{gavrg}!pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}}
+\paragraph[{\texorpdfstring{gavrg(ibcs, iz, in, iprot, rhosc, n1, n2, xmeff, a0)}{gavrg(ibcs, iz, in, iprot, rhosc, n1, n2, xmeff, a0)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function gavrg (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{ibcs, }
+\item[{integer, intent(in)}]{iz, }
+\item[{integer, intent(in)}]{in, }
+\item[{integer, intent(in)}]{iprot, }
+\item[{real(8), intent(inout)}]{rhosc, }
+\item[{integer, intent(in)}]{n1, }
+\item[{integer, intent(in)}]{n2, }
+\item[{real(8), intent(in)}]{xmeff, }
+\item[{real(8), intent(in)}]{a0}
+\end{DoxyParamCaption}
+)}\hypertarget{pairing__old_8f90_ab37f71472eaedec7d3acc55dd2d1a93f}{}\label{pairing__old_8f90_ab37f71472eaedec7d3acc55dd2d1a93f}
+
+
+Calculates the strength of the monopole pairing interaction using the average gap method.  the average gap model is based on moller and nix, nucl. phys.\+a536 (1992) 
+
+
+\begin{DoxyEnumerate}
+\item the average pair density is computed using the semi-\/classical approximation for the harmonic oscillator model modified by the isospin-\/dependent factor derived based on the wigner-\/kirkwood expansion for the woods-\/saxon potential (+ spin-\/orbit + coulomb).
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em ibcs} & I\+N\+T\+E\+G\+ER, switch for pairing mode. 1 for B\+CS or Lipkin-\/\+Nogami for all other values. \\
+\hline
+\mbox{\tt in}  & {\em iz} & I\+N\+T\+E\+G\+ER, takes the proton number. \\
+\hline
+\mbox{\tt in}  & {\em in} & I\+N\+T\+E\+G\+ER, takes the neutron number \\
+\hline
+\mbox{\tt in}  & {\em iprot} & I\+N\+T\+E\+G\+ER, switch for Neutrons (0) or protons (1). \\
+\hline
+\mbox{\tt in}  & {\em rhosc} & R\+E\+A\+L(8), takes semiclassical level density at Fermi surface, determined by function \textquotesingle{}semrho\textquotesingle{} or by simple estimate if \textquotesingle{}rhosc=0\+D0\textquotesingle{} is given. \\
+\hline
+\mbox{\tt in}  & {\em n1} & I\+N\+T\+E\+G\+ER, takes number of first HF level used in the B\+CS (LN) calculations. (Preferably {\ttfamily n1} = 1) \\
+\hline
+\mbox{\tt in}  & {\em n2} & I\+N\+T\+E\+G\+ER, takes number of last HF level used in the B\+CS (LN) calculations. (Preferably {\ttfamily n2} = {\ttfamily npart}, i.\+e., {\ttfamily iz} or {\ttfamily in}) \\
+\hline
+\mbox{\tt in}  & {\em xmeff} & R\+E\+A\+L(8), takes effective mass (=1 in the Wood-\/\+Saxon model). \\
+\hline
+\mbox{\tt in}  & {\em a0} & R\+E\+A\+L(8), takes surface parameter in a Saxon Woods shape, is 0.\+58 $\ast$ surface width from formfactor \\
+\hline
+\end{DoxyParams}
+
+\end{DoxyEnumerate}\index{pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}!pairol@{pairol}}
+\index{pairol@{pairol}!pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}}
+\paragraph[{\texorpdfstring{pairol(e, gw, ph, nz, nmax, gp, eferm, delta, partnm, iter, ipair, eps, iab)}{pairol(e, gw, ph, nz, nmax, gp, eferm, delta, partnm, iter, ipair, eps, iab)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine pairol (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(npsid), intent(in)}]{e, }
+\item[{real(8), dimension(npsid), intent(inout)}]{gw, }
+\item[{real(8), dimension(npsid), intent(in)}]{ph, }
+\item[{integer, intent(in)}]{nz, }
+\item[{integer, intent(in)}]{nmax, }
+\item[{real(8), intent(inout)}]{gp, }
+\item[{real(8), intent(inout)}]{eferm, }
+\item[{real(8), intent(inout)}]{delta, }
+\item[{real(8), intent(out)}]{partnm, }
+\item[{integer, intent(inout)}]{iter, }
+\item[{integer, intent(in)}]{ipair, }
+\item[{real(8), intent(in)}]{eps, }
+\item[{integer, intent(in)}]{iab}
+\end{DoxyParamCaption}
+)}\hypertarget{pairing__old_8f90_a05b69f5283ced21de8af97403a9f9c2c}{}\label{pairing__old_8f90_a05b69f5283ced21de8af97403a9f9c2c}
+
+
+Determines the fermi-\/energy {\ttfamily eferm} and the gap {\ttfamily delta} such that the \char`\"{}gap-\/equation\char`\"{} and the \char`\"{}particle number condition\char`\"{} are fulfilled simultanously. this is achieved by iteration with a gradient scheme (Newton\textquotesingle{}s tangential formula) where the gradient is evaluated by finite differences.  There are two schemes possible\+:
+\begin{DoxyEnumerate}
+\item The \char`\"{}constant force\char`\"{} approach, where the pairing force is given in \textquotesingle{}gp\textquotesingle{}.
+\item The \char`\"{}constant gap\char`\"{} approach, where the gap is kept fixed and is given in {\ttfamily delta}.
+\end{DoxyEnumerate}There is only {\ttfamily eferm} to be determined in the \char`\"{}constant gap\char`\"{} approach. The gap-\/equation is used at the end to determine an according force {\ttfamily gp}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em e} & R\+E\+A\+L(8), array, takes single particle energies. \\
+\hline
+\mbox{\tt in,out}  & {\em gw} & R\+E\+A\+L(8), array, takes occupation probabilities, input is used as initial guess for the iteration. Returns the resulting occupation probabilities. \\
+\hline
+\mbox{\tt in}  & {\em ph} & R\+E\+A\+L(8), array, takes the multiplicities of the single particle levels. \\
+\hline
+\mbox{\tt in}  & {\em nz} & I\+N\+T\+E\+G\+ER, takes the desired particle number. \\
+\hline
+\mbox{\tt in}  & {\em nmax} & I\+N\+T\+E\+G\+ER, takes maximum number of single particle states (needs to be smaller than the parameter \textquotesingle{}npsid\textquotesingle{} and smaller than 46, for dimensioning reasons). \\
+\hline
+\mbox{\tt in,out}  & {\em gp} & R\+E\+A\+L(8), takes size of pairing-\/force, is input in case of \char`\"{}constant force\char`\"{} approach, output in case of \char`\"{}constat gap\char`\"{}. \\
+\hline
+\mbox{\tt in,out}  & {\em eferm} & R\+E\+A\+L(8), returns Fermi energy, input is used as initial guess; if eferm=0.\+0 is input then a suitable initial guess is computed from input {\ttfamily gw}. \\
+\hline
+\mbox{\tt in,out}  & {\em delta} & R\+E\+A\+L(8), takes pairing gap; is input in case of \char`\"{}constant gap\char`\"{} approach, output in case of \char`\"{}constant force\char`\"{}. \\
+\hline
+\mbox{\tt in,out}  & {\em partnm} & R\+E\+A\+L(8), returns the particle number, from summing {\ttfamily gw} with degeneracy {\ttfamily ph}. \\
+\hline
+\mbox{\tt in}  & {\em iter} & R\+E\+A\+L(8), takes number of pairing iterations, abs(iter) is the number of iterations. \\
+\hline
+\mbox{\tt in}  & {\em ipair} & I\+N\+T\+E\+G\+ER, takes pairing type (ipair=1\+: \char`\"{}constant force\char`\"{} approach, using pairing force \textquotesingle{}gp\textquotesingle{}; ipair=0\+: \char`\"{}constant gap\char`\"{} approach, using given gap {\ttfamily delta}; ipair=4\+: thermal occupation with temperature given by {\ttfamily delta}. \\
+\hline
+\mbox{\tt in}  & {\em eps} & I\+N\+T\+E\+G\+ER, takes end condition for pairing iteration; iteration terminates if error in particle number is smaller than {\ttfamily eps} and if {\ttfamily eferm} and/or {\ttfamily delta} are smaller than {\ttfamily eps}. \\
+\hline
+\mbox{\tt in}  & {\em iab} & I\+N\+T\+E\+G\+ER, takes print level; significant values are -\/2, -\/1, 0 and 1; larger value prints more. \\
+\hline
+\end{DoxyParams}
+\index{pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}!parnm@{parnm}}
+\index{parnm@{parnm}!pairing\+\_\+old.\+f90@{pairing\+\_\+old.\+f90}}
+\paragraph[{\texorpdfstring{parnm(e, gw, ph, nmax, delta, elam, ipair)}{parnm(e, gw, ph, nmax, delta, elam, ipair)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function parnm (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(npsid), intent(in)}]{e, }
+\item[{real(8), dimension(npsid), intent(out)}]{gw, }
+\item[{real(8), dimension(npsid), intent(in)}]{ph, }
+\item[{integer, intent(in)}]{nmax, }
+\item[{real(8), intent(in)}]{delta, }
+\item[{real(8), intent(in)}]{elam, }
+\item[{integer, intent(in)}]{ipair}
+\end{DoxyParamCaption}
+)}\hypertarget{pairing__old_8f90_a434bd6ba9fa05b19a1064003777cf149}{}\label{pairing__old_8f90_a434bd6ba9fa05b19a1064003777cf149}
+
+
+The function computes the particle number in a pairing or temperature distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em e} & R\+E\+A\+L(8), array, takes single particle energies. \\
+\hline
+\mbox{\tt in,out}  & {\em gw} & R\+E\+A\+L(8), array, takes occupation probabilities, input is used as initial guess for the iteration. Returns the resulting occupation probabilities. \\
+\hline
+\mbox{\tt in}  & {\em ph} & R\+E\+A\+L(8), array, takes the multiplicities of the single particle levels. \\
+\hline
+\mbox{\tt in}  & {\em nmax} & I\+N\+T\+E\+G\+ER, takes number of states in {\ttfamily e}, {\ttfamily gw} and {\ttfamily ph}. \\
+\hline
+\mbox{\tt in}  & {\em delta} & R\+E\+A\+L(8), takes pairing gap or temperature. \\
+\hline
+\mbox{\tt in}  & {\em elam} & R\+E\+A\+L(8), takes the Fermi energy. \\
+\hline
+\mbox{\tt in}  & {\em ipair} & I\+N\+T\+E\+G\+ER, switch to pairing (0) or temperature (4). \\
+\hline
+\end{DoxyParams}

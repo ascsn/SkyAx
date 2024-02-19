@@ -1,0 +1,5 @@
+test_cases_Skyrme/*/*
+test_cases_Fayans/*
+!for005*
+!README
+!*.bat

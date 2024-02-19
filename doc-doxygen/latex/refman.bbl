@@ -1,0 +1,23 @@
+\begin{thebibliography}{1}
+
+\bibitem{Lauritsch94}
+G.~LAURITSCH and P.-G. REINHARD.
+\newblock An fft solver for the coulomb problem.
+\newblock {\em International Journal of Modern Physics C}, 05(01):65--75, 1994.
+
+\bibitem{Pre92aB}
+W.~H. Press, S.~A. Teukolsky, W.~T. Vetterling, and B.~P. Flannery.
+\newblock {\em Numerical Recipes in {C}: {T}he Art of Scientific Computing}.
+\newblock Cambridge University Press, New York, 2 edition, 1992.
+
+\bibitem{Reinhard1992a}
+P.-G. Reinhard.
+\newblock From sum rules to rpa: 1. nuclei.
+\newblock {\em Annalen der Physik}, 504(8):632--661, 1992.
+
+\bibitem{Reinhard1992}
+P.-G. Reinhard and Y.~K. Gambhir.
+\newblock Rpa in wavefunction representation.
+\newblock {\em Annalen der Physik}, 504(8):598--631, 1992.
+
+\end{thebibliography}

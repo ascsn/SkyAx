@@ -1,0 +1,49 @@
+Short explanations for the 'skyax' package: (status 9. January 2023)
+--------------------------------------------------------------------
+
+The following instructions assume that you are on a Linux system.
+
+Create a working directory 'SkyAx' and change to it. Place the
+the package 'SkyAx.tgz' there and unpack it. This will generate 
+the documentation file "Skyax.pdf" and the subdirectories:
+source_f90         contains all source files and a 'Makefile', the
+                   latter provides options for GNU Fortran and 
+                   Intel Fortran;
+doc-doxygen        contains sources for 'doxygen' and its actual output
+                   on 'SkyAx_doxygen.pdf' which delivers more detailed
+                   information from the various subroutines.
+                   (The doxygen output has yet to be updated.)
+test_cases_Skyrme  Skyrme test cases input and output.
+test_cases_Fayans  Fayans test cases input and output.
+
+To compile and link change to subdirectory 'source_f90' and edit the
+'Makefile'. Two compilers are provided, Intel Fortran 'ifort' and
+GNU Fortran 'gfortran'. Check the 'COMPILERFLAGS' such that they
+comply with your installation.
+Once you have updated the 'Makefile' just issue a 'make'. That
+will tell you the usage. For example, if you want to use 'gfortran'
+just execute 'make ifort'. This will place an executable
+'skyax.ifort.seq' in the working directory (one level above 'source').
+
+A simple way to run the code is to choose one of the functionals
+provided in the file 'source_f90/forces.data'. Examples for input are
+given in the subdirectories of the directories 'test_cases_*' with name
+starting by 'for005'. All these test cases contains input files and
+corresponding output files to check the actual installation. 
+
+To specify an example:  take 'Cd118' where the input file is named
+'for005'. Go to a working directory of your choice, copy 'for005' from
+'Ca48' to that and run '~/SkyAx/skyax.ifort.seq < for005'. This
+will produce several output files with the qualifier 'tst' (defined in
+'for005') from which the 'ensurf.tst' contains compressed information
+on deformation, energy, radii etc. The file 'out_details.tst' shows a
+detailed protocol of iteration and results. For more explanations and
+the meaning of other output files see the documentation in 'SkyAx.pdf'.
+
+
+There is still one obnoxious feature. The results depend slightly on
+the compiler used. The worst case is Intel Fortran with OpenMP 
+(option 'make ifort_omp') which can fail badly in some cases. This
+indicates that there is probably some non-standard use of Fortran
+constructs which deserves further checking.
+ 

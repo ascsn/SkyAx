@@ -1,0 +1,204 @@
+\hypertarget{namespacewavefr}{}\subsection{wavefr Module Reference}
+\label{namespacewavefr}\index{wavefr@{wavefr}}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{namespacewavefr_a82c6a57af65c62f9fba38b7eeb46ca8f}{alloc\+\_\+wf} (npsi)
+\item 
+subroutine \hyperlink{namespacewavefr_a569f9e92e926f1a2f7b5a9c8efb2907e}{dealloc\+\_\+wf} ()
+\item 
+real(8) function \hyperlink{namespacewavefr_a10dc27c35fdb4656b839f63dbc1ccb38}{wfovlp} (psia, psib)
+\item 
+pure real(8) function, dimension(0\+:nz, 0\+:nr, nsd) \hyperlink{namespacewavefr_a6941c11e1d1f594c22032dee72d5c67a}{time\+\_\+reversal} (psia)
+\item 
+real(8) function \hyperlink{namespacewavefr_aead2efe9f9e481e6a594c93871cce730}{wfovlptr} (psia, psib)
+\item 
+subroutine \hyperlink{namespacewavefr_a519281578e3b01a8650657a2ced55e8a}{wfproj} (psia, psib, fac)
+\item 
+subroutine \hyperlink{namespacewavefr_a0c4c5f764c196fe4b005f62e9369a1b0}{wfprojtr} (psia, psib, fac)
+\item 
+real(8) function \hyperlink{namespacewavefr_a3d95d1d937626dca97d24be282442950}{wfovpc} (psia)
+\item 
+real(8) function \hyperlink{namespacewavefr_a82a49ad95ae89423187333e2c1899e4f}{wfovoc} (psia, psib)
+\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(8), dimension(\+:,\+:,\+:,\+:), pointer \hyperlink{namespacewavefr_a52b30de869aa8a41afeacaca1874f0f8}{psi}
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+This module contains the main variable for wave functions and other variables for auxiliary storaged of s.\+p. wave functions. Furthermore it contains routines for overlaps and projections of s.\+p.\+states and time-\/reversed s.\+p. states. 
+
+\subsubsection{Function/\+Subroutine Documentation}
+\index{wavefr@{wavefr}!alloc\+\_\+wf@{alloc\+\_\+wf}}
+\index{alloc\+\_\+wf@{alloc\+\_\+wf}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{alloc\+\_\+wf(npsi)}{alloc_wf(npsi)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine wavefr\+::alloc\+\_\+wf (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{npsi}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a82c6a57af65c62f9fba38b7eeb46ca8f}{}\label{namespacewavefr_a82c6a57af65c62f9fba38b7eeb46ca8f}
+
+
+Allocates the storage for wave functions. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em npsi} & I\+N\+T\+E\+G\+ER, takes the total number of wave function. \\
+\hline
+\end{DoxyParams}
+\index{wavefr@{wavefr}!dealloc\+\_\+wf@{dealloc\+\_\+wf}}
+\index{dealloc\+\_\+wf@{dealloc\+\_\+wf}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{dealloc\+\_\+wf()}{dealloc_wf()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine wavefr\+::dealloc\+\_\+wf (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a569f9e92e926f1a2f7b5a9c8efb2907e}{}\label{namespacewavefr_a569f9e92e926f1a2f7b5a9c8efb2907e}
+
+
+Deallocates the storage for wave functions. 
+
+\index{wavefr@{wavefr}!time\+\_\+reversal@{time\+\_\+reversal}}
+\index{time\+\_\+reversal@{time\+\_\+reversal}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{time\+\_\+reversal(psia)}{time_reversal(psia)}}]{\setlength{\rightskip}{0pt plus 5cm}pure real(8) function, dimension(0\+:nz,0\+:nr,nsd) wavefr\+::time\+\_\+reversal (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psia}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a6941c11e1d1f594c22032dee72d5c67a}{}\label{namespacewavefr_a6941c11e1d1f594c22032dee72d5c67a}
+
+
+Returns the time-\/reversed state of {\ttfamily psia}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psia} & R\+E\+A\+L(8), array, takes the first wave function. \\
+\hline
+\end{DoxyParams}
+\index{wavefr@{wavefr}!wfovlp@{wfovlp}}
+\index{wfovlp@{wfovlp}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{wfovlp(psia, psib)}{wfovlp(psia, psib)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function wavefr\+::wfovlp (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psia, }
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psib}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a10dc27c35fdb4656b839f63dbc1ccb38}{}\label{namespacewavefr_a10dc27c35fdb4656b839f63dbc1ccb38}
+
+
+Computes the overlap between two wave functions. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psia} & R\+E\+A\+L(8), array, takes the first wave function. \\
+\hline
+\mbox{\tt in}  & {\em psib} & R\+E\+A\+L(8), array, takes the second wave function. \\
+\hline
+\end{DoxyParams}
+\index{wavefr@{wavefr}!wfovlptr@{wfovlptr}}
+\index{wfovlptr@{wfovlptr}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{wfovlptr(psia, psib)}{wfovlptr(psia, psib)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function wavefr\+::wfovlptr (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psia, }
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psib}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_aead2efe9f9e481e6a594c93871cce730}{}\label{namespacewavefr_aead2efe9f9e481e6a594c93871cce730}
+
+
+Computes the overlap between time-\/reversed state of {\ttfamily psia} and {\ttfamily psib} , including spin. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psia} & R\+E\+A\+L(8), array, takes the first wave function. \\
+\hline
+\mbox{\tt in}  & {\em psib} & R\+E\+A\+L(8), array, takes the second wave function. \\
+\hline
+\end{DoxyParams}
+\index{wavefr@{wavefr}!wfovoc@{wfovoc}}
+\index{wfovoc@{wfovoc}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{wfovoc(psia, psib)}{wfovoc(psia, psib)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function wavefr\+::wfovoc (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(in)}]{psia, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(in)}]{psib}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a82a49ad95ae89423187333e2c1899e4f}{}\label{namespacewavefr_a82a49ad95ae89423187333e2c1899e4f}
+
+
+Computes the overlap between two wave functions, without spin. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psia} & R\+E\+A\+L(8), array, takes the first wave function. \\
+\hline
+\mbox{\tt in}  & {\em psib} & R\+E\+A\+L(8), array, takes the second wave function. \\
+\hline
+\end{DoxyParams}
+\index{wavefr@{wavefr}!wfovpc@{wfovpc}}
+\index{wfovpc@{wfovpc}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{wfovpc(psia)}{wfovpc(psia)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function wavefr\+::wfovpc (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(in)}]{psia}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a3d95d1d937626dca97d24be282442950}{}\label{namespacewavefr_a3d95d1d937626dca97d24be282442950}
+
+
+Computes the norm of a wave functions, without spin. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psia} & R\+E\+A\+L(8), array, takes the wave function. \\
+\hline
+\end{DoxyParams}
+\index{wavefr@{wavefr}!wfproj@{wfproj}}
+\index{wfproj@{wfproj}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{wfproj(psia, psib, fac)}{wfproj(psia, psib, fac)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine wavefr\+::wfproj (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psia, }
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(inout)}]{psib, }
+\item[{real(8), intent(in)}]{fac}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a519281578e3b01a8650657a2ced55e8a}{}\label{namespacewavefr_a519281578e3b01a8650657a2ced55e8a}
+
+
+projects components of spinor {\ttfamily psia} out of {\ttfamily psib\+:} \[ |b\rangle = |b\rangle - fac \times |a\rangle \] 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psia} & R\+E\+A\+L(8), array, takes the first wave function. \\
+\hline
+\mbox{\tt in,out}  & {\em psib} & R\+E\+A\+L(8), array, takes the second wave function. \\
+\hline
+\mbox{\tt in}  & {\em fac} & R\+E\+A\+L(8), takes the factor of wave function {\ttfamily psia}. \\
+\hline
+\end{DoxyParams}
+\index{wavefr@{wavefr}!wfprojtr@{wfprojtr}}
+\index{wfprojtr@{wfprojtr}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{wfprojtr(psia, psib, fac)}{wfprojtr(psia, psib, fac)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine wavefr\+::wfprojtr (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psia, }
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(inout)}]{psib, }
+\item[{real(8), intent(in)}]{fac}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacewavefr_a0c4c5f764c196fe4b005f62e9369a1b0}{}\label{namespacewavefr_a0c4c5f764c196fe4b005f62e9369a1b0}
+
+
+Projects components of time-\/reversed spinor of {\ttfamily psia} out of {\ttfamily psib\+:} \[ |b\rangle = |b\rangle - fac \times |\bar{a}\rangle \]. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psia} & R\+E\+A\+L(8), array, takes the first wave function. \\
+\hline
+\mbox{\tt in,out}  & {\em psib} & R\+E\+A\+L(8), array, takes the second wave function. \\
+\hline
+\mbox{\tt in}  & {\em fac} & R\+E\+A\+L(8), takes the factor of wave function {\ttfamily psia}. \\
+\hline
+\end{DoxyParams}
+
+
+\subsubsection{Variable Documentation}
+\index{wavefr@{wavefr}!psi@{psi}}
+\index{psi@{psi}!wavefr@{wavefr}}
+\paragraph[{\texorpdfstring{psi}{psi}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:,\+:), pointer wavefr\+::psi}\hypertarget{namespacewavefr_a52b30de869aa8a41afeacaca1874f0f8}{}\label{namespacewavefr_a52b30de869aa8a41afeacaca1874f0f8}
+
+
+The main storage for all s.\+p. states. 
+

@@ -1,0 +1,884 @@
+\hypertarget{namespacegrid}{}\subsection{grid Module Reference}
+\label{namespacegrid}\index{grid@{grid}}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{namespacegrid_a4cb599ddc037e470eb64f386a0971ea5}{init\+\_\+grid} ()
+\item 
+subroutine \hyperlink{namespacegrid_a0d6ef544d8d744ea1c6b70658774a4b2}{nablaz\+\_\+scalar} (fldin, fldout, izpfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_ab8b751012b26ee67998674d81747d532}{nablar\+\_\+scalar} (fldin, fldout, imfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_a35f707d0d56204d4f6474c5808a93dbc}{nablaz\+\_\+spin} (fldin, fldout, izpfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_ab4994ce54858ab4a5ca1d1f97260ebad}{nablar\+\_\+spin} (fldin, fldout, imfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_a7030a73b3eff3d418914c2f94e6f5eca}{nablap\+\_\+spin} (fldin, fldout, imfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_a40e9fda41c6370cd95343f7033601e1e}{laplace\+\_\+scalar} (fldin, fldout, izpfld, imfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_a807f502b4225a59f7575c250a8ccd032}{laplace\+\_\+spin} (fldin, fldout, izpfld, imfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_adb67b33df30984560a4a640e00a40f99}{laplacer\+\_\+scalar} (fldin, fldout, imfld, ibpfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_a75afbba2c2a62cbb743d49cc49daa186}{damp\+\_\+meson} (fldin, fldout, factor)
+\item 
+subroutine \hyperlink{namespacegrid_a07298a336f9ab0a423504ef5826db475}{damp\+\_\+nucleon} (dampr, dampz, fldin, fldout, izpfld, imfld, factor)
+\item 
+subroutine \hyperlink{namespacegrid_a2e25b0f7ec79d19d9b91b80efd0489da}{init\+\_\+derive} (d, itype, ipnt, isyma, dx, ngrid, mgrid)
+\item 
+real(8) function \hyperlink{namespacegrid_aa872a933c56de60d6abf31fd7bec2814}{f2int} (fua, fub)
+\item 
+real(8) function \hyperlink{namespacegrid_a826ce21cf77769b59324009174610ab9}{f1int} (fua)
+\item 
+subroutine \hyperlink{namespacegrid_a771bf7fcf3d65544eb8badcb0d8fe528}{matr\+\_\+mul} (a, b, c, imax, nmax)
+\item 
+subroutine \hyperlink{namespacegrid_a3fa4b3b24e221d4f98dc90fc2bc54c21}{matr\+\_\+inv} (a, nmax, imax)
+\item 
+subroutine \hyperlink{namespacegrid_a094af63a3600c9b47d99fc5eb2b0b28c}{mulz} (a, x, y, factor, iaccu)
+\item 
+subroutine \hyperlink{namespacegrid_a729ef173ecbf5623d1bf2c94fcc0bf92}{mulr} (a, x, y, factor, iaccu)
+\item 
+subroutine \hyperlink{namespacegrid_aa66349c5be01c56fead6f21b56fda0a2}{mulr0} (a, x, y, factor, iaccu)
+\item 
+subroutine \hyperlink{namespacegrid_a8424de604ef58a42851aa63b52bf535f}{init\+\_\+int\+\_\+weight}
+\item 
+subroutine \hyperlink{namespacegrid_ad009f2e6c140cc067f8aa8f9ffac21b2}{test\+\_\+print} (field, nzmin, nzmax, nrmin, nrmax, header)
+\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(8) \hyperlink{namespacegrid_a1baa9e0cda2fabdcf3c692417f51cb99}{dr} =1\+D0
+\item 
+real(8) \hyperlink{namespacegrid_af2dd57b4230bb5691266889f867fc507}{dz} =1\+D0
+\item 
+real(8) \hyperlink{namespacegrid_a5da7a7ed94ce1ad125820c9e731998ab}{sym} =1\+D0
+\item 
+integer \hyperlink{namespacegrid_adcf6fea7f9e201561e68a1d7c04421c5}{nr} =0
+\item 
+integer \hyperlink{namespacegrid_ac1e240a950d37771ad366b8b12b3743e}{nz} =0
+\item 
+integer \hyperlink{namespacegrid_adb8ca41499ab74560e9d97f2511f2cc4}{idrtyp} =0
+\item 
+real(8) \hyperlink{namespacegrid_ac01da4440df8a87994cbe84c6fe756b1}{sr} =0\+D0
+\item 
+real(8) \hyperlink{namespacegrid_a1368c70ae54f199b68ccfa8672252bf9}{sz}
+\item 
+real(8) \hyperlink{namespacegrid_a45853148f801057061a76070e2969573}{dvol}
+\item 
+integer \hyperlink{namespacegrid_af1ff96c4459cb5671a60fe70e6ce6a3e}{nr\+\_\+testp}
+\item 
+integer \hyperlink{namespacegrid_a8beb75ae0c827f8dea414882ff08e037}{nz\+\_\+testp}
+\item 
+integer \hyperlink{namespacegrid_a2aa66619046d86914292b3e3826e6149}{isym} =1
+\item 
+integer \hyperlink{namespacegrid_aa34e25e6540e6c8bee7767d3bcf0bdee}{icm}
+\item 
+real(8), dimension(\+:), allocatable \hyperlink{namespacegrid_a179734537d519e50cb4330f69282778c}{r}
+\item 
+real(8), dimension(\+:), allocatable \hyperlink{namespacegrid_a70452110896f967bfa9712b77c0bd3de}{z}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a16bcad48837c65e5d97745b347cafefc}{derz1}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a524a0741df0c2d7298368fad8a95f621}{derz2}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a927d3ab579693ac5d3d1b383fc47309e}{derr1}
+\item 
+real(8), dimension(\+:,\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a3d6fc00aedb6c70b6a7028425fcf06b6}{derr2a}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a5a54381288367b46b4e714d245b33573}{derz2f}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a0039357c12385ef014b08446e7cc0e6c}{derr1f}
+\item 
+real(8), dimension(\+:,\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a8804ec2dcbfca2354a910b528fcd10d0}{derr2af}
+\item 
+real(8), dimension(\+:,\+:), allocatable \hyperlink{namespacegrid_a37bbb6d76b285961dc17e687364ba48d}{r1inv}
+\item 
+real(8), dimension(\+:,\+:), allocatable \hyperlink{namespacegrid_ac5d461ae0b4027338462085f7b2c117d}{r2inv}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_af4a35d1cb4ef0d6a9e9eac420a4e9638}{zdnuc}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_ab4cf4ad8b469e501cd06fbe82300f2ee}{rdnuc}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_af1ff89ca0b7f52aa01202240df562a10}{zdmes}
+\item 
+real(8), dimension(\+:,\+:,\+:), allocatable \hyperlink{namespacegrid_a19320a5e6ed33bc3a07ef487bda6acff}{rdmes}
+\item 
+integer \hyperlink{namespacegrid_a44dd95d936820f4f1b37d0a1eb780862}{iband\+\_\+derr}
+\item 
+integer \hyperlink{namespacegrid_aa4819c3f9b94d2f272ae40641aedb49e}{iband\+\_\+derz}
+\item 
+real(8), dimension(\+:,\+:), allocatable \hyperlink{namespacegrid_a77471665506f557a1b28abdc12d6a60a}{int\+\_\+weight}
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+This module contains the grid variables as well as the matrices and routines for computing derivatives and integrals. 
+
+Derivatives can be calculated either using a standart n-\/point formula or the Fourier definition. In both cases matrices are constructed and functions have to be multiplied with those to obtain the derivatives. Special attention has to be given to symmetries. The symmetry in z-\/direction is controlled with the variable {\ttfamily sym} (or {\ttfamily isym}). Also the z-\/parity and m-\/component is taken into account. 
+
+\subsubsection{Function/\+Subroutine Documentation}
+\index{grid@{grid}!damp\+\_\+meson@{damp\+\_\+meson}}
+\index{damp\+\_\+meson@{damp\+\_\+meson}!grid@{grid}}
+\paragraph[{\texorpdfstring{damp\+\_\+meson(fldin, fldout, factor)}{damp_meson(fldin, fldout, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::damp\+\_\+meson (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(out)}]{fldout, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a75afbba2c2a62cbb743d49cc49daa186}{}\label{namespacegrid_a75afbba2c2a62cbb743d49cc49daa186}
+
+
+Calculate action of the meson-\/damping operator on a scalar function. \[ \frac{1}{\texttt{dams}^2} \cdot \frac{1}{1-\delta_r/\texttt{dams}^2} \cdot \frac{1}{1-\delta_z\texttt{dams}^2} \]. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!damp\+\_\+nucleon@{damp\+\_\+nucleon}}
+\index{damp\+\_\+nucleon@{damp\+\_\+nucleon}!grid@{grid}}
+\paragraph[{\texorpdfstring{damp\+\_\+nucleon(dampr, dampz, fldin, fldout, izpfld, imfld, factor)}{damp_nucleon(dampr, dampz, fldin, fldout, izpfld, imfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::damp\+\_\+nucleon (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nr},0\+:{\bf nr},0\+:kmpsi), intent(in)}]{dampr, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nz},4), intent(in)}]{dampz, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{izpfld, }
+\item[{integer, intent(in)}]{imfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a07298a336f9ab0a423504ef5826db475}{}\label{namespacegrid_a07298a336f9ab0a423504ef5826db475}
+
+
+Calculate action of the nucleon-\/damping operator on a spinor. \[ \frac{\texttt{x0inv}}{\texttt{e0inv}} \cdot \frac{1}{1+t_r/\texttt{e0inv}} \cdot \frac{1}{1+t_z\texttt{e0inv}} \]. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em izpfld} & I\+N\+T\+E\+G\+ER, takes the z-\/parity of upper spinor. \\
+\hline
+\mbox{\tt in}  & {\em imfld} & I\+N\+T\+E\+G\+ER, takes the m-\/component of the field. (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!f1int@{f1int}}
+\index{f1int@{f1int}!grid@{grid}}
+\paragraph[{\texorpdfstring{f1int(fua)}{f1int(fua)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function grid\+::f1int (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fua}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a826ce21cf77769b59324009174610ab9}{}\label{namespacegrid_a826ce21cf77769b59324009174610ab9}
+
+
+Computes the integral over {\ttfamily fua}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fua} & R\+E\+A\+L(8), array, takes input function. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!f2int@{f2int}}
+\index{f2int@{f2int}!grid@{grid}}
+\paragraph[{\texorpdfstring{f2int(fua, fub)}{f2int(fua, fub)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function grid\+::f2int (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fua, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fub}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_aa872a933c56de60d6abf31fd7bec2814}{}\label{namespacegrid_aa872a933c56de60d6abf31fd7bec2814}
+
+
+Computes the integral over {\ttfamily fua} $\ast$ {\ttfamily fub}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fua} & R\+E\+A\+L(8), array, takes first input function. \\
+\hline
+\mbox{\tt in}  & {\em fub} & R\+E\+A\+L(8), array, takes second input function. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!init\+\_\+derive@{init\+\_\+derive}}
+\index{init\+\_\+derive@{init\+\_\+derive}!grid@{grid}}
+\paragraph[{\texorpdfstring{init\+\_\+derive(d, itype, ipnt, isyma, dx, ngrid, mgrid)}{init_derive(d, itype, ipnt, isyma, dx, ngrid, mgrid)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::init\+\_\+derive (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:mgrid,0\+:mgrid,$\ast$), intent(out)}]{d, }
+\item[{integer, intent(in)}]{itype, }
+\item[{integer, intent(in)}]{ipnt, }
+\item[{integer, intent(in)}]{isyma, }
+\item[{real(8), intent(in)}]{dx, }
+\item[{integer, intent(in)}]{ngrid, }
+\item[{integer, intent(in)}]{mgrid}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a2e25b0f7ec79d19d9b91b80efd0489da}{}\label{namespacegrid_a2e25b0f7ec79d19d9b91b80efd0489da}
+
+
+Initialization of derivative matrices. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em d} & R\+E\+A\+L(8), array, returns derivative matrix. \\
+\hline
+\mbox{\tt in}  & {\em itype} & I\+N\+T\+E\+G\+ER, type of derivative\+: 0\+: Bessel operator, 1\+: 1st derivative, 2\+: 2nd derivative. \\
+\hline
+\mbox{\tt in}  & {\em ipnt} & I\+N\+T\+E\+G\+ER, takes the band width of derivative. \\
+\hline
+\mbox{\tt in}  & {\em isyma} & I\+N\+T\+E\+G\+ER, switch for good parity for reflection at lower boundary. \\
+\hline
+\mbox{\tt in}  & {\em dx} & R\+E\+A\+L(8), takes spacing of grid points. \\
+\hline
+\mbox{\tt in}  & {\em ngrid} & I\+N\+T\+E\+G\+ER, number of grid points. \\
+\hline
+\mbox{\tt in}  & {\em mgrid} & I\+N\+T\+E\+G\+ER, total dimension of array to store derivatives. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!init\+\_\+grid@{init\+\_\+grid}}
+\index{init\+\_\+grid@{init\+\_\+grid}!grid@{grid}}
+\paragraph[{\texorpdfstring{init\+\_\+grid()}{init_grid()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::init\+\_\+grid (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a4cb599ddc037e470eb64f386a0971ea5}{}\label{namespacegrid_a4cb599ddc037e470eb64f386a0971ea5}
+
+
+Initialization of the grid operations routines. 
+
+This routine determines the band widths for derivatives and calls the appropriate routines for initializations for the derivative matrices.
+\begin{DoxyItemize}
+\item For idrtyp = 0\+: Fourier derivatives.
+\item For idrtyp = 1\+: 9-\/point in r-\/direction, Fourier in z-\/direction.
+\item For idrtyp = 2\+: Fourier in r-\/direction, 9-\/point in z-\/direction.
+\item For idrtyp = 3\+: 9-\/point derivatives. 
+\end{DoxyItemize}\index{grid@{grid}!init\+\_\+int\+\_\+weight@{init\+\_\+int\+\_\+weight}}
+\index{init\+\_\+int\+\_\+weight@{init\+\_\+int\+\_\+weight}!grid@{grid}}
+\paragraph[{\texorpdfstring{init\+\_\+int\+\_\+weight}{init_int_weight}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::init\+\_\+int\+\_\+weight (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a8424de604ef58a42851aa63b52bf535f}{}\label{namespacegrid_a8424de604ef58a42851aa63b52bf535f}
+
+
+Initializes integration weight for wave function overlaps and scalar integrals. 
+
+\index{grid@{grid}!laplace\+\_\+scalar@{laplace\+\_\+scalar}}
+\index{laplace\+\_\+scalar@{laplace\+\_\+scalar}!grid@{grid}}
+\paragraph[{\texorpdfstring{laplace\+\_\+scalar(fldin, fldout, izpfld, imfld, ibpfld, factor)}{laplace_scalar(fldin, fldout, izpfld, imfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::laplace\+\_\+scalar (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{izpfld, }
+\item[{integer, intent(in)}]{imfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a40e9fda41c6370cd95343f7033601e1e}{}\label{namespacegrid_a40e9fda41c6370cd95343f7033601e1e}
+
+
+Calculate the action of the laplace operator. \[ f*[(d/dr)^2 + 1/r (d/dr) - m^2/r^2 + (d/dz)^2] \]. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em izpfld} & I\+N\+T\+E\+G\+ER, takes the z-\/parity of field (1 for positive, 2 for negative, 1 and isym=0 for no good z-\/parity) \\
+\hline
+\mbox{\tt in}  & {\em imfld} & I\+N\+T\+E\+G\+ER, takes the m-\/component of the field. \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!laplace\+\_\+spin@{laplace\+\_\+spin}}
+\index{laplace\+\_\+spin@{laplace\+\_\+spin}!grid@{grid}}
+\paragraph[{\texorpdfstring{laplace\+\_\+spin(fldin, fldout, izpfld, imfld, ibpfld, factor)}{laplace_spin(fldin, fldout, izpfld, imfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::laplace\+\_\+spin (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{izpfld, }
+\item[{integer, intent(in)}]{imfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a807f502b4225a59f7575c250a8ccd032}{}\label{namespacegrid_a807f502b4225a59f7575c250a8ccd032}
+
+
+Calculate the action of the laplace operator on a spinor. \[ f*[(d/dr)^2 + 1/r (d/dr) - m^2/r^2 + (d/dz)^2] \]. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em izpfld} & I\+N\+T\+E\+G\+ER, takes the z-\/parity of upper component (1 for positive, 2 for negative, 1 and isym=0 for no good z-\/parity) \\
+\hline
+\mbox{\tt in}  & {\em imfld} & I\+N\+T\+E\+G\+ER, takes the z-\/component of angular momentum m of the upper component. \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!laplacer\+\_\+scalar@{laplacer\+\_\+scalar}}
+\index{laplacer\+\_\+scalar@{laplacer\+\_\+scalar}!grid@{grid}}
+\paragraph[{\texorpdfstring{laplacer\+\_\+scalar(fldin, fldout, imfld, ibpfld, factor)}{laplacer_scalar(fldin, fldout, imfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::laplacer\+\_\+scalar (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{imfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_adb67b33df30984560a4a640e00a40f99}{}\label{namespacegrid_adb67b33df30984560a4a640e00a40f99}
+
+
+Calculate the action of the radial part of the laplace operator. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em imfld} & I\+N\+T\+E\+G\+ER, takes the m-\/component of the field. \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!matr\+\_\+inv@{matr\+\_\+inv}}
+\index{matr\+\_\+inv@{matr\+\_\+inv}!grid@{grid}}
+\paragraph[{\texorpdfstring{matr\+\_\+inv(a, nmax, imax)}{matr_inv(a, nmax, imax)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::matr\+\_\+inv (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(nmax,nmax), intent(inout)}]{a, }
+\item[{integer, intent(in)}]{nmax, }
+\item[{integer, intent(in)}]{imax}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a3fa4b3b24e221d4f98dc90fc2bc54c21}{}\label{namespacegrid_a3fa4b3b24e221d4f98dc90fc2bc54c21}
+
+
+Matrix inversion of matrix, implemented with L\+A\+P\+A\+CK routines. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in,out}  & {\em a} & R\+E\+A\+L(8), array, takes the matrix a and returns the inverse. \\
+\hline
+\mbox{\tt in}  & {\em imax} & I\+N\+T\+E\+G\+ER, takes the actual dimension of matrix a. \\
+\hline
+\mbox{\tt in}  & {\em nmax} & I\+N\+T\+E\+G\+ER, takes the maximal dimension of the matrices. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!matr\+\_\+mul@{matr\+\_\+mul}}
+\index{matr\+\_\+mul@{matr\+\_\+mul}!grid@{grid}}
+\paragraph[{\texorpdfstring{matr\+\_\+mul(a, b, c, imax, nmax)}{matr_mul(a, b, c, imax, nmax)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::matr\+\_\+mul (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nmax,0\+:nmax), intent(in)}]{a, }
+\item[{real(8), dimension(0\+:nmax,0\+:nmax), intent(in)}]{b, }
+\item[{real(8), dimension(0\+:nmax,0\+:nmax), intent(out)}]{c, }
+\item[{integer, intent(in)}]{imax, }
+\item[{integer, intent(in)}]{nmax}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a771bf7fcf3d65544eb8badcb0d8fe528}{}\label{namespacegrid_a771bf7fcf3d65544eb8badcb0d8fe528}
+
+
+Full matrix multiplication a$\ast$b=c. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em a} & R\+E\+A\+L(8), array, takes the matrix a. \\
+\hline
+\mbox{\tt in}  & {\em a} & R\+E\+A\+L(8), array, takes the matrix b. \\
+\hline
+\mbox{\tt out}  & {\em c} & R\+E\+A\+L(8), array, returns the matrix c. \\
+\hline
+\mbox{\tt in}  & {\em imax} & I\+N\+T\+E\+G\+ER, takes the actual dimension of matrices a, b and c. \\
+\hline
+\mbox{\tt in}  & {\em nmax} & I\+N\+T\+E\+G\+ER, takes the maximal dimension of the matrices. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!mulr@{mulr}}
+\index{mulr@{mulr}!grid@{grid}}
+\paragraph[{\texorpdfstring{mulr(a, x, y, factor, iaccu)}{mulr(a, x, y, factor, iaccu)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::mulr (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nr},0\+:{\bf nr}), intent(in)}]{a, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{x, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(inout)}]{y, }
+\item[{real(8), intent(in)}]{factor, }
+\item[{integer, intent(in)}]{iaccu}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a729ef173ecbf5623d1bf2c94fcc0bf92}{}\label{namespacegrid_a729ef173ecbf5623d1bf2c94fcc0bf92}
+
+
+Matrix-\/matrix multiplication for operations in r-\/direction. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in,out}  & {\em a} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily a}. \\
+\hline
+\mbox{\tt in,out}  & {\em x} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily x}. \\
+\hline
+\mbox{\tt in,out}  & {\em y} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily y}. \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the value {\ttfamily factor}. \\
+\hline
+\mbox{\tt in}  & {\em iaccu} & I\+N\+T\+E\+G\+ER, 0 for no accumulation, 1 for accumulation of {\ttfamily y}. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!mulr0@{mulr0}}
+\index{mulr0@{mulr0}!grid@{grid}}
+\paragraph[{\texorpdfstring{mulr0(a, x, y, factor, iaccu)}{mulr0(a, x, y, factor, iaccu)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::mulr0 (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nr},0\+:{\bf nr}), intent(in)}]{a, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{x, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(inout)}]{y, }
+\item[{real(8), intent(in)}]{factor, }
+\item[{integer, intent(in)}]{iaccu}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_aa66349c5be01c56fead6f21b56fda0a2}{}\label{namespacegrid_aa66349c5be01c56fead6f21b56fda0a2}
+
+
+Matrix-\/matrix multiplication for operations in r-\/direction (only r=0). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in,out}  & {\em a} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily a}. \\
+\hline
+\mbox{\tt in,out}  & {\em x} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily x}. \\
+\hline
+\mbox{\tt in,out}  & {\em y} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily y}. \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the value {\ttfamily factor}. \\
+\hline
+\mbox{\tt in}  & {\em iaccu} & I\+N\+T\+E\+G\+ER, 0 for no accumulation, 1 for accumulation of {\ttfamily y}. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!mulz@{mulz}}
+\index{mulz@{mulz}!grid@{grid}}
+\paragraph[{\texorpdfstring{mulz(a, x, y, factor, iaccu)}{mulz(a, x, y, factor, iaccu)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::mulz (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nz}), intent(in)}]{a, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{x, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(inout)}]{y, }
+\item[{real(8), intent(in)}]{factor, }
+\item[{integer, intent(in)}]{iaccu}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a094af63a3600c9b47d99fc5eb2b0b28c}{}\label{namespacegrid_a094af63a3600c9b47d99fc5eb2b0b28c}
+
+
+Matrix-\/matrix multiplication for operations in z-\/direction. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in,out}  & {\em a} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily a}. \\
+\hline
+\mbox{\tt in,out}  & {\em x} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily x}. \\
+\hline
+\mbox{\tt in,out}  & {\em y} & R\+E\+A\+L(8), array, takes the matrix {\ttfamily y}. \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the value {\ttfamily factor}. \\
+\hline
+\mbox{\tt in}  & {\em iaccu} & I\+N\+T\+E\+G\+ER, 0 for no accumulation, 1 for accumulation of {\ttfamily y}. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!nablap\+\_\+spin@{nablap\+\_\+spin}}
+\index{nablap\+\_\+spin@{nablap\+\_\+spin}!grid@{grid}}
+\paragraph[{\texorpdfstring{nablap\+\_\+spin(fldin, fldout, imfld, ibpfld, factor)}{nablap_spin(fldin, fldout, imfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::nablap\+\_\+spin (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{imfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a7030a73b3eff3d418914c2f94e6f5eca}{}\label{namespacegrid_a7030a73b3eff3d418914c2f94e6f5eca}
+
+
+Calculate the $\phi$-\/component of the gradient of a spinor. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em imfld} & I\+N\+T\+E\+G\+ER, takes the m-\/component of the upper component. \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!nablar\+\_\+scalar@{nablar\+\_\+scalar}}
+\index{nablar\+\_\+scalar@{nablar\+\_\+scalar}!grid@{grid}}
+\paragraph[{\texorpdfstring{nablar\+\_\+scalar(fldin, fldout, imfld, ibpfld, factor)}{nablar_scalar(fldin, fldout, imfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::nablar\+\_\+scalar (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{imfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_ab8b751012b26ee67998674d81747d532}{}\label{namespacegrid_ab8b751012b26ee67998674d81747d532}
+
+
+Calculate the r-\/component of the gradient of a scalar function. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em imfld} & I\+N\+T\+E\+G\+ER, takes the m-\/component of the field. \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!nablar\+\_\+spin@{nablar\+\_\+spin}}
+\index{nablar\+\_\+spin@{nablar\+\_\+spin}!grid@{grid}}
+\paragraph[{\texorpdfstring{nablar\+\_\+spin(fldin, fldout, imfld, ibpfld, factor)}{nablar_spin(fldin, fldout, imfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::nablar\+\_\+spin (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{imfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_ab4994ce54858ab4a5ca1d1f97260ebad}{}\label{namespacegrid_ab4994ce54858ab4a5ca1d1f97260ebad}
+
+
+Calculate the r-\/component of the gradient of a spinor. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em imfld} & I\+N\+T\+E\+G\+ER, takes the m-\/component of the upper component. \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!nablaz\+\_\+scalar@{nablaz\+\_\+scalar}}
+\index{nablaz\+\_\+scalar@{nablaz\+\_\+scalar}!grid@{grid}}
+\paragraph[{\texorpdfstring{nablaz\+\_\+scalar(fldin, fldout, izpfld, ibpfld, factor)}{nablaz_scalar(fldin, fldout, izpfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::nablaz\+\_\+scalar (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{izpfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a0d6ef544d8d744ea1c6b70658774a4b2}{}\label{namespacegrid_a0d6ef544d8d744ea1c6b70658774a4b2}
+
+
+Calculate the z-\/component of the gradient of a scalar function. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em izpfld} & I\+N\+T\+E\+G\+ER, takes the z-\/parity 1 for positive, 2 for negative and 1 and {\ttfamily isym} = 0 for no good parity. \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!nablaz\+\_\+spin@{nablaz\+\_\+spin}}
+\index{nablaz\+\_\+spin@{nablaz\+\_\+spin}!grid@{grid}}
+\paragraph[{\texorpdfstring{nablaz\+\_\+spin(fldin, fldout, izpfld, ibpfld, factor)}{nablaz_spin(fldin, fldout, izpfld, ibpfld, factor)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::nablaz\+\_\+spin (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(in)}]{fldin, }
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr},nsd), intent(out)}]{fldout, }
+\item[{integer, intent(in)}]{izpfld, }
+\item[{integer, intent(in)}]{ibpfld, }
+\item[{real(8), intent(in)}]{factor}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_a35f707d0d56204d4f6474c5808a93dbc}{}\label{namespacegrid_a35f707d0d56204d4f6474c5808a93dbc}
+
+
+Calculate the z-\/component of the gradient of a spinor. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em fldin} & R\+E\+A\+L(8), array, takes the input field. \\
+\hline
+\mbox{\tt out}  & {\em fldout} & R\+E\+A\+L(8), array, returns the output field. \\
+\hline
+\mbox{\tt in}  & {\em izpfld} & I\+N\+T\+E\+G\+ER, takes the z-\/parity of upper spinor (1 for positive, 2 for negative, 1 and isym=0 for no good z-\/parity). \\
+\hline
+\mbox{\tt in}  & {\em ibpfld} & I\+N\+T\+E\+G\+ER, takes boundary parity. 1 for negative (zero-\/value), 2 for positive (zero-\/derivative). \\
+\hline
+\mbox{\tt in}  & {\em factor} & R\+E\+A\+L(8), takes the weight factor. \\
+\hline
+\end{DoxyParams}
+\index{grid@{grid}!test\+\_\+print@{test\+\_\+print}}
+\index{test\+\_\+print@{test\+\_\+print}!grid@{grid}}
+\paragraph[{\texorpdfstring{test\+\_\+print(field, nzmin, nzmax, nrmin, nrmax, header)}{test_print(field, nzmin, nzmax, nrmin, nrmax, header)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\+::test\+\_\+print (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:{\bf nz},0\+:{\bf nr}), intent(in)}]{field, }
+\item[{integer, intent(in)}]{nzmin, }
+\item[{integer, intent(in)}]{nzmax, }
+\item[{integer, intent(in)}]{nrmin, }
+\item[{integer, intent(in)}]{nrmax, }
+\item[{character (len=$\ast$), intent(in)}]{header}
+\end{DoxyParamCaption}
+)}\hypertarget{namespacegrid_ad009f2e6c140cc067f8aa8f9ffac21b2}{}\label{namespacegrid_ad009f2e6c140cc067f8aa8f9ffac21b2}
+
+
+Testprint of real \textquotesingle{}field\textquotesingle{} in the range nzmin$<$iz$<$nzmax and nrmin$<$ir$<$nrmax. Maximally 10 ir are printed. Print is named by \textquotesingle{}header\textquotesingle{}. Maximum and minimum value of {\ttfamily field} is evaluated and printed (in whole range). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em field} & R\+E\+A\+L(8), array, takes the field to print. \\
+\hline
+\mbox{\tt in}  & {\em nzmin} & I\+N\+T\+E\+G\+ER, takes minimum z index for printing. \\
+\hline
+\mbox{\tt in}  & {\em nzmax} & I\+N\+T\+E\+G\+ER, takes maximum z index for printing. \\
+\hline
+\mbox{\tt in}  & {\em nrmin} & I\+N\+T\+E\+G\+ER, takes minimum r index for printing. \\
+\hline
+\mbox{\tt in}  & {\em nrmax} & I\+N\+T\+E\+G\+ER, takes maximum r index for printing. \\
+\hline
+\mbox{\tt in}  & {\em header} & C\+H\+A\+R\+A\+C\+T\+ER, array, takes maximum r index for printing. \\
+\hline
+\end{DoxyParams}
+
+
+\subsubsection{Variable Documentation}
+\index{grid@{grid}!derr1@{derr1}}
+\index{derr1@{derr1}!grid@{grid}}
+\paragraph[{\texorpdfstring{derr1}{derr1}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::derr1}\hypertarget{namespacegrid_a927d3ab579693ac5d3d1b383fc47309e}{}\label{namespacegrid_a927d3ab579693ac5d3d1b383fc47309e}
+
+
+First derivative in r-\/direction. 
+
+\index{grid@{grid}!derr1f@{derr1f}}
+\index{derr1f@{derr1f}!grid@{grid}}
+\paragraph[{\texorpdfstring{derr1f}{derr1f}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::derr1f}\hypertarget{namespacegrid_a0039357c12385ef014b08446e7cc0e6c}{}\label{namespacegrid_a0039357c12385ef014b08446e7cc0e6c}
+
+
+First derivative in r-\/direction (fourier definition). 
+
+\index{grid@{grid}!derr2a@{derr2a}}
+\index{derr2a@{derr2a}!grid@{grid}}
+\paragraph[{\texorpdfstring{derr2a}{derr2a}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:,\+:), allocatable grid\+::derr2a}\hypertarget{namespacegrid_a3d6fc00aedb6c70b6a7028425fcf06b6}{}\label{namespacegrid_a3d6fc00aedb6c70b6a7028425fcf06b6}
+
+
+Bessel operator in r-\/direction. 
+
+\index{grid@{grid}!derr2af@{derr2af}}
+\index{derr2af@{derr2af}!grid@{grid}}
+\paragraph[{\texorpdfstring{derr2af}{derr2af}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:,\+:), allocatable grid\+::derr2af}\hypertarget{namespacegrid_a8804ec2dcbfca2354a910b528fcd10d0}{}\label{namespacegrid_a8804ec2dcbfca2354a910b528fcd10d0}
+
+
+Bessel operator in r-\/direction (fourier definition). 
+
+\index{grid@{grid}!derz1@{derz1}}
+\index{derz1@{derz1}!grid@{grid}}
+\paragraph[{\texorpdfstring{derz1}{derz1}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::derz1}\hypertarget{namespacegrid_a16bcad48837c65e5d97745b347cafefc}{}\label{namespacegrid_a16bcad48837c65e5d97745b347cafefc}
+
+
+First derivative in z-\/direction. 
+
+\index{grid@{grid}!derz2@{derz2}}
+\index{derz2@{derz2}!grid@{grid}}
+\paragraph[{\texorpdfstring{derz2}{derz2}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::derz2}\hypertarget{namespacegrid_a524a0741df0c2d7298368fad8a95f621}{}\label{namespacegrid_a524a0741df0c2d7298368fad8a95f621}
+
+
+Second derivative in z-\/direction. 
+
+\index{grid@{grid}!derz2f@{derz2f}}
+\index{derz2f@{derz2f}!grid@{grid}}
+\paragraph[{\texorpdfstring{derz2f}{derz2f}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::derz2f}\hypertarget{namespacegrid_a5a54381288367b46b4e714d245b33573}{}\label{namespacegrid_a5a54381288367b46b4e714d245b33573}
+
+
+Second derivative in z-\/direction (fourier definition). 
+
+\index{grid@{grid}!dr@{dr}}
+\index{dr@{dr}!grid@{grid}}
+\paragraph[{\texorpdfstring{dr}{dr}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) grid\+::dr =1\+D0}\hypertarget{namespacegrid_a1baa9e0cda2fabdcf3c692417f51cb99}{}\label{namespacegrid_a1baa9e0cda2fabdcf3c692417f51cb99}
+
+
+Grid spacing in r-\/direction. 
+
+\index{grid@{grid}!dvol@{dvol}}
+\index{dvol@{dvol}!grid@{grid}}
+\paragraph[{\texorpdfstring{dvol}{dvol}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) grid\+::dvol}\hypertarget{namespacegrid_a45853148f801057061a76070e2969573}{}\label{namespacegrid_a45853148f801057061a76070e2969573}
+
+
+Volume element for space integration. 
+
+\index{grid@{grid}!dz@{dz}}
+\index{dz@{dz}!grid@{grid}}
+\paragraph[{\texorpdfstring{dz}{dz}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) grid\+::dz =1\+D0}\hypertarget{namespacegrid_af2dd57b4230bb5691266889f867fc507}{}\label{namespacegrid_af2dd57b4230bb5691266889f867fc507}
+
+
+Grid spacing in z-\/direction. 
+
+\index{grid@{grid}!iband\+\_\+derr@{iband\+\_\+derr}}
+\index{iband\+\_\+derr@{iband\+\_\+derr}!grid@{grid}}
+\paragraph[{\texorpdfstring{iband\+\_\+derr}{iband_derr}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::iband\+\_\+derr}\hypertarget{namespacegrid_a44dd95d936820f4f1b37d0a1eb780862}{}\label{namespacegrid_a44dd95d936820f4f1b37d0a1eb780862}
+
+
+Band width of derivatives in r-\/direction. 
+
+\index{grid@{grid}!iband\+\_\+derz@{iband\+\_\+derz}}
+\index{iband\+\_\+derz@{iband\+\_\+derz}!grid@{grid}}
+\paragraph[{\texorpdfstring{iband\+\_\+derz}{iband_derz}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::iband\+\_\+derz}\hypertarget{namespacegrid_aa4819c3f9b94d2f272ae40641aedb49e}{}\label{namespacegrid_aa4819c3f9b94d2f272ae40641aedb49e}
+
+
+Band width of derivatives in z-\/direction. 
+
+\index{grid@{grid}!icm@{icm}}
+\index{icm@{icm}!grid@{grid}}
+\paragraph[{\texorpdfstring{icm}{icm}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::icm}\hypertarget{namespacegrid_aa34e25e6540e6c8bee7767d3bcf0bdee}{}\label{namespacegrid_aa34e25e6540e6c8bee7767d3bcf0bdee}
+
+
+Point on z-\/grid for Center of nucleus. If sym=0\+: 1, if sym=1\+: nz/2+1. 
+
+\index{grid@{grid}!idrtyp@{idrtyp}}
+\index{idrtyp@{idrtyp}!grid@{grid}}
+\paragraph[{\texorpdfstring{idrtyp}{idrtyp}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::idrtyp =0}\hypertarget{namespacegrid_adb8ca41499ab74560e9d97f2511f2cc4}{}\label{namespacegrid_adb8ca41499ab74560e9d97f2511f2cc4}
+
+
+Switch for type of derivative. 
+
+\index{grid@{grid}!int\+\_\+weight@{int\+\_\+weight}}
+\index{int\+\_\+weight@{int\+\_\+weight}!grid@{grid}}
+\paragraph[{\texorpdfstring{int\+\_\+weight}{int_weight}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:), allocatable grid\+::int\+\_\+weight}\hypertarget{namespacegrid_a77471665506f557a1b28abdc12d6a60a}{}\label{namespacegrid_a77471665506f557a1b28abdc12d6a60a}
+
+
+Integration weight for scalar products. 
+
+\index{grid@{grid}!isym@{isym}}
+\index{isym@{isym}!grid@{grid}}
+\paragraph[{\texorpdfstring{isym}{isym}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::isym =1}\hypertarget{namespacegrid_a2aa66619046d86914292b3e3826e6149}{}\label{namespacegrid_a2aa66619046d86914292b3e3826e6149}
+
+
+Integer Variable for symmetry. 
+
+\index{grid@{grid}!nr@{nr}}
+\index{nr@{nr}!grid@{grid}}
+\paragraph[{\texorpdfstring{nr}{nr}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::nr =0}\hypertarget{namespacegrid_adcf6fea7f9e201561e68a1d7c04421c5}{}\label{namespacegrid_adcf6fea7f9e201561e68a1d7c04421c5}
+
+
+Grid size in r-\/direction. 
+
+\index{grid@{grid}!nr\+\_\+testp@{nr\+\_\+testp}}
+\index{nr\+\_\+testp@{nr\+\_\+testp}!grid@{grid}}
+\paragraph[{\texorpdfstring{nr\+\_\+testp}{nr_testp}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::nr\+\_\+testp}\hypertarget{namespacegrid_af1ff96c4459cb5671a60fe70e6ce6a3e}{}\label{namespacegrid_af1ff96c4459cb5671a60fe70e6ce6a3e}
+
+
+Output length in r-\/direction for printing (test switch). 
+
+\index{grid@{grid}!nz@{nz}}
+\index{nz@{nz}!grid@{grid}}
+\paragraph[{\texorpdfstring{nz}{nz}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::nz =0}\hypertarget{namespacegrid_ac1e240a950d37771ad366b8b12b3743e}{}\label{namespacegrid_ac1e240a950d37771ad366b8b12b3743e}
+
+
+Grid size in z-\/direction. 
+
+\index{grid@{grid}!nz\+\_\+testp@{nz\+\_\+testp}}
+\index{nz\+\_\+testp@{nz\+\_\+testp}!grid@{grid}}
+\paragraph[{\texorpdfstring{nz\+\_\+testp}{nz_testp}}]{\setlength{\rightskip}{0pt plus 5cm}integer grid\+::nz\+\_\+testp}\hypertarget{namespacegrid_a8beb75ae0c827f8dea414882ff08e037}{}\label{namespacegrid_a8beb75ae0c827f8dea414882ff08e037}
+
+
+Output length in z-\/direction for printing (test switch). 
+
+\index{grid@{grid}!r@{r}}
+\index{r@{r}!grid@{grid}}
+\paragraph[{\texorpdfstring{r}{r}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:), allocatable grid\+::r}\hypertarget{namespacegrid_a179734537d519e50cb4330f69282778c}{}\label{namespacegrid_a179734537d519e50cb4330f69282778c}
+
+
+r-\/coordinates 
+
+\index{grid@{grid}!r1inv@{r1inv}}
+\index{r1inv@{r1inv}!grid@{grid}}
+\paragraph[{\texorpdfstring{r1inv}{r1inv}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:), allocatable grid\+::r1inv}\hypertarget{namespacegrid_a37bbb6d76b285961dc17e687364ba48d}{}\label{namespacegrid_a37bbb6d76b285961dc17e687364ba48d}
+
+
+$ 1/r$. 
+
+\index{grid@{grid}!r2inv@{r2inv}}
+\index{r2inv@{r2inv}!grid@{grid}}
+\paragraph[{\texorpdfstring{r2inv}{r2inv}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:), allocatable grid\+::r2inv}\hypertarget{namespacegrid_ac5d461ae0b4027338462085f7b2c117d}{}\label{namespacegrid_ac5d461ae0b4027338462085f7b2c117d}
+
+
+$ 1/r^2$. 
+
+\index{grid@{grid}!rdmes@{rdmes}}
+\index{rdmes@{rdmes}!grid@{grid}}
+\paragraph[{\texorpdfstring{rdmes}{rdmes}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::rdmes}\hypertarget{namespacegrid_a19320a5e6ed33bc3a07ef487bda6acff}{}\label{namespacegrid_a19320a5e6ed33bc3a07ef487bda6acff}
+
+
+Damping operator for the photon in r-\/direction. 
+
+\index{grid@{grid}!rdnuc@{rdnuc}}
+\index{rdnuc@{rdnuc}!grid@{grid}}
+\paragraph[{\texorpdfstring{rdnuc}{rdnuc}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::rdnuc}\hypertarget{namespacegrid_ab4cf4ad8b469e501cd06fbe82300f2ee}{}\label{namespacegrid_ab4cf4ad8b469e501cd06fbe82300f2ee}
+
+
+Damping operator for the nucleons in r-\/direction. 
+
+\index{grid@{grid}!sr@{sr}}
+\index{sr@{sr}!grid@{grid}}
+\paragraph[{\texorpdfstring{sr}{sr}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) grid\+::sr =0\+D0}\hypertarget{namespacegrid_ac01da4440df8a87994cbe84c6fe756b1}{}\label{namespacegrid_ac01da4440df8a87994cbe84c6fe756b1}
+
+
+First point in r-\/direction. 
+
+\index{grid@{grid}!sym@{sym}}
+\index{sym@{sym}!grid@{grid}}
+\paragraph[{\texorpdfstring{sym}{sym}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) grid\+::sym =1\+D0}\hypertarget{namespacegrid_a5da7a7ed94ce1ad125820c9e731998ab}{}\label{namespacegrid_a5da7a7ed94ce1ad125820c9e731998ab}
+
+
+Symmetry parameter. 1\+: z-\/reflection symmetry; 0\+: no symmetry. 
+
+\index{grid@{grid}!sz@{sz}}
+\index{sz@{sz}!grid@{grid}}
+\paragraph[{\texorpdfstring{sz}{sz}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) grid\+::sz}\hypertarget{namespacegrid_a1368c70ae54f199b68ccfa8672252bf9}{}\label{namespacegrid_a1368c70ae54f199b68ccfa8672252bf9}
+
+
+First point in z-\/direction. 
+
+\index{grid@{grid}!z@{z}}
+\index{z@{z}!grid@{grid}}
+\paragraph[{\texorpdfstring{z}{z}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:), allocatable grid\+::z}\hypertarget{namespacegrid_a70452110896f967bfa9712b77c0bd3de}{}\label{namespacegrid_a70452110896f967bfa9712b77c0bd3de}
+
+
+z-\/coordinates 
+
+\index{grid@{grid}!zdmes@{zdmes}}
+\index{zdmes@{zdmes}!grid@{grid}}
+\paragraph[{\texorpdfstring{zdmes}{zdmes}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::zdmes}\hypertarget{namespacegrid_af1ff89ca0b7f52aa01202240df562a10}{}\label{namespacegrid_af1ff89ca0b7f52aa01202240df562a10}
+
+
+Damping operator for the photon in z-\/direction. 
+
+\index{grid@{grid}!zdnuc@{zdnuc}}
+\index{zdnuc@{zdnuc}!grid@{grid}}
+\paragraph[{\texorpdfstring{zdnuc}{zdnuc}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(\+:,\+:,\+:), allocatable grid\+::zdnuc}\hypertarget{namespacegrid_af4a35d1cb4ef0d6a9e9eac420a4e9638}{}\label{namespacegrid_af4a35d1cb4ef0d6a9e9eac420a4e9638}
+
+
+Damping operator for the nucleons in z-\/direction. 
+

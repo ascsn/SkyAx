@@ -1,0 +1,17 @@
+&main outnam='tst',iprint=2000,itmax=1000
+/
+&force t0=-2488.913d0,t1=486.818d0,t2=-546.395d0,t3=13777.000d0,
+ x0=0.834d0,x1=-0.344d0,x2=-1.0D0,x3=1.35400d0,
+ t4=123.000d0,b4p=61.5D0,power=0.166666667D0,
+ h2m=20.7355298d0,20.7355298d0,
+ chg=1D0,ex=1,riftm=0D0,zpe=1,
+ ipair=5,v0prot=295.369,v0neut=286.669,rho0pr=0.0D0
+/
+&grids nz=61,nr=25,dz=1.00,dr=1.00,tsym=F
+/
+&static nprot=118,nneut=176,betain=0.2,x0inv=0.3,tvaryx0=T,inodiag=9999
+/
+&constraint swicon2=1D0,betmin2=-0.0D0,betmax2=0.6D0,betaw2=0.05D0
+/
+&thermal
+/

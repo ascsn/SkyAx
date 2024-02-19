@@ -1,0 +1,132 @@
+\hypertarget{namespaceutil}{}\subsection{util Module Reference}
+\label{namespaceutil}\index{util@{util}}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{namespaceutil_aac4992cc592b0d0683d9cb2a87ebddd5}{write\+\_\+skyax\+\_\+header} ()
+\item 
+subroutine \hyperlink{namespaceutil_aa9bfa6660c51896cbd65a21cdaa39082}{writ2d} ()
+\item 
+subroutine \hyperlink{namespaceutil_a069d437605f9b9b092ea89b615d8c25a}{read2d} ()
+\item 
+subroutine \hyperlink{namespaceutil_aa9b0a6c5e567c5d51bff6bddd9f44a9b}{plot\+\_\+2d} ()
+\item 
+subroutine \hyperlink{namespaceutil_a9117111f9dd66d8c3f70c4f386bb9729}{writ3d} ()
+\item 
+subroutine \hyperlink{namespaceutil_a0a5db2f39cbcc56ea6720c6c394d2349}{polint} (xa, ya, n, x, y, dy)
+\item 
+subroutine \hyperlink{namespaceutil_af8c8a5bf64f2cb86380d62663ee08273}{protfold} (rhoin, rhofold)
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+This module contains routines for in and output of wave functions and helper routines for printout. 
+
+\subsubsection{Function/\+Subroutine Documentation}
+\index{util@{util}!plot\+\_\+2d@{plot\+\_\+2d}}
+\index{plot\+\_\+2d@{plot\+\_\+2d}!util@{util}}
+\paragraph[{\texorpdfstring{plot\+\_\+2d()}{plot_2d()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine util\+::plot\+\_\+2d (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceutil_aa9b0a6c5e567c5d51bff6bddd9f44a9b}{}\label{namespaceutil_aa9b0a6c5e567c5d51bff6bddd9f44a9b}
+
+
+Plots densities in the file \textquotesingle{}plot\+\_\+2D.???\textquotesingle{}. 
+
+\index{util@{util}!polint@{polint}}
+\index{polint@{polint}!util@{util}}
+\paragraph[{\texorpdfstring{polint(xa, ya, n, x, y, dy)}{polint(xa, ya, n, x, y, dy)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine util\+::polint (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(n), intent(in)}]{xa, }
+\item[{real(8), dimension(n), intent(in)}]{ya, }
+\item[{integer, intent(in)}]{n, }
+\item[{real(8), intent(in)}]{x, }
+\item[{real(8), intent(out)}]{y, }
+\item[{real(8), intent(out)}]{dy}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceutil_a0a5db2f39cbcc56ea6720c6c394d2349}{}\label{namespaceutil_a0a5db2f39cbcc56ea6720c6c394d2349}
+
+
+Polynomial interpolation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em xa} & R\+E\+A\+L(8), array, takes x values. \\
+\hline
+\mbox{\tt in}  & {\em ya} & R\+E\+A\+L(8), array, takes corresponding y values. \\
+\hline
+\mbox{\tt in}  & {\em n} & I\+N\+T\+E\+G\+ER, takes order of polynomial for interpolation. \\
+\hline
+\mbox{\tt in}  & {\em x} & R\+E\+A\+L(8), takes x value at which interpolated function is wanted. \\
+\hline
+\mbox{\tt out}  & {\em y} & R\+E\+A\+L(8), returns interpolated function value. \\
+\hline
+\mbox{\tt out}  & {\em dy} & R\+E\+A\+L(8), returns error estimate for resulting y. \\
+\hline
+\end{DoxyParams}
+\index{util@{util}!protfold@{protfold}}
+\index{protfold@{protfold}!util@{util}}
+\paragraph[{\texorpdfstring{protfold(rhoin, rhofold)}{protfold(rhoin, rhofold)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine util\+::protfold (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(in)}]{rhoin, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(out)}]{rhofold}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceutil_af8c8a5bf64f2cb86380d62663ee08273}{}\label{namespaceutil_af8c8a5bf64f2cb86380d62663ee08273}
+
+
+Folding of given density {\ttfamily rhoin} with Gaussian of width {\ttfamily rcut1}. Result is returned on {\ttfamily rhofold}. 
+
+Uses Taylor expansion of Gaussain in momentum space.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em rhoin} & R\+E\+A\+L(8), array, takes the input density. \\
+\hline
+\mbox{\tt out}  & {\em rhofold} & R\+E\+A\+L(8), array, returns the folded density. \\
+\hline
+\end{DoxyParams}
+\index{util@{util}!read2d@{read2d}}
+\index{read2d@{read2d}!util@{util}}
+\paragraph[{\texorpdfstring{read2d()}{read2d()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine util\+::read2d (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceutil_a069d437605f9b9b092ea89b615d8c25a}{}\label{namespaceutil_a069d437605f9b9b092ea89b615d8c25a}
+
+
+Reads wavefunctions and associated quantities for restart from \char`\"{}restart.\+data\char`\"{}. 
+
+\index{util@{util}!writ2d@{writ2d}}
+\index{writ2d@{writ2d}!util@{util}}
+\paragraph[{\texorpdfstring{writ2d()}{writ2d()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine util\+::writ2d (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceutil_aa9bfa6660c51896cbd65a21cdaa39082}{}\label{namespaceutil_aa9bfa6660c51896cbd65a21cdaa39082}
+
+
+Saves wavefunctions and associated quantities for restart in \char`\"{}restart.\+data\char`\"{}. 
+
+\index{util@{util}!writ3d@{writ3d}}
+\index{writ3d@{writ3d}!util@{util}}
+\paragraph[{\texorpdfstring{writ3d()}{writ3d()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine util\+::writ3d (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceutil_a9117111f9dd66d8c3f70c4f386bb9729}{}\label{namespaceutil_a9117111f9dd66d8c3f70c4f386bb9729}
+
+
+Interpolates and transfer wave functions on a 3D grid. Produces a restart file which can be read by the 3D program \char`\"{}\+Sky3\+D\char`\"{}. 
+
+\index{util@{util}!write\+\_\+skyax\+\_\+header@{write\+\_\+skyax\+\_\+header}}
+\index{write\+\_\+skyax\+\_\+header@{write\+\_\+skyax\+\_\+header}!util@{util}}
+\paragraph[{\texorpdfstring{write\+\_\+skyax\+\_\+header()}{write_skyax_header()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine util\+::write\+\_\+skyax\+\_\+header (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceutil_aac4992cc592b0d0683d9cb2a87ebddd5}{}\label{namespaceutil_aac4992cc592b0d0683d9cb2a87ebddd5}
+
+
+Writes header for main output. 
+

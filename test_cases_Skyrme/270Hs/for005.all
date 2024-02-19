@@ -1,0 +1,17 @@
+&main outnam='fh0',title='test fission 270Hs',iprint=2000,itmax=1000,itest=0/
+&force 
+ name='SVbas',ipair=7,pairstab=-0.3D0
+/
+&grids tsym=T,nr=25,nz=31,dr=1D0,dz=1D0,
+/
+&static nprot=108,nneut=162,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=1D0,
+errenr=1D-9,errvar=0.05D0,betain=0.2D0,inodiag=50,tvaryx0=T
+/
+&constraint itypco=1,
+  swicon2=1D0,betmin2=0.05,betmax2=1.0D0,betaw2=0.05,
+  swicon4=1D0,betmin4=-0.2D0,betmax4=0.9D0,betaw4=0.1/
+&thermal /
+
+
+
+

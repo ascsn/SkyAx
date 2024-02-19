@@ -1,0 +1,24 @@
+&main outnam='O16',title='test PES 16O: quadrupole+octupole',iprint=1000,itmax=1000
+/
+,
+&force 
+ name='SV-min',pairstab=-0D0,ipair=7
+/
+&grids tsym=F,nz=35,nr=17,dr=1D0,dz=1D0,
+/
+&static nprot=8,nneut=8,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
+deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-10,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=T,inodiag=9999/
+&constraint 
+swicon2=1D0,betmin2=0.2D0,betmax2=-0.2D0,betaw2=-0.05D0,
+swicon3=1D0,betmin3=0.2D0,betmax3=-0.2D0,betaw3=-0.05D0,
+tfresh=F,qerr=1D-6,
+/
+&thermal /
+
+
+
+
+
+
+

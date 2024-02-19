@@ -1,0 +1,48 @@
+\hypertarget{dyndamp_8f90}{}\subsection{dyndamp.\+f90 File Reference}
+\label{dyndamp_8f90}\index{dyndamp.\+f90@{dyndamp.\+f90}}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{dyndamp_8f90_a976e5960cba48ca4f610bf3c5c9a2029}{dyndamp\+\_\+constr} (iter)
+\item 
+subroutine \hyperlink{dyndamp_8f90_ac01e764d9b27cef0b29ec27462df4543}{damp\+\_\+linconstraint} ()
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Function/\+Subroutine Documentation}
+\index{dyndamp.\+f90@{dyndamp.\+f90}!damp\+\_\+linconstraint@{damp\+\_\+linconstraint}}
+\index{damp\+\_\+linconstraint@{damp\+\_\+linconstraint}!dyndamp.\+f90@{dyndamp.\+f90}}
+\paragraph[{\texorpdfstring{damp\+\_\+linconstraint()}{damp_linconstraint()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine damp\+\_\+linconstraint (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{dyndamp_8f90_ac01e764d9b27cef0b29ec27462df4543}{}\label{dyndamp_8f90_ac01e764d9b27cef0b29ec27462df4543}
+
+
+Damping of linear constraint by simpy limiting the constraint potential from below and from above (see {\ttfamily vqlimlow}, {\ttfamily vqlimup}).  Note\+: applied only to L=2. 
+
+\index{dyndamp.\+f90@{dyndamp.\+f90}!dyndamp\+\_\+constr@{dyndamp\+\_\+constr}}
+\index{dyndamp\+\_\+constr@{dyndamp\+\_\+constr}!dyndamp.\+f90@{dyndamp.\+f90}}
+\paragraph[{\texorpdfstring{dyndamp\+\_\+constr(iter)}{dyndamp_constr(iter)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine dyndamp\+\_\+constr (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{iter}
+\end{DoxyParamCaption}
+)}\hypertarget{dyndamp_8f90_a976e5960cba48ca4f610bf3c5c9a2029}{}\label{dyndamp_8f90_a976e5960cba48ca4f610bf3c5c9a2029}
+
+
+Dynamic damping of constraint according to actual density \textquotesingle{}rho\textquotesingle{}. The nuclear surface line is defined with respect to a certain critical density value. The distance to the surface line is evaluated, and the constraint field is attenuated with a Saxon-\/\+Woods profile using this distance.  Three ways of defining the distance of the surface are tested\+: 
+
+
+\begin{DoxyItemize}
+\item damp\+\_\+constraint\+: distance of an outer point (rho$<$rho\+\_\+critical) is the minimal distance to an inner point (rho$>$rho\+\_\+critical) and vice versa.
+\item delrmn\+: the surface line is evaluated as r(z) using linear interpolation of density. Then the distance is computed as the shortest distance to this surface line.
+\item damint\+: similar as {\ttfamily delrmn}, but using direct linear interpolation between the gid points. The first way in \textquotesingle{}damp\+\_\+constraint\textquotesingle{} is actually used and stored in the array for constraint. The other schemes are evaluated and printed for comparison.
+\end{DoxyItemize}
+
+N\+O\+TE\+: This is a routine in development and requires further investigations before it can be used in production runs. Open problems are, e.\+g., lack of truly variational formulatio (the actual \textquotesingle{}rho\textquotesingle{} is used) and discontinuities due to box interpolation )in \textquotesingle{}damp\+\_\+constraint\textquotesingle{}) and, less so, to linear interpolation.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em iter} & I\+N\+T\+E\+G\+ER, takes the current iteration number. \\
+\hline
+\end{DoxyParams}

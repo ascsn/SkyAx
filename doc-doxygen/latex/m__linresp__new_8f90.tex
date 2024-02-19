@@ -1,0 +1,291 @@
+\hypertarget{m__linresp__new_8f90}{}\subsection{m\+\_\+linresp\+\_\+new.\+f90 File Reference}
+\label{m__linresp__new_8f90}\index{m\+\_\+linresp\+\_\+new.\+f90@{m\+\_\+linresp\+\_\+new.\+f90}}
+\subsubsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \hyperlink{namespacelinresponse}{linresponse}
+\end{DoxyCompactItemize}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{namespacelinresponse_ac7dc729b94ff97324cbcb373a7053824}{linresponse\+::linresp} (outnam)
+\item 
+subroutine \hyperlink{namespacelinresponse_aab3668ccec9e4ea33e562dab64df6ea7}{linresponse\+::zpe\+\_\+cm\+\_\+linresp}
+\item 
+subroutine \hyperlink{namespacelinresponse_accf4858777e66315385254729a6171a9}{linresponse\+::upd\+\_\+path} ()
+\item 
+subroutine \hyperlink{namespacelinresponse_a50077a49a59d82124945f738cc437277}{linresponse\+::upd\+\_\+derivatives} ()
+\item 
+subroutine \hyperlink{namespacelinresponse_ab65d39013d00e2cd1de48c1b00346e75}{linresponse\+::ini\+\_\+matrix\+\_\+p} (p2q, pvar, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a95312b973b472d59dc5295754cc55d9a}{linresponse\+::crank\+\_\+test\+\_\+resp} (b2q, q2q, p2q, h2q, mass, stiff, qvar, pvar, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a777faa79d49267e9d5ace6baa9b61b23}{linresponse\+::crank\+\_\+inglis} (b2q, q2q, p2q, h2q, mass, stiff, qvar, pvar, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a9f43d9ba17b599e367e32c1a116cf9ee}{linresponse\+::crank\+\_\+gcm} (b2q, q2q, p2q, h2q, mass, stiff, qvar, pvar, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_ab848da5b377f9ae7a08bafb5dd17639e}{linresponse\+::crank\+\_\+scaling} (b2q, q2q, p2q, h2q, mass, stiff, qvar, pvar, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a036dc4cb7a96c3c1e325f114354d0b45}{linresponse\+::crank\+\_\+selfc} (b2q, q2q, p2q, h2q, mass, stiff, qvar, pvar, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_ad6ff2cb4832bf0daf8777d1f4018fd23}{linresponse\+::crank\+\_\+chf} (b2q, q2q, p2q, h2q, mass, stiff, qvar, pvar, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a617bf806d780675484099cc4305c0d6c}{linresponse\+::crank\+\_\+atdhf} (b2q, q2q, p2q, h2q, mass, stiff, qvar, pvar, il, imu, pathmode)
+\item 
+subroutine \hyperlink{namespacelinresponse_a4c1e86b5926885714434e0012651a467}{linresponse\+::eval\+\_\+com\+\_\+qnq} (n2q, q2q, mass, il, imu, iiso)
+\item 
+subroutine \hyperlink{namespacelinresponse_adbdb635326275de10b74819756129ab1}{linresponse\+::eval\+\_\+comm\+\_\+bp} (comm, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_abc710f3e14e21d9ede646126558cac98}{linresponse\+::ini\+\_\+matrix\+\_\+n} (n2q, n0q, nvar, il, imu, iiso)
+\item 
+subroutine \hyperlink{namespacelinresponse_a294e9689fc6deb2f4dc10e196f9fccd9}{linresponse\+::ini\+\_\+matrix\+\_\+b} (b2q, b0q, bvar, il, imu, iiso, ipath)
+\item 
+subroutine \hyperlink{namespacelinresponse_a40b22e27e8ea2570813e27e87b83ffc3}{linresponse\+::ini\+\_\+matrix\+\_\+h} (h2q, h0q, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a98499d053119f8816eb583fee6d3b324}{linresponse\+::ini\+\_\+transtab} (il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_ae67606daa1380ebab58a59916942bc29}{linresponse\+::upd\+\_\+response\+\_\+odd} (q2q, phi, drphi, dzphi, dpphi, ddphi, occphi, resp\+\_\+ar, resp\+\_\+ap, resp\+\_\+az, resp\+\_\+sr, resp\+\_\+sp, resp\+\_\+sz, resp\+\_\+cr, resp\+\_\+cp, resp\+\_\+cz, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a38e3c48d5c409e1d841d02727ff27488}{linresponse\+::upd\+\_\+response\+\_\+ptest} (p2q, phi, drphi, dzphi, dpphi, ddphi, occphi, resp\+\_\+u, resp\+\_\+b, resp\+\_\+drb, resp\+\_\+dpb, resp\+\_\+dzb, resp\+\_\+wr, resp\+\_\+wp, resp\+\_\+wz, il, imu, a1, a2, a3, a4, a5, a6)
+\item 
+subroutine \hyperlink{namespacelinresponse_ae0070fd7f0f72238fd255f7c9878daf1}{linresponse\+::upd\+\_\+response\+\_\+qtest} (q2q, phi, drphi, dzphi, dpphi, ddphi, occphi, resp\+\_\+ar, resp\+\_\+ap, resp\+\_\+az, resp\+\_\+sr, resp\+\_\+sp, resp\+\_\+sz, resp\+\_\+cr, resp\+\_\+cp, resp\+\_\+cz, il, imu, a1, a2, a3, a4, a5, a6)
+\item 
+subroutine \hyperlink{namespacelinresponse_a5f0a600485b5318b97a183ecbb632e14}{linresponse\+::upd\+\_\+response\+\_\+even} (p2q, phi, drphi, dzphi, dpphi, ddphi, occphi, resp\+\_\+u, resp\+\_\+b, resp\+\_\+drb, resp\+\_\+dpb, resp\+\_\+dzb, resp\+\_\+wr, resp\+\_\+wp, resp\+\_\+wz, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_aa613217289744fb8a260a787a6486cd5}{linresponse\+::upd\+\_\+hresp\+\_\+even} (hresp2q, phi, drphi, dzphi, dpphi, ddphi, occphi, resp\+\_\+u, resp\+\_\+b, resp\+\_\+wr, resp\+\_\+wp, resp\+\_\+wz, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_a4a85727caa626cd05a3656233f05dc8d}{linresponse\+::upd\+\_\+hresp\+\_\+odd} (hresp2q, phi, drphi, dzphi, dpphi, ddphi, occphi, resp\+\_\+ar, resp\+\_\+ap, resp\+\_\+az, resp\+\_\+sr, resp\+\_\+sp, resp\+\_\+sz, resp\+\_\+cr, resp\+\_\+cp, resp\+\_\+cz, il, imu)
+\item 
+subroutine \hyperlink{namespacelinresponse_ab96bf307cf27ab53f89611b635f2fa28}{linresponse\+::upd\+\_\+locpotwgt} ()
+\item 
+subroutine \hyperlink{namespacelinresponse_a6b8f38f93468b890f753104248cd0f29}{linresponse\+::ini\+\_\+files} (title, outnam)
+\item 
+subroutine \hyperlink{namespacelinresponse_a5340ecb0ff19e7647002c98f61fecf3c}{linresponse\+::cpshift} (cpval, newval)
+\item 
+subroutine \hyperlink{namespacelinresponse_abc6223efc1cc1c1426030732e5db06f0}{linresponse\+::static\+\_\+afterburn} (ipath, varerr, maxiter)
+\item 
+subroutine \hyperlink{namespacelinresponse_a654f4030a490a074dbdc40ae9af28e32}{linresponse\+::return\+\_\+wavefunctions} (ipath)
+\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+integer, parameter \hyperlink{namespacelinresponse_a61b4047baf19d042872d8ceed0416b1e}{linresponse\+::mzd} =nzd
+\item 
+integer, parameter \hyperlink{namespacelinresponse_a0f1c9b37ba70c482d06a765ac59da516}{linresponse\+::mrd} =nrd
+\item 
+integer, parameter \hyperlink{namespacelinresponse_a5ce6645ed59d7c6845a4eaa13cc060ed}{linresponse\+::mid} =2
+\item 
+integer, parameter \hyperlink{namespacelinresponse_a9d6252ae4cde6390991667cd981f7a5a}{linresponse\+::msd} =nsd
+\item 
+integer, parameter \hyperlink{namespacelinresponse_a7d139c0bde0ee62d24b2906275e8953a}{linresponse\+::mpsid} =npsid
+\item 
+integer, parameter \hyperlink{namespacelinresponse_abd8480f5e3944238c71b36aa4facd7b5}{linresponse\+::mtd} =1000
+\item 
+integer, parameter \hyperlink{namespacelinresponse_a6bf64170d4100fc94f7b85375e147082}{linresponse\+::mtdtot} =100000
+\item 
+integer, parameter \hyperlink{namespacelinresponse_a799a3287dd27fc3b00e5f050ed9c95df}{linresponse\+::lambdamax} =3
+\item 
+real(8), dimension(0\+:mrd, 0\+:mrd, 0\+:kmpsi) \hyperlink{namespacelinresponse_a77986a25dd6b5d30220a7f3294c79016}{linresponse\+::lrdampr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mzd, 2) \hyperlink{namespacelinresponse_a2b636d6bb28e43387430e6b07d33fa15}{linresponse\+::lrdampz}
+\item 
+real(8) \hyperlink{namespacelinresponse_ae037dc32bfb1ea3484f9930a392110ec}{linresponse\+::lre0inv}
+\item 
+real(8) \hyperlink{namespacelinresponse_a955e3100803d9f5ebd0fc30925fb35ff}{linresponse\+::lrx0}
+\item 
+real(8) \hyperlink{namespacelinresponse_aa17805959857e7f4d64f4b75f392dd79}{linresponse\+::lrstep}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ac1edf3417df4c7be9af93e89cce968a8}{linresponse\+::rerho}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_af0947a40ccb29beef134d88918db4a89}{linresponse\+::rekin}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a222c8a4189b33f0a3d3e5ecb65f9eb71}{linresponse\+::recurr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ad8ba23f685d178f2b77689ff9ebcc4fd}{linresponse\+::recurp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a8fa0a4d1352ead394965075f9ce9d71b}{linresponse\+::recurz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a1bf3f31e13280679b10213f2bbf20a6d}{linresponse\+::respnr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ac5eaeb720dd5f4c714f729f5c743a803}{linresponse\+::respnp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a5521f9f4746cad113563a738f4ca93a5}{linresponse\+::respnz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a2baf378e57c93ac0ab00325d1b8a929c}{linresponse\+::resocr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ab2c43282a9f2e416ecf169cf33232c7a}{linresponse\+::resocp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a0ea3b943fe3389af9c2ac58b6960d56a}{linresponse\+::resocz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a873d3e41a72583e692b572b7bd9bd619}{linresponse\+::reskdr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a74707cbfad2c3353821bbd8887ff2edf}{linresponse\+::reskdp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a27a9fba4c442bf4cf7691243737a89e2}{linresponse\+::reskdz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a84c63a614056a861745a1dbb504e9688}{linresponse\+::repair}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a6bb46d69aff571994a9f9fa1bd2c6e66}{linresponse\+::relocpot}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd) \hyperlink{namespacelinresponse_a6e77c8092534f158dea0c7e2e24adcb4}{linresponse\+::recoupot}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ac1957d236baef96b56777286e9f3c73d}{linresponse\+::reeffmas}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a82e00a40d4e7b9da38b7ed863b478a46}{linresponse\+::redzeffmas}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a9373ae4e61b4f56aaf1bdda2220b6b84}{linresponse\+::redpeffmas}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ac3dcec490760355090db4449f07af242}{linresponse\+::redreffmas}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ae59e7071c07822fe6f42ccb65f7a5499}{linresponse\+::redynpotr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_ac97c3f520c6a3ed7951b9ea89c708dea}{linresponse\+::redynpotp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_aa7199bd4aef0d3b4b9ac19113dff05c3}{linresponse\+::redynpotz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_af35c667771d04682427a36b449a93e4e}{linresponse\+::respnpotr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a93306d7c4ba88c016a861358c2b5490d}{linresponse\+::respnpotp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a9d605b10ad61f70040cc25d4ca6448c1}{linresponse\+::respnpotz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a558d85c10979647eb804dba312a1bd0b}{linresponse\+::resocpotr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a1b6fa600d56bf0d7b77d07f171dc7793}{linresponse\+::resocpotp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_add1bf214d7e350a1a9d5fdf77bcddb1e}{linresponse\+::resocpotz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a69c41279cfccb9280ec0c0f09982b4e0}{linresponse\+::respnmasr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a9ca153f1f704fd51d0dd27aa1a2960c2}{linresponse\+::respnmasp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a23f5c23741de87ff5cb9344b6a1da0a9}{linresponse\+::respnmasz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a4512760ae7f7ad2161017e48b3ff033f}{linresponse\+::repairpot}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a028e7ac108ab51fd0fabac921cf71bca}{linresponse\+::locpotwgt1}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_a819a78e71d0cf49dd813370193e4fb89}{linresponse\+::locpotwgt2}
+\item 
+integer \hyperlink{namespacelinresponse_adb61bfef079eb1930d139eed68f380b6}{linresponse\+::trntrtot}
+\item 
+integer, dimension(1\+:mpsid) \hyperlink{namespacelinresponse_add6adfb3307de506ff9df3fbced5d455}{linresponse\+::trntr}
+\item 
+integer, dimension(1\+:mpsid, 1\+:mtd, 8) \hyperlink{namespacelinresponse_a48946e006ee347a9d5cd199a7b0c9c9e}{linresponse\+::tridx}
+\item 
+real(8), dimension(1\+:mpsid, 1\+:mtd, 2) \hyperlink{namespacelinresponse_aa1829afaae570dd28780164ee7301ad3}{linresponse\+::trxi}
+\item 
+real(8), dimension(1\+:mpsid, 1\+:mtd, 2) \hyperlink{namespacelinresponse_a3fe3745d1132347ce166488d08c551ba}{linresponse\+::treta}
+\item 
+integer, dimension(mpsid) \hyperlink{namespacelinresponse_af98d69b735645ff6509e4f17f65e1c6c}{linresponse\+::origin}
+\item 
+integer, dimension(mpsid) \hyperlink{namespacelinresponse_aa082206ac85069a33ad130724ec7f1c5}{linresponse\+::partner}
+\item 
+integer \hyperlink{namespacelinresponse_a4b5cf5d78baf2df6fc432c2fd83cda23}{linresponse\+::trmmax}
+\item 
+integer \hyperlink{namespacelinresponse_a6f8d45bf8fde55dcec2af66995440168}{linresponse\+::nsttot}
+\item 
+integer, dimension(2) \hyperlink{namespacelinresponse_ae85d53e045bec02010f105cc0306ef0d}{linresponse\+::nstadd}
+\item 
+integer \hyperlink{namespacelinresponse_a67d3ff49b843c97654b915df16d434ff}{linresponse\+::isresact}
+\item 
+integer \hyperlink{namespacelinresponse_aad7355d12ba87d9de1019a98fc90774c}{linresponse\+::ismfresp}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_ae8d5663cab17941d63b83058fa05c0f5}{linresponse\+::cprho}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_a64503af5073d1f46b908f149a807e6cd}{linresponse\+::cpkin}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_a43aec530adfd4c583ce9d970182a0fb7}{linresponse\+::cpsocr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_a8e6f56787bbe0fc2da109f6db06e85e5}{linresponse\+::cpsocz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_ac16a6e91cc1e8f95c47946e97742b3ae}{linresponse\+::cplocpot}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_a4d310a63d9c52ff4529c55e317efce5d}{linresponse\+::cpeffmas}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_aadb1987010da49aa0411aa240720073b}{linresponse\+::cpsocpotr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid,-\/1\+:1) \hyperlink{namespacelinresponse_a0eda5bcaba548efd96f5b4228a94476d}{linresponse\+::cpsocpotz}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd,-\/1\+:1) \hyperlink{namespacelinresponse_a49ecc02a0ce115698ecdda83c4b57cb2}{linresponse\+::cpcoupot}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_afde69c119f8f0479417ad9cc3b17ff52}{linresponse\+::cpdreffmas}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, mid) \hyperlink{namespacelinresponse_adf9a384f9c47067a0bf64bd061abe4f6}{linresponse\+::cpdzeffmas}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd,-\/1\+:1) \hyperlink{namespacelinresponse_ac93c3179f7a68e6beb7ebb0850752b63}{linresponse\+::cpconstr}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, mpsid,-\/1\+:1) \hyperlink{namespacelinresponse_a1b1d1e3dce337fd38d6e2c55f51ed589}{linresponse\+::cppsi}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, mpsid) \hyperlink{namespacelinresponse_af6c0268944233db3ebabc44cfd9c3ea7}{linresponse\+::cpdrpsi}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, mpsid) \hyperlink{namespacelinresponse_a30e151e0b022c082f5babbbf5f3500c9}{linresponse\+::cpdppsi}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, mpsid) \hyperlink{namespacelinresponse_a42a510f315dcfe63c844b515de247957}{linresponse\+::cpdzpsi}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, mpsid) \hyperlink{namespacelinresponse_aca372ddfa36e61e983a177ef5aac3207}{linresponse\+::cpddpsi}
+\item 
+real(8), dimension(mtdtot, 0\+:lambdamax) \hyperlink{namespacelinresponse_ad9211706fb38ee5ddf8f1330b320611e}{linresponse\+::p2qatdhf}
+\item 
+real(8), dimension(mtdtot, 0\+:lambdamax) \hyperlink{namespacelinresponse_a5661ced2c24fb8ad7f99ef6949fb8fe0}{linresponse\+::q2qatdhf}
+\item 
+real(8), dimension(mtdtot, 0\+:lambdamax) \hyperlink{namespacelinresponse_a43b732836eeb8fd0701a1d4d1c84bcf1}{linresponse\+::p2qchf}
+\item 
+real(8), dimension(mtdtot, 0\+:lambdamax) \hyperlink{namespacelinresponse_ae848883da04b775a0c09b1b8b63ac0b2}{linresponse\+::q2qchf}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_ab0af48119842ca22b14c5bd0fc696009}{linresponse\+::cpbeta}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_a1ac93ef7fd704c651120d666cf06c16d}{linresponse\+::cpzcm}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_a8f352b36f61a65b218a2e68b846e45c0}{linresponse\+::cpatnum}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_a23b5f09aecbf28425e742b0306bda253}{linresponse\+::cpradrms}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_a8d17637a2fa968976fd5d33dd58ca008}{linresponse\+::cpraddif}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_afd1f3a534c58c755902559f0379b7dcd}{linresponse\+::cpradsrf}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_aedf1f63c865a5ca60d62e01490ff724d}{linresponse\+::cpenergy}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_a077f9f139d2e09d605c8abca5faf60f1}{linresponse\+::cpenergyc}
+\item 
+real(8), dimension(-\/1\+:1) \hyperlink{namespacelinresponse_a7af204e35af6978c1c90366dab7d3ea3}{linresponse\+::cplambda}
+\item 
+real(8), dimension(mpsid,-\/1\+:1) \hyperlink{namespacelinresponse_ad4b3bc883634141ca4d1fc2553bf3182}{linresponse\+::cpdeltaf}
+\item 
+real(8), dimension(mpsid,-\/1\+:1) \hyperlink{namespacelinresponse_a3b5067bbf38f7b8e3a74eeeea5464a3d}{linresponse\+::cpwtpair}
+\item 
+real(8), dimension(mpsid,-\/1\+:1) \hyperlink{namespacelinresponse_aa3625b28311dd74ef8e9faa6a05297f8}{linresponse\+::cppairfc}
+\item 
+real(8), dimension(mpsid,-\/1\+:1) \hyperlink{namespacelinresponse_a4beb9ddcbc5b71a35a428344e28d342b}{linresponse\+::cpspenrg}
+\item 
+real(8), dimension(mpsid,-\/1\+:1) \hyperlink{namespacelinresponse_abb8495e6e268bf84381fef93f7b5d914}{linresponse\+::cpqpenrg}
+\item 
+real(8), dimension(mpsid,-\/1\+:1) \hyperlink{namespacelinresponse_a48c34fbf632c40c01f13f84e69353096}{linresponse\+::cpvsqf}
+\item 
+real(8), dimension(mid,-\/1\+:1) \hyperlink{namespacelinresponse_a4f6ff81d700596dc1bbcccd3072a6a40}{linresponse\+::cpfer}
+\item 
+integer \hyperlink{namespacelinresponse_a03188f86a350cdc6ecb12f090d8e80a7}{linresponse\+::cplen}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, mpsid, 2) \hyperlink{namespacelinresponse_afc26a0c3d8de439056bba96da16a1a29}{linresponse\+::lrres}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, 2) \hyperlink{namespacelinresponse_a58c5521a878e9ff5087a49ec0c43223c}{linresponse\+::lrbuff1}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd, 2) \hyperlink{namespacelinresponse_ab52dee8da1470dbf62697745e6f59aa4}{linresponse\+::lrbuff2}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd) \hyperlink{namespacelinresponse_afed5ca6b47765e612176f3f7353d21a8}{linresponse\+::lrwrk\+\_\+scalar}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd) \hyperlink{namespacelinresponse_a9e65ade8c2b85220fe4f21d39b463c8f}{linresponse\+::lrwrk2\+\_\+scalar}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd) \hyperlink{namespacelinresponse_a568691ca253a1c4f233388d844861a24}{linresponse\+::lrwrk1\+\_\+spinor}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd) \hyperlink{namespacelinresponse_a5ba84ba52b63841630c55e3d1bb01e92}{linresponse\+::lrwrk2\+\_\+spinor}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd) \hyperlink{namespacelinresponse_a02ee1e3bbde3436ec55311e4d2688a83}{linresponse\+::lrwrk3\+\_\+spinor}
+\item 
+real(8), dimension(0\+:mzd, 0\+:mrd, msd) \hyperlink{namespacelinresponse_aed6027bac5361e268d67d07b2d872ec2}{linresponse\+::lrwrk4\+\_\+spinor}
+\item 
+logical, parameter \hyperlink{namespacelinresponse_a5f0384abf4776063906b14b663a1c54b}{linresponse\+::d\+\_\+lrdebug} =.false.
+\item 
+logical, parameter \hyperlink{namespacelinresponse_ae22c6f582e8f07c7cfa7edba466d7641}{linresponse\+::d\+\_\+oldcrank} =.false.
+\end{DoxyCompactItemize}

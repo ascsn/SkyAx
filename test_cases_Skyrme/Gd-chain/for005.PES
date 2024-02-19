@@ -1,0 +1,7 @@
+&main outnam='PES',title='156Gd',iprint=1000,itmax=1000/
+&force  name='SV-bas',ipair=7/
+&grids tsym=T,nr=23,nz=23/
+&static nprot=64,nneut=92,e0inv=110D0,x0inv=0.4D0,addrho=0.15D0,addocc=1D0,
+        errenr=1D-9,errvar=0.05D0,betain=-0.2D0,tvaryx0=T/
+&constraint swicon2=1D0,betmin2=-0.4,betmax2=0.6,betaw2=0.02/
+&thermal /

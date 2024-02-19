@@ -1,0 +1,10 @@
+SUBROUTINE user_interface_1()
+  USE cranking, ONLY: all_cranking
+  CALL all_cranking()      
+  RETURN
+END SUBROUTINE user_interface_1
+SUBROUTINE user_interface_2()
+  USE cranking, ONLY: atdhf_path
+  CALL atdhf_path()
+  RETURN
+END SUBROUTINE user_interface_2

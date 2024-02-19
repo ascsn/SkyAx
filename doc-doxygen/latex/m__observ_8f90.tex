@@ -1,0 +1,249 @@
+\hypertarget{m__observ_8f90}{}\subsection{m\+\_\+observ.\+f90 File Reference}
+\label{m__observ_8f90}\index{m\+\_\+observ.\+f90@{m\+\_\+observ.\+f90}}
+\subsubsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \hyperlink{namespaceobserv}{observ}
+\end{DoxyCompactItemize}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{namespaceobserv_a95e1935bb63b583b0ca0575f0f80f1c3}{observ\+::sinfo} (iter)
+\item 
+subroutine \hyperlink{namespaceobserv_ae5279f904be9922f8f914643db509aad}{observ\+::write\+\_\+ensurf} (iter)
+\item 
+subroutine \hyperlink{namespaceobserv_a3f8b0d008c221139e4f24d70634bfeff}{observ\+::energ} ()
+\item 
+subroutine \hyperlink{namespaceobserv_a55eac5863325b72c55b82394b9fbc025}{observ\+::energ2} ()
+\item 
+subroutine \hyperlink{namespaceobserv_a5627b5a74b86f1ea84da4e3d8ef274db}{observ\+::obs} (rhoini, atnum, rms, d, q, o, h, qsq, zcm)
+\item 
+subroutine \hyperlink{namespaceobserv_a8210a4df1b28eb34510fd9d4bb9851c3}{observ\+::obsti} (rhoin, qfac, qcfac, qa, qc, qa2, qc2)
+\item 
+subroutine \hyperlink{namespaceobserv_a5dceadb61af708e4d37dc5f2d5ee3284}{observ\+::bubble} ()
+\item 
+real(8) function \hyperlink{namespaceobserv_aad82119702a9563bd04eac2d050e8e47}{observ\+::fragdist} (rhoin)
+\item 
+subroutine \hyperlink{namespaceobserv_ac0ebb6d3f156fbd0921aa9d43978dc5d}{observ\+::occ\+\_\+lz} ()
+\item 
+subroutine \hyperlink{namespaceobserv_ab795c872e2b2dddd7f5c7a519f49ab92}{observ\+::radius} ()
+\item 
+subroutine \hyperlink{m__observ_8f90_af2f533d64650a60e4a2d8e7a102e1525}{rms\+\_\+back} (foa, rmsact, r4act)
+\item 
+subroutine \hyperlink{namespaceobserv_a6696dab60b04302875af1a9b7ab61fe6}{observ\+::fourf} (q1, cmwid, foc0, fop, fon, fo, foc)
+\item 
+real(8) function \hyperlink{namespaceobserv_a7a329dea033cb1606639d5deb6aaad29}{observ\+::fbint} (qin, formfa, rleng, ikmax)
+\item 
+real(8) function \hyperlink{namespaceobserv_a8fe61665a4670e6215ecc9db5d6478b2}{observ\+::qzero} (foin, iqstrt, delk, rleng, ikmax)
+\item 
+subroutine \hyperlink{namespaceobserv_a4ccae3e6386e9f57519189540c0a541c}{observ\+::zpe\+\_\+cm}
+\item 
+subroutine \hyperlink{namespaceobserv_a56772dd19b8a5af560935df604c30315}{observ\+::localize} ()
+\item 
+subroutine \hyperlink{namespaceobserv_a6400bb0d7fd8f21ce1ff763fcfebe70d}{observ\+::densit} (psiw, weight, ist, rhod, taud, divlsd, rlsr, rlsz)
+\item 
+subroutine \hyperlink{namespaceobserv_a7bdfb81b161bdc113076f9e9cdc24b46}{observ\+::sdenti} (psiw, rhoacc, addwgt, ist)
+\item 
+real(8) function \hyperlink{namespaceobserv_ac34a8711125703b516871b1323fcffe5}{observ\+::zcmobs} (rhoini)
+\item 
+logical function \hyperlink{namespaceobserv_ad3ede781f00b650dd45cf509ffcd81b5}{observ\+::check\+\_\+border\+\_\+density} ()
+\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(8) \hyperlink{namespaceobserv_a992f70652154733395ffdab398549239}{observ\+::tempmn} =0\+D0
+\item 
+real(8) \hyperlink{namespaceobserv_a389e94f4d08c345cc37906dc48289a9d}{observ\+::tempmx} =0\+D0
+\item 
+real(8) \hyperlink{namespaceobserv_a844b0f466d0870c37fd460723a96f21c}{observ\+::tempw} =1\+D0
+\item 
+real(8) \hyperlink{namespaceobserv_a70b4ab331c460ccbbad144d552722744}{observ\+::tempac} =1\+D0
+\item 
+integer \hyperlink{namespaceobserv_a1c1ca20926be13c61016d6ee42c77212}{observ\+::itmax} =1000
+\item 
+integer \hyperlink{namespaceobserv_ad0ee4417f363898a68c79a49c0de9280}{observ\+::iprint} =1000
+\item 
+real(8) \hyperlink{namespaceobserv_a23f826df2cae1039589aced00fb7939b}{observ\+::atnum}
+\item 
+real(8) \hyperlink{namespaceobserv_a1342a598cec837c98c3e43012a6826fe}{observ\+::apnum}
+\item 
+real(8) \hyperlink{namespaceobserv_a97c7906f826d0a44d6a25a22fa51ba89}{observ\+::annum}
+\item 
+real(8) \hyperlink{namespaceobserv_a69b58be5538a0df79b7663fe1be07b10}{observ\+::rmsc}
+\item 
+real(8) \hyperlink{namespaceobserv_a3b3964ead731eed696585a43d22b51f6}{observ\+::rms}
+\item 
+real(8) \hyperlink{namespaceobserv_a16ce4982fb88de7727f5d9e0fc731ad7}{observ\+::rmsp}
+\item 
+real(8) \hyperlink{namespaceobserv_aa3dc1d3aead73ec11f1d86f5a069d302}{observ\+::rmsn}
+\item 
+real(8) \hyperlink{namespaceobserv_a40affdee9346fd5b62a32dff19025a59}{observ\+::r4c}
+\item 
+real(8) \hyperlink{namespaceobserv_a763f74159ece0956ce250073d231cee7}{observ\+::r4}
+\item 
+real(8) \hyperlink{namespaceobserv_a923afbf28dd2bf131da354abbb1eb785}{observ\+::r4p}
+\item 
+real(8) \hyperlink{namespaceobserv_a6e698cb41249db67aa98431cf2b5a4cd}{observ\+::r4n}
+\item 
+real(8) \hyperlink{namespaceobserv_aac8164517bfe4101667722dfc46f93f6}{observ\+::d}
+\item 
+real(8) \hyperlink{namespaceobserv_aa7d55b64ce5daf1649ee9f05b95088fc}{observ\+::dn}
+\item 
+real(8) \hyperlink{namespaceobserv_aa2afb41c7a18f5680744a85b000d7861}{observ\+::dp}
+\item 
+real(8) \hyperlink{namespaceobserv_af34b6ff143a2dfdf6559141d5d23fbea}{observ\+::q}
+\item 
+real(8) \hyperlink{namespaceobserv_a234fb1ce0b2c529dac392fb68a962e8b}{observ\+::qp}
+\item 
+real(8) \hyperlink{namespaceobserv_af510c9ba2765c7af068833bc25758aa1}{observ\+::qn}
+\item 
+real(8) \hyperlink{namespaceobserv_af518f12cf84a544107605bba80b46749}{observ\+::o}
+\item 
+real(8) \hyperlink{namespaceobserv_afd9ef4eafea719e983a484a385cf56b7}{observ\+::on}
+\item 
+real(8) \hyperlink{namespaceobserv_ac7b149276ccf05582c5270bafacab20b}{observ\+::op}
+\item 
+real(8) \hyperlink{namespaceobserv_aee3c6d228879577edf3210d8798f5759}{observ\+::h}
+\item 
+real(8) \hyperlink{namespaceobserv_a5fc280880094ef531157b9000331c609}{observ\+::hp}
+\item 
+real(8) \hyperlink{namespaceobserv_a7f7bef99d120f798dbf50695ea51cf6f}{observ\+::hn}
+\item 
+real(8) \hyperlink{namespaceobserv_ae06bf7fff24c07852e4632fc07db4d25}{observ\+::beta1}
+\item 
+real(8) \hyperlink{namespaceobserv_acedfdb84c130c7157e337792dcaf8d65}{observ\+::beta1p}
+\item 
+real(8) \hyperlink{namespaceobserv_a249f6a8a7c0799c554876402bd0b20ba}{observ\+::beta1n}
+\item 
+real(8) \hyperlink{namespaceobserv_a8e4f6f99ecdb81e5aea163822de8628a}{observ\+::beta2}
+\item 
+real(8) \hyperlink{namespaceobserv_ac3de9feb22a0044fec5f0fc73f3de8f2}{observ\+::beta2p}
+\item 
+real(8) \hyperlink{namespaceobserv_ab7441a7793132b9693129241f9226285}{observ\+::beta2n}
+\item 
+real(8) \hyperlink{namespaceobserv_a0fde5336c5d78c45821b53538f702dfb}{observ\+::beta3}
+\item 
+real(8) \hyperlink{namespaceobserv_a07b229432fc572292d89fdad0b982e2f}{observ\+::beta3p}
+\item 
+real(8) \hyperlink{namespaceobserv_af0eb489826da64a5a3eff551c79d7eb0}{observ\+::beta3n}
+\item 
+real(8) \hyperlink{namespaceobserv_a47b1c6dbefba99b8eeeeb876d0cb626e}{observ\+::beta4}
+\item 
+real(8) \hyperlink{namespaceobserv_a60ae9f4bd6411b61020690536d5d0c9d}{observ\+::beta4p}
+\item 
+real(8) \hyperlink{namespaceobserv_a71725cf0728a327f5bc7585186708af7}{observ\+::beta4n}
+\item 
+real(8) \hyperlink{namespaceobserv_a83b0ac43dc656fabd27cb889e02496bc}{observ\+::betafull}
+\item 
+real(8) \hyperlink{namespaceobserv_a54e2e97adacbf83b5bbd1d6836ae5a9e}{observ\+::rsepfrag}
+\item 
+real(8) \hyperlink{namespaceobserv_a70ecabcf15034808b4bb9500d3826a79}{observ\+::zcm}
+\item 
+real(8) \hyperlink{namespaceobserv_a3d24e28b38a8f944e6e335697a5819de}{observ\+::rdmsc}
+\item 
+real(8) \hyperlink{namespaceobserv_a0c3e68d8ecea5ff3171ecea1551e1bb1}{observ\+::surfc}
+\item 
+real(8) \hyperlink{namespaceobserv_a6687188e31bb4225d4f5f5406f282302}{observ\+::xinert}
+\item 
+real(8) \hyperlink{namespaceobserv_a11476aea6a4dfc6718d071f1408a32b5}{observ\+::bmassc}
+\item 
+real(8) \hyperlink{namespaceobserv_a695c136a636f71d44a9dcff1c045f506}{observ\+::bmassr}
+\item 
+real(8) \hyperlink{namespaceobserv_a1edc329ee9e9a9e175b95c7537407759}{observ\+::zpetri}
+\item 
+real(8) \hyperlink{namespaceobserv_a173bfde5e0842795adefaf2aec38fb68}{observ\+::omgtri}
+\item 
+real(8) \hyperlink{namespaceobserv_aa975d7d153f748785eb30f5494f2ad80}{observ\+::widdxy}
+\item 
+real(8) \hyperlink{namespaceobserv_af8caa2b5090bb5b80d0299822bb858e0}{observ\+::widdz}
+\item 
+real(8) \hyperlink{namespaceobserv_a0de483117299fa6f8284416a0706a75e}{observ\+::ezp}
+\item 
+real(8) \hyperlink{namespaceobserv_a25dc1a401a0a58fe28e5d78fa6ec4cb0}{observ\+::zpecmx}
+\item 
+real(8) \hyperlink{namespaceobserv_a01479360bb624e189a7f72acb2eb2f0d}{observ\+::widcmx}
+\item 
+real(8) \hyperlink{namespaceobserv_a6343c5bd2b3a06e7c47357ce13c5620e}{observ\+::zpecmz}
+\item 
+real(8) \hyperlink{namespaceobserv_a128f96e19967460b67ef885021d9fb0a}{observ\+::widcmz}
+\item 
+real(8) \hyperlink{namespaceobserv_a4ffb7986e7585b019cc482528f6da8f7}{observ\+::bubdipp}
+\item 
+real(8) \hyperlink{namespaceobserv_a857bf3d3540f2e6896e8f13f0dc55642}{observ\+::bubdipn}
+\item 
+real(8) \hyperlink{namespaceobserv_a63fc9eb0b13b60cb7dc0df0c8c330966}{observ\+::bubdipt}
+\item 
+real(8), dimension(2) \hyperlink{namespaceobserv_aa4177808cf29e88750de09e971052d7c}{observ\+::boundnum}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_a16d0b249b06168c260b7a7752729f60a}{observ\+::qcorrs}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_a6a9c12cdfb362e6d2af583d7eb17d32f}{observ\+::qlcstps}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_afbab940fd904214e88cead4570ed5a45}{observ\+::varqscs}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_aa5526a16e8f0982dec32b788e8c13eae}{observ\+::qcons}
+\item 
+real(8) \hyperlink{namespaceobserv_aab2b361228c2be9aacc647898d20602c}{observ\+::econ}
+\item 
+real(8) \hyperlink{namespaceobserv_a1988e691b9c7e5f98cb2e13a4a229908}{observ\+::eold}
+\item 
+real(8) \hyperlink{namespaceobserv_a49a7e3ba548450307b3a2c22ace8b3f3}{observ\+::energy}
+\item 
+real(8) \hyperlink{namespaceobserv_a8e556cf28d2d577177523975fb47467b}{observ\+::energr}
+\item 
+real(8) \hyperlink{namespaceobserv_a7df2eeed60a05d3f29ca04013bba2081}{observ\+::ekin}
+\item 
+real(8) \hyperlink{namespaceobserv_a87e633bdcc50c87ba74f4f69c97c8534}{observ\+::epot}
+\item 
+real(8) \hyperlink{namespaceobserv_ac0a63f15b5c3dd97c7869b7748679212}{observ\+::ecoul}
+\item 
+real(8) \hyperlink{namespaceobserv_ac535470bfdf0cb2be9051d1ad7f2b4bf}{observ\+::etpair}
+\item 
+real(8) \hyperlink{namespaceobserv_ac8fdfe12d0195f54b5270f0787d8a4be}{observ\+::eshell}
+\item 
+real(8) \hyperlink{namespaceobserv_aadc4a7afed808cde5967554c7cf067d6}{observ\+::erearr}
+\item 
+real(8) \hyperlink{namespaceobserv_ab70baa891e5608be4ea8c1a24c762d12}{observ\+::equad}
+\item 
+real(8) \hyperlink{namespaceobserv_a8aaf442bc6b6a3d7ef38d939c0819e99}{observ\+::qold}
+\item 
+real(8) \hyperlink{namespaceobserv_a2b56c807c1301829c79e6f061ac78297}{observ\+::qcon}
+\item 
+real(8) \hyperlink{namespaceobserv_a6331b57c0ae11428cdfa449797aa09d2}{observ\+::ecolex}
+\item 
+real(8) \hyperlink{namespaceobserv_aca69c157018bf487e453d1813641ba01}{observ\+::devmf2}
+\item 
+real(8) \hyperlink{namespaceobserv_ae9229ef6dc10115d9fe75d1388132b7d}{observ\+::devh2}
+\item 
+real(8) \hyperlink{namespaceobserv_a64f340dc1105ba5ed8e16d357001225b}{observ\+::devoc2}
+\item 
+real(8) \hyperlink{namespaceobserv_a1e0de4a0f835cef78c7b7d41966b0309}{observ\+::devgap}
+\item 
+real(8) \hyperlink{namespaceobserv_a8c28d244f2e590aebb022ae00f6cb8f6}{observ\+::varqsq}
+\item 
+real(8) \hyperlink{namespaceobserv_afe768980804ddf6563d50cb7d003c1ab}{observ\+::qq0}
+\item 
+real(8) \hyperlink{namespaceobserv_ade8d12eb6ca05d5c2a9e15190a438bda}{observ\+::qq1}
+\item 
+real(8) \hyperlink{namespaceobserv_aded073a456b95a001cacac23177dcf46}{observ\+::qq2}
+\item 
+real(8) \hyperlink{namespaceobserv_a1672ed9b98a4dab7a167d29620fba100}{observ\+::qq3}
+\item 
+real(8) \hyperlink{namespaceobserv_a9fc1bb5590ff288f6e8a0e89451cf805}{observ\+::qq4}
+\item 
+real(8) \hyperlink{namespaceobserv_a5631c0f0849e2ae5860c899e3d8e39aa}{observ\+::qdh}
+\item 
+integer, parameter, private \hyperlink{namespaceobserv_a644f1914424441bcad6f350dc0fe327c}{observ\+::kfrm} =512
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Function/\+Subroutine Documentation}
+\index{m\+\_\+observ.\+f90@{m\+\_\+observ.\+f90}!rms\+\_\+back@{rms\+\_\+back}}
+\index{rms\+\_\+back@{rms\+\_\+back}!m\+\_\+observ.\+f90@{m\+\_\+observ.\+f90}}
+\paragraph[{\texorpdfstring{rms\+\_\+back(foa, rmsact, r4act)}{rms_back(foa, rmsact, r4act)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine radius\+::rms\+\_\+back (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(kfrm), intent(in)}]{foa, }
+\item[{real(8), intent(out)}]{rmsact, }
+\item[{real(8), intent(out)}]{r4act}
+\end{DoxyParamCaption}
+)}\hypertarget{m__observ_8f90_af2f533d64650a60e4a2d8e7a102e1525}{}\label{m__observ_8f90_af2f533d64650a60e4a2d8e7a102e1525}

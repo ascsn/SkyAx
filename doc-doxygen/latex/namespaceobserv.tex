@@ -1,0 +1,1276 @@
+\hypertarget{namespaceobserv}{}\subsection{observ Module Reference}
+\label{namespaceobserv}\index{observ@{observ}}
+\subsubsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{namespaceobserv_a95e1935bb63b583b0ca0575f0f80f1c3}{sinfo} (iter)
+\item 
+subroutine \hyperlink{namespaceobserv_ae5279f904be9922f8f914643db509aad}{write\+\_\+ensurf} (iter)
+\item 
+subroutine \hyperlink{namespaceobserv_a3f8b0d008c221139e4f24d70634bfeff}{energ} ()
+\item 
+subroutine \hyperlink{namespaceobserv_a55eac5863325b72c55b82394b9fbc025}{energ2} ()
+\item 
+subroutine \hyperlink{namespaceobserv_a5627b5a74b86f1ea84da4e3d8ef274db}{obs} (rhoini, \hyperlink{namespaceobserv_a23f826df2cae1039589aced00fb7939b}{atnum}, \hyperlink{namespaceobserv_a3b3964ead731eed696585a43d22b51f6}{rms}, \hyperlink{namespaceobserv_aac8164517bfe4101667722dfc46f93f6}{d}, \hyperlink{namespaceobserv_af34b6ff143a2dfdf6559141d5d23fbea}{q}, \hyperlink{namespaceobserv_af518f12cf84a544107605bba80b46749}{o}, \hyperlink{namespaceobserv_aee3c6d228879577edf3210d8798f5759}{h}, qsq, \hyperlink{namespaceobserv_a70ecabcf15034808b4bb9500d3826a79}{zcm})
+\item 
+subroutine \hyperlink{namespaceobserv_a8210a4df1b28eb34510fd9d4bb9851c3}{obsti} (rhoin, qfac, qcfac, qa, qc, qa2, qc2)
+\item 
+subroutine \hyperlink{namespaceobserv_a5dceadb61af708e4d37dc5f2d5ee3284}{bubble} ()
+\item 
+real(8) function \hyperlink{namespaceobserv_aad82119702a9563bd04eac2d050e8e47}{fragdist} (rhoin)
+\item 
+subroutine \hyperlink{namespaceobserv_ac0ebb6d3f156fbd0921aa9d43978dc5d}{occ\+\_\+lz} ()
+\item 
+subroutine \hyperlink{namespaceobserv_ab795c872e2b2dddd7f5c7a519f49ab92}{radius} ()
+\item 
+subroutine \hyperlink{namespaceobserv_a6696dab60b04302875af1a9b7ab61fe6}{fourf} (q1, cmwid, foc0, fop, fon, fo, foc)
+\item 
+real(8) function \hyperlink{namespaceobserv_a7a329dea033cb1606639d5deb6aaad29}{fbint} (qin, formfa, rleng, ikmax)
+\item 
+real(8) function \hyperlink{namespaceobserv_a8fe61665a4670e6215ecc9db5d6478b2}{qzero} (foin, iqstrt, delk, rleng, ikmax)
+\item 
+subroutine \hyperlink{namespaceobserv_a4ccae3e6386e9f57519189540c0a541c}{zpe\+\_\+cm}
+\item 
+subroutine \hyperlink{namespaceobserv_a56772dd19b8a5af560935df604c30315}{localize} ()
+\item 
+subroutine \hyperlink{namespaceobserv_a6400bb0d7fd8f21ce1ff763fcfebe70d}{densit} (psiw, weight, ist, rhod, taud, divlsd, rlsr, rlsz)
+\item 
+subroutine \hyperlink{namespaceobserv_a7bdfb81b161bdc113076f9e9cdc24b46}{sdenti} (psiw, rhoacc, addwgt, ist)
+\item 
+real(8) function \hyperlink{namespaceobserv_ac34a8711125703b516871b1323fcffe5}{zcmobs} (rhoini)
+\item 
+logical function \hyperlink{namespaceobserv_ad3ede781f00b650dd45cf509ffcd81b5}{check\+\_\+border\+\_\+density} ()
+\end{DoxyCompactItemize}
+\subsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(8) \hyperlink{namespaceobserv_a992f70652154733395ffdab398549239}{tempmn} =0\+D0
+\item 
+real(8) \hyperlink{namespaceobserv_a389e94f4d08c345cc37906dc48289a9d}{tempmx} =0\+D0
+\item 
+real(8) \hyperlink{namespaceobserv_a844b0f466d0870c37fd460723a96f21c}{tempw} =1\+D0
+\item 
+real(8) \hyperlink{namespaceobserv_a70b4ab331c460ccbbad144d552722744}{tempac} =1\+D0
+\item 
+integer \hyperlink{namespaceobserv_a1c1ca20926be13c61016d6ee42c77212}{itmax} =1000
+\item 
+integer \hyperlink{namespaceobserv_ad0ee4417f363898a68c79a49c0de9280}{iprint} =1000
+\item 
+real(8) \hyperlink{namespaceobserv_a23f826df2cae1039589aced00fb7939b}{atnum}
+\item 
+real(8) \hyperlink{namespaceobserv_a1342a598cec837c98c3e43012a6826fe}{apnum}
+\item 
+real(8) \hyperlink{namespaceobserv_a97c7906f826d0a44d6a25a22fa51ba89}{annum}
+\item 
+real(8) \hyperlink{namespaceobserv_a69b58be5538a0df79b7663fe1be07b10}{rmsc}
+\item 
+real(8) \hyperlink{namespaceobserv_a3b3964ead731eed696585a43d22b51f6}{rms}
+\item 
+real(8) \hyperlink{namespaceobserv_a16ce4982fb88de7727f5d9e0fc731ad7}{rmsp}
+\item 
+real(8) \hyperlink{namespaceobserv_aa3dc1d3aead73ec11f1d86f5a069d302}{rmsn}
+\item 
+real(8) \hyperlink{namespaceobserv_a40affdee9346fd5b62a32dff19025a59}{r4c}
+\item 
+real(8) \hyperlink{namespaceobserv_a763f74159ece0956ce250073d231cee7}{r4}
+\item 
+real(8) \hyperlink{namespaceobserv_a923afbf28dd2bf131da354abbb1eb785}{r4p}
+\item 
+real(8) \hyperlink{namespaceobserv_a6e698cb41249db67aa98431cf2b5a4cd}{r4n}
+\item 
+real(8) \hyperlink{namespaceobserv_aac8164517bfe4101667722dfc46f93f6}{d}
+\item 
+real(8) \hyperlink{namespaceobserv_aa7d55b64ce5daf1649ee9f05b95088fc}{dn}
+\item 
+real(8) \hyperlink{namespaceobserv_aa2afb41c7a18f5680744a85b000d7861}{dp}
+\item 
+real(8) \hyperlink{namespaceobserv_af34b6ff143a2dfdf6559141d5d23fbea}{q}
+\item 
+real(8) \hyperlink{namespaceobserv_a234fb1ce0b2c529dac392fb68a962e8b}{qp}
+\item 
+real(8) \hyperlink{namespaceobserv_af510c9ba2765c7af068833bc25758aa1}{qn}
+\item 
+real(8) \hyperlink{namespaceobserv_af518f12cf84a544107605bba80b46749}{o}
+\item 
+real(8) \hyperlink{namespaceobserv_afd9ef4eafea719e983a484a385cf56b7}{on}
+\item 
+real(8) \hyperlink{namespaceobserv_ac7b149276ccf05582c5270bafacab20b}{op}
+\item 
+real(8) \hyperlink{namespaceobserv_aee3c6d228879577edf3210d8798f5759}{h}
+\item 
+real(8) \hyperlink{namespaceobserv_a5fc280880094ef531157b9000331c609}{hp}
+\item 
+real(8) \hyperlink{namespaceobserv_a7f7bef99d120f798dbf50695ea51cf6f}{hn}
+\item 
+real(8) \hyperlink{namespaceobserv_ae06bf7fff24c07852e4632fc07db4d25}{beta1}
+\item 
+real(8) \hyperlink{namespaceobserv_acedfdb84c130c7157e337792dcaf8d65}{beta1p}
+\item 
+real(8) \hyperlink{namespaceobserv_a249f6a8a7c0799c554876402bd0b20ba}{beta1n}
+\item 
+real(8) \hyperlink{namespaceobserv_a8e4f6f99ecdb81e5aea163822de8628a}{beta2}
+\item 
+real(8) \hyperlink{namespaceobserv_ac3de9feb22a0044fec5f0fc73f3de8f2}{beta2p}
+\item 
+real(8) \hyperlink{namespaceobserv_ab7441a7793132b9693129241f9226285}{beta2n}
+\item 
+real(8) \hyperlink{namespaceobserv_a0fde5336c5d78c45821b53538f702dfb}{beta3}
+\item 
+real(8) \hyperlink{namespaceobserv_a07b229432fc572292d89fdad0b982e2f}{beta3p}
+\item 
+real(8) \hyperlink{namespaceobserv_af0eb489826da64a5a3eff551c79d7eb0}{beta3n}
+\item 
+real(8) \hyperlink{namespaceobserv_a47b1c6dbefba99b8eeeeb876d0cb626e}{beta4}
+\item 
+real(8) \hyperlink{namespaceobserv_a60ae9f4bd6411b61020690536d5d0c9d}{beta4p}
+\item 
+real(8) \hyperlink{namespaceobserv_a71725cf0728a327f5bc7585186708af7}{beta4n}
+\item 
+real(8) \hyperlink{namespaceobserv_a83b0ac43dc656fabd27cb889e02496bc}{betafull}
+\item 
+real(8) \hyperlink{namespaceobserv_a54e2e97adacbf83b5bbd1d6836ae5a9e}{rsepfrag}
+\item 
+real(8) \hyperlink{namespaceobserv_a70ecabcf15034808b4bb9500d3826a79}{zcm}
+\item 
+real(8) \hyperlink{namespaceobserv_a3d24e28b38a8f944e6e335697a5819de}{rdmsc}
+\item 
+real(8) \hyperlink{namespaceobserv_a0c3e68d8ecea5ff3171ecea1551e1bb1}{surfc}
+\item 
+real(8) \hyperlink{namespaceobserv_a6687188e31bb4225d4f5f5406f282302}{xinert}
+\item 
+real(8) \hyperlink{namespaceobserv_a11476aea6a4dfc6718d071f1408a32b5}{bmassc}
+\item 
+real(8) \hyperlink{namespaceobserv_a695c136a636f71d44a9dcff1c045f506}{bmassr}
+\item 
+real(8) \hyperlink{namespaceobserv_a1edc329ee9e9a9e175b95c7537407759}{zpetri}
+\item 
+real(8) \hyperlink{namespaceobserv_a173bfde5e0842795adefaf2aec38fb68}{omgtri}
+\item 
+real(8) \hyperlink{namespaceobserv_aa975d7d153f748785eb30f5494f2ad80}{widdxy}
+\item 
+real(8) \hyperlink{namespaceobserv_af8caa2b5090bb5b80d0299822bb858e0}{widdz}
+\item 
+real(8) \hyperlink{namespaceobserv_a0de483117299fa6f8284416a0706a75e}{ezp}
+\item 
+real(8) \hyperlink{namespaceobserv_a25dc1a401a0a58fe28e5d78fa6ec4cb0}{zpecmx}
+\item 
+real(8) \hyperlink{namespaceobserv_a01479360bb624e189a7f72acb2eb2f0d}{widcmx}
+\item 
+real(8) \hyperlink{namespaceobserv_a6343c5bd2b3a06e7c47357ce13c5620e}{zpecmz}
+\item 
+real(8) \hyperlink{namespaceobserv_a128f96e19967460b67ef885021d9fb0a}{widcmz}
+\item 
+real(8) \hyperlink{namespaceobserv_a4ffb7986e7585b019cc482528f6da8f7}{bubdipp}
+\item 
+real(8) \hyperlink{namespaceobserv_a857bf3d3540f2e6896e8f13f0dc55642}{bubdipn}
+\item 
+real(8) \hyperlink{namespaceobserv_a63fc9eb0b13b60cb7dc0df0c8c330966}{bubdipt}
+\item 
+real(8), dimension(2) \hyperlink{namespaceobserv_aa4177808cf29e88750de09e971052d7c}{boundnum}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_a16d0b249b06168c260b7a7752729f60a}{qcorrs}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_a6a9c12cdfb362e6d2af583d7eb17d32f}{qlcstps}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_afbab940fd904214e88cead4570ed5a45}{varqscs}
+\item 
+real(8), dimension(0\+:4), public \hyperlink{namespaceobserv_aa5526a16e8f0982dec32b788e8c13eae}{qcons}
+\item 
+real(8) \hyperlink{namespaceobserv_aab2b361228c2be9aacc647898d20602c}{econ}
+\item 
+real(8) \hyperlink{namespaceobserv_a1988e691b9c7e5f98cb2e13a4a229908}{eold}
+\item 
+real(8) \hyperlink{namespaceobserv_a49a7e3ba548450307b3a2c22ace8b3f3}{energy}
+\item 
+real(8) \hyperlink{namespaceobserv_a8e556cf28d2d577177523975fb47467b}{energr}
+\item 
+real(8) \hyperlink{namespaceobserv_a7df2eeed60a05d3f29ca04013bba2081}{ekin}
+\item 
+real(8) \hyperlink{namespaceobserv_a87e633bdcc50c87ba74f4f69c97c8534}{epot}
+\item 
+real(8) \hyperlink{namespaceobserv_ac0a63f15b5c3dd97c7869b7748679212}{ecoul}
+\item 
+real(8) \hyperlink{namespaceobserv_ac535470bfdf0cb2be9051d1ad7f2b4bf}{etpair}
+\item 
+real(8) \hyperlink{namespaceobserv_ac8fdfe12d0195f54b5270f0787d8a4be}{eshell}
+\item 
+real(8) \hyperlink{namespaceobserv_aadc4a7afed808cde5967554c7cf067d6}{erearr}
+\item 
+real(8) \hyperlink{namespaceobserv_ab70baa891e5608be4ea8c1a24c762d12}{equad}
+\item 
+real(8) \hyperlink{namespaceobserv_a8aaf442bc6b6a3d7ef38d939c0819e99}{qold}
+\item 
+real(8) \hyperlink{namespaceobserv_a2b56c807c1301829c79e6f061ac78297}{qcon}
+\item 
+real(8) \hyperlink{namespaceobserv_a6331b57c0ae11428cdfa449797aa09d2}{ecolex}
+\item 
+real(8) \hyperlink{namespaceobserv_aca69c157018bf487e453d1813641ba01}{devmf2}
+\item 
+real(8) \hyperlink{namespaceobserv_ae9229ef6dc10115d9fe75d1388132b7d}{devh2}
+\item 
+real(8) \hyperlink{namespaceobserv_a64f340dc1105ba5ed8e16d357001225b}{devoc2}
+\item 
+real(8) \hyperlink{namespaceobserv_a1e0de4a0f835cef78c7b7d41966b0309}{devgap}
+\item 
+real(8) \hyperlink{namespaceobserv_a8c28d244f2e590aebb022ae00f6cb8f6}{varqsq}
+\item 
+real(8) \hyperlink{namespaceobserv_afe768980804ddf6563d50cb7d003c1ab}{qq0}
+\item 
+real(8) \hyperlink{namespaceobserv_ade8d12eb6ca05d5c2a9e15190a438bda}{qq1}
+\item 
+real(8) \hyperlink{namespaceobserv_aded073a456b95a001cacac23177dcf46}{qq2}
+\item 
+real(8) \hyperlink{namespaceobserv_a1672ed9b98a4dab7a167d29620fba100}{qq3}
+\item 
+real(8) \hyperlink{namespaceobserv_a9fc1bb5590ff288f6e8a0e89451cf805}{qq4}
+\item 
+real(8) \hyperlink{namespaceobserv_a5631c0f0849e2ae5860c899e3d8e39aa}{qdh}
+\item 
+integer, parameter, private \hyperlink{namespaceobserv_a644f1914424441bcad6f350dc0fe327c}{kfrm} =512
+\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+This module contains the variables for most observables and routines to calculate them. {\ttfamily sinfo} is the main routine for calculating and printing observables. 
+
+\subsubsection{Function/\+Subroutine Documentation}
+\index{observ@{observ}!bubble@{bubble}}
+\index{bubble@{bubble}!observ@{observ}}
+\paragraph[{\texorpdfstring{bubble()}{bubble()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::bubble (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a5dceadb61af708e4d37dc5f2d5ee3284}{}\label{namespaceobserv_a5dceadb61af708e4d37dc5f2d5ee3284}
+
+
+This routine computes the central depth of neutron, proton and total densities and stores it in {\ttfamily bubdipn}, {\ttfamily bubdipp} and {\ttfamily bubdipt}. 
+
+\index{observ@{observ}!check\+\_\+border\+\_\+density@{check\+\_\+border\+\_\+density}}
+\index{check\+\_\+border\+\_\+density@{check\+\_\+border\+\_\+density}!observ@{observ}}
+\paragraph[{\texorpdfstring{check\+\_\+border\+\_\+density()}{check_border_density()}}]{\setlength{\rightskip}{0pt plus 5cm}logical function observ\+::check\+\_\+border\+\_\+density (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_ad3ede781f00b650dd45cf509ffcd81b5}{}\label{namespaceobserv_ad3ede781f00b650dd45cf509ffcd81b5}
+\index{observ@{observ}!densit@{densit}}
+\index{densit@{densit}!observ@{observ}}
+\paragraph[{\texorpdfstring{densit(psiw, weight, ist, rhod, taud, divlsd, rlsr, rlsz)}{densit(psiw, weight, ist, rhod, taud, divlsd, rlsr, rlsz)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::densit (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psiw, }
+\item[{real(8), intent(in)}]{weight, }
+\item[{integer, intent(in)}]{ist, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(inout)}]{rhod, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(inout)}]{taud, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(inout)}]{divlsd, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(inout)}]{rlsr, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(inout)}]{rlsz}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a6400bb0d7fd8f21ce1ff763fcfebe70d}{}\label{namespaceobserv_a6400bb0d7fd8f21ce1ff763fcfebe70d}
+
+
+Accumulates the densities {\ttfamily rhod}, {\ttfamily taud}, {\ttfamily divlsd}, calculated for the state in wave function {\ttfamily psiw} with the occupation probability {\ttfamily weight}. 
+
+This state is supposed to be related to the global label {\ttfamily ist}.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psiw} & R\+E\+A\+L(8), array, takes the wave function of state . \\
+\hline
+\mbox{\tt in}  & {\em weight} & R\+E\+A\+L(8), takes the occupation probability of the state {\ttfamily ist} (does not include the multiplicity {\ttfamily wate}. \\
+\hline
+\mbox{\tt in}  & {\em ist} & I\+N\+T\+E\+G\+ER, takes the absolute adress of the state. \\
+\hline
+\mbox{\tt out}  & {\em rhod} & R\+E\+A\+L(8), array, takes and returns the density. \\
+\hline
+\mbox{\tt out}  & {\em taud} & R\+E\+A\+L(8), array, takes and returns the kinetic density. \\
+\hline
+\mbox{\tt out}  & {\em divlsd} & R\+E\+A\+L(8), array, takes and returns the divergence ls-\/density. \\
+\hline
+\mbox{\tt out}  & {\em rlsr} & R\+E\+A\+L(8), array, takes and returns the ls-\/density r-\/component. \\
+\hline
+\mbox{\tt out}  & {\em rlsz} & R\+E\+A\+L(8), array, takes and returns the ls-\/density z-\/component. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!energ@{energ}}
+\index{energ@{energ}!observ@{observ}}
+\paragraph[{\texorpdfstring{energ()}{energ()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::energ (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a3f8b0d008c221139e4f24d70634bfeff}{}\label{namespaceobserv_a3f8b0d008c221139e4f24d70634bfeff}
+
+
+Computes the total energy directly from densities. 
+
+The different contribution to the total energy are
+\begin{DoxyItemize}
+\item $ T $\+: the total kinetic energy calculated as \[ T=\sum_q \frac{\hbar^2}{2m_q}\int\D^3 r\, \tau_q \] with $ \tau_q $ the isospin-\/specific kinetic density.
+\item $ E_0 $\+: The $ b_0 $ and $ b'_0 $-\/dependent part is \[ E_0=\int \D^3\!r\,\left(\frac{b_0}{2}\rho^2-\frac{b_0'}{2}\sum_q\rho_q^2\right). \]
+\item $ E_{1}$\+: kinetic terms containing the coefficients $ b_1 $ and $ b_1' $\+: \[ E_1=\int \D^3\!r\,\left(b_1[\rho\tau-{\vec\jmath\,}{}^2] -b_1'\sum_q[\rho_q\tau_q-{\vec\jmath_q}{}^2]\right).\]
+\item $ E_{2} $\+: terms containing the coefficients $ b_2 $ and $ b_2' $. They involve the Laplacians of the densities. \[ E_2=\int \D^3\!r\,\left(-\frac{b_2}{2}\rho\Delta\rho +\frac{b_2'}{2}\sum_q\rho_q\Delta\rho_q\right). \]
+\item $ E_{3} $\+: The many-\/body contribution is given by \[ E_{3}=\int \D^3\!r\,\left(\frac{b_3}{3}\rho^{\alpha+2} -\frac{b_3'}{3}\rho^\alpha\sum_q\rho_q^2\right). \]
+\item $ E_\mathrm{ls} $\+: the spin-\/orbit energy \[ E_\mathrm{ls}=\int \D^3\!r\,\biggl( -b_4[\rho\nabla\cdot\vec J+ \vec s\cdot(\nabla\times\vec\jmath)]-b_4'\sum_q[\rho_q\nabla\cdot\vec J_q+ \vec s_q\cdot(\nabla\times\vec\jmath_q)]\biggr) \]
+\item $ E_\mathrm{C} $\+: the Coulomb energy. It consists of the standard expression for a charge distribution in its own field (Hartree term) plus the exchange term in the Slater approximation. The formula is \[ E_\mathrm{C} = \frac{e^2}{2}\int \D^3\!r \D^3\!r' \frac{\rho_p(\vec{r})\rho_p(\vec{r'})}{|\vec{r}-\vec{r'}|} -\int \D^3\!r\,\frac{3e^2}{4}\left(\frac3{\pi}\right)^{\tfrac1{3}}\rho_p^{4/3} \] where $ e $ is the elementary charge with $ e^2=1.43989 $ MeV $ \cdot $fm. 
+\end{DoxyItemize}\index{observ@{observ}!energ2@{energ2}}
+\index{energ2@{energ2}!observ@{observ}}
+\paragraph[{\texorpdfstring{energ2()}{energ2()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::energ2 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a55eac5863325b72c55b82394b9fbc025}{}\label{namespaceobserv_a55eac5863325b72c55b82394b9fbc025}
+
+
+Computes the total energy from sum over s.\+p. energies and rearrangement energy. 
+
+\index{observ@{observ}!fbint@{fbint}}
+\index{fbint@{fbint}!observ@{observ}}
+\paragraph[{\texorpdfstring{fbint(qin, formfa, rleng, ikmax)}{fbint(qin, formfa, rleng, ikmax)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function observ\+::fbint (
+\begin{DoxyParamCaption}
+\item[{real(8), intent(in)}]{qin, }
+\item[{real(8), dimension({\bf kfrm}), intent(in)}]{formfa, }
+\item[{real(8), intent(in)}]{rleng, }
+\item[{integer, intent(in)}]{ikmax}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a7a329dea033cb1606639d5deb6aaad29}{}\label{namespaceobserv_a7a329dea033cb1606639d5deb6aaad29}
+
+
+This routine interpolates the formfactor from the formfactor on a discrete grid at momentum {\ttfamily qeff} = {\ttfamily q} $\ast$ {\ttfamily rleng}. 
+
+The fourier-\/bessel interpolation runs into problems with round-\/off errors if {\ttfamily qeff} comes too close to a multiple of $ \pi $. We switch to an explicit treatment of the pole-\/term in that case. {\ttfamily precis} defines the neighbourhood of a pole-\/term for which the routine switches to an explicit laurent expansion.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em qin} & R\+E\+A\+L(8), takes the q value. \\
+\hline
+\mbox{\tt in}  & {\em formfa} & R\+E\+A\+L(8), array, takes the formfactor on the grid. \\
+\hline
+\mbox{\tt in}  & {\em delk} & R\+E\+A\+L(8), takes the grid spacing. \\
+\hline
+\mbox{\tt in}  & {\em rleng} & R\+E\+A\+L(8), scaling factor for effective q value. \\
+\hline
+\mbox{\tt in}  & {\em ikmax} & R\+E\+A\+L(8), grid size of {\ttfamily formfa}. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!fourf@{fourf}}
+\index{fourf@{fourf}!observ@{observ}}
+\paragraph[{\texorpdfstring{fourf(q1, cmwid, foc0, fop, fon, fo, foc)}{fourf(q1, cmwid, foc0, fop, fon, fo, foc)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::fourf (
+\begin{DoxyParamCaption}
+\item[{real(8), intent(in)}]{q1, }
+\item[{real(8), intent(inout)}]{cmwid, }
+\item[{real(8), intent(out)}]{foc0, }
+\item[{real(8), intent(out)}]{fop, }
+\item[{real(8), intent(out)}]{fon, }
+\item[{real(8), intent(out)}]{fo, }
+\item[{real(8), intent(out)}]{foc}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a6696dab60b04302875af1a9b7ab61fe6}{}\label{namespaceobserv_a6696dab60b04302875af1a9b7ab61fe6}
+
+
+Computes the spherical Fourier-\/\+Bessel transform of the proton and neutron densities. The formfactors thus obtained are augmented by the nucleon formfactor. 
+
+The present version omits the contribution from the magnetic formfactor of the nucleon.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em q1} & R\+E\+A\+L(8), takes the radial momentum at which the fourier-\/transformation is to be evaluated. \\
+\hline
+\mbox{\tt in,out}  & {\em cmwid} & R\+E\+A\+L(8), parameter for center of mass correction. \\
+\hline
+\mbox{\tt out}  & {\em foc0} & R\+E\+A\+L(8), returns the charge formfactor. \\
+\hline
+\mbox{\tt out}  & {\em fop} & R\+E\+A\+L(8), returns the proton formfactor. \\
+\hline
+\mbox{\tt out}  & {\em fon} & R\+E\+A\+L(8), returns the neutron formfactor. \\
+\hline
+\mbox{\tt out}  & {\em fo} & R\+E\+A\+L(8), returns the total formfactor. \\
+\hline
+\mbox{\tt out}  & {\em foc} & R\+E\+A\+L(8), returns the charge formfactor including spin-\/orbit. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!fragdist@{fragdist}}
+\index{fragdist@{fragdist}!observ@{observ}}
+\paragraph[{\texorpdfstring{fragdist(rhoin)}{fragdist(rhoin)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function observ\+::fragdist (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,kqm), intent(in)}]{rhoin}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_aad82119702a9563bd04eac2d050e8e47}{}\label{namespaceobserv_aad82119702a9563bd04eac2d050e8e47}
+
+
+Computes the distance of the centers of mass in the right and left half grid for the input density {\ttfamily rhoin}. 
+
+The properties are evaluated as integrals.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em rhoin} & R\+E\+A\+L(8), array, takes the input density. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!localize@{localize}}
+\index{localize@{localize}!observ@{observ}}
+\paragraph[{\texorpdfstring{localize()}{localize()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::localize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a56772dd19b8a5af560935df604c30315}{}\label{namespaceobserv_a56772dd19b8a5af560935df604c30315}
+
+
+This routine computes the localization criterion. 
+
+First the routine writes the headers for density and localization files which can be viewed with plotmtv. Then the localization measure is constructed. Finally it is written to the plotmtv file.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em outnam} & C\+H\+A\+R\+A\+C\+T\+ER, array, takes output name suffix. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!obs@{obs}}
+\index{obs@{obs}!observ@{observ}}
+\paragraph[{\texorpdfstring{obs(rhoini, atnum, rms, d, q, o, h, qsq, zcm)}{obs(rhoini, atnum, rms, d, q, o, h, qsq, zcm)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::obs (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(in)}]{rhoini, }
+\item[{real(8), intent(out)}]{atnum, }
+\item[{real(8), intent(out)}]{rms, }
+\item[{real(8), intent(out)}]{d, }
+\item[{real(8), intent(out)}]{q, }
+\item[{real(8), intent(out)}]{o, }
+\item[{real(8), intent(out)}]{h, }
+\item[{real(8), intent(out)}]{qsq, }
+\item[{real(8), intent(in)}]{zcm}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a5627b5a74b86f1ea84da4e3d8ef274db}{}\label{namespaceobserv_a5627b5a74b86f1ea84da4e3d8ef274db}
+
+
+This routine computes observables from an input density such as particle number, radius and moments. 
+
+The properties are evaluated as integrals.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em rhoini} & R\+E\+A\+L(8), array, takes the input density. \\
+\hline
+\mbox{\tt out}  & {\em atnum} & R\+E\+A\+L(8), returns the particle number. \\
+\hline
+\mbox{\tt out}  & {\em rms} & R\+E\+A\+L(8), returns the rms radius. \\
+\hline
+\mbox{\tt out}  & {\em d} & R\+E\+A\+L(8), returns the spherical dipole moment. \\
+\hline
+\mbox{\tt out}  & {\em q} & R\+E\+A\+L(8), returns the cartesian quadrupole moment. \\
+\hline
+\mbox{\tt out}  & {\em o} & R\+E\+A\+L(8), returns the spherical octupole moment. \\
+\hline
+\mbox{\tt out}  & {\em h} & R\+E\+A\+L(8), returns the spherical hexadecupole moment. \\
+\hline
+\mbox{\tt out}  & {\em qsq} & R\+E\+A\+L(8), returns the squared quadrupole moment as an estimate of variance. \\
+\hline
+\mbox{\tt in}  & {\em atnum} & R\+E\+A\+L(8), takes the center-\/of-\/mass relative to which the above moments are computed. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!obsti@{obsti}}
+\index{obsti@{obsti}!observ@{observ}}
+\paragraph[{\texorpdfstring{obsti(rhoin, qfac, qcfac, qa, qc, qa2, qc2)}{obsti(rhoin, qfac, qcfac, qa, qc, qa2, qc2)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::obsti (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,kqm), intent(in)}]{rhoin, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(in)}]{qfac, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(in)}]{qcfac, }
+\item[{real(8), intent(out)}]{qa, }
+\item[{real(8), intent(out)}]{qc, }
+\item[{real(8), intent(out)}]{qa2, }
+\item[{real(8), intent(out)}]{qc2}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a8210a4df1b28eb34510fd9d4bb9851c3}{}\label{namespaceobserv_a8210a4df1b28eb34510fd9d4bb9851c3}
+
+
+This routine computes observables from an input density such as particle number, radius and moments. Constraint fields. 
+
+The properties are evaluated as integrals.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em rhoin} & R\+E\+A\+L(8), array, takes the input density. \\
+\hline
+\mbox{\tt in}  & {\em qfac} & R\+E\+A\+L(8), array, takes the actual damped constraint. \\
+\hline
+\mbox{\tt in}  & {\em qcfac} & R\+E\+A\+L(8), array, takes the actual raw constraint. \\
+\hline
+\mbox{\tt out}  & {\em qa} & R\+E\+A\+L(8), returns the constraining momentum from {\ttfamily qcfac}. \\
+\hline
+\mbox{\tt out}  & {\em qc} & R\+E\+A\+L(8), returns the momentum of {\ttfamily qfac}. \\
+\hline
+\mbox{\tt out}  & {\em qa2} & R\+E\+A\+L(8), returns the constraining momentum from {\ttfamily qcfac} squared. \\
+\hline
+\mbox{\tt out}  & {\em qc2} & R\+E\+A\+L(8), returns the momentum of {\ttfamily qfac} squared. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!occ\+\_\+lz@{occ\+\_\+lz}}
+\index{occ\+\_\+lz@{occ\+\_\+lz}!observ@{observ}}
+\paragraph[{\texorpdfstring{occ\+\_\+lz()}{occ_lz()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::occ\+\_\+lz (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_ac0ebb6d3f156fbd0921aa9d43978dc5d}{}\label{namespaceobserv_ac0ebb6d3f156fbd0921aa9d43978dc5d}
+
+
+This routine computes the total occupation of each $ l_z $ band and prints it. 
+
+The properties are evaluated as integrals. \index{observ@{observ}!qzero@{qzero}}
+\index{qzero@{qzero}!observ@{observ}}
+\paragraph[{\texorpdfstring{qzero(foin, iqstrt, delk, rleng, ikmax)}{qzero(foin, iqstrt, delk, rleng, ikmax)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function observ\+::qzero (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension({\bf kfrm}), intent(in)}]{foin, }
+\item[{integer, intent(in)}]{iqstrt, }
+\item[{real(8), intent(in)}]{delk, }
+\item[{real(8), intent(in)}]{rleng, }
+\item[{integer, intent(in)}]{ikmax}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a8fe61665a4670e6215ecc9db5d6478b2}{}\label{namespaceobserv_a8fe61665a4670e6215ecc9db5d6478b2}
+
+
+Evaluates and returns the momentum at which the formfactor given on array {\ttfamily foin} has a zero. 
+
+Scan for zero starts at the field position {\ttfamily iqstrt}. {\ttfamily ikmax} is the actual length of the array {\ttfamily foin}.{\ttfamily delk} is the stepsize in the momentum.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em foin} & R\+E\+A\+L(8), array, takes the form factor. \\
+\hline
+\mbox{\tt in}  & {\em iqstart} & R\+E\+A\+L(8), takes the field position for start of scanning. \\
+\hline
+\mbox{\tt in}  & {\em delk} & R\+E\+A\+L(8), takes the grid spacing of {\ttfamily foin}. \\
+\hline
+\mbox{\tt in}  & {\em rleng} & R\+E\+A\+L(8), scaling factor for effective q value. \\
+\hline
+\mbox{\tt in}  & {\em ikmax} & R\+E\+A\+L(8), grid size of {\ttfamily foin}. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!radius@{radius}}
+\index{radius@{radius}!observ@{observ}}
+\paragraph[{\texorpdfstring{radius()}{radius()}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::radius (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_ab795c872e2b2dddd7f5c7a519f49ab92}{}\label{namespaceobserv_ab795c872e2b2dddd7f5c7a519f49ab92}
+
+
+Compute formfactor and deduced radius-\/observables. 
+
+First the grid of the form factors are determined, then the width parameter for the c.\+m. corrections are calculated. Next all formfactors are computed. From those the (charge?) surface width and the rms radii are determined. \index{observ@{observ}!sdenti@{sdenti}}
+\index{sdenti@{sdenti}!observ@{observ}}
+\paragraph[{\texorpdfstring{sdenti(psiw, rhoacc, addwgt, ist)}{sdenti(psiw, rhoacc, addwgt, ist)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::sdenti (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,nsd), intent(in)}]{psiw, }
+\item[{real(8), dimension(0\+:nz,0\+:nr), intent(inout)}]{rhoacc, }
+\item[{real(8), intent(in)}]{addwgt, }
+\item[{integer, intent(in)}]{ist}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a7bdfb81b161bdc113076f9e9cdc24b46}{}\label{namespaceobserv_a7bdfb81b161bdc113076f9e9cdc24b46}
+
+
+Accumulates the density {\ttfamily rho}. 
+
+This state is supposed to be related to the global label {\ttfamily ist}. The fields have to be multiplied with (1.\+0-\/ {\ttfamily addrho}) before the m-\/loop in the calling routine. This routine is used in connection with the iteration of quadrupole deformations.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psiw} & R\+E\+A\+L(8), array, takes the wave function of state . \\
+\hline
+\mbox{\tt out}  & {\em rhod} & R\+E\+A\+L(8), array, takes and returns the density. \\
+\hline
+\mbox{\tt in}  & {\em addwgt} & R\+E\+A\+L(8), takes the occupation probability of the state {\ttfamily ist} (does not include the multiplicity {\ttfamily wate}. \\
+\hline
+\mbox{\tt in}  & {\em ist} & I\+N\+T\+E\+G\+ER, takes the absolute adress of the state. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!sinfo@{sinfo}}
+\index{sinfo@{sinfo}!observ@{observ}}
+\paragraph[{\texorpdfstring{sinfo(iter)}{sinfo(iter)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::sinfo (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{iter}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a95e1935bb63b583b0ca0575f0f80f1c3}{}\label{namespaceobserv_a95e1935bb63b583b0ca0575f0f80f1c3}
+
+
+Prints and calculates observables such as total energy, pairing energy, kinetic energy, deformation parameters, radii etc. If {\ttfamily iter} matches print modulus prints out detailed information and s.\+p. states. 
+
+The pairing energy is evaluated as follows\+:
+
+$ E_\mathrm{pair} $\+: the pairing energy. It consists of a contact pairing interaction involving the pairing densities $ \xi_q $ augmented by an optional density dependence. The formula is \[ E_{\rm pair} = \frac{1}{4} \sum_{q\in\{p,n\}}V_\mathrm{pair,q} \int \D^3r |\xi_q|^2 \left[1 -\frac{\rho}{\rho_{0,\mathrm{pair}}}\right]\;. \] It contains a continuous switch, the parameter $ \rho_{0,\mathrm{pair}} $. A pure $ \delta $-\/interaction (DI), also called volume pairing, is recovered for $ \rho_{0,\mathrm{pair}}\longrightarrow\infty $. The general case is the density dependent $ \delta $-\/interaction (D\+D\+DI). A typical value near matter equilibrium density $ \rho_{0,\mathrm{pair}}=0.16 $ fm $ ^{-3} $ concentrates pairing to the surface. The most flexible choice is to consider $ \rho_{0,\mathrm{pair}} $ as an additional free parameter. Actual adjustments with this option deliver a form of the pairing functional which stays in between the extremes of volume and surface pairing.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em iter} & I\+N\+T\+E\+G\+ER, takes the current iteration number; iter=itmax signals final evaluation. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!write\+\_\+ensurf@{write\+\_\+ensurf}}
+\index{write\+\_\+ensurf@{write\+\_\+ensurf}!observ@{observ}}
+\paragraph[{\texorpdfstring{write\+\_\+ensurf(iter)}{write_ensurf(iter)}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::write\+\_\+ensurf (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{iter}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_ae5279f904be9922f8f914643db509aad}{}\label{namespaceobserv_ae5279f904be9922f8f914643db509aad}
+
+
+Writes to protocol file for basic P\+ES and other gross properties. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em iter} & I\+N\+T\+E\+G\+ER, takes the current iteration number. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!zcmobs@{zcmobs}}
+\index{zcmobs@{zcmobs}!observ@{observ}}
+\paragraph[{\texorpdfstring{zcmobs(rhoini)}{zcmobs(rhoini)}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) function observ\+::zcmobs (
+\begin{DoxyParamCaption}
+\item[{real(8), dimension(0\+:nz,0\+:nr,kqm), intent(in)}]{rhoini}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_ac34a8711125703b516871b1323fcffe5}{}\label{namespaceobserv_ac34a8711125703b516871b1323fcffe5}
+
+
+Computes the center-\/of-\/mass for the density distribution given in two components on {\ttfamily rhoini}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em psiin} & R\+E\+A\+L(8), array, takes the input density. \\
+\hline
+\end{DoxyParams}
+\index{observ@{observ}!zpe\+\_\+cm@{zpe\+\_\+cm}}
+\index{zpe\+\_\+cm@{zpe\+\_\+cm}!observ@{observ}}
+\paragraph[{\texorpdfstring{zpe\+\_\+cm}{zpe_cm}}]{\setlength{\rightskip}{0pt plus 5cm}subroutine observ\+::zpe\+\_\+cm (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceobserv_a4ccae3e6386e9f57519189540c0a541c}{}\label{namespaceobserv_a4ccae3e6386e9f57519189540c0a541c}
+
+
+Zero point energy for c.\+m. motion. as $<$P$\ast$$\ast$2$>$/2mA. 
+
+
+
+\subsubsection{Variable Documentation}
+\index{observ@{observ}!annum@{annum}}
+\index{annum@{annum}!observ@{observ}}
+\paragraph[{\texorpdfstring{annum}{annum}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::annum}\hypertarget{namespaceobserv_a97c7906f826d0a44d6a25a22fa51ba89}{}\label{namespaceobserv_a97c7906f826d0a44d6a25a22fa51ba89}
+
+
+Neutron number. 
+
+\index{observ@{observ}!apnum@{apnum}}
+\index{apnum@{apnum}!observ@{observ}}
+\paragraph[{\texorpdfstring{apnum}{apnum}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::apnum}\hypertarget{namespaceobserv_a1342a598cec837c98c3e43012a6826fe}{}\label{namespaceobserv_a1342a598cec837c98c3e43012a6826fe}
+
+
+Proton number. 
+
+\index{observ@{observ}!atnum@{atnum}}
+\index{atnum@{atnum}!observ@{observ}}
+\paragraph[{\texorpdfstring{atnum}{atnum}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::atnum}\hypertarget{namespaceobserv_a23f826df2cae1039589aced00fb7939b}{}\label{namespaceobserv_a23f826df2cae1039589aced00fb7939b}
+
+
+Mass number for nucleus. 
+
+\index{observ@{observ}!beta1@{beta1}}
+\index{beta1@{beta1}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta1}{beta1}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta1}\hypertarget{namespaceobserv_ae06bf7fff24c07852e4632fc07db4d25}{}\label{namespaceobserv_ae06bf7fff24c07852e4632fc07db4d25}
+
+
+Dipole deformation paramter. 
+
+\index{observ@{observ}!beta1n@{beta1n}}
+\index{beta1n@{beta1n}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta1n}{beta1n}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta1n}\hypertarget{namespaceobserv_a249f6a8a7c0799c554876402bd0b20ba}{}\label{namespaceobserv_a249f6a8a7c0799c554876402bd0b20ba}
+
+
+Neutron dipole deformation parameter. 
+
+\index{observ@{observ}!beta1p@{beta1p}}
+\index{beta1p@{beta1p}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta1p}{beta1p}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta1p}\hypertarget{namespaceobserv_acedfdb84c130c7157e337792dcaf8d65}{}\label{namespaceobserv_acedfdb84c130c7157e337792dcaf8d65}
+
+
+Proton dipole deforamtion parameter. 
+
+\index{observ@{observ}!beta2@{beta2}}
+\index{beta2@{beta2}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta2}{beta2}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta2}\hypertarget{namespaceobserv_a8e4f6f99ecdb81e5aea163822de8628a}{}\label{namespaceobserv_a8e4f6f99ecdb81e5aea163822de8628a}
+
+
+Quadrupole deformation parameter. 
+
+\index{observ@{observ}!beta2n@{beta2n}}
+\index{beta2n@{beta2n}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta2n}{beta2n}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta2n}\hypertarget{namespaceobserv_ab7441a7793132b9693129241f9226285}{}\label{namespaceobserv_ab7441a7793132b9693129241f9226285}
+
+
+Neutron quadrupole deformation parameter. 
+
+\index{observ@{observ}!beta2p@{beta2p}}
+\index{beta2p@{beta2p}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta2p}{beta2p}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta2p}\hypertarget{namespaceobserv_ac3de9feb22a0044fec5f0fc73f3de8f2}{}\label{namespaceobserv_ac3de9feb22a0044fec5f0fc73f3de8f2}
+
+
+Proton quadrupole deformation parameter. 
+
+\index{observ@{observ}!beta3@{beta3}}
+\index{beta3@{beta3}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta3}{beta3}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta3}\hypertarget{namespaceobserv_a0fde5336c5d78c45821b53538f702dfb}{}\label{namespaceobserv_a0fde5336c5d78c45821b53538f702dfb}
+
+
+Octupole deformation parameter. 
+
+\index{observ@{observ}!beta3n@{beta3n}}
+\index{beta3n@{beta3n}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta3n}{beta3n}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta3n}\hypertarget{namespaceobserv_af0eb489826da64a5a3eff551c79d7eb0}{}\label{namespaceobserv_af0eb489826da64a5a3eff551c79d7eb0}
+
+
+Neutron octupole deformation parameter. 
+
+\index{observ@{observ}!beta3p@{beta3p}}
+\index{beta3p@{beta3p}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta3p}{beta3p}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta3p}\hypertarget{namespaceobserv_a07b229432fc572292d89fdad0b982e2f}{}\label{namespaceobserv_a07b229432fc572292d89fdad0b982e2f}
+
+
+Proton octupole deformation parameter. 
+
+\index{observ@{observ}!beta4@{beta4}}
+\index{beta4@{beta4}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta4}{beta4}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta4}\hypertarget{namespaceobserv_a47b1c6dbefba99b8eeeeb876d0cb626e}{}\label{namespaceobserv_a47b1c6dbefba99b8eeeeb876d0cb626e}
+
+
+Hexadecupole deformation parameter. 
+
+\index{observ@{observ}!beta4n@{beta4n}}
+\index{beta4n@{beta4n}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta4n}{beta4n}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta4n}\hypertarget{namespaceobserv_a71725cf0728a327f5bc7585186708af7}{}\label{namespaceobserv_a71725cf0728a327f5bc7585186708af7}
+
+
+Neutron hexadecupole deformation parameter. 
+
+\index{observ@{observ}!beta4p@{beta4p}}
+\index{beta4p@{beta4p}!observ@{observ}}
+\paragraph[{\texorpdfstring{beta4p}{beta4p}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::beta4p}\hypertarget{namespaceobserv_a60ae9f4bd6411b61020690536d5d0c9d}{}\label{namespaceobserv_a60ae9f4bd6411b61020690536d5d0c9d}
+
+
+Proton hexadecupole deformation parameter. 
+
+\index{observ@{observ}!betafull@{betafull}}
+\index{betafull@{betafull}!observ@{observ}}
+\paragraph[{\texorpdfstring{betafull}{betafull}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::betafull}\hypertarget{namespaceobserv_a83b0ac43dc656fabd27cb889e02496bc}{}\label{namespaceobserv_a83b0ac43dc656fabd27cb889e02496bc}
+
+
+Quadrupole including variance $\beta_\mathrm{f}=\sqrt{\beta_{g.s.}^2+\Delta^2\beta}$. 
+
+\index{observ@{observ}!bmassc@{bmassc}}
+\index{bmassc@{bmassc}!observ@{observ}}
+\paragraph[{\texorpdfstring{bmassc}{bmassc}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::bmassc}\hypertarget{namespaceobserv_a11476aea6a4dfc6718d071f1408a32b5}{}\label{namespaceobserv_a11476aea6a4dfc6718d071f1408a32b5}
+
+
+Cartesian collective quadrupole mass in scaling approach. 
+
+\index{observ@{observ}!bmassr@{bmassr}}
+\index{bmassr@{bmassr}!observ@{observ}}
+\paragraph[{\texorpdfstring{bmassr}{bmassr}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::bmassr}\hypertarget{namespaceobserv_a695c136a636f71d44a9dcff1c045f506}{}\label{namespaceobserv_a695c136a636f71d44a9dcff1c045f506}
+
+
+Radial collective quadrupole mass in scaling approach. 
+
+\index{observ@{observ}!boundnum@{boundnum}}
+\index{boundnum@{boundnum}!observ@{observ}}
+\paragraph[{\texorpdfstring{boundnum}{boundnum}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(2) observ\+::boundnum}\hypertarget{namespaceobserv_aa4177808cf29e88750de09e971052d7c}{}\label{namespaceobserv_aa4177808cf29e88750de09e971052d7c}
+
+
+Number of bound nucleons. 
+
+\index{observ@{observ}!bubdipn@{bubdipn}}
+\index{bubdipn@{bubdipn}!observ@{observ}}
+\paragraph[{\texorpdfstring{bubdipn}{bubdipn}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::bubdipn}\hypertarget{namespaceobserv_a857bf3d3540f2e6896e8f13f0dc55642}{}\label{namespaceobserv_a857bf3d3540f2e6896e8f13f0dc55642}
+
+
+Neutron bubble parameter. 
+
+\index{observ@{observ}!bubdipp@{bubdipp}}
+\index{bubdipp@{bubdipp}!observ@{observ}}
+\paragraph[{\texorpdfstring{bubdipp}{bubdipp}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::bubdipp}\hypertarget{namespaceobserv_a4ffb7986e7585b019cc482528f6da8f7}{}\label{namespaceobserv_a4ffb7986e7585b019cc482528f6da8f7}
+
+
+Proton bubble parameter. 
+
+\index{observ@{observ}!bubdipt@{bubdipt}}
+\index{bubdipt@{bubdipt}!observ@{observ}}
+\paragraph[{\texorpdfstring{bubdipt}{bubdipt}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::bubdipt}\hypertarget{namespaceobserv_a63fc9eb0b13b60cb7dc0df0c8c330966}{}\label{namespaceobserv_a63fc9eb0b13b60cb7dc0df0c8c330966}
+
+
+Bubble parameter. 
+
+\index{observ@{observ}!d@{d}}
+\index{d@{d}!observ@{observ}}
+\paragraph[{\texorpdfstring{d}{d}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::d}\hypertarget{namespaceobserv_aac8164517bfe4101667722dfc46f93f6}{}\label{namespaceobserv_aac8164517bfe4101667722dfc46f93f6}
+
+
+Dipole moment. 
+
+\index{observ@{observ}!devgap@{devgap}}
+\index{devgap@{devgap}!observ@{observ}}
+\paragraph[{\texorpdfstring{devgap}{devgap}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::devgap}\hypertarget{namespaceobserv_a1e0de4a0f835cef78c7b7d41966b0309}{}\label{namespaceobserv_a1e0de4a0f835cef78c7b7d41966b0309}
+
+
+Average deviation from gap equation. 
+
+\index{observ@{observ}!devh2@{devh2}}
+\index{devh2@{devh2}!observ@{observ}}
+\paragraph[{\texorpdfstring{devh2}{devh2}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::devh2}\hypertarget{namespaceobserv_ae9229ef6dc10115d9fe75d1388132b7d}{}\label{namespaceobserv_ae9229ef6dc10115d9fe75d1388132b7d}
+
+
+Variance of mean-\/field operator. 
+
+\index{observ@{observ}!devmf2@{devmf2}}
+\index{devmf2@{devmf2}!observ@{observ}}
+\paragraph[{\texorpdfstring{devmf2}{devmf2}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::devmf2}\hypertarget{namespaceobserv_aca69c157018bf487e453d1813641ba01}{}\label{namespaceobserv_aca69c157018bf487e453d1813641ba01}
+
+
+Average variance of s.\+p. energies. 
+
+\index{observ@{observ}!devoc2@{devoc2}}
+\index{devoc2@{devoc2}!observ@{observ}}
+\paragraph[{\texorpdfstring{devoc2}{devoc2}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::devoc2}\hypertarget{namespaceobserv_a64f340dc1105ba5ed8e16d357001225b}{}\label{namespaceobserv_a64f340dc1105ba5ed8e16d357001225b}
+
+
+Content of h$\ast$psi in given wavefunctions. 
+
+\index{observ@{observ}!dn@{dn}}
+\index{dn@{dn}!observ@{observ}}
+\paragraph[{\texorpdfstring{dn}{dn}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::dn}\hypertarget{namespaceobserv_aa7d55b64ce5daf1649ee9f05b95088fc}{}\label{namespaceobserv_aa7d55b64ce5daf1649ee9f05b95088fc}
+
+
+Neutron dipole moment. 
+
+\index{observ@{observ}!dp@{dp}}
+\index{dp@{dp}!observ@{observ}}
+\paragraph[{\texorpdfstring{dp}{dp}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::dp}\hypertarget{namespaceobserv_aa2afb41c7a18f5680744a85b000d7861}{}\label{namespaceobserv_aa2afb41c7a18f5680744a85b000d7861}
+
+
+Proton dipole moment. 
+
+\index{observ@{observ}!ecolex@{ecolex}}
+\index{ecolex@{ecolex}!observ@{observ}}
+\paragraph[{\texorpdfstring{ecolex}{ecolex}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::ecolex}\hypertarget{namespaceobserv_a6331b57c0ae11428cdfa449797aa09d2}{}\label{namespaceobserv_a6331b57c0ae11428cdfa449797aa09d2}
+
+
+Energy in Coulomb exchange. 
+
+\index{observ@{observ}!econ@{econ}}
+\index{econ@{econ}!observ@{observ}}
+\paragraph[{\texorpdfstring{econ}{econ}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::econ}\hypertarget{namespaceobserv_aab2b361228c2be9aacc647898d20602c}{}\label{namespaceobserv_aab2b361228c2be9aacc647898d20602c}
+
+
+Energy convergence parameter. 
+
+\index{observ@{observ}!ecoul@{ecoul}}
+\index{ecoul@{ecoul}!observ@{observ}}
+\paragraph[{\texorpdfstring{ecoul}{ecoul}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::ecoul}\hypertarget{namespaceobserv_ac0a63f15b5c3dd97c7869b7748679212}{}\label{namespaceobserv_ac0a63f15b5c3dd97c7869b7748679212}
+
+
+Coulomb energy. 
+
+\index{observ@{observ}!ekin@{ekin}}
+\index{ekin@{ekin}!observ@{observ}}
+\paragraph[{\texorpdfstring{ekin}{ekin}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::ekin}\hypertarget{namespaceobserv_a7df2eeed60a05d3f29ca04013bba2081}{}\label{namespaceobserv_a7df2eeed60a05d3f29ca04013bba2081}
+
+
+Kinetic energy. 
+
+\index{observ@{observ}!energr@{energr}}
+\index{energr@{energr}!observ@{observ}}
+\paragraph[{\texorpdfstring{energr}{energr}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::energr}\hypertarget{namespaceobserv_a8e556cf28d2d577177523975fb47467b}{}\label{namespaceobserv_a8e556cf28d2d577177523975fb47467b}
+
+
+Total energy from shell and rearrangement energy. 
+
+\index{observ@{observ}!energy@{energy}}
+\index{energy@{energy}!observ@{observ}}
+\paragraph[{\texorpdfstring{energy}{energy}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::energy}\hypertarget{namespaceobserv_a49a7e3ba548450307b3a2c22ace8b3f3}{}\label{namespaceobserv_a49a7e3ba548450307b3a2c22ace8b3f3}
+
+
+Total energy directly from densities. 
+
+\index{observ@{observ}!eold@{eold}}
+\index{eold@{eold}!observ@{observ}}
+\paragraph[{\texorpdfstring{eold}{eold}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::eold}\hypertarget{namespaceobserv_a1988e691b9c7e5f98cb2e13a4a229908}{}\label{namespaceobserv_a1988e691b9c7e5f98cb2e13a4a229908}
+
+
+Energy from previous iteration. 
+
+\index{observ@{observ}!epot@{epot}}
+\index{epot@{epot}!observ@{observ}}
+\paragraph[{\texorpdfstring{epot}{epot}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::epot}\hypertarget{namespaceobserv_a87e633bdcc50c87ba74f4f69c97c8534}{}\label{namespaceobserv_a87e633bdcc50c87ba74f4f69c97c8534}
+
+
+Potential energy. 
+
+\index{observ@{observ}!equad@{equad}}
+\index{equad@{equad}!observ@{observ}}
+\paragraph[{\texorpdfstring{equad}{equad}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::equad}\hypertarget{namespaceobserv_ab70baa891e5608be4ea8c1a24c762d12}{}\label{namespaceobserv_ab70baa891e5608be4ea8c1a24c762d12}
+
+
+Energy contained in constraint. 
+
+\index{observ@{observ}!erearr@{erearr}}
+\index{erearr@{erearr}!observ@{observ}}
+\paragraph[{\texorpdfstring{erearr}{erearr}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::erearr}\hypertarget{namespaceobserv_aadc4a7afed808cde5967554c7cf067d6}{}\label{namespaceobserv_aadc4a7afed808cde5967554c7cf067d6}
+
+
+Rearrangement energy. 
+
+\index{observ@{observ}!eshell@{eshell}}
+\index{eshell@{eshell}!observ@{observ}}
+\paragraph[{\texorpdfstring{eshell}{eshell}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::eshell}\hypertarget{namespaceobserv_ac8fdfe12d0195f54b5270f0787d8a4be}{}\label{namespaceobserv_ac8fdfe12d0195f54b5270f0787d8a4be}
+
+
+Shell energy. 
+
+\index{observ@{observ}!etpair@{etpair}}
+\index{etpair@{etpair}!observ@{observ}}
+\paragraph[{\texorpdfstring{etpair}{etpair}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::etpair}\hypertarget{namespaceobserv_ac535470bfdf0cb2be9051d1ad7f2b4bf}{}\label{namespaceobserv_ac535470bfdf0cb2be9051d1ad7f2b4bf}
+
+
+Total pairing energy (or -\/\+T$\ast$S in case of thermal). 
+
+\index{observ@{observ}!ezp@{ezp}}
+\index{ezp@{ezp}!observ@{observ}}
+\paragraph[{\texorpdfstring{ezp}{ezp}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::ezp}\hypertarget{namespaceobserv_a0de483117299fa6f8284416a0706a75e}{}\label{namespaceobserv_a0de483117299fa6f8284416a0706a75e}
+
+
+full Z\+PE from $<$P$\ast$$\ast$2$>$/2mA. 
+
+\index{observ@{observ}!h@{h}}
+\index{h@{h}!observ@{observ}}
+\paragraph[{\texorpdfstring{h}{h}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::h}\hypertarget{namespaceobserv_aee3c6d228879577edf3210d8798f5759}{}\label{namespaceobserv_aee3c6d228879577edf3210d8798f5759}
+
+
+Hexadecupole moment. 
+
+\index{observ@{observ}!hn@{hn}}
+\index{hn@{hn}!observ@{observ}}
+\paragraph[{\texorpdfstring{hn}{hn}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::hn}\hypertarget{namespaceobserv_a7f7bef99d120f798dbf50695ea51cf6f}{}\label{namespaceobserv_a7f7bef99d120f798dbf50695ea51cf6f}
+
+
+Neutron hexadecupole moment. 
+
+\index{observ@{observ}!hp@{hp}}
+\index{hp@{hp}!observ@{observ}}
+\paragraph[{\texorpdfstring{hp}{hp}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::hp}\hypertarget{namespaceobserv_a5fc280880094ef531157b9000331c609}{}\label{namespaceobserv_a5fc280880094ef531157b9000331c609}
+
+
+Proton hexadecupole moment. 
+
+\index{observ@{observ}!iprint@{iprint}}
+\index{iprint@{iprint}!observ@{observ}}
+\paragraph[{\texorpdfstring{iprint}{iprint}}]{\setlength{\rightskip}{0pt plus 5cm}integer observ\+::iprint =1000}\hypertarget{namespaceobserv_ad0ee4417f363898a68c79a49c0de9280}{}\label{namespaceobserv_ad0ee4417f363898a68c79a49c0de9280}
+
+
+Modulus for printing output. 
+
+\index{observ@{observ}!itmax@{itmax}}
+\index{itmax@{itmax}!observ@{observ}}
+\paragraph[{\texorpdfstring{itmax}{itmax}}]{\setlength{\rightskip}{0pt plus 5cm}integer observ\+::itmax =1000}\hypertarget{namespaceobserv_a1c1ca20926be13c61016d6ee42c77212}{}\label{namespaceobserv_a1c1ca20926be13c61016d6ee42c77212}
+
+
+Maximum number of iterations for one deformation. 
+
+\index{observ@{observ}!kfrm@{kfrm}}
+\index{kfrm@{kfrm}!observ@{observ}}
+\paragraph[{\texorpdfstring{kfrm}{kfrm}}]{\setlength{\rightskip}{0pt plus 5cm}integer, parameter, private observ\+::kfrm =512\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{namespaceobserv_a644f1914424441bcad6f350dc0fe327c}{}\label{namespaceobserv_a644f1914424441bcad6f350dc0fe327c}
+
+
+Maximum dimension of formfactor fields. 
+
+\index{observ@{observ}!o@{o}}
+\index{o@{o}!observ@{observ}}
+\paragraph[{\texorpdfstring{o}{o}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::o}\hypertarget{namespaceobserv_af518f12cf84a544107605bba80b46749}{}\label{namespaceobserv_af518f12cf84a544107605bba80b46749}
+
+
+Octupole moment. 
+
+\index{observ@{observ}!omgtri@{omgtri}}
+\index{omgtri@{omgtri}!observ@{observ}}
+\paragraph[{\texorpdfstring{omgtri}{omgtri}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::omgtri}\hypertarget{namespaceobserv_a173bfde5e0842795adefaf2aec38fb68}{}\label{namespaceobserv_a173bfde5e0842795adefaf2aec38fb68}
+
+
+Estimate of collective energy in triaxial direction. 
+
+\index{observ@{observ}!on@{on}}
+\index{on@{on}!observ@{observ}}
+\paragraph[{\texorpdfstring{on}{on}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::on}\hypertarget{namespaceobserv_afd9ef4eafea719e983a484a385cf56b7}{}\label{namespaceobserv_afd9ef4eafea719e983a484a385cf56b7}
+
+
+Neutron octupole moment. 
+
+\index{observ@{observ}!op@{op}}
+\index{op@{op}!observ@{observ}}
+\paragraph[{\texorpdfstring{op}{op}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::op}\hypertarget{namespaceobserv_ac7b149276ccf05582c5270bafacab20b}{}\label{namespaceobserv_ac7b149276ccf05582c5270bafacab20b}
+
+
+Proton octupole moment. 
+
+\index{observ@{observ}!q@{q}}
+\index{q@{q}!observ@{observ}}
+\paragraph[{\texorpdfstring{q}{q}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::q}\hypertarget{namespaceobserv_af34b6ff143a2dfdf6559141d5d23fbea}{}\label{namespaceobserv_af34b6ff143a2dfdf6559141d5d23fbea}
+
+
+Quadrupole moment. 
+
+\index{observ@{observ}!qcon@{qcon}}
+\index{qcon@{qcon}!observ@{observ}}
+\paragraph[{\texorpdfstring{qcon}{qcon}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qcon}\hypertarget{namespaceobserv_a2b56c807c1301829c79e6f061ac78297}{}\label{namespaceobserv_a2b56c807c1301829c79e6f061ac78297}
+
+
+Change of quadrupole momentum in one iteration. 
+
+\index{observ@{observ}!qcons@{qcons}}
+\index{qcons@{qcons}!observ@{observ}}
+\paragraph[{\texorpdfstring{qcons}{qcons}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(0\+:4), public observ\+::qcons}\hypertarget{namespaceobserv_aa5526a16e8f0982dec32b788e8c13eae}{}\label{namespaceobserv_aa5526a16e8f0982dec32b788e8c13eae}
+\index{observ@{observ}!qcorrs@{qcorrs}}
+\index{qcorrs@{qcorrs}!observ@{observ}}
+\paragraph[{\texorpdfstring{qcorrs}{qcorrs}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(0\+:4), public observ\+::qcorrs}\hypertarget{namespaceobserv_a16d0b249b06168c260b7a7752729f60a}{}\label{namespaceobserv_a16d0b249b06168c260b7a7752729f60a}
+\index{observ@{observ}!qdh@{qdh}}
+\index{qdh@{qdh}!observ@{observ}}
+\paragraph[{\texorpdfstring{qdh}{qdh}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qdh}\hypertarget{namespaceobserv_a5631c0f0849e2ae5860c899e3d8e39aa}{}\label{namespaceobserv_a5631c0f0849e2ae5860c899e3d8e39aa}
+
+
+Element $<$\+Q d=\char`\"{}\char`\"{} h$>$=\char`\"{}\char`\"{}$>$ for L=2. 
+
+\index{observ@{observ}!qlcstps@{qlcstps}}
+\index{qlcstps@{qlcstps}!observ@{observ}}
+\paragraph[{\texorpdfstring{qlcstps}{qlcstps}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(0\+:4), public observ\+::qlcstps}\hypertarget{namespaceobserv_a6a9c12cdfb362e6d2af583d7eb17d32f}{}\label{namespaceobserv_a6a9c12cdfb362e6d2af583d7eb17d32f}
+\index{observ@{observ}!qn@{qn}}
+\index{qn@{qn}!observ@{observ}}
+\paragraph[{\texorpdfstring{qn}{qn}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qn}\hypertarget{namespaceobserv_af510c9ba2765c7af068833bc25758aa1}{}\label{namespaceobserv_af510c9ba2765c7af068833bc25758aa1}
+
+
+Neutron quadrupole moment. 
+
+\index{observ@{observ}!qold@{qold}}
+\index{qold@{qold}!observ@{observ}}
+\paragraph[{\texorpdfstring{qold}{qold}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qold}\hypertarget{namespaceobserv_a8aaf442bc6b6a3d7ef38d939c0819e99}{}\label{namespaceobserv_a8aaf442bc6b6a3d7ef38d939c0819e99}
+
+
+Quadrupole from previous iteration. 
+
+\index{observ@{observ}!qp@{qp}}
+\index{qp@{qp}!observ@{observ}}
+\paragraph[{\texorpdfstring{qp}{qp}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qp}\hypertarget{namespaceobserv_a234fb1ce0b2c529dac392fb68a962e8b}{}\label{namespaceobserv_a234fb1ce0b2c529dac392fb68a962e8b}
+
+
+Proton quadrupole moment. 
+
+\index{observ@{observ}!qq0@{qq0}}
+\index{qq0@{qq0}!observ@{observ}}
+\paragraph[{\texorpdfstring{qq0}{qq0}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qq0}\hypertarget{namespaceobserv_afe768980804ddf6563d50cb7d003c1ab}{}\label{namespaceobserv_afe768980804ddf6563d50cb7d003c1ab}
+
+
+Variance of monopole moment. 
+
+\index{observ@{observ}!qq1@{qq1}}
+\index{qq1@{qq1}!observ@{observ}}
+\paragraph[{\texorpdfstring{qq1}{qq1}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qq1}\hypertarget{namespaceobserv_ade8d12eb6ca05d5c2a9e15190a438bda}{}\label{namespaceobserv_ade8d12eb6ca05d5c2a9e15190a438bda}
+
+
+Variance of dipole moment. 
+
+\index{observ@{observ}!qq2@{qq2}}
+\index{qq2@{qq2}!observ@{observ}}
+\paragraph[{\texorpdfstring{qq2}{qq2}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qq2}\hypertarget{namespaceobserv_aded073a456b95a001cacac23177dcf46}{}\label{namespaceobserv_aded073a456b95a001cacac23177dcf46}
+
+
+Variance of quarupole moment. 
+
+\index{observ@{observ}!qq3@{qq3}}
+\index{qq3@{qq3}!observ@{observ}}
+\paragraph[{\texorpdfstring{qq3}{qq3}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qq3}\hypertarget{namespaceobserv_a1672ed9b98a4dab7a167d29620fba100}{}\label{namespaceobserv_a1672ed9b98a4dab7a167d29620fba100}
+
+
+Variance of octupole moment. 
+
+\index{observ@{observ}!qq4@{qq4}}
+\index{qq4@{qq4}!observ@{observ}}
+\paragraph[{\texorpdfstring{qq4}{qq4}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::qq4}\hypertarget{namespaceobserv_a9fc1bb5590ff288f6e8a0e89451cf805}{}\label{namespaceobserv_a9fc1bb5590ff288f6e8a0e89451cf805}
+
+
+Variance of hexadecupole moment. 
+
+\index{observ@{observ}!r4@{r4}}
+\index{r4@{r4}!observ@{observ}}
+\paragraph[{\texorpdfstring{r4}{r4}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::r4}\hypertarget{namespaceobserv_a763f74159ece0956ce250073d231cee7}{}\label{namespaceobserv_a763f74159ece0956ce250073d231cee7}
+
+
+total radius from 4. radial moment 
+
+\index{observ@{observ}!r4c@{r4c}}
+\index{r4c@{r4c}!observ@{observ}}
+\paragraph[{\texorpdfstring{r4c}{r4c}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::r4c}\hypertarget{namespaceobserv_a40affdee9346fd5b62a32dff19025a59}{}\label{namespaceobserv_a40affdee9346fd5b62a32dff19025a59}
+
+
+charge radius from 4. radial moment 
+
+\index{observ@{observ}!r4n@{r4n}}
+\index{r4n@{r4n}!observ@{observ}}
+\paragraph[{\texorpdfstring{r4n}{r4n}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::r4n}\hypertarget{namespaceobserv_a6e698cb41249db67aa98431cf2b5a4cd}{}\label{namespaceobserv_a6e698cb41249db67aa98431cf2b5a4cd}
+
+
+neutron radius from 4. radial moment 
+
+\index{observ@{observ}!r4p@{r4p}}
+\index{r4p@{r4p}!observ@{observ}}
+\paragraph[{\texorpdfstring{r4p}{r4p}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::r4p}\hypertarget{namespaceobserv_a923afbf28dd2bf131da354abbb1eb785}{}\label{namespaceobserv_a923afbf28dd2bf131da354abbb1eb785}
+
+
+proton radius from 4. radial moment 
+
+\index{observ@{observ}!rdmsc@{rdmsc}}
+\index{rdmsc@{rdmsc}!observ@{observ}}
+\paragraph[{\texorpdfstring{rdmsc}{rdmsc}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::rdmsc}\hypertarget{namespaceobserv_a3d24e28b38a8f944e6e335697a5819de}{}\label{namespaceobserv_a3d24e28b38a8f944e6e335697a5819de}
+
+
+Charge diffraction radius. 
+
+\index{observ@{observ}!rms@{rms}}
+\index{rms@{rms}!observ@{observ}}
+\paragraph[{\texorpdfstring{rms}{rms}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::rms}\hypertarget{namespaceobserv_a3b3964ead731eed696585a43d22b51f6}{}\label{namespaceobserv_a3b3964ead731eed696585a43d22b51f6}
+
+
+Total rms radius. 
+
+\index{observ@{observ}!rmsc@{rmsc}}
+\index{rmsc@{rmsc}!observ@{observ}}
+\paragraph[{\texorpdfstring{rmsc}{rmsc}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::rmsc}\hypertarget{namespaceobserv_a69b58be5538a0df79b7663fe1be07b10}{}\label{namespaceobserv_a69b58be5538a0df79b7663fe1be07b10}
+
+
+Charge rms radius. 
+
+\index{observ@{observ}!rmsn@{rmsn}}
+\index{rmsn@{rmsn}!observ@{observ}}
+\paragraph[{\texorpdfstring{rmsn}{rmsn}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::rmsn}\hypertarget{namespaceobserv_aa3dc1d3aead73ec11f1d86f5a069d302}{}\label{namespaceobserv_aa3dc1d3aead73ec11f1d86f5a069d302}
+
+
+Neutron rms radius. 
+
+\index{observ@{observ}!rmsp@{rmsp}}
+\index{rmsp@{rmsp}!observ@{observ}}
+\paragraph[{\texorpdfstring{rmsp}{rmsp}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::rmsp}\hypertarget{namespaceobserv_a16ce4982fb88de7727f5d9e0fc731ad7}{}\label{namespaceobserv_a16ce4982fb88de7727f5d9e0fc731ad7}
+
+
+Proton rms radius. 
+
+\index{observ@{observ}!rsepfrag@{rsepfrag}}
+\index{rsepfrag@{rsepfrag}!observ@{observ}}
+\paragraph[{\texorpdfstring{rsepfrag}{rsepfrag}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::rsepfrag}\hypertarget{namespaceobserv_a54e2e97adacbf83b5bbd1d6836ae5a9e}{}\label{namespaceobserv_a54e2e97adacbf83b5bbd1d6836ae5a9e}
+
+
+distance of two separated fragments. 
+
+\index{observ@{observ}!surfc@{surfc}}
+\index{surfc@{surfc}!observ@{observ}}
+\paragraph[{\texorpdfstring{surfc}{surfc}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::surfc}\hypertarget{namespaceobserv_a0c3e68d8ecea5ff3171ecea1551e1bb1}{}\label{namespaceobserv_a0c3e68d8ecea5ff3171ecea1551e1bb1}
+
+
+Surface thickness of charge distribution. 
+
+\index{observ@{observ}!tempac@{tempac}}
+\index{tempac@{tempac}!observ@{observ}}
+\paragraph[{\texorpdfstring{tempac}{tempac}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::tempac =1\+D0}\hypertarget{namespaceobserv_a70b4ab331c460ccbbad144d552722744}{}\label{namespaceobserv_a70b4ab331c460ccbbad144d552722744}
+
+
+Actual temperature for current step. 
+
+\index{observ@{observ}!tempmn@{tempmn}}
+\index{tempmn@{tempmn}!observ@{observ}}
+\paragraph[{\texorpdfstring{tempmn}{tempmn}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::tempmn =0\+D0}\hypertarget{namespaceobserv_a992f70652154733395ffdab398549239}{}\label{namespaceobserv_a992f70652154733395ffdab398549239}
+
+
+Minimal temperature. 
+
+\index{observ@{observ}!tempmx@{tempmx}}
+\index{tempmx@{tempmx}!observ@{observ}}
+\paragraph[{\texorpdfstring{tempmx}{tempmx}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::tempmx =0\+D0}\hypertarget{namespaceobserv_a389e94f4d08c345cc37906dc48289a9d}{}\label{namespaceobserv_a389e94f4d08c345cc37906dc48289a9d}
+
+
+Maximal temoerature. 
+
+\index{observ@{observ}!tempw@{tempw}}
+\index{tempw@{tempw}!observ@{observ}}
+\paragraph[{\texorpdfstring{tempw}{tempw}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::tempw =1\+D0}\hypertarget{namespaceobserv_a844b0f466d0870c37fd460723a96f21c}{}\label{namespaceobserv_a844b0f466d0870c37fd460723a96f21c}
+
+
+Step width for temperature loop. 
+
+\index{observ@{observ}!varqscs@{varqscs}}
+\index{varqscs@{varqscs}!observ@{observ}}
+\paragraph[{\texorpdfstring{varqscs}{varqscs}}]{\setlength{\rightskip}{0pt plus 5cm}real(8), dimension(0\+:4), public observ\+::varqscs}\hypertarget{namespaceobserv_afbab940fd904214e88cead4570ed5a45}{}\label{namespaceobserv_afbab940fd904214e88cead4570ed5a45}
+\index{observ@{observ}!varqsq@{varqsq}}
+\index{varqsq@{varqsq}!observ@{observ}}
+\paragraph[{\texorpdfstring{varqsq}{varqsq}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::varqsq}\hypertarget{namespaceobserv_a8c28d244f2e590aebb022ae00f6cb8f6}{}\label{namespaceobserv_a8c28d244f2e590aebb022ae00f6cb8f6}
+
+
+Variance of constraint momentum (for constraint iteration). 
+
+\index{observ@{observ}!widcmx@{widcmx}}
+\index{widcmx@{widcmx}!observ@{observ}}
+\paragraph[{\texorpdfstring{widcmx}{widcmx}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::widcmx}\hypertarget{namespaceobserv_a01479360bb624e189a7f72acb2eb2f0d}{}\label{namespaceobserv_a01479360bb624e189a7f72acb2eb2f0d}
+
+
+Alternative width of center-\/of-\/mass momentum along x direction. 
+
+\index{observ@{observ}!widcmz@{widcmz}}
+\index{widcmz@{widcmz}!observ@{observ}}
+\paragraph[{\texorpdfstring{widcmz}{widcmz}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::widcmz}\hypertarget{namespaceobserv_a128f96e19967460b67ef885021d9fb0a}{}\label{namespaceobserv_a128f96e19967460b67ef885021d9fb0a}
+
+
+Alternative width of center-\/of-\/mass momentum along x direction. 
+
+\index{observ@{observ}!widdxy@{widdxy}}
+\index{widdxy@{widdxy}!observ@{observ}}
+\paragraph[{\texorpdfstring{widdxy}{widdxy}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::widdxy}\hypertarget{namespaceobserv_aa975d7d153f748785eb30f5494f2ad80}{}\label{namespaceobserv_aa975d7d153f748785eb30f5494f2ad80}
+
+
+Width of center-\/of-\/mass momentum along r direction. 
+
+\index{observ@{observ}!widdz@{widdz}}
+\index{widdz@{widdz}!observ@{observ}}
+\paragraph[{\texorpdfstring{widdz}{widdz}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::widdz}\hypertarget{namespaceobserv_af8caa2b5090bb5b80d0299822bb858e0}{}\label{namespaceobserv_af8caa2b5090bb5b80d0299822bb858e0}
+
+
+Width of center-\/of-\/mass momentum along z direction. 
+
+\index{observ@{observ}!xinert@{xinert}}
+\index{xinert@{xinert}!observ@{observ}}
+\paragraph[{\texorpdfstring{xinert}{xinert}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::xinert}\hypertarget{namespaceobserv_a6687188e31bb4225d4f5f5406f282302}{}\label{namespaceobserv_a6687188e31bb4225d4f5f5406f282302}
+
+
+Rigid-\/body momentum of inertia orthognal to z-\/axis. 
+
+\index{observ@{observ}!zcm@{zcm}}
+\index{zcm@{zcm}!observ@{observ}}
+\paragraph[{\texorpdfstring{zcm}{zcm}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::zcm}\hypertarget{namespaceobserv_a70ecabcf15034808b4bb9500d3826a79}{}\label{namespaceobserv_a70ecabcf15034808b4bb9500d3826a79}
+
+
+Center of mass on z-\/axis. 
+
+\index{observ@{observ}!zpecmx@{zpecmx}}
+\index{zpecmx@{zpecmx}!observ@{observ}}
+\paragraph[{\texorpdfstring{zpecmx}{zpecmx}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::zpecmx}\hypertarget{namespaceobserv_a25dc1a401a0a58fe28e5d78fa6ec4cb0}{}\label{namespaceobserv_a25dc1a401a0a58fe28e5d78fa6ec4cb0}
+
+
+Alternative center-\/of-\/mass energy along x direction. 
+
+\index{observ@{observ}!zpecmz@{zpecmz}}
+\index{zpecmz@{zpecmz}!observ@{observ}}
+\paragraph[{\texorpdfstring{zpecmz}{zpecmz}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::zpecmz}\hypertarget{namespaceobserv_a6343c5bd2b3a06e7c47357ce13c5620e}{}\label{namespaceobserv_a6343c5bd2b3a06e7c47357ce13c5620e}
+
+
+Alternative center-\/of-\/mass energy along z direction. 
+
+\index{observ@{observ}!zpetri@{zpetri}}
+\index{zpetri@{zpetri}!observ@{observ}}
+\paragraph[{\texorpdfstring{zpetri}{zpetri}}]{\setlength{\rightskip}{0pt plus 5cm}real(8) observ\+::zpetri}\hypertarget{namespaceobserv_a1edc329ee9e9a9e175b95c7537407759}{}\label{namespaceobserv_a1edc329ee9e9a9e175b95c7537407759}
+
+
+Estimate of zero-\/point energy in triaxial direction. 
+

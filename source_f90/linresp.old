@@ -1,0 +1,1269 @@
+!=======================================================================
+
+!     cranking()
+
+!     calculate dynamic Q-operator and P-operator by different cranking
+!     methods.
+
+!     Different Methods are supported:
+
+!       0)  CHF:           [H,[H,Q]]             = -2*dlambda/dq*B Beta
+!       1)  GCM:                 Q               =   -i P/(2*<P^2>)
+!       2)  inglis:           [H,Q]              =   i  2B     P
+!       3)  self-cons.:   LQ= [H,Q] + H^{resp}_Q =   i  2B     P
+!       4)  ATDHF:            L^2Q               =   Omega^2   Q
+
+!     H is the static Hamiltonian, Beta is the messurement operator
+!     of the collective coordiante. L is the Liouvillian
+
+!                      LA = [H,A] + H^{resp}_A
+
+!     While CHF and ATDHF locally define the collective path by
+!     themselves GCM, inglis and self-cons. require a given P-Operator.
+
+!=======================================================================
+!      subroutine cranking(type,imu,H2q,
+!     &                    P2q,resP,Q2q,resQ,B2q,resB,
+!     &                    B,BN,C,PVar,QVar,OmgSq,Nrm,Nrm0)
+!c
+!c     ------------------------------------------------------------------
+!c
+!      include 'paramr.inc'
+!      include 'dynpar.inc'
+!      include 'linresp.inc'
+!      include 'levels.inc'
+!c
+!c     ------------------------------------------------------------------
+!c
+!      double precision H2q(1:MTD)
+!      double precision P2q(1:MTD)
+!      double precision Q2q(1:MTD)
+!      double precision B2q(1:MTD)
+!      double precision HP2q(1:MTD)
+!      double precision HQ2q(1:MTD)
+!#IF(FULLSPACE)
+!      double precision ResP(0:MZD,0:MRD,MSD,MPSID,2)
+!      double precision ResQ(0:MZD,0:MRD,MSD,MPSID,2)
+!      double precision ResB(0:MZD,0:MRD,MSD,MPSID,2)
+!      double precision ResHP(0:MZD,0:MRD,MSD,MPSID,2)
+!      double precision ResHQ(0:MZD,0:MRD,MSD,MPSID,2)
+
+!      double precision drRes(0:MZD,0:MRD,MSD,MPSID,2)
+!      double precision dzRes(0:MZD,0:MRD,MSD,MPSID,2)
+!      double precision dpRes(0:MZD,0:MRD,MSD,MPSID,2)
+!      double precision ddRes(0:MZD,0:MRD,MSD,MPSID,2)
+!#ELSE
+!      double precision ResP
+!      double precision ResQ
+!      double precision ResB
+!      double precision ResHP
+!      double precision ResHQ
+
+!      double precision drRes
+!      double precision dzRes
+!      double precision dpRes
+!      double precision ddRes
+!#ENDIF
+
+!      double precision B,BN,C
+!      double precision PVar,BVar,QVar,OmgSq
+!      double precision Nrm,Nrm0
+!      integer          imu,type
+
+!      integer          max_citer
+!      double precision stp_res_Q  , stp_qp_Q  , max_err_Q
+!      double precision stp_res_P  , stp_qp_P  , max_err_P
+!      double precision stp_res_Omg, stp_qp_Omg, max_err_Omg
+
+!      integer          ir,iz,itr,ist,iter,buff2,lograte
+!      integer          ibpar
+!      double precision norm,error_P,error_Q,buffer
+!      double precision var1,var2
+!      double precision Pnorm(MPSID),Qnorm(MPSID),Bnorm(MPSID)
+!      double precision HPnorm(MPSID),HQnorm(MPSID)
+!      double precision rho,rhomax,r,z,buff,buff1
+
+!c
+!c     ------------------------------------------------------------------
+!c
+!      error_P  =0.0D0
+!      error_Q  =0.0D0
+!      error_Omg=0.0D0
+!c
+!c     iteration parameters
+!c     ------------------------------------------------------------------
+!      max_citer    = 1000   ! maximum number of cranking iterations
+!      stp_res_P    = LRStep ! gradient steps in residual components
+!      stp_res_Q    = LRStep
+!      stp_res_Omg  = LRStep**2
+!      stp_qp_P     = 0.8    ! gradient steps in qp-components
+!      stp_qp_Q     = 0.8
+!      stp_qp_Omg   = 0.8
+!      max_err_P    = 1.0E-12 ! maximum relative error || P - LQ   ||/<P^2>
+!      max_err_Q    = 1.0E-12 ! maximum relative error || Q - LP   ||/<Q^2>
+!      max_err_Omg  = 1.0E-12 ! maximum relative error || Q - L^2Q ||/<Omg^2>
+!      lograte      = 1       ! logging rate
+!c
+!c     check for unsupported cranking method
+!c     ------------------------------------------------------------------
+!      if (type.lt.0.or.type.gt.5) stop 'unsupported cranking method'
+!c
+!c     ==================================================================
+!c     now the five different methods:
+!c     ==================================================================
+!c
+!c     ------------------------------------------------------------------
+!c     CHF + SELFCONSISTANT CRANKING                     (requires Beta)
+!c     ------------------------------------------------------------------
+!      if (type.eq.0) then
+!c
+!c        initialization
+!c        ---------------------------------------------------------------
+!         BVar   = var_oper(B2q,ResB,imu)
+!c
+!c        find Q-operator by {\cal L}^2 Q = 4 BC Q
+!c        ---------------------------------------------------------------
+!         do itr=1,TRlen
+!            Q2q(itr)= B2q(itr)/H2q(itr)**2 ! Q_ij = B_ij/(e_i + e_j)**2
+!         enddo
+!c
+!#IF(FULLSPACE)
+!c        inversion of {\cal L}_0 in residual space
+!c        ---------------------------------------------------------------
+!c        initialize using the B-Operator
+!         if (isresact.eq.1) then
+!c
+!c           initialize using the B-Operator
+!            do ist=1,nst(1)+nst(2)
+!               do ir=0,nr
+!                  do iz=0,nz
+!                   ResQ(iz,ir,1,ist,1)=ResB(iz,ir,1,ist,1)
+!                   ResQ(iz,ir,2,ist,1)=ResB(iz,ir,2,ist,1)
+!                   ResQ(iz,ir,1,ist,2)=ResB(iz,ir,1,ist,2)
+!                   ResQ(iz,ir,2,ist,2)=ResB(iz,ir,2,ist,2)
+!                  enddo
+!               enddo
+!            enddo
+!c
+!c           calculate norm of residual componentes B-Operator
+!            do ist=1,nst(1)+nst(2)
+!               Bnorm(ist)=
+!     &              wfovlp(ResB(0,0,1,ist,1),ResB(0,0,1,ist,1))
+!     &             +wfovlp(ResB(0,0,1,ist,2),ResB(0,0,1,ist,2))
+!            enddo
+!c
+!         else
+!c
+!c           set residual components to zero
+!            call zero_oper(Q2q,ResQ,2)
+!            call zero_oper(HP2q,ResHP,2)
+!c
+!         endif
+!#ENDIF
+!c
+!c        ===============================================================
+!c        the cranking iteration (find Q-Operator)
+!c        ===============================================================
+!         do iter=1,max_citer
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           calculate derivatives of resiual part of Q
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!               call upd_derive_spinor(ResQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                              dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                              ddRes(0,0,1,1,1),
+!     &                              (-1)**imu,+imu,nst(1)+nst(2))
+!               call upd_derive_spinor(ResQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                              dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                              ddRes(0,0,1,1,2),
+!     &                              (-1)**imu,-imu,nst(1)+nst(2))
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           calculate action of Liouville-Operator
+!c           ------------------------------------------------------------
+!            call comm_HQ(H2q,Q2q,ResQ,drRes,dzRes,dpRes,ddRes,
+!     &                    HQ2q,ResHQ,imu)
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           calculate derivatives of resiual part of LQ \propto P
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!               call upd_derive_spinor(ResHQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                              dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                              ddRes(0,0,1,1,1),
+!     &                              (-1)**imu,+imu,nst(1)+nst(2))
+!               call upd_derive_spinor(ResHQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                              dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                              ddRes(0,0,1,1,2),
+!     &                              (-1)**imu,-imu,nst(1)+nst(2))
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           calculate action of Liouville-Operator
+!c           ------------------------------------------------------------
+!            call comm_HP(H2q,HQ2q,ResHQ,drRes,dzRes,dpRes,ddRes,
+!     &                    HP2q,ResHP,imu)
+!c
+!c           ------------------------------------------------------------
+!c           perform the gradient step in qp-space
+!c           ------------------------------------------------------------
+!            do itr=1,TRLen
+!               HQ2q(itr) = HP2q(itr)-B2q(itr)
+!               Q2q(itr)  =
+!     &         Q2q(itr)  - stp_qp_Omg*(HP2q(itr)-B2q(itr))/H2q(itr)**2
+!            enddo
+!c
+!c           ------------------------------------------------------------
+!c           evaluate errors (only if residual parts are neglected)
+!c           ------------------------------------------------------------
+!            if (isresact.eq.0) then
+!               buffer   = error_Q
+!               error_Q  = sqrt(var_oper(HQ2q,resHQ,imu))
+!               derror_Q = error_Q-buffer
+!            endif
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           perform the gradient step in residual space
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!c
+!c              ---------------------------------------------------------
+!c              calculate norm of residual components of [H,Q]-Operator
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  HPnorm(ist)=
+!     &                 wfovlp(resHP(0,0,1,ist,1),resHP(0,0,1,ist,1))+
+!     &                 wfovlp(resHP(0,0,1,ist,2),resHP(0,0,1,ist,2))
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              calculate errors in residual space
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                        ResHQ(iz,ir,1,ist,1) = ResHP(iz,ir,1,ist,1)-
+!     &                                         ResB(iz,ir,1,ist,1)
+!                        ResHQ(iz,ir,2,ist,1) = ResHP(iz,ir,2,ist,1)-
+!     &                                         ResB(iz,ir,2,ist,1)
+!                        ResHQ(iz,ir,1,ist,2) = ResHP(iz,ir,1,ist,2)-
+!     &                                         ResB(iz,ir,1,ist,2)
+!                        ResHQ(iz,ir,2,ist,2) = ResHP(iz,ir,2,ist,2)-
+!     &                                         ResB(iz,ir,2,ist,2)
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!               buffer   = error_Q
+!               error_Q  = sqrt(var_oper(HQ2q,resHQ,imu))
+!               derror_Q = error_Q-buffer
+!c
+!c              ---------------------------------------------------------
+!c              apply damping
+!c              ---------------------------------------------------------
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHQ(0,0,1,1,1),ResHP(0,0,1,1,1),
+!     &                          (-1)**imu,imu,1.0D0,nst(1)+nst(2))
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHP(0,0,1,1,1),ResHQ(0,0,1,1,1),
+!     &                          (-1)**imu,imu,stp_res_Omg,nst(1)+nst(2))
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHQ(0,0,1,1,2),ResHP(0,0,1,1,2),
+!     &                          (-1)**imu,imu,1.0D0,nst(1)+nst(2))
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHP(0,0,1,1,2),ResHQ(0,0,1,1,2),
+!     &                          (-1)**imu,imu,stp_res_Omg,nst(1)+nst(2))
+
+!c
+!c              ---------------------------------------------------------
+!c              the gradient step
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                      ResQ(iz,ir,1,ist,1) =
+!     &                ResQ(iz,ir,1,ist,1) - ResHQ(iz,ir,1,ist,1)
+!                      ResQ(iz,ir,2,ist,1) =
+!     &                ResQ(iz,ir,2,ist,1) - ResHQ(iz,ir,2,ist,1)
+!                      ResQ(iz,ir,1,ist,2) =
+!     &                ResQ(iz,ir,1,ist,2) - ResHQ(iz,ir,1,ist,2)
+!                      ResQ(iz,ir,2,ist,2) =
+!     &                ResQ(iz,ir,2,ist,2) - ResHQ(iz,ir,2,ist,2)
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              norm stabilization
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  norm=sqrt(Bnorm(ist)/HPnorm(ist))
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                        ResQ(iz,ir,1,ist,1) = ResQ(iz,ir,1,ist,1)*norm
+!                        ResQ(iz,ir,2,ist,1) = ResQ(iz,ir,2,ist,1)*norm
+!                        ResQ(iz,ir,1,ist,2) = ResQ(iz,ir,1,ist,2)*norm
+!                        ResQ(iz,ir,2,ist,2) = ResQ(iz,ir,2,ist,2)*norm
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              project out sp-contributions
+!c              ---------------------------------------------------------
+!               call project_Omega(ResQ,(-1)**imu,imu,1,'Q')
+!c
+!c           ------------------------------------------------------------
+!c           END of gradient step in residual space
+!c           ------------------------------------------------------------
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           Logging and convergency-check
+!c           ------------------------------------------------------------
+!c
+!            if (mod(iter,lograte).eq.0               .or.
+!     &          error_Q.le.max_err_Q*sqrt(abs(BVar)) .or.
+!     &          iter.eq.max_citer ) then
+!c
+!              write(21,'(a,i5,1(1pg16.4),2(e16.3))') 'CHF+SELFC  : ',
+!     &              iter,error_Q,error_Q/sqrt(abs(BVar)),
+!     &              derror_Q
+!c
+!               if (error_Q.le.max_err_Q*sqrt(abs(BVar))) goto 2100
+!               if (abs(derror_Q).lt.1.0E-10) goto 2100
+!c
+!            endif
+!c
+!         enddo
+!c        ===============================================================
+!c        END of cranking iteration (find Q-Operator)
+!c        ===============================================================
+! 2100    continue
+!c
+!#IF(FULLSPACE)
+!c        ------------------------------------------------------------
+!c        calculate derivatives of residual part of Q
+!c         ------------------------------------------------------------
+!         if (isresact.eq.1) then
+!            call upd_derive_spinor(ResQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                           dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                           ddRes(0,0,1,1,1),
+!     &                           (-1)**imu,+imu,nst(1)+nst(2))
+!            call upd_derive_spinor(ResQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                            dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                            ddRes(0,0,1,1,2),
+!     &                            (-1)**imu,-imu,nst(1)+nst(2))
+!         endif
+!#ENDIF
+!c
+!c        ------------------------------------------------------------
+!c        calculate action of Liouville-Operator to obtain P-Operator
+!c        ------------------------------------------------------------
+!         call comm_HQ(H2q,Q2q,ResQ,drRes,dzRes,dpRes,ddRes,
+!     &                P2q,ResP,imu)
+!c
+!c     ------------------------------------------------------------------
+!c     GCM-formula:                                    (requires P,Beta)
+!c     ------------------------------------------------------------------
+!      else if (type.eq.1) then
+!c
+!c        GCM-Mass requires P-Variance
+!#IF(FULLSPACE)
+!         PVar   = var_oper(P2q,ResP,imu)
+!#ELSE
+!         call comm_and_var_QP(buff,PVar,buff1,CPbeta(0),
+!     &                        (-1)**imu,imu,0)
+!#ENDIF
+!c
+!c        the quasiparticle part of the GCM Q-Operator
+!         do itr=1,TRlen
+!            Q2q(itr)= P2q(itr)/(2.0D0*PVar)
+!         enddo
+!c
+!#IF(FULLSPACE)
+!c        the residual part of the GCM Q-Operator
+!         if (isresact.eq.1) then
+!            do ist=1,nst(1)+nst(2)
+!               do ir=0,nr
+!                  do iz=0,nz
+!                  ResQ(iz,ir,1,ist,1)=ResP(iz,ir,1,ist,1)/(2.0D0*PVar)
+!                  ResQ(iz,ir,2,ist,1)=ResP(iz,ir,2,ist,1)/(2.0D0*PVar)
+!                  ResQ(iz,ir,1,ist,2)=ResP(iz,ir,1,ist,2)/(2.0D0*PVar)
+!                  ResQ(iz,ir,2,ist,2)=ResP(iz,ir,2,ist,2)/(2.0D0*PVar)
+!                  enddo
+!               enddo
+!            enddo
+!         else
+!            call zero_oper(Q2q,ResQ,2)  ! set residual part to zero
+!         endif
+!#ENDIF
+!c
+!c     ------------------------------------------------------------------
+!c     inglis-formula:                                 (requires P,Beta)
+!c     ------------------------------------------------------------------
+!      else if (type.eq.2) then
+!c
+!c        temporary disable MF-response
+!c        ---------------------------------------------------------------
+!         buff2=isMFresp
+!         isMFresp=0
+!c
+!c        initialization
+!c        ---------------------------------------------------------------
+!#IF(FULLSPACE)
+!         PVar   = var_oper(P2q,ResP,imu)
+!#ELSE
+!         call comm_and_var_QP(buff,PVar,buff1,CPbeta(0),
+!     &                        (-1)**imu,imu,0)
+!#ENDIF
+!c
+!c        find Q-operator by {\cal L}_0 Q = [H,Q] = -2i B P
+!c        ---------------------------------------------------------------
+!c        initialize with inglis values for the 2qp-part
+!         do itr=1,TRlen
+!            Q2q(itr)= P2q(itr)/H2q(itr)   ! Q_ij = P_ij/(e_i + e_j)
+!         enddo
+!c
+!#IF(FULLSPACE)
+!c        inversion of {\cal L}_0 in residual space
+!c        ---------------------------------------------------------------
+!c        initialize using the B-Operator
+!         if (isresact.eq.1) then
+!            do ist=1,nst(1)+nst(2)
+!               do ir=0,nr
+!                  do iz=0,nz
+!                   ResQ(iz,ir,1,ist,1)=ResB(iz,ir,1,ist,1)
+!                   ResQ(iz,ir,2,ist,1)=ResB(iz,ir,2,ist,1)
+!                   ResQ(iz,ir,1,ist,2)=0.0D0*ResB(iz,ir,1,ist,2)
+!                   ResQ(iz,ir,2,ist,2)=0.0D0*ResB(iz,ir,2,ist,2)
+!                  enddo
+!               enddo
+!            enddo
+!         else
+!            call zero_oper(Q2q,ResQ,2)  ! set residual part to zero
+!         endif
+!c
+!c        calculate norm of residual componentes P-Operator
+!         do ist=1,nst(1)+nst(2)
+!            Pnorm(ist)=
+!     &           wfovlp(ResP(0,0,1,ist,1),ResP(0,0,1,ist,1))
+!c     &          +wfovlp(ResP(0,0,1,ist,2),ResP(0,0,1,ist,2))
+!         enddo
+!c
+!c        find resQ by iteration
+!         if (isresact.eq.1) then
+!            do iter=1,max_citer
+!c
+!c            prepare derivatives of residual part of Q
+!             call upd_derive_spinor(ResQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                              dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                              ddRes(0,0,1,1,1),
+!     &                              (-1)**imu,+imu,nst(1)+nst(2))
+!c             call upd_derive_spinor(ResQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!c     &                              dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!c     &                              ddRes(0,0,1,1,2),
+!c     &                              (-1)**imu,-imu,nst(1)+nst(2))
+!c
+!c            calculate action of Liouville-Operator
+!             call comm_HQ(H2q,Q2q,resQ,drRes,dzRes,dpRes,ddRes,
+!     &                    HQ2q,resHQ,imu)
+!c
+!c            calculate variance <[H,Q]^2> and <P[H,Q]>
+!             var1=var_oper(HQ2q,ResHQ,imu)
+!             var2=0.5D0*comm_QP(HQ2q,ResHQ,P2q,ResP,imu)
+!c
+!c            calculate norm of residual components of [H,Q]-Operator
+!             do ist=1,nst(1)+nst(2)
+!                HQnorm(ist)=
+!     &               wfovlp(resHQ(0,0,1,ist,1),resHQ(0,0,1,ist,1))
+!c     &               +wfovlp(resHQ(0,0,1,ist,2),resHQ(0,0,1,ist,2))
+!             enddo
+!c
+!c            calculate error in residual space
+!             do ist=1,nst(1)+nst(2)
+!                do ir=0,nr
+!                   do iz=0,nz
+!                      resHP(iz,ir,1,ist,1) = resHQ(iz,ir,1,ist,1)-
+!     &                                       resP(iz,ir,1,ist,1)
+!                      resHP(iz,ir,2,ist,1) = resHQ(iz,ir,2,ist,1)-
+!     &                                       resP(iz,ir,2,ist,1)
+!                      resHP(iz,ir,1,ist,2) = 0.0D0!resHQ(iz,ir,1,ist,2)-
+!c     &                                       resP(iz,ir,1,ist,2)
+!                      resHP(iz,ir,2,ist,2) = 0.0D0!resHQ(iz,ir,2,ist,2)-
+!c     &                                       resP(iz,ir,2,ist,2)
+!                   enddo
+!                enddo
+!             enddo
+!c
+!c            store error of [H,Q]-Operator
+!             buffer   = error_P
+!             error_P  = sqrt(var_oper(HP2q,resHP,imu))
+!             derror_P = error_P-buffer
+!c
+!c            log components which have big errors
+!             do ist=1,nst(1)+nst(2)
+!                norm=wfovlp(resHP(0,0,1,ist,1),resHP(0,0,1,ist,1))
+!c     &              +wfovlp(resHP(0,0,1,ist,2),resHP(0,0,1,ist,2))
+!                if (norm.gt.1E-2) then
+!                write (88,*) ist,norm,CPvsqf(ist,0)
+!                endif
+!             enddo
+!c
+!c            apply damping
+!             call damp_spinor(LRDampr,LRDampz,
+!     &                        resHP(0,0,1,1,1),resHQ(0,0,1,1,1),
+!     &                        (-1)**imu,imu,stp_res_P,nst(1)+nst(2))
+!c             call damp_spinor(LRDampr,LRDampz,
+!c     &                        resHP(0,0,1,1,2),resHQ(0,0,1,1,2),
+!c     &                        (-1)**imu,-imu,stp_res_P,nst(1)+nst(2))
+!             call project_Omega(ResHQ,(-1)**imu,imu)
+!c
+!c            perform the gradient step in residual space
+!             do ist=1,nst(1)+nst(2)
+!                do ir=0,nr
+!                   do iz=0,nz
+!                      ResQ(iz,ir,1,ist,1) =
+!     &                ResQ(iz,ir,1,ist,1) - resHQ(iz,ir,1,ist,1)
+!                      ResQ(iz,ir,2,ist,1) =
+!     &                ResQ(iz,ir,2,ist,1) - resHQ(iz,ir,2,ist,1)
+!                      ResQ(iz,ir,1,ist,2) = 0.0D0!
+!c     &                ResQ(iz,ir,1,ist,2) - resHQ(iz,ir,1,ist,2)
+!                      ResQ(iz,ir,2,ist,2) = 0.0D0!
+!c     &                ResQ(iz,ir,2,ist,2) - resHQ(iz,ir,2,ist,2)
+!                      enddo
+!                   enddo
+!             enddo
+!c
+!c            norm stabilization
+!             do ist=1,nst(1)+nst(2)
+!                norm=sqrt(Pnorm(ist)/HQnorm(ist))
+!                do ir=0,nr
+!                   do iz=0,nz
+!                      ResQ(iz,ir,1,ist,1) = ResQ(iz,ir,1,ist,1)*norm
+!                      ResQ(iz,ir,2,ist,1) = ResQ(iz,ir,2,ist,1)*norm
+!                      ResQ(iz,ir,1,ist,2) = 0.0*ResQ(iz,ir,1,ist,2)*norm
+!                      ResQ(iz,ir,2,ist,2) = 0.0*ResQ(iz,ir,2,ist,2)*norm
+!                   enddo
+!                enddo
+!             enddo
+!c
+!c            project out sp-contributions
+!             call project_Omega(ResQ,(-1)**imu,imu)
+!c
+!c            Logging and convergency-check
+!c            ---------------------------------------------------------
+!             norm     = 1.0D0-var2**2/(Pvar*var1)
+!c
+!             if (mod(iter,lograte).eq.0 .or.
+!     &           error_P.le.max_err_P*sqrt(abs(PVar)) .or.
+!     &           iter.eq.max_citer ) then
+!c
+!               write(21,'(a,i5,2(1pg16.4),3(e16.3))') 'INGLIS   : ',
+!     &              iter,error_P,error_P/sqrt(abs(PVar)),
+!     &              derror_P,norm
+!c
+!               if ((error_P.le.max_err_P*sqrt(abs(PVar))).and.
+!     &             (norm.lt.1E-4)) goto 2102
+!               if (abs(derror_P).lt.1.0E-10) goto 2102
+!c
+!              endif
+!c
+!            enddo
+! 2102       continue
+!c
+!         endif
+!#ENDIF
+!c
+!c        reactivate MF-response
+!c        ---------------------------------------------------------------
+!         isMFresp=buff2
+!c
+!c     ------------------------------------------------------------------
+!c     self-consistent cranking:                       (requires P,Beta)
+!c     ------------------------------------------------------------------
+!      else if (type.eq.3) then
+!c
+!#IF(FULLSPACE)
+!         PVar   = var_oper(P2q,ResP,imu)
+!#ELSE
+!         call comm_and_var_QP(buff,PVar,buff1,CPbeta(0),
+!     &                        (-1)**imu,imu,0)
+!         write(666,*) PVar
+!#ENDIF
+!c
+!c        find Q-operator by {\cal L}_0 Q = [H,Q] = -2i B P
+!c        ---------------------------------------------------------------
+!c        initialize with inglis values for the 2qp-part
+!         do itr=1,TRlen
+!            Q2q(itr)= P2q(itr)/H2q(itr)   ! Q_ij = P_ij/(e_i + e_j)
+!         enddo
+!c
+!#IF(FULLSPACE)
+!c        inversion of {\cal L}_0 in residual space
+!c        ---------------------------------------------------------------
+!c        initialize using the B-Operator
+!         if (isresact.eq.1) then
+!c
+!c           initialize using the B-Operator
+!            do ist=1,nst(1)+nst(2)
+!               do ir=0,nr
+!                  do iz=0,nz
+!                   ResQ(iz,ir,1,ist,1)=ResB(iz,ir,1,ist,1)
+!                   ResQ(iz,ir,2,ist,1)=ResB(iz,ir,2,ist,1)
+!                   ResQ(iz,ir,1,ist,2)=ResB(iz,ir,1,ist,2)
+!                   ResQ(iz,ir,2,ist,2)=ResB(iz,ir,2,ist,2)
+!                  enddo
+!               enddo
+!            enddo
+!c
+!c           calculate norm of residual componentes P-Operator
+!            do ist=1,nst(1)+nst(2)
+!               Pnorm(ist)=
+!     &              wfovlp(ResP(0,0,1,ist,1),ResP(0,0,1,ist,1))
+!     &             +wfovlp(ResP(0,0,1,ist,2),ResP(0,0,1,ist,2))
+!            enddo
+!c
+!         else
+!c
+!c           set residual components to zero
+!            call zero_oper(Q2q,ResQ,2)
+!            call zero_oper(HP2q,ResHP,2)
+!c
+!         endif
+!#ENDIF
+!c
+!c        ===============================================================
+!c        the cranking iteration (find Q-Operator)
+!c        ===============================================================
+!         do iter=1,max_citer
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           calculate derivatives of resiual part of Q
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!               call upd_derive_spinor(ResQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                              dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                              ddRes(0,0,1,1,1),
+!     &                              (-1)**imu,+imu,nst(1)+nst(2))
+!               call upd_derive_spinor(ResQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                              dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                              ddRes(0,0,1,1,2),
+!     &                              (-1)**imu,-imu,nst(1)+nst(2))
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           calculate action of Liouville-Operator
+!c           ------------------------------------------------------------
+!            call comm_HQ(H2q,Q2q,resQ,drRes,dzRes,dpRes,ddRes,
+!     &                    HQ2q,resHQ,imu)
+!c
+!c           ------------------------------------------------------------
+!c           perform the gradient step in qp-space
+!c           ------------------------------------------------------------
+!            do itr=1,TRLen
+!               HP2q(itr) = HQ2q(itr)-P2q(itr)
+!               Q2q(itr)  =
+!     &         Q2q(itr)  - stp_qp_P*(HQ2q(itr)-P2q(itr))/H2q(itr)
+!            enddo
+!c
+!c           ------------------------------------------------------------
+!c           evaluate errors (only if residual parts are neglected)
+!c           ------------------------------------------------------------
+!            if (isresact.eq.0) then
+!               buffer   = error_P
+!               var1     = var_oper(HQ2q,resHQ,imu)
+!               var2     = var_oper( P2q, resP,imu)
+!               var3     = 0.5D0*comm_QP(HQ2q,resHQ,P2q,resP,imu)
+!               error_P  = sqrt(var_oper(HP2q,resHP,imu))
+!               derror_P = error_P-buffer
+!            endif
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           perform the gradient step in residual space
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!c
+!c              ---------------------------------------------------------
+!c              calculate norm of residual components of [H,Q]-Operator
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  HQnorm(ist)=
+!     &                 wfovlp(resHQ(0,0,1,ist,1),resHQ(0,0,1,ist,1))+
+!     &                 wfovlp(resHQ(0,0,1,ist,2),resHQ(0,0,1,ist,2))
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              calculate errors in residual space
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                        ResHP(iz,ir,1,ist,1) = ResHQ(iz,ir,1,ist,1)+
+!     &                                         ResP(iz,ir,1,ist,1)
+!                        ResHP(iz,ir,2,ist,1) = ResHQ(iz,ir,2,ist,1)+
+!     &                                         ResP(iz,ir,2,ist,1)
+!                        ResHP(iz,ir,1,ist,2) = ResHQ(iz,ir,1,ist,2)+
+!     &                                         ResP(iz,ir,1,ist,2)
+!                        ResHP(iz,ir,2,ist,2) = ResHQ(iz,ir,2,ist,2)+
+!     &                                         ResP(iz,ir,2,ist,2)
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!               buffer   = error_P
+!               error_P  = sqrt(var_oper(HP2q,resHP,imu))
+!               derror_P = error_P-buffer
+!c
+!c              ---------------------------------------------------------
+!c              apply damping
+!c              ---------------------------------------------------------
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHP(0,0,1,1,1),ResHQ(0,0,1,1,1),
+!     &                          (-1)**imu,+imu,stp_res_P,nst(1)+nst(2))
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHP(0,0,1,1,2),ResHQ(0,0,1,1,2),
+!     &                          (-1)**imu,-imu,stp_res_P,nst(1)+nst(2))
+!c
+!c              ---------------------------------------------------------
+!c              the gradient step
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                      ResQ(iz,ir,1,ist,1) =
+!     &                ResQ(iz,ir,1,ist,1) + resHQ(iz,ir,1,ist,1)
+!                      ResQ(iz,ir,2,ist,1) =
+!     &                ResQ(iz,ir,2,ist,1) + resHQ(iz,ir,2,ist,1)
+!                      ResQ(iz,ir,1,ist,2) =
+!     &                ResQ(iz,ir,1,ist,2) + resHQ(iz,ir,1,ist,2)
+!                      ResQ(iz,ir,2,ist,2) =
+!     &                ResQ(iz,ir,2,ist,2) + resHQ(iz,ir,2,ist,2)
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              norm stabilization
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  norm=sqrt(Pnorm(ist)/HQnorm(ist))
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                        ResQ(iz,ir,1,ist,1) = ResQ(iz,ir,1,ist,1)*norm
+!                        ResQ(iz,ir,2,ist,1) = ResQ(iz,ir,2,ist,1)*norm
+!                        ResQ(iz,ir,1,ist,2) = ResQ(iz,ir,1,ist,2)*norm
+!                        ResQ(iz,ir,2,ist,2) = ResQ(iz,ir,2,ist,2)*norm
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              project out sp-contributions
+!c              ---------------------------------------------------------
+!               call project_qp(Q2q,ResQ,+1,imu,2)
+!c               call project_Omega(ResQ,(-1)**imu,imu)
+!c
+!c           ------------------------------------------------------------
+!c           END of gradient step in residual space
+!c           ------------------------------------------------------------
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           Logging and convergency-check
+!c           ------------------------------------------------------------
+!            if (mod(iter,lograte).eq.0               .or.
+!c     &          error_P.le.max_err_P*sqrt(abs(PVar)) .or.
+!     &          iter.eq.max_citer ) then
+!c
+!               write(21,'(a,i5,4(f6.1))') 'SELFC    : ',
+!     &              iter,
+!     &              log10(MAX(abs(error_P                  ),1E-16)),
+!     &              log10(MAX(abs(error_P/sqrt(abs(PVar))  ),1E-16)),
+!     &              log10(MAX(abs(derror_P                 ),1E-16)),
+!     &              log10(MAX(abs(1.0D0-var3**2/(var1*var2)),1E-16))
+!c
+!c               if (error_P.le.max_err_P*sqrt(abs(PVar))) goto 2103
+!c
+!            endif
+!c
+!            if (error_P.le.max_err_P) goto 2103
+!c
+!         enddo
+!c        ===============================================================
+!c        END of cranking iteration (find Q-Operator)
+!c        ===============================================================
+! 2103    continue
+!c
+!c
+!c     ------------------------------------------------------------------
+!c     ATDHF                                              (requires Beta)
+!c     ------------------------------------------------------------------
+!      else if (type.eq.4) then
+!c
+!c        initialization
+!c        ---------------------------------------------------------------
+!         BVar   = var_oper(B2q,ResB,imu)
+!c
+!c        find Q-operator by {\cal L}^2 Q = 4 BC Q
+!c        ---------------------------------------------------------------
+!         do itr=1,TRlen
+!            Q2q(itr)= B2q(itr)/H2q(itr)**2 ! Q_ij = B_ij/(e_i + e_j)**2
+!         enddo
+!c
+!#IF(FULLSPACE)
+!c        inversion of {\cal L}_0 in residual space
+!c        ---------------------------------------------------------------
+!c        initialize using the B-Operator
+!         if (isresact.eq.1) then
+!c
+!c           initialize using the B-Operator
+!            do ist=1,nst(1)+nst(2)
+!               do ir=0,nr
+!                  do iz=0,nz
+!                   ResQ(iz,ir,1,ist,1)=ResB(iz,ir,1,ist,1)
+!                   ResQ(iz,ir,2,ist,1)=ResB(iz,ir,2,ist,1)
+!                   ResQ(iz,ir,1,ist,2)=ResB(iz,ir,1,ist,2)
+!                   ResQ(iz,ir,2,ist,2)=ResB(iz,ir,2,ist,2)
+!                  enddo
+!               enddo
+!            enddo
+!c
+!c           calculate norm of residual componentes B-Operator
+!            do ist=1,nst(1)+nst(2)
+!               Bnorm(ist)=
+!     &              wfovlp(ResB(0,0,1,ist,1),ResB(0,0,1,ist,1))
+!     &             +wfovlp(ResB(0,0,1,ist,2),ResB(0,0,1,ist,2))
+!            enddo
+!c
+!         else
+!c
+!c           set residual components to zero
+!            call zero_oper(Q2q,ResQ,2)
+!            call zero_oper(HP2q,ResHP,2)
+!c
+!         endif
+!#ENDIF
+!c
+!c        ===============================================================
+!c        the cranking iteration (find Q-Operator)
+!c        ===============================================================
+!         do iter=1,max_citer
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           calculate derivatives of resiual part of Q
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!               call upd_derive_spinor(ResQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                              dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                              ddRes(0,0,1,1,1),
+!     &                              (-1)**imu,+imu,nst(1)+nst(2))
+!               call upd_derive_spinor(ResQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                              dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                              ddRes(0,0,1,1,2),
+!     &                              (-1)**imu,-imu,nst(1)+nst(2))
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           calculate action of Liouville-Operator
+!c           ------------------------------------------------------------
+!            call comm_HQ(H2q,Q2q,ResQ,drRes,dzRes,dpRes,ddRes,
+!     &                    HQ2q,ResHQ,imu)
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           calculate derivatives of resiual part of LQ \propto P
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!               call upd_derive_spinor(ResHQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                              dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                              ddRes(0,0,1,1,1),
+!     &                              (-1)**imu,+imu,nst(1)+nst(2))
+!               call upd_derive_spinor(ResHQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                              dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                              ddRes(0,0,1,1,2),
+!     &                              (-1)**imu,-imu,nst(1)+nst(2))
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           calculate action of Liouville-Operator
+!c           ------------------------------------------------------------
+!            call comm_HP(H2q,HQ2q,ResHQ,drRes,dzRes,dpRes,ddRes,
+!     &                    HP2q,ResHP,imu)
+!c
+!c           ------------------------------------------------------------
+!c           calculate Omega^2
+!c           ------------------------------------------------------------
+!            OmgSq=comm_QP(Q2q,ResQ,HP2q,ResHP,imu)/
+!     &            comm_QP(Q2q,ResQ, Q2q,ResQ, imu)
+!c
+!c           ------------------------------------------------------------
+!c           perform the gradient step in qp-space
+!c           ------------------------------------------------------------
+!            do itr=1,TRLen
+!               HQ2q(itr) = HP2q(itr)-OmgSq*Q2q(itr)
+!               Q2q(itr)  = Q2q(itr) -stp_qp_Omg *
+!     &                    (HP2q(itr)-OmgSq*Q2q(itr))/H2q(itr)**2
+!            enddo
+!c
+!c           ------------------------------------------------------------
+!c           evaluate errors (only if residual parts are neglected)
+!c           ------------------------------------------------------------
+!            if (isresact.eq.0) then
+!               buffer   = error_Q
+!               error_Q  = sqrt(var_oper(HQ2q,resHQ,imu))
+!               derror_Q = error_Q-buffer
+!            endif
+!c
+!#IF(FULLSPACE)
+!c           ------------------------------------------------------------
+!c           perform the gradient step in residual space
+!c           ------------------------------------------------------------
+!            if (isresact.eq.1) then
+!c
+!c              ---------------------------------------------------------
+!c              calculate norm of residual components of [H,Q]-Operator
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  HPnorm(ist)=
+!     &                 wfovlp(resHP(0,0,1,ist,1),resHP(0,0,1,ist,1))+
+!     &                 wfovlp(resHP(0,0,1,ist,2),resHP(0,0,1,ist,2))
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              calculate errors in residual space
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                        ResHQ(iz,ir,1,ist,1) = ResHP(iz,ir,1,ist,1)-
+!     &                                         ResB(iz,ir,1,ist,1)
+!                        ResHQ(iz,ir,2,ist,1) = ResHP(iz,ir,2,ist,1)-
+!     &                                         ResB(iz,ir,2,ist,1)
+!                        ResHQ(iz,ir,1,ist,2) = ResHP(iz,ir,1,ist,2)-
+!     &                                         ResB(iz,ir,1,ist,2)
+!                        ResHQ(iz,ir,2,ist,2) = ResHP(iz,ir,2,ist,2)-
+!     &                                         ResB(iz,ir,2,ist,2)
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!               buffer   = error_Q
+!               error_Q  = sqrt(var_oper(HQ2q,resHQ,imu))
+!               derror_Q = error_Q-buffer
+!c
+!c              ---------------------------------------------------------
+!c              apply damping
+!c              ---------------------------------------------------------
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHQ(0,0,1,1,1),ResHP(0,0,1,1,1),
+!     &                          (-1)**imu,imu,1.0D0,nst(1)+nst(2))
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHP(0,0,1,1,1),ResHQ(0,0,1,1,1),
+!     &                          (-1)**imu,imu,stp_res_Omg,nst(1)+nst(2))
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHQ(0,0,1,1,2),ResHP(0,0,1,1,2),
+!     &                          (-1)**imu,imu,1.0D0,nst(1)+nst(2))
+!               call damp_spinor(LRDampr,LRDampz,
+!     &                          ResHP(0,0,1,1,2),ResHQ(0,0,1,1,2),
+!     &                          (-1)**imu,imu,stp_res_Omg,nst(1)+nst(2))
+
+!c
+!c              ---------------------------------------------------------
+!c              the gradient step
+!c              ---------------------------------------------------------
+!               do ist=1,nst(1)+nst(2)
+!                  do ir=0,nr
+!                     do iz=0,nz
+!                      ResQ(iz,ir,1,ist,1) =
+!     &                ResQ(iz,ir,1,ist,1) - ResHQ(iz,ir,1,ist,1)
+!                      ResQ(iz,ir,2,ist,1) =
+!     &                ResQ(iz,ir,2,ist,1) - ResHQ(iz,ir,2,ist,1)
+!                      ResQ(iz,ir,1,ist,2) =
+!     &                ResQ(iz,ir,1,ist,2) - ResHQ(iz,ir,1,ist,2)
+!                      ResQ(iz,ir,2,ist,2) =
+!     &                ResQ(iz,ir,2,ist,2) - ResHQ(iz,ir,2,ist,2)
+!                     enddo
+!                  enddo
+!               enddo
+!c
+!c              ---------------------------------------------------------
+!c              project out sp-contributions
+!c              ---------------------------------------------------------
+!               call project_qp(Q2q,ResQ,+1,imu,2)
+!c
+!c           ------------------------------------------------------------
+!c           END of gradient step in residual space
+!c           ------------------------------------------------------------
+!            endif
+!#ENDIF
+!c
+!c           ------------------------------------------------------------
+!c           normalize Q to 2*<QQ> = 1
+!c           ------------------------------------------------------------
+!            norm=1.0/sqrt(comm_QP(Q2q,ResQ, Q2q,ResQ, imu))
+!            do itr=1,TRlen
+!               Q2q(itr)=Q2q(itr)*norm
+!            enddo
+!c
+!c
+!c           ------------------------------------------------------------
+!c           Logging and convergency-check
+!c           ------------------------------------------------------------
+!c
+!            if (mod(iter,lograte).eq.0               .or.
+!     &          error_Q.le.max_err_Q*sqrt(abs(QVar)) .or.
+!     &          iter.eq.max_citer ) then
+!c
+!               write(21,'(a,i5,1(1pg16.4),2(e16.3))') 'ATDHF     : ',
+!     &              iter,error_Q,error_Q/sqrt(abs(BVar)),
+!     &              derror_Q
+!c
+!               if (error_Q.le.max_err_Q*sqrt(abs(QVar))) goto 2104
+!               if (abs(derror_Q).lt.1.0E-10) goto 2104
+!c
+!            endif
+!c
+!         enddo
+!c        ===============================================================
+!c        END of cranking iteration (find Q-Operator)
+!c        ===============================================================
+! 2104    continue
+!c
+!#IF(FULLSPACE)
+!c        ------------------------------------------------------------
+!c        calculate derivatives of residual part of Q
+!c         ------------------------------------------------------------
+!         if (isresact.eq.1) then
+!            call upd_derive_spinor(ResQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                           dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                           ddRes(0,0,1,1,1),
+!     &                           (-1)**imu,+imu,nst(1)+nst(2))
+!            call upd_derive_spinor(ResQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                            dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                            ddRes(0,0,1,1,2),
+!     &                            (-1)**imu,-imu,nst(1)+nst(2))
+!         endif
+!#ENDIF
+!c
+!c        ------------------------------------------------------------
+!c        calculate action of Liouville-Operator to obtain P-Operator
+!c        ------------------------------------------------------------
+!         call comm_HQ(H2q,Q2q,ResQ,drRes,dzRes,dpRes,ddRes,
+!     &                P2q,ResP,imu)
+!c
+!      endif
+!c
+!      write(88,'(a)') '--- cranking finished  ---'
+!c
+!c     ==================================================================
+!c     end of the cranking methods
+!c     ==================================================================
+!c
+!c     Normalization:
+!c
+!c     normalize P to Beta  and Q to P
+!c
+!c       1) GCM-formulas do not need any explicit normalization.
+!c       2) for inglis and sc-cranking normalization is defined by
+!c
+!c             [H,Q] = -i 2B P  --> [H, Q/(2B)] = -iP
+!c
+!c          and restored by Q -> 2BQ
+!c
+!c       3) CHF-cranking and ATDHF-cranking need explicit normalisation
+!c
+!c     in case of fullspace calculations (isresact=1) Q,P could be
+!c     normalized explicitly in any case.
+!c
+!c
+!c     explicit normalization of P and Q to B
+!c     ==================================================================
+!      if (FULLSPACE.or.
+!     & ((type.eq.0.or.type.eq.4.or.type.eq.5).or.(isresact.eq.1))) then
+!c
+!         B=-1.0D0   ! just set a flag -- this is not the real mass
+!c
+!#IF(FULLSPACE)
+!c
+!c       normalization of P to B       <[B,P]> = i
+!c       ----------------------------------------------------------------
+!         norm=1.0D0/comm_QP(B2q,resB,P2q,resP,imu)
+!         do itr=1,TRlen
+!            P2q(itr)= P2q(itr)*norm
+!         enddo
+!c
+!         do ist=1,nst(1)+nst(2)
+!            do ir=0,nr
+!               do iz=0,nz
+!                  resP(iz,ir,1,ist,1) = resP(iz,ir,1,ist,1)*norm
+!                  resP(iz,ir,2,ist,1) = resP(iz,ir,2,ist,1)*norm
+!                  resP(iz,ir,1,ist,2) = resP(iz,ir,1,ist,2)*norm
+!                  resP(iz,ir,2,ist,2) = resP(iz,ir,2,ist,2)*norm
+!               enddo
+!            enddo
+!         enddo
+!c
+!c        normalization of Q to P      <[Q,P]> = i
+!c        ---------------------------------------------------------------
+!         norm = 1.0D0/comm_QP(Q2q,resQ,P2q,resP,imu)
+!         do itr=1,TRlen
+!            Q2q(itr)= Q2q(itr)*norm
+!         enddo
+!c
+!         do ist=1,nst(1)+nst(2)
+!            do ir=0,nr
+!               do iz=0,nz
+!                  resQ(iz,ir,1,ist,1) = resQ(iz,ir,1,ist,1)*norm
+!                  resQ(iz,ir,2,ist,1) = resQ(iz,ir,2,ist,1)*norm
+!                  resQ(iz,ir,1,ist,2) = resQ(iz,ir,1,ist,2)*norm
+!                  resQ(iz,ir,2,ist,2) = resQ(iz,ir,2,ist,2)*norm
+!               enddo
+!            enddo
+!         enddo
+!#ENDIF
+!c
+!c
+!c     implicit normalization of Q to P:  i[H,Q] = 2BP
+!c     ==================================================================
+!      else if (type.eq.2.or.type.eq.3) then
+!c
+!         B    = 0.5/comm_QP(Q2q,resQ,P2q,resP,imu)
+!         do itr=1,TRlen
+!            Q2q(itr)= 2.0D0*B*Q2q(itr)
+!         enddo
+!c
+!c     the GCM-mass with fullspace precission
+!c     ==================================================================
+!      else if (type.eq.1) then
+!c
+
+
+!c
+!      endif
+!c
+!      write(88,'(a)') '--- normalization finished  ---'
+!c
+!c     Calculation of widths, masses and stiffness:
+!c     ==================================================================
+!c     calculate <Q^2>,<P^2>,<[Beta,P]>,<[Q,P]>
+!c     ------------------------------------------------------------------
+!      QVar   = var_oper(Q2q,resQ,imu)
+!#IF(FULLSPACE)
+!      Nrm0   = comm_QP(B2q,resB,P2q,resP,imu)
+!      Nrm    = comm_QP(Q2q,resQ,P2q,resP,imu)
+!      PVar   = var_oper(P2q,resP,imu)
+!#ELSE
+!      call comm_and_var_QP(BVar,PVar,Nrm0,CPbeta(0),
+!     &                     (-1)**imu,imu,0)
+!#ENDIF
+!c
+!c     calculate LQ = [H,Q] + H_Q
+!c     and        B = 1/2*<[Q,LQ]]>
+!c     ------------------------------------------------------------------
+!c
+!#IF(FULLSPACE)
+!c     prepare derivatives of residual part of Q
+!      call upd_derive_spinor(ResQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                       dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                       ddRes(0,0,1,1,1),
+!     &                       (-1)**imu,+imu,nst(1)+nst(2))
+!      call upd_derive_spinor(ResQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                       dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                       ddRes(0,0,1,1,2),
+!     &                       (-1)**imu,-imu,nst(1)+nst(2))
+!#ENDIF
+!c
+!c     if mass has not been calculated before
+!      if (B.eq.-1.0D0) then
+!c
+!c        calculate action of Liouville-Operator
+!         call comm_HQ(H2q,Q2q,resQ,drRes,dzRes,dpRes,ddRes,
+!     &                HQ2q,resHQ,imu)
+!         B = 0.5D0*comm_QP(Q2q,resQ,HQ2q,resHQ,imu)
+!c
+!      endif
+!c
+!c     calculate  LP = [H,P] + H_P
+!c     and        C  = 1/2*<[P,LP]> = -1/2*<[LP,P]>
+!c     ------------------------------------------------------------------
+!#IF(FULLSPACE)
+!      call upd_derive_spinor(ResP(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                       dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                       ddRes(0,0,1,1,1),
+!     &                       (-1)**imu,+imu,nst(1)+nst(2))
+!      call upd_derive_spinor(ResP(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                       dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                       ddRes(0,0,1,1,2),
+!     &                       (-1)**imu,-imu,nst(1)+nst(2))
+!#ENDIF
+!c
+!      call comm_HP(H2q,P2q,ResP,drRes,dzRes,dpRes,ddRes,
+!     &             HP2q,resHP,imu)
+!c
+!      C = -0.5D0*comm_QP(HP2q,ResHP,P2q,ResP,imu)
+!c
+!c     calculate L^2Q    = [H,LQ] + H_{LQ}
+!c     and       Omega^2 = <[P,L^2Q]>
+!c     ------------------------------------------------------------------
+!#IF(FULLSPACE)
+!      call upd_derive_spinor(ResHQ(0,0,1,1,1),drRes(0,0,1,1,1),
+!     &                       dzRes(0,0,1,1,1),dpRes(0,0,1,1,1),
+!     &                       ddRes(0,0,1,1,1),
+!     &                       (-1)**imu,+imu,nst(1)+nst(2))
+!      call upd_derive_spinor(ResHQ(0,0,1,1,2),drRes(0,0,1,1,2),
+!     &                       dzRes(0,0,1,1,2),dpRes(0,0,1,1,2),
+!     &                       ddRes(0,0,1,1,2),
+!     &                       (-1)**imu,-imu,nst(1)+nst(2))
+!#ENDIF
+!c
+!      call comm_HP(H2q,HQ2q,ResHQ,drRes,dzRes,dpRes,ddRes,
+!     &             HP2q,resHP,imu)
+!c
+!      OmgSq = comm_QP(HP2q,ResHP,P2q,ResP,imu)
+!c
+!c     calculate particle number mass B_N
+!c     ------------------------------------------------------------------
+!      call comm_NQ(Q2q,ResQ,HQ2q,ResHQ)
+!      BN = 0.5D0*comm_QP(Q2q,ResQ,HQ2q,ResHQ,imu)
+!c
+!      write(88,'(a)') '--- evaluation finished  ---'
+!c
+!c     Logging
+!c     ------------------------------------------------------------------
+!      if (type.eq.0) then
+!         write(21,'(a,8(1pe16.4))') 'CHF_SC_VAL: ',
+!     &        B,C,PVar,QVar,OmgSq,BN,Nrm,Nrm0
+!      elseif (type.eq.1) then
+!         write(21,'(a,8(1pe16.4))') 'GCM_VAL   : ',
+!     &        B,C,PVar,QVar,OmgSq,BN,Nrm,Nrm0
+!      elseif (type.eq.2) then
+!         write(21,'(a,8(1pe16.4))') 'INGLIS_VAL: ',
+!     &        B,C,PVar,QVar,OmgSq,BN,Nrm,Nrm0
+!      elseif (type.eq.3) then
+!         write(21,'(a,8(1pe16.4))') 'SELFC_VAL : ',
+!     &        B,C,PVar,QVar,OmgSq,BN,Nrm,Nrm0
+!      elseif (type.eq.4) then
+!         write(21,'(a,8(1pe16.4))') 'ATDHF_VAL : ',
+!     &        B,C,PVar,QVar,OmgSq,BN,Nrm,Nrm0
+!      endif
+!c
+!c     ------------------------------------------------------------------
+!c
+!      return
+!      end
