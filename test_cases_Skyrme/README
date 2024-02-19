@@ -1,0 +1,49 @@
+This directory 'test_cases' contains input and output for five test cases.
+Each example is collected in its own directory. The directories are:
+
+
+O16-quad-oct:
+   A series of quadrupole+octupole constraints producing input for
+   a 3D color-map plot of the potential-energy surface in the plane  
+   of dimensionless quadrupole and octupole momentum.
+   Input if 'for005'. Output has names as explained in the paper.
+   A Gnuplot file displaying he data is also included.
+
+Gd-chain:
+   Contains a series of ground-state calculations along the chain
+   of Gd isotopes from spherical to deformed regime. The series is
+   invoked by the Linux batch file 'Gd-chain.bat'. You probably need
+   to adapt the reference to the executable 'skyax.gfortran.omp'
+   and, of course, to prepare that in advance. The output is
+   evaluated in a Gnuplot file. Note that the ground state calculation
+   starts twice, from initial prolate and from initial oblate shape
+   to explore the isomers in case of deformation. The plot shows
+   the evolution of energy and deformation, and additionally one
+   quadrupole potential-energy surface to illustrate the isomerism.
+
+Cd118:
+   One ground state calculation for 118Cd with output of the density
+   distributions and a Gnuplot file to visualize them. Input file is
+   'for005'. Output has names as explained in the paper.
+
+Og294-fission:
+   Quadrupole constraint calculations producing the potential-energy
+   surface for fission in 294Og. Calculations are done without enforcing
+   reflection symmetry to explore possible asymmetric fission. Input is 
+   'for005', output as explained in the paper. Visualization is done here
+   with a Python file 'Og294.py' producing 'Og294_ensurf.pdf'.
+   The asymmetric calculations are more prone to instabilities. Thus
+   the safest (but not fastest) strategy has been used, augmented
+   Lagrangian for the constraint and no diagonalization of the  
+   mean-field Hamiltonian.
+
+270Hs:
+   A large space of quadrupole-hexadecapole constraint calculations
+   for the potential-energy surface in 270Hs. Reflection symmetry
+   is invoked. To cope better with the large amount of calculations,
+   the faster constraint iteration scheme (itypco=1) and diagonalization 
+   in the sub-space of s.p. states is used. The result is visualized
+   with Gnuplot and the corresponding plot file is also provided.
+   Input is 'for005.all'. Output has names as explained in the paper.
+ 
+
