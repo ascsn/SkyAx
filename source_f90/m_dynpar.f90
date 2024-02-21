@@ -15,17 +15,23 @@ USE paramr, ONLY : xxxl,ixxxl,oh,one
 IMPLICIT NONE
 
 ! numerical parameters for iteration etc
-REAL(8) :: x0inv=0.3D0   !<Overall factor in front of the damping operator.
-REAL(8) :: e0inv=120D0   !<Witdh of the damping operator.
-REAL(8) :: addrho=0.2D0  !<Fraction of new density to be added to the old, used to compute 'adyrho'.
-REAL(8) :: addpot=1D0    !<Fraction of new potential to be added to the old.
-REAL(8) :: addocc=0.3D0  !<Fraction of new occupation numbers 'VSQF' to be added to the old.
-REAL(8) :: errenr=1D-9   !<Termination criterion for energy change.
-REAL(8) :: errvar=1D-1   !<Termination criterion for energy variance.
-REAL(8) :: adyrho        !<Dynamical fraction of new density.
-REAL(8) :: adypot        !<Dynamical  fraction of new potential.
-INTEGER :: mpmax         !<Max no. of z component of angular momentum.
-INTEGER :: itert         !<Overall total number of iterations.
+REAL(8) :: x0inv=0.3D0     !<Overall factor in front of the damping operator.
+REAL(8) :: e0inv=120D0     !<Witdh of the damping operator.
+REAL(8) :: addrho=0.2D0    !<Fraction of new density to be added to the old, used to compute 'adyrho'.
+REAL(8) :: addpot=1D0      !<Fraction of new potential to be added to the old.
+REAL(8) :: addocc=0.3D0    !<Fraction of new occupation numbers 'VSQF' to be added to the old.
+REAL(8) :: errenr=1D-9     !<Termination criterion for energy change.
+REAL(8) :: errvar=1D-1     !<Termination criterion for energy variance.
+REAL(8) :: adyrho          !<Dynamical fraction of new density.
+REAL(8) :: adypot          !<Dynamical  fraction of new potential.
+INTEGER :: mpmax           !<Max no. of z component of angular momentum.
+INTEGER :: itert           !<Overall total number of iterations.
+INTEGER :: iterbcs=300     !<iteration nr. from which on HFB is active
+INTEGER :: iterhfb=600     !<nr. of iterations with enhanced pairing
+INTEGER :: iternat=0       !<nr. of iterations in configuration space (not yet installed)
+INTEGER :: modnat=9999999  !<modulus of switxhing to iterations in configuration space
+REAL(8) :: pairenhance=2D0 !<initial enhancement of pairing strength
+LOGICAL :: tnobcs=.TRUE.   !<suppresses initial BCS phase after first run along a deformation path
 CHARACTER (LEN=3) :: outnam = "tst"  !< 3-digit qualifier for output files
 CHARACTER (LEN=80) :: title=" "  !< Title for the actual run, printed in the header of output files.
 
@@ -144,6 +150,7 @@ REAL(8) :: stwid=10D0                       !<Width for stabilized boundary cond
 REAL(8) :: stslop=15D0                      !<Slope for stabilized boundary conditions for constraint calculations.
 REAL(8) :: rhocut=0.03D0                    !<Density from which stabilizing potential is added.
 LOGICAL :: tstab=.FALSE.                    !<Switch for stabilizing boundaries.
+LOGICAL :: thfb=.FALSE.                     !<Indicates thet HFB is active
 
   !> This contains the parameters for pairing:
   TYPE Pairing

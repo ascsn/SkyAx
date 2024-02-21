@@ -21,17 +21,24 @@ IMPLICIT NONE
 
 LOGICAL,PARAMETER :: tafter=.true.           ! switch to "afterburn"
 
-LOGICAL ::           tvaryx0=.FALSE.
+LOGICAL :: tvaryx0=.FALSE.                   ! switch to variable szep size
+LOGICAL :: thfbsav                           ! global switch to HFB (dep. on ipair)
+LOGICAL :: tfirst                            ! signals first run along a deformation path
 
 REAL(8) :: devh2s,dnewoct,econs,oldoct,&
            qact0,qact2,qact3,qact4,qconsav,&
            devh2prev=100,econprev=100,x0invmin
+REAL(8) :: pairfacact                        ! actual pairing enhancement factor
+REAL(8) :: pairfcsav(2),fxisav,h1xisav,hgradxisav
 INTEGER :: iplold,ipold,iter,itesto,&
            itmaxact,iwu,nchg,nmass,number_threads=1
 INTEGER :: iqact0,iqact2,iqact3,iqact4,itemp,ntempmax
 INTEGER :: iqact0o,iqact2o,iqact3o,iqact4o    ! save previous values
+INTEGER :: ipairsav            ! saves initial setting of pairing model
 
-NAMELIST /main/ iprint,itmax,itest,title,outnam,&
+NAMELIST /main/ iprint,itmax,itest, &
+                iterbcs,iterhfb,pairenhance,modnat,iternat,tnobcs, &
+                title,outnam,&
                 ipri_fields,tpri_occup,tpri_conver,tpri_bubble,tpri_2d,&
                 tpri_radii,tpri_formf
 NAMELIST /grids/ tsym,nr,nz,dr,dz,idrtyp
@@ -56,6 +63,9 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 !                                                                     *
 !**********************************************************************
   READ(5,main)
+
+  thfbsav = ipair==6 .OR. ipair==8
+  ipairsav = ipair
   
   IF(tpri_bubble) THEN
     OPEN(173,FILE='bubbleness.'//outnam)
@@ -94,6 +104,15 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   IF(riftm1 == 0D0) riftm1 = riftm  !new
   IF(itest>0) WRITE(6,*) 'ipair,v0prot,v0neut,pairstab,rho0pr=',&
     ipair,pairfc,pairstab,rho0pr  
+
+  IF(thfbsav) THEN
+    fxisav = fxi
+    h1xisav = h1xi
+    hgradxisav = hgradxi
+    pairfcsav = pairfc
+  END IF
+
+
   
 !**********************************************************************
 !                                                                     *
@@ -230,6 +249,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
     END IF
     iqact0o=iqact0;iqact2o=iqact2;iqact3o=iqact3;iqact4o=iqact4;
 
+
     qsoll0=qact0; qsoll2=qact2; qsoll3=qact3; qsoll4=qact4
     IF(tfixcon0) qlamb0=qact0
     IF(tfixcon2) THEN
@@ -304,9 +324,39 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
       eold   = energy
       istblo = 0
       itmaxact=itmax
+      tfirst = iqact0==0.AND.iqact2==0.AND.iqact3==0.AND.iqact4==0
 !      IF(iflmb0==1) itmaxact=itcons2     ! prepare for later direct iteration
       iterations: DO iter=0,itmaxact
         oldoct=beta3
+
+        ! set actual HFB/BCS option
+        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) ) THEN
+          thfb = thfbsav
+          ipair = ipairsav
+        ELSE
+          thfb = .FALSE.
+          ipair = ipairsav-1
+        END IF
+
+        ! initialize gradual pairing enhancment 
+        IF(thfbsav .AND. (tfresh .OR. tfirst)) THEN
+          IF(iter<iterhfb) THEN
+            pairfacact = 1D0+pairenhance*MAX(0,iterhfb-iter)/iterhfb
+            fxi = fxisav*pairfacact
+            h1xi = h1xisav*pairfacact
+            hgradxi = hgradxisav*pairfacact
+            pairfc = pairfcsav*pairfacact
+          ELSE
+            fxi = fxisav
+            h1xi = h1xisav
+            hgradxi = hgradxisav
+            pairfc = pairfcsav
+          END IF
+        ELSE
+        END IF
+
+
+
         IF(MOD(iter,iprint)==1) THEN
           WRITE(6,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm x0inv'
           WRITE(7,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv'
