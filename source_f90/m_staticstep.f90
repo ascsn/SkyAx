@@ -24,6 +24,12 @@ USE steputil
 IMPLICIT NONE
 INTEGER, PUBLIC :: inodiag=50    !< Number of iterations without diagonalizing the Hamiltonian matrix
 INTEGER, PUBLIC :: iterstat      !< to communicate actual iteration number
+REAL(8), PUBLIC :: devhh2              !< counter for variance (h*h)
+REAL(8), PUBLIC :: hdh                 !< counter for <hD h>
+REAL(8), PUBLIC :: hddh                !< counter for <hD Dh>
+REAL(8), PUBLIC :: hdhdh               !< counter for <hD h Dh>
+REAL(8), PUBLIC :: qh0,qh1,qh2,qh3,qh4 !< counter for <Q h>
+REAL(8), PUBLIC :: qhdig               !< counter for diagonal part of <Q h>, only L=2
 
 LOGICAL, PUBLIC,PARAMETER :: tshiftcm=.TRUE.   !< shift c.m. to z=0
 
@@ -66,12 +72,6 @@ REAL(8) :: caugmlagr4=0D0   !< Parameter for augmented Lagrangian method  L=4
 REAL(8),SAVE :: qc          !< auxiliary storage for actual deformation
 
 !REAL(8) :: ebin                !< offset in s.p. energy
-REAL(8) :: devhh2              !< counter for variance (h*h)
-REAL(8) :: hdh                 !< counter for <hD h>
-REAL(8) :: hddh                !< counter for <hD Dh>
-REAL(8) :: hdhdh               !< counter for <hD h Dh>
-REAL(8) :: qh0,qh1,qh2,qh3,qh4 !< counter for <Q h>
-REAL(8) :: qhdig               !< counter for diagonal part of <Q h>, only L=2
 
 ! The following are already defined in 'm_observ.f90':
 !    devh2               ! counter for variance
@@ -122,7 +122,7 @@ IMPLICIT NONE
 
 INTEGER, INTENT(IN)           :: iter
 
-REAL(8) :: aopt,fac,qh,redfac,width,rmsb,v2act
+REAL(8) :: aopt,fac,qh,redfac,width,rmsb,v2act,symcond
 INTEGER :: im,iq,is,kpsic,nadd
 INTEGER :: nlo,nhi,i
 !$ REAL(8) :: wtime1,wtime2
@@ -227,6 +227,7 @@ hdh   = 0D0; hddh  = 0D0; hdhdh = 0D0;
 qq0=0D0;qq1=0D0;qq2=0D0;qq3=0D0;qq4=0D0;
 qh0=0D0;qh1=0D0;qh2=0D0;qh3=0D0;qh4=0D0;
 qh = 0D0; qdh = 0D0; qhdig = 0D0
+symcondiso = 0D0
 
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
@@ -245,6 +246,10 @@ DO  i=1,nom         ! loop over all blocks
        '          nlo=',nlo,'   nhi=',nhi, '   lz=',kpsic,'   chg=',iq
   !$ wtime1 = OMP_GET_WTIME()
   IF(iter > 0) THEN
+    IF(thfb) THEN
+      CALL hfbstep(temp,symcond,nlo,nhi,iter,.TRUE.)
+      symcondiso(iq) = symcondiso(iq) + symcond
+    ELSE
     IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
     DO  jst=nlo,nhi
       
@@ -288,6 +293,8 @@ DO  i=1,nom         ! loop over all blocks
     END DO
     
     IF(tdiag) CALL diag_wf(hmatr(nlo:nhi,nlo:nhi),nlo,nhi-nlo+1)
+
+    END IF
     
 !   Schmidt orthonormmalization of the states  ( needed after "diag_wf")
     CALL schmit(psi(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
@@ -350,6 +357,7 @@ IF(ifopts == 1) THEN
   WRITE(7,'(a,2g12.4)') ' optimal stepsize=',aopt
   WRITE(6,'(a,2g12.4)') ' optimal stepsize=',aopt
 END IF
+IF(thfb) WRITE(7,'(a,i5,2(1pg13.5))') '#HFB symmetry condition:',iter,symcondiso
 ! testprint, presently restricted to constraint L=2
 IF(tswicon2 .AND. tqq .AND. tcstp) &
   WRITE(66,'(a,i4,6g12.4)') 'iter,qh,qdh,qq,qhdig,qh/qq,qlam=',  &
@@ -506,6 +514,9 @@ DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 
 RETURN
 END SUBROUTINE sstep
+
+include 'lagpar.f90'
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: zcm_adjust

@@ -64,8 +64,6 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 !**********************************************************************
   READ(5,main)
 
-  thfbsav = ipair==6 .OR. ipair==8
-  ipairsav = ipair
   
   IF(tpri_bubble) THEN
     OPEN(173,FILE='bubbleness.'//outnam)
@@ -85,6 +83,11 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 !                                                                     *
 !**********************************************************************
   CALL read_force
+
+  WRITE(*,*) 'ipair input=',ipair
+  thfbsav = ipair==6 .OR. ipair==8
+  ipairsav = ipair
+
   IF(tFayans) THEN
     CALL ini_fyfunc()
     tpair = .TRUE.
@@ -330,7 +333,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
         oldoct=beta3
 
         ! set actual HFB/BCS option
-        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) ) THEN
+        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) .OR. .NOT.thfbsav) THEN
           thfb = thfbsav
           ipair = ipairsav
         ELSE

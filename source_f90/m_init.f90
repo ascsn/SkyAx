@@ -131,10 +131,10 @@ IF(ipair.GE.0 .AND. ipair.LE.3) THEN
   CALL user_interface_3()          ! initializes user defined pairing 
 ELSE IF(ipair==4) THEN
   pairfc=0D0
-ELSE IF(ipair == 5 .OR. ipair == 9) THEN
+ELSE IF(ipair == 5 .OR.ipair == 6 .OR. ipair == 9) THEN
   IF(pairfc(1)==0D0) pairfc(1) = 300D0
   IF(pairfc(2)==0D0) pairfc(2) = 300D0
-ELSE IF(ipair == 7 .OR. ipair == 11) THEN
+ELSE IF(ipair == 7 .OR. ipair == 8 .OR. ipair == 11) THEN
   IF(pairfc(1)==0D0) pairfc(1) = 600D0
   IF(pairfc(2)==0D0) pairfc(2) = 600D0
 ELSE

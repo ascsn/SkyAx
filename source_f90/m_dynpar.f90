@@ -339,7 +339,7 @@ CONTAINS
        IF(ipair==5 .OR. ipair==9) THEN 
          pairact=forcact%vdi
          v0prot=pairact%v0prot; v0neut=pairact%v0neut
-       ELSE IF(ipair==7 .OR. ipair==11) THEN
+       ELSE IF(ipair==7 .OR. ipair==8 .OR. ipair==11) THEN
          pairact=forcact%dddi
          v0prot=pairact%v0prot; v0neut=pairact%v0neut; rho0pr=pairact%rho0pr
        END IF
