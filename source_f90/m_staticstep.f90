@@ -965,8 +965,9 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     ist2 = nst(1)+1
     CALL thermal_occ(tempac,spenrg(ist2),vsqf(ist2),wate(ist2),wtpair_uv(ist2),&
                      wtpair_v2(ist2),fer(2),one*npart(2),nst(2))
-  ELSE IF(ipair == 5 .OR. ipair == 7 .OR. ipair == 9  &
-        .OR. ipair == 11) THEN     ! BCS with zero-range pairing functional
+!  ELSE IF(ipair == 5 .OR. ipair == 7 .OR. ipair == 9  &
+!        .OR. ipair == 11) THEN     ! HFB/BCS with zero-range pairing functional
+  ELSE IF(ipair>4 .AND. ipair.NE.10) THEN  ! HFB/BCS with zero-range pairing functional
       CALL hfbpot()
       IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
         CALL respax(iter)
@@ -981,8 +982,8 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
       CALL pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
           wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
           nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
-          
-    vsqobs(1:nsttot) = vsqf(1:nsttot)
+
+      vsqobs(1:nsttot) = vsqf(1:nsttot)
   ELSE
     STOP ' ipair outside -1..4 or 5, 7, 9 or 11 not active'
   END IF

@@ -1,0 +1,20 @@
+&main outnam='hfb',title='test 20O',iprint=1000,itmax=8000
+/
+&force 
+ name='SV-min',pairstab=-0D0,ipair=8
+/
+&grids tsym=T,nz=17,nr=17,dr=1D0,dz=1D0,
+/
+&static nprot=8,nneut=12,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
+deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=T,inodiag=9999/
+&constraint 
+/
+&thermal /
+
+
+
+
+
+
+

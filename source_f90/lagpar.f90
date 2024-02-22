@@ -27,7 +27,7 @@ USE observ, ONLY: qq0,qq1,qq2,qq3,qq4,qdh,devmf2,devgap,devh2,devoc2
 !INCLUDE 'crankin.inc'
 
 
-REAL(8), INTENT(OUT)    :: hfbpsi(0:nzd,0:nrd,nsd,npsi(2))
+REAL(8), INTENT(OUT)    :: hfbpsi(0:nz,0:nr,nsd,npsi(2))
 REAL(8), INTENT(OUT)    :: symcond
 INTEGER, INTENT(IN)     :: istmin,istmax,iter
 LOGICAL, INTENT(IN)     :: tqq
@@ -55,7 +55,7 @@ IF(istmin <= nst(1)) THEN
 ELSE
   iq = 2
 END IF
-
+symcond = 0D0
 !     compute and store action of HFB Hamiltonian
 DO jst=istmin,istmax
   CALL hpsi(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst),jst)
@@ -78,12 +78,12 @@ DO jst=istmin,istmax
           +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,is,jst)*uva
     END DO
   END IF
-END DO
-
-CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,istmin,istmax,&
+  IF(tqq) CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,istmin,istmax,&
                             spevar(jst),spenrg(jst),&     
                             qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&  
                             qh4,qhdig,devmf2,devgap,devh2,devoc2)
+END DO
+
 
 !     compute matrix of Lagrange parameters
 ALLOCATE(hlagr(istmin:istmax,istmin:istmax))
@@ -127,7 +127,7 @@ DO ist=istmin,istmax
         hfbpsi(0:nz,0:nr,1:2,ist) = hfbpsi(0:nz,0:nr,1:2,ist)  &
         -psi(0:nz,0:nr,1:2,jst)*hlagr(jst,ist)
   END DO
-  IF(.NOT.tbcs) devmf2  = devmf2 + vsqf(jst)*wate(ist)*  &
+  IF(.NOT.tbcs) devmf2  = devmf2 + vsqf(ist)*wate(ist)*  &
                           wfovlp(hfbpsi(:,:,:,ist),hfbpsi(:,:,:,ist))
 END DO
 DEALLOCATE(hlagr,symatrix)
@@ -148,6 +148,7 @@ DO ist=istmin,istmax
         wfovlp(hfbpsi(0:nz,0:nr,1:2,ist),hfbpsi(0:nz,0:nr,1:2,ist)),  &
         wfovlp(psi(0:nz,0:nr,1:2,ist),psi(0:nz,0:nr,1:2,ist))
   END IF
+  IF(tqq) CALL accumulate_variances_2(ist,istmin,istmax,hfbpsi(:,:,:,ist),qdh,hdh,hddh,hdhdh)  
   psi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
   IF(tbcs .AND. iq==1 .AND. mpsi(ist)==0) THEN
     WRITE(7,'(a,i4)') 'ortho-normality after: ist=',ist
@@ -156,7 +157,6 @@ DO ist=istmin,istmax
   END IF
 END DO
 
-CALL accumulate_variances_2(jst,istmin,istmax,psip,qdh,hdh,hddh,hdhdh)  !  ???
 
 
 RETURN
@@ -184,7 +184,7 @@ USE levels
 USE fields, ONLY: pairpt
 USE init, ONLY: idanuc
 
-REAL(8), INTENT(IN OUT) :: psiact(0:nzd,0:nrd,nsd)
+REAL(8), INTENT(IN OUT) :: psiact(0:nz,0:nr,nsd)
 REAL(8), INTENT(IN)     :: v2act
 INTEGER, INTENT(IN)     :: istact
 
