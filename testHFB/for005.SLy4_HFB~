@@ -1,0 +1,21 @@
+&main outnam='slh',iprint=20000,itmax=3000
+/
+&force t0=-2488.913d0,t1=486.818d0,t2=-546.395d0,t3=13777.000d0,
+ x0=0.834d0,x1=-0.344d0,x2=-1.0D0,x3=1.35400d0,
+ t4=123.000d0,b4p=61.5D0,power=0.166666667D0,
+ h2m=20.7355298d0,20.7355298d0,
+ chg=1D0,ex=1,riftm=0D0,zpe=0,
+ ipair=6,v0prot=200D0,v0neut=200D0,rho0pr=0.0D0,
+ pair_cutoff=-20D0,tregpair=F
+/
+&grids nz=25,nr=25,dz=0.7D0,dr=0.7D0,tsym=T
+/
+&static nprot=50,nneut=70,betain=0.0,x0inv=0.3,tvaryx0=T,inodiag=9999,
+   deocc(1)=2.5D0,deocc(2)=2.5D0,errenr=1D-14,
+/
+&constraint swicon2=0D0,betmin2=-0.0D0,betmax2=0.6D0,betaw2=0.05D0
+/
+&thermal
+/
+
+
