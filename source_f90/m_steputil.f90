@@ -325,7 +325,8 @@ END IF
 !***************************************************************    
 !     prints and plots
 !***************************************************************  
-  IF (ipri_fields>0 .AND. MOD(iter,ipri_fields) == 0.AND.iter > 0) THEN
+  IF (ipri_fields>0) THEN
+  IF (MOD(iter,ipri_fields) == 0.AND.iter > 0) THEN
     WRITE(18,'(3(a,i3),a,f10.5,4(/a),a)')  &
         ' Z=',npart(1),' N=',npart(2),' ITER=',iter,' BETA2=',beta2,  &
         'X:z [fm]', 'Y:fields',  &
@@ -365,6 +366,7 @@ END IF
       WRITE(18,'(1x,f6.3,2g12.4)') ((iz+sz-icm)*dz,  &
           potadd(iz,0,1),potadd(iz,0,2), iz=0,nz)
     END IF
+  END IF
   END IF
   
 !***************************************************************   
