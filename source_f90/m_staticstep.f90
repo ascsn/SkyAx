@@ -968,7 +968,7 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
 !  ELSE IF(ipair == 5 .OR. ipair == 7 .OR. ipair == 9  &
 !        .OR. ipair == 11) THEN     ! HFB/BCS with zero-range pairing functional
   ELSE IF(ipair>4 .AND. ipair.NE.10) THEN  ! HFB/BCS with zero-range pairing functional
-      CALL hfbpot()
+      CALL hfbpot(iter)
       IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
         CALL respax(iter)
         IF(itest > 0) WRITE(7,'(a,4g12.4)')  &

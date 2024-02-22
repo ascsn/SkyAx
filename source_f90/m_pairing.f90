@@ -40,7 +40,7 @@ CONTAINS
 !! \c ipair is used here to indicate the switch to surface pairing: 5,6: 
 !! volume pairing; 7,8: surface pairing.
 !--------------------------------------------------------------------------- 
-SUBROUTINE hfbpot()
+SUBROUTINE hfbpot(iter)
 
 USE paramr
 USE dynpar
@@ -53,15 +53,17 @@ USE fyfunc, ONLY: fy_hfbpot
 
 IMPLICIT NONE
 
+INTEGER, INTENT(IN) :: iter
+
 REAL(8) :: smallp = 0.000001d0
 
 REAL(8) ::  ecrit,npower
 REAL(8) ::  epairtestp,epairtestn,epairtest
-REAL(8) ::  buff(2)
+REAL(8) ::  buff(2),geff,rhofac
 
 REAL(8), ALLOCATABLE :: work(:,:)
 
-INTEGER :: i,iq,jst
+INTEGER :: i,iq,jst,iz,ir
 REAL(8) :: uv,v0prot,v0neut,v2
 
 ALLOCATE(work(0:nz,0:nr))
@@ -69,6 +71,9 @@ work=0D0
 
 !     zero field before accumulation
 paircr(:,:,:) = zero
+
+! reset rearrangement potential
+IF(tregpair) regpairadd=1D0
 
 !     accumulate new pair-density
 DO jst=1,nst(1)+nst(2)
@@ -86,11 +91,34 @@ ELSE
   v0neut = -pairfc(2)
 
   IF(ipair <= 6 .OR. ipair == 9) THEN
-    pairpt(0:nz,0:nr,1)  = v0prot * paircr(0:nz,0:nr,1)
-    pairpt(0:nz,0:nr,2)  = v0neut * paircr(0:nz,0:nr,2)
+    IF(tregpair .AND. iter>50) THEN
+      DO ir=0,nr; DO iz=0,nz
+        geff = geff_regpair(fer(1),pair_cutoff,pot(iz,ir,1),bmass(iz,ir,1),v0prot) 
+        pairpt(iz,ir,1)  = paircr(iz,ir,1) * geff
+        regpairadd(iz,ir,1) = 1D0 !(geff/v0prot)**2
+        geff = geff_regpair(fer(2),pair_cutoff,pot(iz,ir,2),bmass(iz,ir,2),v0neut) 
+        pairpt(iz,ir,2)  = paircr(iz,ir,2) * geff
+        regpairadd(iz,ir,2) = 1D0 !(geff/v0neut)**2
+      END DO; END DO
+    ELSE
+      pairpt(0:nz,0:nr,1)  = v0prot * paircr(0:nz,0:nr,1)
+      pairpt(0:nz,0:nr,2)  = v0neut * paircr(0:nz,0:nr,2)
+    END IF
   ELSE
-    pairpt(:,:,1)  = v0prot * (one-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,1)
-    pairpt(:,:,2)  = v0neut * (one-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,2)
+    IF(tregpair .AND. iter>50) THEN
+      DO ir=0,nr; DO iz=0,nz
+        rhofac = (1D0-(rho(iz,ir,1)+rho(iz,ir,2))/rho0pr)
+        geff = geff_regpair(fer(1),pair_cutoff,pot(iz,ir,1),bmass(iz,ir,1),v0prot*rhofac) 
+        pairpt(iz,ir,1)  = paircr(iz,ir,1) * geff
+        regpairadd(iz,ir,1) = (geff/(v0prot*rhofac))**2
+        geff = geff_regpair(fer(2),pair_cutoff,pot(iz,ir,2),bmass(iz,ir,2),v0neut) 
+        pairpt(iz,ir,2)  = paircr(iz,ir,2) * geff
+        regpairadd(iz,ir,2) = (geff/(v0neut*rhofac))**2
+      END DO; END DO
+    ELSE
+      pairpt(:,:,1)  = v0prot * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,1)
+      pairpt(:,:,2)  = v0neut * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,2)
+    END IF
   END IF
 END IF
 
@@ -134,6 +162,133 @@ DEALLOCATE(work)
 
 RETURN
 END SUBROUTINE hfbpot
+
+
+REAL(8) FUNCTION geff_regpair(efermi_a,ecut_a,pot_a,bmas_a,g_pair)
+!
+!  Computes the regularization kernel g_eff for
+!  regularized pairing.
+!  
+IMPLICIT NONE
+REAL(8),INTENT(IN) :: efermi_a     ! Fermi energy
+REAL(8),INTENT(IN) :: ecut_a       ! Cutoff energy
+REAL(8),INTENT(IN) :: pot_a        ! local potential U(r)
+REAL(8),INTENT(IN) :: bmas_a       ! local inverse effective mass B*(r)=hbar**2/(2M*)
+REAL(8),INTENT(IN) :: g_pair       ! local pairing strength from pairing model
+
+  geff_regpair = g_pair/(1-g_pair*Keff_regpair())
+!  geff_regpair = g_pair/(1-g_pair*Keff_regpair2())
+
+  RETURN
+
+CONTAINS
+
+REAL(8) FUNCTION Keff_regpair
+!
+!  Computes the regularization kernel K_eff for
+!  regularized pairing.
+!  
+
+REAL(8),PARAMETER :: fourpi=12.56637061D0   ! 4*pi
+REAL(8),PARAMETER :: fourpi2=39.4784176D0   ! 4*pi**2
+REAL(8) :: kf2                     ! square of Fermi momentum
+REAL(8) :: kf                      ! absolute value of Fermi momentum
+REAL(8) :: kcut                    ! cutoff momentum, deduced from ecut_a
+REAL(8) :: ecut_eff                ! cutoff energy relatice to cont. threshold
+
+kf2= (efermi_a-pot_a)/bmas_a
+kf = SQRT(ABS(kf2))
+ecut_eff = ecut_a  !+efermi_a
+kcut = (ecut_eff+efermi_a-pot_a)/bmas_a
+IF(kcut<0D0) THEN
+  WRITE(6,'(a,3(1pg13.5))') ' e_cut,e_fermi,pot=',ecut_a,efermi_a,pot_a
+  STOP "'kcut' is imaginary"
+END IF
+kcut=SQRT(kcut)
+
+IF(kf2.GE.0D0) THEN
+  Keff_regpair = (kcut/(fourpi2*bmas_a)) * &
+                 (1D0 - (kf/(kcut+kcut))*LOG((kcut+kf)/(kcut-kf))  )
+ELSE
+  Keff_regpair = (kcut/(fourpi2*bmas_a)) * &
+                 (1D0 + (kf/(kcut))*ATAN((kf/(kcut)))  )
+END IF
+
+RETURN
+
+END FUNCTION Keff_regpair
+
+
+REAL(8) FUNCTION Keff_regpair2
+!
+!  Computes the regularization kernel K_eff for
+!  regularized pairing.
+!  
+
+REAL(8),PARAMETER :: fourpi=12.56637061D0   ! 4*pi
+REAL(8),PARAMETER :: fourpi2=39.4784176D0   ! 4*pi**2
+REAL(8) :: kf2                     ! square of Fermi momentum
+REAL(8) :: kf                      ! absolute value of Fermi momentum
+REAL(8) :: kcut                    ! cutoff momentum, deduced from ecut_a
+REAL(8) :: lcut                    ! lower cutoff momentum, deduced from ecut_a
+REAL(8) :: ecut_eff                ! cutoff energy relatice to cont. threshold
+
+REAL(8) :: a,b                     ! auxiliary
+
+ecut_eff = ecut_a  !+efermi_a
+
+IF ( pot_a + ecut_eff - efermi_a < 0D0 ) THEN
+   !
+   kf = SQRT( ( efermi_a - pot_a ) / bmas_a )
+   kcut = SQRT( ( efermi_a + ecut_eff - pot_a ) / bmas_a )
+   lcut = SQRT( ( efermi_a - ecut_eff - pot_a ) / bmas_a )
+   a = kcut / fourpi2 / bmas_a &
+      * ( 1 - kf / 2 / kcut * log( ( kcut + kf ) / ( kcut - kf ) ) )
+   b = lcut / fourpi2 / bmas_a &
+      * ( 1 - kf / 2 / lcut * log( ( lcut + kf ) / ( kf - lcut ) ) )
+!         rega(p,it) = a
+!         regb(p,it) = b
+   !........................ geff(p,it) = 1 / ( 1 / g - a - b )
+ELSE
+   IF ( pot_a - efermi_a < 0D0 ) THEN
+      !
+      kf = SQRT( ( efermi_a - pot_a ) / bmas_a )
+      kcut = SQRT( ( efermi_a + ecut_eff - pot_a ) / bmas_a )
+      a = kcut / fourpi2 / bmas_a * &
+         ( 1 - kf / 2 / kcut * log( ( kcut + kf ) / ( kcut - kf ) ) )
+      b = 0D0
+!            rega(p,it) = a
+!            regb(p,it) = 0D0
+      !..................... geff(p,it) = 1 / ( 1 / g - a )
+   ELSE
+      IF ( pot_a - ecut_eff - efermi_a < 0D0 ) THEN
+         !
+         kf = SQRT( - ( efermi_a - pot_a ) / bmas_a )
+         kcut = SQRT( ( efermi_a + ecut_eff - pot_a ) / bmas_a )
+         a = kcut / fourpi2 / bmas_a &
+            * ( 1 + kf / kcut * atan( kf / kcut ) )
+         b = 0D0
+!               rega(p,it) = a
+!               regb(p,it) = 0D0
+         !.................. geff(p,it) = 1 / ( 1 / g - a )
+      ELSE
+         !
+         a = 0D0
+         b = 0D0
+!               rega(p,it) = 0D0
+!               regb(p,it) = 0D0
+         !.................. geff(p,it) = g
+      END IF
+   END IF
+END IF
+Keff_regpair2 = a+b
+
+RETURN
+
+END FUNCTION Keff_regpair2
+
+END FUNCTION geff_regpair
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: pairdn

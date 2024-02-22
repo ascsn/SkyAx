@@ -151,6 +151,7 @@ REAL(8) :: stslop=15D0                      !<Slope for stabilized boundary cond
 REAL(8) :: rhocut=0.03D0                    !<Density from which stabilizing potential is added.
 LOGICAL :: tstab=.FALSE.                    !<Switch for stabilizing boundaries.
 LOGICAL :: thfb=.FALSE.                     !<Indicates thet HFB is active
+LOGICAL :: tregpair=.FALSE.                 !<Switches regularized pairing
 
   !> This contains the parameters for pairing:
   TYPE Pairing
@@ -265,7 +266,7 @@ CONTAINS
          tFayans, &
          avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
          fxi,h1xi,hgradxi,delfxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
-         isovectormodel,tcutoff_uvspace
+         isovectormodel,tcutoff_uvspace,tregpair
 
     READ(5,force)
     predefined=.FALSE.
