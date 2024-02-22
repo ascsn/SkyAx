@@ -9,6 +9,7 @@ MODULE fields
 
 USE paramr, ONLY : kqm
 USE grid,   ONLY : nz,nr
+USE dynpar, ONLY : tregpair
 
 IMPLICIT NONE
 
@@ -32,6 +33,7 @@ REAL(8),ALLOCATABLE :: rholsz(:,:,:)   !<Spin-orbit current in z-direction.
 REAL(8),ALLOCATABLE :: d2rho(:,:,:)    !<Laplaceian on \c rho.
 REAL(8),ALLOCATABLE :: rhoti(:,:,:)    !<Density for constraint calculation.
 REAL(8),ALLOCATABLE :: paircr(:,:,:)   !<Pairing density.
+REAL(8),ALLOCATABLE :: regpairadd(:,:,:)!<Rearranegment potential in regularized pairing
 
 CONTAINS
 
@@ -48,11 +50,13 @@ ALLOCATE(&
          tau   (0:nz,0:nr,kqm),drhols (0:nz,0:nr,kqm),rholsr(0:nz,0:nr,kqm),rholsz(0:nz,0:nr,kqm)  ,&
          d2rho (0:nz,0:nr,kqm),rhoti  (0:nz,0:nr,kqm),paircr(0:nz,0:nr,kqm)                         &
          )
+IF(tregpair) ALLOCATE(regpairadd(0:nz,0:nr,kqm))
          pot   =0.0d0; coulpt =0.0d0 ;bmass =0.0d0; potls =0.0d0
          drbmas=0.0d0; dzbmas =0.0d0 ;potadd=0.0d0; rhosur=0.0d0 
          pairpt=0.0d0; potdamp=0.0d0 ;rho   =0.0d0; crho  =0.0d0
          tau   =0.0d0; drhols =0.0d0 ;rholsr=0.0d0; rholsz=0.0d0
-         d2rho =0.0d0; rhoti  =0.0d0 ;paircr=0.0d0
+         d2rho =0.0d0; rhoti  =0.0d0 ;paircr=0.0d0 
+IF(tregpair) regpairadd=0.0d0
 RETURN
 END SUBROUTINE alloc_fields
 

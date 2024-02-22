@@ -484,8 +484,8 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
         IF(tpair .AND. iq == 2) THEN
           adparp = redpot*(pairfc(1)*(paircr(iz,ir,1)*paircr(iz,ir,1))  &
               +pairfc(2)*(paircr(iz,ir,2)*paircr(iz,ir,2)))*parfac
-          pot(iz,ir,1) = adparp + pot(iz,ir,1)
-          pot(iz,ir,2) = adparp + pot(iz,ir,2)
+          pot(iz,ir,1) = adparp*regpairadd(iz,ir,1) + pot(iz,ir,1)
+          pot(iz,ir,2) = adparp*regpairadd(iz,ir,2) + pot(iz,ir,2)
         END IF
         
 !***************************************************************   
