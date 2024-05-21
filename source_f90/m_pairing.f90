@@ -183,7 +183,7 @@ REAL(8),INTENT(IN) :: g_pair       ! local pairing strength from pairing model
 
 CONTAINS
 
-REAL(8) FUNCTION Keff_regpair
+REAL(8) FUNCTION Keff_regpair()
 !
 !  Computes the regularization kernel K_eff for
 !  regularized pairing.
@@ -219,7 +219,7 @@ RETURN
 END FUNCTION Keff_regpair
 
 
-REAL(8) FUNCTION Keff_regpair2
+REAL(8) FUNCTION Keff_regpair2()
 !
 !  Computes the regularization kernel K_eff for
 !  regularized pairing.

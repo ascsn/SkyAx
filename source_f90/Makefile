@@ -13,7 +13,7 @@ ifort ifort_omp : export COMPILER_SKYAX = ifort
 #
 #gf        : export COMPILERFLAGS_SKYAX = -O3 -msse4.2 -mavx
 #gf_omp    : export COMPILERFLAGS_SKYAX = -O3 -fopenmp  -msse4.2 -mavx
-gf        : export COMPILERFLAGS_SKYAX = -Ofast -march=native
+gf        : export COMPILERFLAGS_SKYAX = -Ofast -march=native -mcmodel=large
 gf_omp    : export COMPILERFLAGS_SKYAX = -Ofast -march=native -fopenmp
 gf_d      : export COMPILERFLAGS_SKYAX = -g -fbacktrace -Wall -fbounds-check -finit-real=NaN
 ifort     : export COMPILERFLAGS_SKYAX = -O3 -xhost -mcmodel=large

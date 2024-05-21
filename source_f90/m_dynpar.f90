@@ -133,6 +133,7 @@ REAL(8) :: pair_cutoff=1.65D0               !<Parameter for soft cutoff of pairi
 REAL(8) :: erra=1D-9                        !<Termination criterion for error in particle number.
 LOGICAL :: tcutoff_uvspace=.TRUE.           !<Switch to pairing cutoff in u*v weight, else in v*v weight.
 LOGICAL :: tcutoff_WS                       !<Switch to pairing cutoff by Woods-Saxon profile
+LOGICAL, PARAMETER :: thfbvariat=.FALSE.    !<Switch to variational cutoff -- placeholder, not yet fully coded
 
 INTEGER :: ipair=ixxxl                      !<Defines the pairing model.
 INTEGER :: npiter=100                       !<Maximum number of iterations for the solution of the gap equation.
