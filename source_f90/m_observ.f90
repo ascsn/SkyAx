@@ -115,7 +115,9 @@ REAL(8) :: qq2      !<Variance of quarupole moment
 REAL(8) :: qq3      !<Variance of octupole moment
 REAL(8) :: qq4      !<Variance of hexadecupole moment
 REAL(8) :: qdh      !<Element <Q D h> for L=2
-REAL(8) :: symcondiso(2) ! HFB symmetry conditions for protons and neutrons
+REAL(8) :: symcondiso(2) !< HFB symmetry conditions for protons and neutrons
+REAL(8) :: symcondi(2)   !< initial HFB symmetry condition in 'hfb_natural'
+REAL(8) :: symcondf(2)   !< final HFB symmetry condition in 'hfb_natural'
 
 REAL(8),ALLOCATABLE,SAVE :: rmsfield(:,:) ! field containing r**2
 
