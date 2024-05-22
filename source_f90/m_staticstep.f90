@@ -65,7 +65,7 @@ LOGICAL :: tdiag            !< switch for diagonalization of Hamiltonian matrix
 INTEGER :: jst              !< Variable for current wf
 
 REAL(8) :: caugmlagr0=0D0   !< Parameter for augmented Lagrangian method  L=0
-REAL(8) :: caugmlagr1=0D0   !< Parameter for augmented Lagrangian method  L=1
+!REAL(8) :: caugmlagr1=0D0   !< Parameter for augmented Lagrangian method  L=1
 REAL(8) :: caugmlagr2=0D0   !< Parameter for augmented Lagrangian method  L=2
 REAL(8) :: caugmlagr3=0D0   !< Parameter for augmented Lagrangian method  L=3
 REAL(8) :: caugmlagr4=0D0   !< Parameter for augmented Lagrangian method  L=4
@@ -349,6 +349,7 @@ ELSE
   devmf2 = SQRT(ABS(devmf2))
   devh2  = devmf2
 END IF
+IF(thfb) devh2=SUM(symcondiso)
 devhh2 = SQRT(devhh2)
 
 ! some protocol prints
@@ -571,8 +572,9 @@ REAL(8) :: qab0,qab1,qab2,qab3,qab4
 REAL(8) :: hab,offnor,offwgt,ua,ub,va,vb,vv2
 INTEGER :: is,jstp
 
-REAL(8),ALLOCATABLE :: psi0(:,:,:),psi1(:,:,:),psi2(:,:,:),psi3(:,:,:),&
-                       psi4(:,:,:),psip(:,:,:)
+!REAL(8),ALLOCATABLE :: psi0(:,:,:),psi1(:,:,:),psi2(:,:,:),psi3(:,:,:),&
+!                       psi4(:,:,:),psip(:,:,:)
+REAL(8),ALLOCATABLE :: psi0(:,:,:),psi2(:,:,:),psi3(:,:,:),psi4(:,:,:),psip(:,:,:)
 
 ALLOCATE(psip(0:nz,0:nr,nsd))
 
@@ -968,22 +970,25 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
 !  ELSE IF(ipair == 5 .OR. ipair == 7 .OR. ipair == 9  &
 !        .OR. ipair == 11) THEN     ! HFB/BCS with zero-range pairing functional
   ELSE IF(ipair>4 .AND. ipair.NE.10) THEN  ! HFB/BCS with zero-range pairing functional
-      CALL hfbpot(iter)
-      IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
-        CALL respax(iter)
-        IF(itest > 0) WRITE(7,'(a,4g12.4)')  &
-            ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
-      END IF
-      itest = -1
-      CALL pairdn(spenrg,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
-          fer(1),epair(1),gap(1),feradd(1),  &
-          nst(1),nst(1),npiter,ipair,0,istblo,erra,itest-1)
-      ist2 = nst(1)+1
-      CALL pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
-          wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
-          nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
-
-      vsqobs(1:nsttot) = vsqf(1:nsttot)
+    CALL hfbpot(iter)
+    IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
+      CALL respax(iter)
+      IF(itest > 0) WRITE(7,'(a,4g12.4)')  &
+          ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
+    END IF
+    itest = -1
+    CALL pairdn(spenrg,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
+        fer(1),epair(1),gap(1),feradd(1),  &
+        nst(1),nst(1),npiter,ipair,0,istblo,erra,itest-1)
+    ist2 = nst(1)+1
+    CALL pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
+        wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
+        nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
+    vsqobs(1:nsttot) = vsqf(1:nsttot)
+    IF(iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+      CALL hfb_natural(1,fer(1),1D0*npart(1))
+      CALL hfb_natural(2,fer(2),1D0*npart(2))
+    END IF
   ELSE
     STOP ' ipair outside -1..4 or 5, 7, 9 or 11 not active'
   END IF
@@ -991,7 +996,7 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
   ! mixing old and new occupations
   IF(itert > itpini) THEN
   !                                      maximum distance in 'vsqf'
-    IF(ioccmx == 1) THEN
+     IF(ioccmx == 1) THEN
       distmx = 0D0
       DO jst=1,nst(1)+nst(2)
         distmx = MAX(ABS(vsqf(jst)-vsqfol(jst)),distmx)

@@ -7,7 +7,7 @@ q/SHELL 	       = /bin/bash
 # ----- define the compiler being used---------------------------------------
 #
 gf gf_omp gf_d  : export COMPILER_SKYAX = gfortran
-ifort ifort_omp : export COMPILER_SKYAX = ifort
+ifort ifort_omp ifort_dbg : export COMPILER_SKYAX = ifort
 #
 # ----- define compiler flags and linker flags-------------------------------
 #
@@ -17,6 +17,7 @@ gf        : export COMPILERFLAGS_SKYAX = -Ofast -march=native -mcmodel=large
 gf_omp    : export COMPILERFLAGS_SKYAX = -Ofast -march=native -fopenmp
 gf_d      : export COMPILERFLAGS_SKYAX = -g -fbacktrace -Wall -fbounds-check -finit-real=NaN
 ifort     : export COMPILERFLAGS_SKYAX = -O3 -xhost -mcmodel=large
+ifort_dbg : export COMPILERFLAGS_SKYAX = -g -traceback -CB -mcmodel=large -check uninit
 ifort_omp : export COMPILERFLAGS_SKYAX = -O3 -xhost -qopenmp -mcmodel=large
 #
 # ----- executables----------------------------------------------------------
@@ -25,11 +26,12 @@ gf        : export EXEC_SKYAX = skyax.gfortran.seq
 gf_omp    : export EXEC_SKYAX = skyax.gfortran.omp
 gf_d      : export EXEC_SKYAX = skyax.gfortran.dbg
 ifort     : export EXEC_SKYAX = skyax.ifort.seq
+ifort_dbg : export EXEC_SKYAX = skyax.ifort.dbg
 ifort_omp : export EXEC_SKYAX = skyax.ifort.omp
 #
 # ----- libraries--------------------------------------------------------------
 #
-gf gf_d gf_omp ifort ifort_omp: export LIBS_SKYAX = -llapack -lblas
+gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
 #gf gf_d ifort : export LIBS_SKYAX = -L$(/usr/lib) -lblas -L$(/usr/lib) -llapack 
 #
 # ----- restart make, clean or print info------------------------------------
@@ -67,7 +69,7 @@ params:
 	@echo 
 
 
-gf gf_d gf_omp ifort ifort_omp : 
+gf gf_d gf_omp ifort ifort_omp ifort_dbg: 
 	@$(MAKE) -f $(firstword $(MAKEFILE_LIST)) makeit
 
 #
@@ -83,7 +85,7 @@ MODULES        =  m_paramr.o m_dynpar.o m_levels.o m_grid.o m_wavefr.o \
                   m_fields.o m_constr.o m_observ.o m_coulomb.o \
                   m_staticstep.o m_pairing.o m_util.o m_init.o \
 	 	  m_hdiag.o m_steputil.o user_interface.o \
-                  skyax.o m_fyfunc_2D.o
+                  skyax.o m_fyfunc_2D.o hfb-natural.o
 
 #
 #-----------------------------------------------------------------------------
@@ -121,6 +123,9 @@ m_util.o : m_dynpar.o m_fields.o m_grid.o m_levels.o m_observ.o \
            m_paramr.o m_wavefr.o Makefile
 
 m_pairing.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
+              m_levels.o m_observ.o m_paramr.o m_wavefr.o m_fyfunc_2D.o Makefile
+
+hfb-natural.o : m_pairing.o m_dynpar.o m_fields.o m_grid.o \
               m_levels.o m_observ.o m_paramr.o m_wavefr.o m_fyfunc_2D.o Makefile
 
 m_init.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \

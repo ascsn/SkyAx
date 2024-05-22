@@ -1332,9 +1332,10 @@ REAL(8), PARAMETER :: cutk=4D0,cutdel=0.4D0    ! soft cutoff in k space
 
 REAL(8) :: foc(kfrm),fop(kfrm),fon(kfrm),fo(kfrm),foc0(kfrm)
 REAL(8) :: rhoback(kfrm),fob(kfrm)   ! auxiliary arrays for back transformation
-REAL(8) :: r4back                    ! fourth radial moment from Fourier back transform
+!REAL(8) :: r4back                    ! fourth radial moment from Fourier back transform
 REAL(8) :: cmwid,delk,delrac,q1,qr,rleng,rmax,zmax,zpeact
-REAL(8) :: r2lsp,r2lsn,r2mcor,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
+!REAL(8) :: r2lsp,r2lsn,r2mcor,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
+REAL(8) :: r2lsp,r2lsn,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
 INTEGER :: iq,ikmax
 
 !     determine grid in spherical coordinate space from backward F.B. trafo

@@ -17,27 +17,32 @@ USE dynpar
 USE levels
 USE fields
 USE observ
+USE steputil, ONLY: hpsi, update_energy_order
+USE pairin, ONLY: pairdn
+IMPLICIT NONE
 
 INTEGER, INTENT(IN)      :: iso
 REAL(8), INTENT(IN OUT)  :: efermiso
 REAL(8), INTENT(IN)      :: partnumin
 
 
-INTEGER :: istbloact
-REAL(8) :: partnum
+INTEGER :: istbloact,is,iab,isonpl,ist,jst,istbuf,iter,m1  !,npsid
+INTEGER :: n1,n2,na,nb,nae,namax,nmaxa,nbe,nbhi,nbmax,nblo,np1,nq,nqi
+REAL(8) :: partnum,efadd,avsymcond,cahcb,cbhca,dampstep,delstep,fackincut
+REAL(8) :: hermg,hermh,hermhm,ovlaa,ovlab,spemax,spemin,symcondmax,v2avar
 REAL(8), ALLOCATABLE :: cm(:,:),cmnew(:,:),symcond(:,:)
 REAL(8), ALLOCATABLE :: hcm(:,:)
 REAL(8), ALLOCATABLE :: hmatrix(:,:),gapmatrix(:,:)
 REAL(8), ALLOCATABLE :: phasfac(:),paircut_uv(:),paircut_v2(:),spenat(:),gapnat(:)
 REAL(8), ALLOCATABLE :: gwa(:),v2a(:),uva(:),lambda(:,:),dummy(:)
-INTEGER, ALLOCATABLE :: jssav(:)
+!INTEGER, ALLOCATABLE :: jssav(:)
 REAL(8), ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
 
-LOGICAL, PARAMETER :: tprint=.false.,tprint0=.false.
-LOGICAL, PARAMETER :: tprint1=.false.
+LOGICAL, PARAMETER :: tprint=.TRUE.,tprint0=.TRUE.
+LOGICAL, PARAMETER :: tprint1=.TRUE.
 LOGICAL, PARAMETER :: toffdiag=.true.,tnewv2=.false.
-LOGICAL, PARAMETER :: tbuffer=.true.    ! use buffering for matrix products
-INTEGER, PARAMETER :: ifcut=1
+LOGICAL, PARAMETER :: tbuffer=.FALSE.    ! use buffering for matrix products
+!INTEGER, PARAMETER :: ifcut=1
 !      INTEGER,PARAMETER :: iternat=0!100
 !      REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=0D0
 REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=20D0
@@ -69,9 +74,11 @@ IF(tprint0) WRITE(6,'(a,2i4,4(1pg13.5))')  &
     'HFB natural for iso,nmaxa,eferm,partnum=',iso,nmaxa,efermiso, partnum
 ALLOCATE(lambda(nmaxa,nmaxa),cmnew(nmaxa,nmaxa),gapnat(nmaxa))
 ALLOCATE(hmatrix(nmaxa,nmaxa),gapmatrix(nmaxa,nmaxa))
-ALLOCATE(gwa(nmaxa),hcm(nmaxa,nmaxa))
+!ALLOCATE(gwa(nmaxa),hcm(nmaxa,nmaxa))
+ALLOCATE(hcm(nmaxa,nmaxa))
 ALLOCATE(paircut_uv(nmaxa),paircut_v2(nmaxa),phasfac(nmaxa),spenat(nmaxa))
-ALLOCATE(jssav(nmaxa),v2a(nmaxa),uva(nmaxa),cm(nmaxa,nmaxa))
+!ALLOCATE(jssav(nmaxa))
+ALLOCATE(v2a(nmaxa),uva(nmaxa),cm(nmaxa,nmaxa))
 ALLOCATE(dummy(nmaxa),symcond(nmaxa,nmaxa))
 
 !     copy old weights to new workspace
@@ -82,7 +89,7 @@ DO nq=1,nmaxa
   paircut_uv(nq)=wtpair_uv(nqi)
   paircut_v2(nq)=wtpair_v2(nqi)
 END DO
-gwa=v2a
+!gwa=v2a
 
 !     set up Hamiltonian matrix, gap matrix, and initial value for
 !     unitary transformation to natural orbits
@@ -100,7 +107,7 @@ DO n1=1,nmaxa
   ist=n1+isonpl
   m1=mpsi(ist)
   np1=nparz(1,ist)
-  CALL hpsi(psi(0,0,1,ist),psin,ist)
+  CALL hpsi(psi(0:nz,0:nr,1:2,ist),psin,ist)
   DO is=1,nsd
     psip(0:nz,0:nr,is)=psi(0:nz,0:nr,is,ist)*pairpt(0:nz,0:nr,iso)
     psip(0:nz,0:nr,is)=psi(0:nz,0:nr,is,ist)*pairpt(0:nz,0:nr,iso)
@@ -126,7 +133,7 @@ DO n1=1,nmaxa
 END DO
 DEALLOCATE(psip,psin)
 
-CALL sortenerg(nmaxa,spenat,iorder(1+isonpl))     ! sorting to energy
+CALL update_energy_order(nmaxa,spenat(1:nmaxa),iorder(1+isonpl:nmaxa+isonpl))     ! sorting to energy
 IF(tprint1) WRITE(6,'(a,5000(2i4,2x))') 'IORDER:',  &
     (na+isonpl,iorder(na+isonpl)+isonpl,na=1,nmaxa)
 IF(tnewv2) THEN
@@ -136,11 +143,11 @@ IF(tnewv2) THEN
     WRITE(6,'(a,200(1pg13.5))') 'gapnat:',gapnat(1:nmaxa)
   END IF
   IF(pairstab /= 0)  &
-      CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair,  &
+      CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair(iso),  &
       pairstab,nmaxa,nmaxa,iab,tcutoff_uvspace)
   CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
-      nst(iso),nst(iso),npiter,ipair,istbloact,erra,itest-1)  
+      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)  
   IF(tprint0) WRITE(6,'(a,6(1pg13.5))') 'after PAIRDN:',  &
       efermiso,epair(iso),gap(iso),efadd
   IF(tprint0 .AND. iso==2) THEN
@@ -206,15 +213,15 @@ WRITE(6,'(a,2i5,1pg13.5)') 'HFB natural: iso,iter,symm=',  &
 IF(tprint0) THEN
   WRITE(6,'(a,i5)') 'HFB natural: iter=',0
   WRITE(6,'(a,7(1pg13.5))') ' partnum,efermi,epair,cutfac=',  &
-      partnum,sum(v2a*phasfac)*2D0,efermiso,epair,cutfac
+      partnum,sum(v2a*phasfac)*2D0,efermiso,epair,pair_cutoff
   IF(tprint1) THEN
-    WRITE(6,'(a)')'# n  js  spe  v2  uv  cut   phasfac'
+    WRITE(6,'(a)')'# n   spe  v2  uv  cut   phasfac'
     DO na=1,nmaxa
-      WRITE(6,'(2i3,5(1pg13.5))') na,jssav(na),spenat(na),v2a(na),  &
+      WRITE(6,'(i3,5(1pg13.5))') na,spenat(na),v2a(na),  &
           gapnat(na),paircut_uv(na),phasfac(na)
       nb=na+isonpl
       WRITE(6,'(6x,5(1pg13.5))') spenrg(nb),vsqf(nb),  &
-          deltaf(nb),paircut_uv(nb),wate(nb)
+          deltaf(nb),wtpair_uv(nb),wate(nb)
     END DO
   END IF
 !          WRITE(6,'(a)') 'asymmetry matrix:'
@@ -249,7 +256,7 @@ DO iter=1,iternat
   IF(tbuffer) THEN
     DO na=1,nmaxa
       IF(thfbvariat) THEN       ! check for paircut_v2!
-        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*cutfac)
+        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*pair_cutoff)
         v2avar = v2a(na) + uva(na)*fackincut
       ELSE
         v2avar = v2a(na)
@@ -268,7 +275,7 @@ DO iter=1,iternat
   ELSE
     DO na=1,nmaxa
       IF(thfbvariat) THEN          ! check for paircut_v2!
-        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*cutfac)
+        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*pair_cutoff)
         v2avar = v2a(na) + uva(na)*fackincut
       ELSE
         v2avar = v2a(na)
@@ -322,7 +329,7 @@ DO iter=1,iternat
   IF(tbuffer) THEN
     DO na=1,nmaxa
       IF(thfbvariat) THEN     !check for paircut_v2 !
-        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*cutfac)
+        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*pair_cutoff)
         v2avar = v2a(na) + uva(na)*fackincut
       ELSE
         v2avar = v2a(na)
@@ -350,7 +357,7 @@ DO iter=1,iternat
   ELSE
     DO na=1,nmaxa;
       IF(thfbvariat) THEN    ! check for paircut_v2
-        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*cutfac)
+        fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*pair_cutoff)
         v2avar = v2a(na) + uva(na)*fackincut
       ELSE
         v2avar = v2a(na)
@@ -419,11 +426,11 @@ DO iter=1,iternat
     END DO
   END DO
   IF(pairstab /= 0)  &
-      CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair,  &
+      CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair(iso),  &
       pairstab,nmaxa,nmaxa,iab,tcutoff_uvspace)
-  CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv(isonpl+1),paircut_v2(isonpl+1),partnum,  &
+  CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
-      nst(iso),nst(iso),npiter,ipair,istbloact,erra,itest-1)
+      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)
   IF(tcutoff_uvspace) THEN                               ! check
     uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)
   ELSE
@@ -438,12 +445,12 @@ DO iter=1,iternat
   IF(tprint0) THEN
     WRITE(6,'(a,i5)') 'HFB natural: iter=',iter
     WRITE(6,'(a,6(1pg13.5))') 'partnum,eferm,epair,delst,symm=',  &
-        partnum,efermi,epairact,delstep, symcondmax,SQRT(avsymcond/partnum)
+        partnum,efermiso,epair(iso),delstep, symcondmax,SQRT(avsymcond/partnum)
   END IF
   IF(tprint1) THEN
-    WRITE(6,'(a)')'# n  js  spe  v2  uv  cut   phasfac'
+    WRITE(6,'(a)')'# n  spe  v2  uv  cut   phasfac'
     DO na=1,nmaxa
-      WRITE(6,'(2i3,5(1pg13.5))') na,jssav(na),spenat(na),v2a(na),  &
+      WRITE(6,'(i3,5(1pg13.5))') na,spenat(na),v2a(na),  &
           uva(na),paircut_uv(na),phasfac(na)
     END DO
     IF(tprint) THEN
@@ -470,11 +477,12 @@ symcondf(iso)=SQRT(avsymcond/partnum)
 WRITE(6,'(a,i2,4(1pg13.5))')  &
     'HFB final symmetry condition: iso,max,average=', iso,symcondmax,symcondf(iso)
 !      CALL  hfb_nat_densit(iso,nmaxa,cm,v2a,uva,jssav,phasfac)
-CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv(isonpl+1),paircut_v2(isonpl+1),jssav,phasfac)
+!CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv(isonpl+1),paircut_v2(isonpl+1),phasfac)
+CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv,paircut_v2,phasfac)
 
 DEALLOCATE(lambda,cmnew,gapnat,hmatrix,gapmatrix)
-DEALLOCATE(paircut_uv,paircut_v2,phasfac,spenat,jssav,v2a,uva,cm)
-DEALLOCATE(dummy,symcond)
+DEALLOCATE(paircut_uv,paircut_v2,phasfac,spenat,v2a,uva,cm)
+DEALLOCATE(dummy,symcond,hcm)
 
 IF(iso==1) THEN
   feradd(1)=efadd
@@ -490,7 +498,7 @@ RETURN
 END SUBROUTINE hfb_natural
 !-----hfb_nat_mapwf---------------------------------------------------------
 
-SUBROUTINE hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv,paircut_v2,jssav,phasfac)
+SUBROUTINE hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv,paircut_v2,phasfac)
 
 USE paramr
 
@@ -508,11 +516,12 @@ REAL(8), INTENT(IN)    :: cm(nmaxa,nmaxa)
 REAL(8), INTENT(IN)    :: v2a(nmaxa)
 REAL(8), INTENT(IN)    :: paircut_uv(nmaxa)
 REAL(8), INTENT(IN)    :: paircut_v2(nmaxa)
-INTEGER, INTENT(IN)    :: jssav(nmaxa)          ! jssav
+!INTEGER, INTENT(IN)    :: jssav(nmaxa)          ! jssav
 REAL(8), INTENT(IN)    :: phasfac(nmaxa)
 
 LOGICAL, PARAMETER :: tprint0=.false.,tprint=.false.
 REAL(8), ALLOCATABLE :: psisav(:,:,:,:)
+INTEGER :: npsid
 
 !-------------------------------------------------------------------------------
 
@@ -529,6 +538,7 @@ END IF
 
 !     new wave functions from HFB coefficients
 
+npsid=nst(1)+nst(2)
 ALLOCATE(psisav(0:nz,0:nr,nsd,npsid))
 acctot=0D0
 psisav=0D0
@@ -583,19 +593,22 @@ SUBROUTINE pair_stab(e,delta,v2occ,ph,pairgw,epair,  &
 !      epair   = pairing energy
 
 USE paramr
+IMPLICIT NONE
 
 REAL(8), INTENT(IN OUT)  :: e(ndim)
 REAL(8), INTENT(IN OUT)  :: delta(ndim)
 REAL(8), INTENT(IN)      :: v2occ(ndim)
 REAL(8), INTENT(IN)      :: ph(ndim)
 REAL(8), INTENT(IN)      :: pairgw(ndim)
-REAL, INTENT(OUT)        :: epair
-REAL, INTENT(IN)         :: pairstab
+REAL(8), INTENT(OUT)        :: epair
+REAL(8), INTENT(IN)         :: pairstab
 INTEGER, INTENT(IN)      :: nmax
 INTEGER, INTENT(IN OUT)  :: ndim
 INTEGER, INTENT(IN)      :: iab
 LOGICAL, INTENT(IN)      :: tphpair
 
+INTEGER :: na
+REAL(8) :: deltaa,v2,sumduv,uv
 
 !LOGICAL :: tphpair
 

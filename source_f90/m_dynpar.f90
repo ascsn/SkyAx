@@ -29,7 +29,7 @@ INTEGER :: itert           !<Overall total number of iterations.
 INTEGER :: iterbcs=300     !<iteration nr. from which on HFB is active
 INTEGER :: iterhfb=600     !<nr. of iterations with enhanced pairing
 INTEGER :: iternat=0       !<nr. of iterations in configuration space (not yet installed)
-INTEGER :: modnat=9999999  !<modulus of switxhing to iterations in configuration space
+INTEGER :: modnat=9999999  !<modulus of switching to iterations in configuration space
 REAL(8) :: pairenhance=2D0 !<initial enhancement of pairing strength
 LOGICAL :: tnobcs=.TRUE.   !<suppresses initial BCS phase after first run along a deformation path
 CHARACTER (LEN=3) :: outnam = "tst"  !< 3-digit qualifier for output files
