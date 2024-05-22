@@ -71,6 +71,7 @@ INTEGER :: mhi(mxd)         !<array storing the upper index for the wave functio
 INTEGER :: mlo(mxd)         !<array storing the lower index for the wave functions
 INTEGER :: miq(mxd)         !<array storing the iq value for the wave functions
 INTEGER :: mim(mxd)         !<array storing the m value for the wave functions
+INTEGER,ALLOCATABLE :: nbuf(:)        !<array storing the m value for the wave functions
  
 REAL(8) :: betain=0.1D0               !< Deformation of initial oscillator wavefunctions.
 REAL(8) :: octini=0D0                 !< Initial octupole deformation (by oczupole squeezing).
@@ -95,12 +96,12 @@ SUBROUTINE alloc_levels(npsi)
            wate(npsi),  spn(npsi),   spenrg(npsi),spevar(npsi),  speold(npsi),vsqf(npsi),&
            dvsqf(npsi), vsqfol(npsi),oc(npsi),    cmpn(nsd,npsi),vsqobs(npsi),deltaf(npsi),&
            wtpair_uv(npsi),wtpair_v2(npsi),qspav(npsi),mpsi(npsi),npar(npsi),nrpar(npsi),&
-            nparz(2,npsi),nqr(npsi),   nqz(npsi),   icharg(npsi),iorder(npsi),  spevhh(npsi) &
-           )
+            nparz(2,npsi),nqr(npsi),   nqz(npsi),   icharg(npsi),iorder(npsi),  spevhh(npsi), &
+           nbuf(npsi)       )
   wate=0.0D0  ;spn=0.0D0   ;spenrg=0.0D0;spevar=0.0D0;speold=0.0D0;vsqf=0.0D0
   dvsqf=0.0D0 ;vsqfol=0.0D0;oc=0.0D0    ;cmpn=0.0D0  ;vsqobs=0.0D0;deltaf=0.0D0
   wtpair_uv=0.0D0;wtpair_v2=0.0D0;qspav=0.0D0 ;mpsi=0  ;npar=0  ;nrpar=0 ;nparz=0
-  nqr=0   ;nqz=0   ;icharg=0;iorder=0;spevhh=0.0D0
+  nqr=0   ;nqz=0   ;icharg=0;iorder=0;spevhh=0.0D0; nbuf=0
   RETURN
 END SUBROUTINE alloc_levels
 !---------------------------------------------------------------------------  

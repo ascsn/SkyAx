@@ -187,7 +187,8 @@ REAL(8) :: accn,accp,addpt,adparp,alpeff,d1pr,&
            d1pz,d1sr,d1sz,d2p,d2s,facne,facpr,parfac,potn,potold,&
            potp,r,r2,redpot,rlsrp,rlszp,rm,rnr,rp,rpr,rs,rsfac,rsfac2,&
            rsinv,rspow,rspow7,ssp,sss,tp,ts,z
-INTEGER :: ic,iq,ir,iterold,iz
+INTEGER :: ic,iq,ir,iz
+INTEGER, SAVE :: iterold
 
 REAL(8),ALLOCATABLE :: wrk1(:,:),wrk2(:,:)
 

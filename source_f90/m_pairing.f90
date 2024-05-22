@@ -227,7 +227,7 @@ REAL(8) FUNCTION Keff_regpair2()
 
 REAL(8),PARAMETER :: fourpi=12.56637061D0   ! 4*pi
 REAL(8),PARAMETER :: fourpi2=39.4784176D0   ! 4*pi**2
-REAL(8) :: kf2                     ! square of Fermi momentum
+!REAL(8) :: kf2                     ! square of Fermi momentum
 REAL(8) :: kf                      ! absolute value of Fermi momentum
 REAL(8) :: kcut                    ! cutoff momentum, deduced from ecut_a
 REAL(8) :: lcut                    ! lower cutoff momentum, deduced from ecut_a
@@ -411,6 +411,7 @@ END IF
 IF(eferm /= zero) THEN
   IF(tcutoff_WS) THEN
     efadd  = pair_cutoff
+    deltac = efadd*0.1D0
     DO i=1,nmax
       arg    = (e(i)-(eferm+efadd))/deltac
       IF(arg > fifty) THEN
