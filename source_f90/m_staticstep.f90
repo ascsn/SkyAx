@@ -358,7 +358,7 @@ IF(ifopts == 1) THEN
   WRITE(7,'(a,2g12.4)') ' optimal stepsize=',aopt
   WRITE(6,'(a,2g12.4)') ' optimal stepsize=',aopt
 END IF
-IF(thfb) WRITE(7,'(a,i5,2(1pg13.5))') '#HFB symmetry condition:',iter,symcondiso
+!IF(thfb) WRITE(7,'(a,i5,2(1pg13.5))') '#HFB symmetry condition:',iter,symcondiso
 ! testprint, presently restricted to constraint L=2
 IF(tswicon2 .AND. tqq .AND. tcstp) &
   WRITE(66,'(a,i4,6g12.4)') 'iter,qh,qdh,qq,qhdig,qh/qq,qlam=',  &
