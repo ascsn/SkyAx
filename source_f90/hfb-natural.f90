@@ -39,9 +39,9 @@ REAL(8), ALLOCATABLE :: gwa(:),v2a(:),uva(:),lambda(:,:),dummy(:)
 REAL(8), ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
 
 LOGICAL, PARAMETER :: tprint=.TRUE.,tprint0=.TRUE.
-LOGICAL, PARAMETER :: tprint1=.TRUE.
+LOGICAL, PARAMETER :: tprint1=.FALSE.
 LOGICAL, PARAMETER :: toffdiag=.true.,tnewv2=.false.
-LOGICAL, PARAMETER :: tbuffer=.FALSE.    ! use buffering for matrix products
+LOGICAL, PARAMETER :: tbuffer=.TRUE.    ! use buffering for matrix products
 !INTEGER, PARAMETER :: ifcut=1
 !      INTEGER,PARAMETER :: iternat=0!100
 !      REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=0D0
@@ -181,16 +181,17 @@ END IF
 avsymcond=0D0
 symcondmax=0D0
 IF(tbuffer) THEN
+  IF(iso==2) WRITE(6,'(a,4i4)') 'isonpl=',isonpl
   DO na=1,nmaxa
     ist=na+isonpl
     istbuf=nbuf(ist)
     np1=nparz(1,ist)
     nblo=mlo(istbuf)-isonpl
     nbhi=mhi(istbuf)-isonpl
-    IF(iso==2) WRITE(6,'(a,3i4)') 'istbuf,nblo,nbhi=',nblo,nbhi,istbuf
+    IF(iso==2) WRITE(6,'(a,4i4)') 'istbuf,nblo,nbhi,ist=',nblo,nbhi,istbuf,ist
     DO nb=nblo,nbhi
-      IF(iso==2) WRITE(6,'(a,2i4)') 'NA,NB=',na,nb
       IF(nparz(1,nb+isonpl) /= np1) cycle
+!      IF(iso==2) WRITE(6,'(a,2i4)') 'NA,NB=',na,nb
       symcond(na,nb) = +(v2a(nb)*hmatrix(na,nb)-v2a(na)*hmatrix(nb,na))  &
           +(uva(nb)*gapmatrix(na,nb)-uva(na)*gapmatrix(nb,na))
       symcondmax=MAX(symcondmax,ABS(symcond(na,nb)))
@@ -318,7 +319,7 @@ DO iter=1,iternat
       symcond(nb,na)= -symcond(na,nb)
     END DO; END DO
   END IF
-  IF(tprint0) WRITE(6,'(a,1pg13.5)') 'before step:',  &
+  IF(tprint0) WRITE(6,'(a,1pg13.5)') 'before step average symm.cond.:',  &
       SQRT(sum(symcond(:,:)**2)/partnum)
 !        nitsub=1
 !        DO itsub=1,nitsub
@@ -347,11 +348,12 @@ DO iter=1,iternat
           dampstep = delstepbas/(hmatrix(n1,n1)-spemin+e0bas)
 !    &                  /nitsub
         END IF
-        cmnew(n1,na) = cm(n1,na) - dampstep*(hcm(n1,na)  &
-            -  sum(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
-!     &          v2avar*SUM(hmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na))
-!     &         +uva(na)*SUM(gapmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na))
-!     &       -  SUM(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
+!        cmnew(n1,na) = cm(n1,na) - dampstep*(hcm(n1,na)  &
+!            -  sum(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
+        cmnew(n1,na) = cm(n1,na) - dampstep*(  &
+               v2avar*SUM(hmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na)) &
+              +uva(na)*SUM(gapmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na)) &
+            -  SUM(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
       END DO
     END DO
   ELSE
@@ -379,7 +381,7 @@ DO iter=1,iternat
   
 !     ortho-normalize
   cm=cmnew
-  IF(tbuffer) THEN
+  IF(tbuffer .AND. 1==2) THEN   ! there is bug in the 'tbuffer' branch ==> skip
     DO nae=1,nmaxa               ! loop runs energy sorted
       ist=iorder(nae+isonpl)+isonpl
       na=ist-isonpl
