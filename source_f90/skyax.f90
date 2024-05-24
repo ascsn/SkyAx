@@ -388,8 +388,11 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 
         END IF
         
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV10:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
         CALL sstep(iter)
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV11:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
         CALL sinfo(iter)
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV12:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
         
         dnewoct=beta3
         
@@ -637,7 +640,7 @@ SUBROUTINE write_headers()
     STOP 'dimension in setup'
   END IF
   
-  IF((ipair == 5.OR.ipair == 7)) THEN
+  IF(ipair.GE.5 .AND. ipair.LE.8) THEN
     IF (pairstab > 0.0D0) THEN
       WRITE(7,6003) pairstab
       6003    FORMAT(' BCS stabilizing energy must not be positive - pairstab=',  &

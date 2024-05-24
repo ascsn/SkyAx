@@ -251,30 +251,32 @@ DO jst=1,nst(1)+nst(2)
   CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
 END DO
 !c     now multiply with strength to obtain local pair-potential
-IF(ipair <= 6 .OR. ipair == 9) THEN
-  pairpt(0:nz,0:nr,1)  = -pairfc(1) * paircr(0:nz,0:nr,1)
-  pairpt(0:nz,0:nr,2)  = -pairfc(2) * paircr(0:nz,0:nr,2)
-ELSE
-  work(0:nz,0:nr)=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
-  pairpt(0:nz,0:nr,1)  = -pairfc(1) * work * paircr(0:nz,0:nr,1)
-  pairpt(0:nz,0:nr,2)  = -pairfc(2) * work * paircr(0:nz,0:nr,2)
-END IF
+IF(.NOT.tFayans) THEN
+  IF(ipair <= 6 .OR. ipair == 9) THEN
+    pairpt(0:nz,0:nr,1)  = -pairfc(1) * paircr(0:nz,0:nr,1)
+    pairpt(0:nz,0:nr,2)  = -pairfc(2) * paircr(0:nz,0:nr,2)
+  ELSE
+    work(0:nz,0:nr)=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
+    pairpt(0:nz,0:nr,1)  = -pairfc(1) * work * paircr(0:nz,0:nr,1)
+    pairpt(0:nz,0:nr,2)  = -pairfc(2) * work * paircr(0:nz,0:nr,2)
+  END IF
 
-IF(ipair <= 6 .OR. ipair == 9) THEN
-  work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)
-  epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
-  work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)
-  epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ? 
-ELSE
-  work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
-  work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)* work
-  epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
-  work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
-  work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)* work
-  epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
+  IF(ipair <= 6 .OR. ipair == 9) THEN
+    work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)
+    epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
+    work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)
+    epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ? 
+  ELSE
+    work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
+    work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)* work
+    epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
+    work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
+    work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)* work
+    epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
+  END IF
+  etpair= epairtestp+ epairtestn
+  IF(ipair <= 4)  etpair=epair(1)+epair(2)
 END IF
-etpair= epairtestp+ epairtestn
-IF(ipair <= 4)  etpair=epair(1)+epair(2)
 
 
 !**********************************************************************
