@@ -38,14 +38,16 @@ REAL(8), ALLOCATABLE :: gwa(:),v2a(:),uva(:),lambda(:,:),dummy(:)
 !INTEGER, ALLOCATABLE :: jssav(:)
 REAL(8), ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
 
-LOGICAL, PARAMETER :: tprint=.TRUE.,tprint0=.TRUE.
-LOGICAL, PARAMETER :: tprint1=.FALSE.
-LOGICAL, PARAMETER :: toffdiag=.true.,tnewv2=.false.
-LOGICAL, PARAMETER :: tbuffer=.TRUE.    ! use buffering for matrix products
+LOGICAL, PARAMETER :: tprint=.FALSE.,tprint0=.FALSE.
+LOGICAL, PARAMETER :: tprint1=.FALSE.,tprinth=.FALSE.
+LOGICAL, PARAMETER :: toffdiag=.true.,tnewv2=.TRUE.
+LOGICAL, PARAMETER :: tbuffer=.TRUE.     ! use buffering for matrix products
+!LOGICAL, PARAMETER :: tbuffert=.TRUE.    ! to test buffering selectively
 !INTEGER, PARAMETER :: ifcut=1
 !      INTEGER,PARAMETER :: iternat=0!100
 !      REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=0D0
-REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=20D0
+!REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=20D0
+REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=40D0
 
 !--------------------------------------------------------------------
 
@@ -133,7 +135,8 @@ DO n1=1,nmaxa
 END DO
 DEALLOCATE(psip,psin)
 
-CALL update_energy_order(nmaxa,spenat(1:nmaxa),iorder(1+isonpl:nmaxa+isonpl))     ! sorting to energy
+!IF(.NOT.tFayans) &
+  CALL update_energy_order(nmaxa,spenat(1:nmaxa),iorder(1+isonpl:nmaxa+isonpl))     ! sorting to energy
 IF(tprint1) WRITE(6,'(a,5000(2i4,2x))') 'IORDER:',  &
     (na+isonpl,iorder(na+isonpl)+isonpl,na=1,nmaxa)
 IF(tnewv2) THEN
@@ -188,7 +191,7 @@ IF(tbuffer) THEN
     np1=nparz(1,ist)
     nblo=mlo(istbuf)-isonpl
     nbhi=mhi(istbuf)-isonpl
-    IF(iso==2) WRITE(6,'(a,4i4)') 'istbuf,nblo,nbhi,ist=',nblo,nbhi,istbuf,ist
+!    IF(iso==2) WRITE(6,'(a,4i4)') 'istbuf,nblo,nbhi,ist=',nblo,nbhi,istbuf,ist
     DO nb=nblo,nbhi
       IF(nparz(1,nb+isonpl) /= np1) cycle
 !      IF(iso==2) WRITE(6,'(a,2i4)') 'NA,NB=',na,nb
@@ -215,14 +218,15 @@ IF(tprint0) THEN
   WRITE(6,'(a,i5)') 'HFB natural: iter=',0
   WRITE(6,'(a,7(1pg13.5))') ' partnum,efermi,epair,cutfac=',  &
       partnum,sum(v2a*phasfac)*2D0,efermiso,epair,pair_cutoff
-  IF(tprint1) THEN
+  IF(tprint1 .AND. tprinth) THEN
     WRITE(6,'(a)')'# n   spe  v2  uv  cut   phasfac'
     DO na=1,nmaxa
-      WRITE(6,'(i3,5(1pg13.5))') na,spenat(na),v2a(na),  &
-          gapnat(na),paircut_uv(na),phasfac(na)
       nb=na+isonpl
-      WRITE(6,'(6x,5(1pg13.5))') spenrg(nb),vsqf(nb),  &
-          deltaf(nb),wtpair_uv(nb),wate(nb)
+      WRITE(6,'(2i3,9(1pg13.5))') nb,iorder(nb)+isonpl,  &
+          spenat(na),v2a(na),gapnat(na),paircut_uv(na),phasfac(na), &
+           spenrg(nb),vsqf(nb), deltaf(nb)
+!      WRITE(6,'(6x,5(1pg13.5))') &
+!          deltaf(nb),wtpair_uv(nb),wate(nb)
     END DO
   END IF
 !          WRITE(6,'(a)') 'asymmetry matrix:'
@@ -232,7 +236,7 @@ IF(tprint0) THEN
   WRITE(6,'(a,i2,4(1pg13.5))')  &
       'HFB-natural init.symm. condition: iso,max,average=',  &
       iso,symcondmax,symcondi(iso)
-  IF(tprint1) THEN
+  IF(tprinth) THEN
     WRITE(6,'(a)') 'h matrix:'
     DO na=1,nmaxa
       WRITE(6,'(i3,a,500(1pg13.5))') na,': ',hmatrix(:,na)
@@ -255,6 +259,7 @@ DO iter=1,iternat
   
 !     h->psi in configuration space
   IF(tbuffer) THEN
+    hcm=0D0
     DO na=1,nmaxa
       IF(thfbvariat) THEN       ! check for paircut_v2!
         fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*pair_cutoff)
@@ -328,6 +333,7 @@ DO iter=1,iternat
   spemax=maxval(spenat,nmaxa)
   delstep=delstepbas/(spemax-spemin)
   IF(tbuffer) THEN
+    cmnew=0D0
     DO na=1,nmaxa
       IF(thfbvariat) THEN     !check for paircut_v2 !
         fackincut = -(1D0-paircut_uv(na))*gapmatrix(na,na)/(-0.1D0*pair_cutoff)
@@ -348,12 +354,12 @@ DO iter=1,iternat
           dampstep = delstepbas/(hmatrix(n1,n1)-spemin+e0bas)
 !    &                  /nitsub
         END IF
-!        cmnew(n1,na) = cm(n1,na) - dampstep*(hcm(n1,na)  &
-!            -  sum(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
-        cmnew(n1,na) = cm(n1,na) - dampstep*(  &
-               v2avar*SUM(hmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na)) &
-              +uva(na)*SUM(gapmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na)) &
-            -  SUM(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
+        cmnew(n1,na) = cm(n1,na) - dampstep*(hcm(n1,na)  &
+            -  sum(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
+!        cmnew(n1,na) = cm(n1,na) - dampstep*(  &
+!               v2avar*SUM(hmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na)) &
+!              +uva(na)*SUM(gapmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na)) &
+!            -  SUM(cm(n1,nblo:nbhi)*lambda(nblo:nbhi,na))     )
       END DO
     END DO
   ELSE
@@ -371,10 +377,12 @@ DO iter=1,iternat
           dampstep = delstepbas/(hmatrix(n1,n1)-spemin+e0bas)
 !    &                  /nitsub
         END IF
-        cmnew(n1,na) = cm(n1,na) - dampstep*(  &
-            v2avar*sum(hmatrix(n1,:)*cm(:,na))  &
-            +uva(na)*sum(gapmatrix(n1,:)*cm(:,na))  &
-            -sum(cm(n1,:)*lambda(:,na))     )
+        cmnew(n1,na) = cm(n1,na) - dampstep*(hcm(n1,na)  &
+            -  sum(cm(n1,:)*lambda(:,na))     )
+!        cmnew(n1,na) = cm(n1,na) - dampstep*(  &
+!            v2avar*sum(hmatrix(n1,:)*cm(:,na))  &
+!            +uva(na)*sum(gapmatrix(n1,:)*cm(:,na))  &
+!            -sum(cm(n1,:)*lambda(:,na))     )
       END DO
     END DO
   END IF
@@ -455,7 +463,7 @@ DO iter=1,iternat
       WRITE(6,'(i3,5(1pg13.5))') na,spenat(na),v2a(na),  &
           uva(na),paircut_uv(na),phasfac(na)
     END DO
-    IF(tprint) THEN
+    IF(tprinth) THEN
       WRITE(6,'(a)') 'symmetry condition in detail:'
       DO na=1,nmaxa
         WRITE(6,'(i3,a,500(1pg13.5))') na,': ',symcond(:,na)
@@ -481,6 +489,18 @@ WRITE(6,'(a,i2,4(1pg13.5))')  &
 !      CALL  hfb_nat_densit(iso,nmaxa,cm,v2a,uva,jssav,phasfac)
 !CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv(isonpl+1),paircut_v2(isonpl+1),phasfac)
 CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv,paircut_v2,phasfac)
+!IF(iso==2)  WRITE(6,'(a,1pg13.5)') 'SUMUVnat:',SUM(SQRT(v2a(1:nmaxa)-v2a(1:nmaxa)**2))
+  IF(tprint1) THEN
+    WRITE(6,'(a)')'# n   spe  v2  uv  cut   phasfac'
+    DO na=1,nmaxa
+      nb=na+isonpl
+      WRITE(6,'(2i3,9(1pg13.5))') nb,iorder(nb)+isonpl,  &
+          spenat(na),v2a(na),gapnat(na),paircut_uv(na),phasfac(na), &
+           spenrg(nb),vsqf(nb), deltaf(nb)
+!      WRITE(6,'(6x,5(1pg13.5))') &
+!          deltaf(nb),wtpair_uv(nb),wate(nb)
+    END DO
+  END IF
 
 DEALLOCATE(lambda,cmnew,gapnat,hmatrix,gapmatrix)
 DEALLOCATE(paircut_uv,paircut_v2,phasfac,spenat,v2a,uva,cm)
@@ -493,6 +513,8 @@ ELSE
   feradd(2)=efadd
   fer(2)=efermiso
 END IF
+
+
 
 !      IF(iso==2) STOP
 
@@ -563,6 +585,8 @@ DO n1=1,nmaxa
   psi(0:nz,0:nr,1:2,ist) = psisav(0:nz,0:nr,1:2,ist)
 END DO
 DEALLOCATE(psisav)
+
+!IF(isonpl>1)  WRITE(6,'(a,1pg13.5)') 'SUMUVaft:',SUM(SQRT(vsqf(isonpl+1:isonpl+nmaxa)-vsqf(isonpl+1:isonpl+nmaxa)**2))
 
 RETURN
 END SUBROUTINE hfb_nat_mapwf

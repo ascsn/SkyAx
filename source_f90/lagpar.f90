@@ -20,6 +20,7 @@ USE fields
 USE wavefr
 USE levels
 USE observ, ONLY: qq0,qq1,qq2,qq3,qq4,qdh,devmf2,devgap,devh2,devoc2
+!USE fyfunc, ONLY: fy_hfbpot
 !USE init, ONLY: idanuc
 !USE staticstep, ONLY: qh0,qh1,qh2,qh3,qh4,hdh,hddh,hdhdh,qhdig
 
@@ -55,6 +56,12 @@ IF(istmin <= nst(1)) THEN
 ELSE
   iq = 2
 END IF
+!  CALL fy_hfbpot()
+!DO ist=0,nr
+!  WRITE(6,'(200(1pg13.5))') pairpt(0:nz,ist,iq)
+!END DO
+!STOP "testp"
+!IF(iq==2) WRITE(6,'(a,1pg13.5)') 'PAIRPT:',pairpt(1,1,iq)
 symcond = 0D0
 !     compute and store action of HFB Hamiltonian
 DO jst=istmin,istmax
@@ -78,6 +85,8 @@ DO jst=istmin,istmax
           +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,is,jst)*uva
     END DO
   END IF
+!  WRITE(6,'(a,i4,4(1pg13.5))') 'HPSI:',jst,v2a,uva, &
+!     wfovlp(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst)),SUM(pairpt(0:nz,0:nr,iq))
   IF(tqq) CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,istmin,istmax,&
                             spevar(jst),spenrg(jst),&     
                             qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&  
@@ -107,8 +116,10 @@ DO ist=istmin,istmax
     ELSE
       hlagr(ist,jst) = 0D0
     END IF
+!    WRITE(6,'(a,2i4,2(1pg13.5))') 'sym:',ist,jst,symatrix(ist,jst),hlagr(ist,jst)
   END DO
 END DO
+!STOP "test"
 
 !     accumulate symmetry condition
 DO ist=istmin,istmax

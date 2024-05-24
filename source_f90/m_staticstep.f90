@@ -229,6 +229,12 @@ qh0=0D0;qh1=0D0;qh2=0D0;qh3=0D0;qh4=0D0;
 qh = 0D0; qdh = 0D0; qhdig = 0D0
 symcondiso = 0D0
 
+IF(thfb) THEN
+  nlo=nst(1)+1
+  nhi=nst(1)+nst(2)
+!  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
+END IF
+
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,temp,wtime1,wtime2,v2act) &
@@ -246,8 +252,10 @@ DO  i=1,nom         ! loop over all blocks
        '          nlo=',nlo,'   nhi=',nhi, '   lz=',kpsic,'   chg=',iq
   !$ wtime1 = OMP_GET_WTIME()
   IF(iter > 0) THEN
+!    WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt:',iter,pairpt(1,1,1:2)
     IF(thfb) THEN
       CALL hfbstep(temp,symcond,nlo,nhi,iter,.TRUE.)
+!      WRITE(6,'(a,3i4,1pg13.5)') 'HFB:',i,nlo,nhi,symcond
       symcondiso(iq) = symcondiso(iq) + symcond
     ELSE
     IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
@@ -468,7 +476,9 @@ END IF
 !**********************************************************************
 
 
+! WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt before:',iter,pairpt(1,1,1:2)
 CALL update_occupations(iter)
+! WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt after:',iter,pairpt(1,1,1:2)
 
 
 !**********************************************************************
@@ -921,7 +931,9 @@ END SUBROUTINE protocol_constr
 
 SUBROUTINE update_occupations(iter)
 
-IMPLICIT NONE     
+USE fyfunc, ONLY: fy_hfbpot
+
+IMPLICIT NONE 
 
 INTEGER, INTENT(IN) :: iter   ! actual iteration number
 
@@ -939,6 +951,7 @@ IF(einitbubble /= 0D0 .AND. iter <= itpini) THEN
 END IF
 
 ! reorder and reoccupy states for output
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUVb:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
 IF(ipair==-1 .OR. (ipair>=0.AND.itert<=itpini)) THEN
   DO iq=1,2
     iofk=iokk(iq)
@@ -957,7 +970,9 @@ IF(iter == itpfix) oc(1:nsttot) = vsqf(1:nsttot)
 
 IF(iter > itpfix) THEN
   vsqf(1:nsttot) = oc(1:nsttot)               ! restore frozen occupation
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUVoc:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
 ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUVa:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
   vsqfol(1:nsttot) = vsqf(1:nsttot)
   IF(ipair.GE.0 .AND. ipair.LE.3) THEN
     CALL user_interface_4()  ! switches to user defined pairing
@@ -985,9 +1000,13 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
         wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
         nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
     vsqobs(1:nsttot) = vsqf(1:nsttot)
-    IF(iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+    IF(thfb .AND. iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+      IF(tFayans) THEN
+        CALL fy_hfbpot()
+      END IF
       CALL hfb_natural(1,fer(1),1D0*npart(1))
       CALL hfb_natural(2,fer(2),1D0*npart(2))
+!      vsqobs(1:nsttot) = vsqf(1:nsttot)
     END IF
   ELSE
     STOP ' ipair outside -1..4 or 5, 7, 9 or 11 not active'
@@ -1006,10 +1025,15 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     ELSE
       addact = addocc
     END IF
-    conocc = one-addact
+    conocc = 1D0-addact
+!      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVunmix:',iter,SUM(SQRT(vsqf(ist2:nst(1)+nst(2))-vsqf(ist2:nst(1)+nst(2))**2))
+!      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVold:',iter,SUM(SQRT(vsqfol(ist2:nst(1)+nst(2))-vsqfol(ist2:nst(1)+nst(2))**2))
     DO jst=1,nst(1)+nst(2)
+      v2=vsqf(jst)
       vsqf(jst)   = addact*vsqf(jst)+conocc*vsqfol(jst)
+      IF(iter>800 .AND. jst>nst(1)) WRITE(6,'(2i4,4(1pg13.5))') jst,iorder(jst)+nst(1),spenrg(jst),v2,vsqfol(jst),vsqf(jst)
     END DO
+!      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVmix:',iter,SUM(SQRT(vsqf(ist2:nst(1)+nst(2))-vsqf(ist2:nst(1)+nst(2))**2))
     ! compute pairing energies from gaps and occupations
     ! (not best choice  --> replace by direct integration)
     IF(ipair >= 5) THEN
