@@ -1031,7 +1031,7 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     DO jst=1,nst(1)+nst(2)
       v2=vsqf(jst)
       vsqf(jst)   = addact*vsqf(jst)+conocc*vsqfol(jst)
-      IF(iter>800 .AND. jst>nst(1)) WRITE(6,'(2i4,4(1pg13.5))') jst,iorder(jst)+nst(1),spenrg(jst),v2,vsqfol(jst),vsqf(jst)
+!      IF(iter>800 .AND. jst>nst(1)) WRITE(6,'(2i4,4(1pg13.5))') jst,iorder(jst)+nst(1),spenrg(jst),v2,vsqfol(jst),vsqf(jst)
     END DO
 !      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVmix:',iter,SUM(SQRT(vsqf(ist2:nst(1)+nst(2))-vsqf(ist2:nst(1)+nst(2))**2))
     ! compute pairing energies from gaps and occupations
