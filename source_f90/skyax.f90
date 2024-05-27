@@ -219,6 +219,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
        STOP ' MMAX too small for given DEOCC for protons'
   IF(2*eocc(2) > mmax(2)+3.0)  &
       STOP ' MMAX too small for given DEOCC for neutrons'
+  IF(iternat>0 .AND. tregpair) STOP "HFB accelerator not yet for regularized pairing"
   CALL init_grid            ! grid and derivative matrices
   CALL idanuc               ! nucleon damping
   CALL idames               ! coulomb damping
