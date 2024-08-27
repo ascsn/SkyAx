@@ -130,9 +130,11 @@ REAL(8) :: pairfc(2)=(/xxxl,xxxl/)          !<The strength of pairing for proton
 REAL(8) :: rho0pr=xxxl                      !<Density parameter for the density-dependent delta pairing.
 REAL(8) :: pairstab=0D0                     !<Parameter for pairing stabilization
 REAL(8) :: pair_cutoff=1.65D0               !<Parameter for soft cutoff of pairing space (<0 = WS profile, >0 = nr. of states)
+REAL(8) :: foldwid=0D0                      !<Parameter for Gaussian width in finite-range pairing
 REAL(8) :: erra=1D-9                        !<Termination criterion for error in particle number.
 LOGICAL :: tcutoff_uvspace=.TRUE.           !<Switch to pairing cutoff in u*v weight, else in v*v weight.
 LOGICAL :: tcutoff_WS                       !<Switch to pairing cutoff by Woods-Saxon profile
+LOGICAL :: thfbfold=.FALSE.                 !<Switch to finite-range pairing if 'foldwid>0D0'
 LOGICAL, PARAMETER :: thfbvariat=.FALSE.    !<Switch to variational cutoff -- placeholder, not yet fully coded
 
 INTEGER :: ipair=ixxxl                      !<Defines the pairing model.
