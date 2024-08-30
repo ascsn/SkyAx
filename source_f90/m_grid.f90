@@ -72,8 +72,8 @@ REAL(8),ALLOCATABLE :: derr2a(:,:,:,:)     !<Bessel operator  in r-direction.
 REAL(8),ALLOCATABLE :: derz2f(:,:,:)       !<Second derivative in z-direction (fourier definition).
 REAL(8),ALLOCATABLE :: derr1f(:,:,:)       !<First derivative in r-direction (fourier definition).
 REAL(8),ALLOCATABLE :: derr2af(:,:,:,:)    !<Bessel operator  in r-direction (fourier definition).
-REAL(8),ALLOCATABLE :: gaufolz(:,:)        !<Gaussian folding in z-direction.
-REAL(8),ALLOCATABLE :: gaufolr(:,:,:)      !<Gaussian folding in r-direction.
+REAL(8),ALLOCATABLE :: gaufolz(:,:,:)      !<Gaussian folding in z-direction.
+REAL(8),ALLOCATABLE :: gaufolr(:,:,:,:)    !<Gaussian folding in r-direction.
 REAL(8),ALLOCATABLE :: r1inv(:,:)          !<\f$ 1/r\f$.
 REAL(8),ALLOCATABLE :: r2inv(:,:)          !<\f$ 1/r^2\f$.
 REAL(8),ALLOCATABLE :: zdnuc(:,:,:)        !<Damping operator for the nucleons in z-direction.
