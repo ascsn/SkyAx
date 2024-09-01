@@ -130,7 +130,7 @@ REAL(8) :: pairfc(2)=(/xxxl,xxxl/)          !<The strength of pairing for proton
 REAL(8) :: rho0pr=xxxl                      !<Density parameter for the density-dependent delta pairing.
 REAL(8) :: pairstab=0D0                     !<Parameter for pairing stabilization
 REAL(8) :: pair_cutoff=1.65D0               !<Parameter for soft cutoff of pairing space (<0 = WS profile, >0 = nr. of states)
-REAL(8) :: foldwid=0D0                      !<Parameter for Gaussian width in finite-range pairing
+REAL(8) :: hfbwidth=0D0                     !<Parameter for Gaussian width in finite-range pairing
 REAL(8) :: erra=1D-9                        !<Termination criterion for error in particle number.
 LOGICAL :: tcutoff_uvspace=.TRUE.           !<Switch to pairing cutoff in u*v weight, else in v*v weight.
 LOGICAL :: tcutoff_WS                       !<Switch to pairing cutoff by Woods-Saxon profile
@@ -265,7 +265,7 @@ CONTAINS
 
     NAMELIST /force/ name, &
          chg,ex,zpe,h2m,t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power, &
-         ipair,v0prot,v0neut,rho0pr,pairstab,pair_cutoff,riftm, &
+         ipair,v0prot,v0neut,rho0pr,pairstab,pair_cutoff,riftm,hfbwidth, &
          tFayans, &
          avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
          fxi,h1xi,hgradxi,delfxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
@@ -300,6 +300,8 @@ CONTAINS
     ELSE
       tcutoff_WS = .FALSE.
     END IF
+
+    IF(hfbwidth>0D0) thfbfold=.TRUE.
 
 CONTAINS
 

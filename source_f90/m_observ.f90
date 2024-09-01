@@ -168,7 +168,7 @@ USE paramr
 USE dynpar
 USE grid, ONLY: nr,nz,icm,tsym,sr,sz,f1int
 USE constr
-USE wavefr, ONLY: psi
+USE wavefr, ONLY: psi,psifold
 USE fields
 USE levels
 
@@ -244,12 +244,21 @@ END IF
 
 paircr(0:nz,0:nr,1:2)  = zero
 !     accumulate new pair-density
-DO jst=1,nst(1)+nst(2)
-  iq    = icharg(jst)
-  v2    = vsqf(jst)
-  uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
-  CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-END DO
+IF(thfbfold) THEN
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
+    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+  END DO
+ELSE
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
+    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+  END DO
+END IF
 !c     now multiply with strength to obtain local pair-potential
 IF(.NOT.tFayans) THEN
   IF(ipair <= 6 .OR. ipair == 9) THEN
@@ -2447,5 +2456,57 @@ rhot=rho(:,:,1)+rho(:,:,2)
 check_border_density = (MAXVAL(rhot,MASK=mask)>1D-6)
 
 END FUNCTION check_border_density
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: spradius
+!> @brief
+!!This routine computes the single-particle radius for the given
+!!s.p. wavefunction. It serves for testing purposes. Printing is
+!!done inside the routine.
+!> @details
+!!The properties are evaluated as integrals.
+!>
+!> @param[in] psiin
+!> REAL(8), array, takes the input spinor wavefunction.
+!!computed.
+!--------------------------------------------------------------------------- 
+SUBROUTINE spradius(psiin)
+
+USE paramr
+USE grid
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)                         :: psiin(0:nz,0:nr,1:2)
+
+REAL(8),ALLOCATABLE :: auxrho(:,:),auxz(:,:),auxr2(:,:)
+
+INTEGER :: ir,iz
+REAL(8) :: spnum,zcm,rms2
+
+!Prepare helper fields if called for the first time
+  ALLOCATE(auxrho(0:nz,0:nr),auxz(0:nz,0:nr),auxr2(0:nz,0:nr))
+ 
+  auxrho(:,:) = psiin(:,:,1)**2+psiin(:,:,2)**2
+  DO ir=0,nr; DO iz=0,nz
+    auxr2(iz,ir)=auxrho(iz,ir)*(r(ir)**2+z(iz)**2)
+    auxz(iz,ir)=auxrho(iz,ir)*z(iz)
+  END DO; END DO
+
+
+!Execute integrals
+  spnum= f1int(auxrho(0:nz,0:nr))
+  IF(tsym) THEN
+    zcm=0D0
+  ELSE
+    zcm  = f1int(auxz(0:nz,0:nr))/spnum
+  END IF
+  rms2 = f1int(auxr2(0:nz,0:nr))/spnum
+  rms2 = rms2-zcm**2
+
+  WRITE(6,'(a,3(1pg13.5))') 'SPRADIUS: norm,zcm,rms=',spnum,zcm,SQRT(rms2)
+  DEALLOCATE(auxrho,auxz,auxr2)
+RETURN
+END SUBROUTINE spradius
 
 END MODULE observ

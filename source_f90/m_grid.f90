@@ -1408,7 +1408,7 @@ END SUBROUTINE test_print
 !--------------------------------------------------------------------------- 
 SUBROUTINE init_Gaussfolding()
 
-USE grid
+USE dynpar, ONLY: hfbwidth
 
 IMPLICIT NONE
 
@@ -1436,13 +1436,16 @@ ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
 
 eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
 DO in=1,4
-  eigvec=derz2f(:,:,in)
+  eigvec=derz2(:,:,in)
   CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z:',eigval
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
   eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
   DO i=1,ndimact; DO j=1,ndimact
 !   sum over "Bessel" eigenstates                                                                                                             
     gaufolz(i,j,in)=0D0
-    DO k = 1, ndimact
+    DO k = 1, ndimact/2+1
       gaufolz(i,j,in) = gaufolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
     END DO
   END DO; END DO
@@ -1462,13 +1465,14 @@ ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
 DO in=1,2; DO im=0,kmpsi
   
   eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-  eigvec=derr2af(:,:,im,in)
+  eigvec=derr2a(:,:,im,in)
   CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL r:',eigval
   eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
   DO i=1,ndimact; DO j=1,ndimact
 !   sum over "Bessel" eigenstates                                                                                                              
     gaufolr(i,j,im,in)=0D0
-    DO k = 1, ndimact
+    DO k = 1, ndimact/2+1
       gaufolr(i,j,im,in) = gaufolr(i,j,im,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
     END DO
   END DO; END DO
@@ -1504,8 +1508,6 @@ END SUBROUTINE init_Gaussfolding
 !--------------------------------------------------------------------------- 
 
 SUBROUTINE Gaussfolding_spin(fldin,fldout,izpfld,imfld,ibpfld,factor)
-
-USE grid
 
 IMPLICIT NONE
 

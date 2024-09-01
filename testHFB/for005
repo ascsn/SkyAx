@@ -1,7 +1,7 @@
 &main outnam='hfb',title='test 20O',iprint=1000,itmax=3000
 /
 &force 
- name='SV-min',pairstab=-0D0,ipair=8
+ name='SV-min',pairstab=-0D0,ipair=8,HFBwidth=1D0,
 /
 &grids tsym=T,nz=17,nr=17,dr=1D0,dz=1D0,
 /

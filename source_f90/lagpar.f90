@@ -49,6 +49,10 @@ LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
 REAL(8) :: v2a,uva
 INTEGER :: mist,npzist,jst,ist,is,iq
 
+REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
+
+IF(thfbfold) ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+
 
 ! set isospin (protons or neutrons)
 IF(istmin <= nst(1)) THEN
@@ -80,10 +84,20 @@ DO jst=istmin,istmax
           (wfovlp(psi(0:nz,0:nr,1:2,ist),psi(0:nz,0:nr,1:2,jst)),ist=istmin,istmax)
     END IF
   ELSE
-    DO is=1,2
-      hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
-          +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,is,jst)*uva
-    END DO
+    IF(thfbfold) THEN
+      psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
+      psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
+      CALL Gaussfolding_spin(psip,psin,nparz(1,jst),mpsi(jst),1,one)
+      DO is=1,2
+        hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
+            +psin(0:nz,0:nr,is)*uva
+      END DO
+    ELSE
+      DO is=1,2
+        hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
+            +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,is,jst)*uva
+      END DO
+    END IF
   END IF
 !  WRITE(6,'(a,i4,4(1pg13.5))') 'HPSI:',jst,v2a,uva, &
 !     wfovlp(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst)),SUM(pairpt(0:nz,0:nr,iq))
@@ -92,6 +106,7 @@ DO jst=istmin,istmax
                             qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&  
                             qh4,qhdig,devmf2,devgap,devh2,devoc2)
 END DO
+IF(thfbfold) DEALLOCATE(psip,psin)
 
 
 !     compute matrix of Lagrange parameters
