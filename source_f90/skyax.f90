@@ -228,6 +228,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
     CALL ssetup                     ! the wavefunctions
     IF(ipair>0) CALL inipai(nmass)
   END IF
+  IF(thfbfold) CALL init_Gaussfolding()
 
 !**********************************************************************
 !                                                                     *

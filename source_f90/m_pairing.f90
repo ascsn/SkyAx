@@ -45,7 +45,7 @@ SUBROUTINE hfbpot(iter)
 USE paramr
 USE dynpar
 USE fields
-USE observ, ONLY: sdenti
+USE observ, ONLY: sdenti,spradius
 USE wavefr
 USE levels
 USE grid
@@ -76,12 +76,26 @@ paircr(:,:,:) = zero
 IF(tregpair) regpairadd=1D0
 
 !     accumulate new pair-density
-DO jst=1,nst(1)+nst(2)
-  iq    = icharg(jst)
-  v2    = vsqf(jst)
-  uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
-  CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-END DO
+IF(thfbfold) THEN
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
+    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1,one)
+    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    WRITE(6,'(a,i4)') 'SPRADIUS before for jst=',jst
+    CALL spradius(psi(0:nz,0:nr,1:2,jst))
+    WRITE(6,'(a,i4)') 'SPRADIUS after for jst=',jst
+    CALL spradius(psifold(0:nz,0:nr,1:2,jst))
+  END DO
+ELSE
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
+    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+  END DO
+END IF
 
 !     now multiply with strength to obtain local pair-potential
 IF(tFayans) THEN
@@ -132,11 +146,19 @@ epairtest= epairtestp+ epairtestn
 
 ! finally compute the actual gaps as s.p. expectation values with
 ! the pair potential
-DO jst=1,nst(1)+nst(2)
-  iq     = icharg(jst)
-  work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
-  deltaf(jst) = f1int(work)
-END DO
+IF(thfbfold) THEN
+  DO jst=1,nst(1)+nst(2)
+    iq     = icharg(jst)
+    work(:,:)=(psifold(:,:,1,jst)**2+psifold(:,:,2,jst)**2)*pairpt(:,:,iq)
+    deltaf(jst) = f1int(work)
+  END DO
+ELSE
+  DO jst=1,nst(1)+nst(2)
+    iq     = icharg(jst)
+    work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
+    deltaf(jst) = f1int(work)
+  END DO
+END IF
 
 IF(itest > 0) THEN
   WRITE(6,'(a)') ' dynamics gaps for protons, directly:'
