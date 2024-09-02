@@ -809,7 +809,7 @@ ELSE
   DO iparmax=-1,+1,2
     DO in=1,2
 !        ---------------------------------------------------------------
-!        determin weights for the n-th finite derivative using p points
+!        determine weights for the n-th finite derivative using p points
 !        into each direction from the central point ((2*p+1)-formula).
 !        ---------------------------------------------------------------         
 !           setup the linear equation system which defines the weights
@@ -1409,7 +1409,7 @@ END SUBROUTINE test_print
 SUBROUTINE init_Gaussfolding()
 
 USE dynpar, ONLY: hfbwidth
-
+USE levels, ONLY: mpsi
 IMPLICIT NONE
 
 REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:)
@@ -1469,23 +1469,34 @@ WRITE(6,*) ' Setup of Gaussian folding in z direction completed'
 !     ===============================================================
 !     initialize folding matrix in r direction
 !     ===============================================================
-ndimact=nr
+ndimact=nr+1
 lwork=1+6*ndimact+2*ndimact**2
 liwork=3+5*ndimact
 ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
 
+gaufolr=0D0
 DO in=1,2; DO im=0,kmpsi
   
   eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-  eigvec=derr2a(1:nr,1:nr,im,in)
+  eigvec=derr2af(0:nr,0:nr,im,in)
+  WRITE(6,'(a)') 'H-Matrix r:'
+  DO i=0,nr
+    WRITE(6,'(100(1pg13.5))') eigvec(:,i)
+  END DO
   CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
-  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL r:',eigval
-  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
+  WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,eigval
+  WRITE(6,'(a)') 'eigenvectors:'
+  DO i=0,nr
+    WRITE(6,'(100(1pg13.5))') eigvec(i,:)
+  END DO
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(1):',eigvec(:,1)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(N):',eigvec(:,ndimact)
+  eigval = 1D0 !EXP(eigval*(0.5D0*hfbwidth)**2)
   DO i=1,ndimact; DO j=1,ndimact
 !   sum over "Bessel" eigenstates                                                                                                              
-    gaufolr(i,j,im,in)=0D0
+!    gaufolr(i,j,im,in)=0D0
     DO k = 1, ndimact
-      gaufolr(i,j,im,in) = gaufolr(i,j,im,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
+      gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
     END DO
   END DO; END DO
 
