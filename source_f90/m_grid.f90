@@ -1436,16 +1436,28 @@ ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
 
 eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
 DO in=1,4
-  eigvec=derz2(:,:,in)
-  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
-  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z:',eigval
-  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
-  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+!  eigvec=derz1(:,:,in)
+!  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z:',eigval
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+  eigvec=derz2(1:nz,1:nz,in)
+!  WRITE(6,'(a)') 'H-Matrix:'
+!  DO i=1,ndimact
+!    WRITE(6,'(100(1pg13.5))') eigvec(i,1:nz)
+!  END DO
+  CALL DSYEVD('V','L',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  lwork=(ndimact*(ndimact+1))/2
+!  call diag_real_symm(derz2(:,:,in), eigval, eigvec, ndimact, ndimact, lwork)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z**2:',eigval
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
   eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL fold:',eigval
   DO i=1,ndimact; DO j=1,ndimact
 !   sum over "Bessel" eigenstates                                                                                                             
     gaufolz(i,j,in)=0D0
-    DO k = 1, ndimact/2+1
+    DO k = 1, ndimact
       gaufolz(i,j,in) = gaufolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
     END DO
   END DO; END DO
@@ -1465,14 +1477,14 @@ ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
 DO in=1,2; DO im=0,kmpsi
   
   eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-  eigvec=derr2a(:,:,im,in)
+  eigvec=derr2a(1:nr,1:nr,im,in)
   CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
   WRITE(6,'(a/400(1pg13.5))') 'EIGVAL r:',eigval
   eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
   DO i=1,ndimact; DO j=1,ndimact
 !   sum over "Bessel" eigenstates                                                                                                              
     gaufolr(i,j,im,in)=0D0
-    DO k = 1, ndimact/2+1
+    DO k = 1, ndimact
       gaufolr(i,j,im,in) = gaufolr(i,j,im,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
     END DO
   END DO; END DO
