@@ -87,7 +87,7 @@ DO jst=istmin,istmax
     IF(thfbfold) THEN
       psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
       psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
-      CALL Gaussfolding_spin(psip,psin,nparz(1,jst),mpsi(jst),1,one)
+      CALL Gaussfolding_spin(psip,psin,nparz(1,jst),mpsi(jst),1)
       DO is=1,2
         hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
             +psin(0:nz,0:nr,is)*uva
