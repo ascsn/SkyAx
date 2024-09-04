@@ -81,12 +81,13 @@ IF(thfbfold) THEN
     iq    = icharg(jst)
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
-    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1,one)
+    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
     CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-    WRITE(6,'(a,i4)') 'SPRADIUS before for jst=',jst
-    CALL spradius(psi(0:nz,0:nr,1:2,jst))
-    WRITE(6,'(a,i4)') 'SPRADIUS after for jst=',jst
-    CALL spradius(psifold(0:nz,0:nr,1:2,jst))
+!    WRITE(6,'(a,3i4)') 'SPRADIUS before for jst,parity,m=',jst,nparz(1,jst),mpsi(jst)
+!    CALL spradius(psi(0:nz,0:nr,1:2,jst))
+!    WRITE(6,'(a,i4)') 'SPRADIUS after for jst=',jst
+!    CALL spradius(psifold(0:nz,0:nr,1:2,jst))
+!    WRITE(6,'(1x)')
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)

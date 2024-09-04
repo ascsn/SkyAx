@@ -2481,14 +2481,16 @@ REAL(8), INTENT(IN)                         :: psiin(0:nz,0:nr,1:2)
 
 REAL(8),ALLOCATABLE :: auxrho(:,:),auxz(:,:),auxr2(:,:)
 
-INTEGER :: ir,iz
+INTEGER :: ir,iz,is
 REAL(8) :: spnum,zcm,rms2
 
 !Prepare helper fields if called for the first time
-  ALLOCATE(auxrho(0:nz,0:nr),auxz(0:nz,0:nr),auxr2(0:nz,0:nr))
+ALLOCATE(auxrho(0:nz,0:nr),auxz(0:nz,0:nr),auxr2(0:nz,0:nr))
  
+
+DO is=1,2
 !  auxrho(:,:) = psiin(:,:,1)**2+psiin(:,:,2)**2
-  auxrho(:,:) = psiin(:,:,1)
+  auxrho(:,:) = psiin(:,:,is)
   DO ir=0,nr; DO iz=0,nz
     auxr2(iz,ir)=auxrho(iz,ir)*(r(ir)**2+z(iz)**2)
     auxz(iz,ir)=auxrho(iz,ir)*z(iz)
@@ -2505,8 +2507,10 @@ REAL(8) :: spnum,zcm,rms2
   rms2 = f1int(auxr2(0:nz,0:nr))/spnum
   rms2 = rms2-zcm**2
 
-  WRITE(6,'(a,4(1pg13.5))') 'SPRADIUS: norm,zcm,rms=',spnum,zcm,SQRT(rms2),rms2
-  DEALLOCATE(auxrho,auxz,auxr2)
+  WRITE(6,'(a,i3,4(1pg13.5))') 'SPRADIUS: is,norm,zcm,rms=',is,spnum,zcm,SQRT(rms2),rms2
+END DO
+
+DEALLOCATE(auxrho,auxz,auxr2)
 RETURN
 END SUBROUTINE spradius
 
