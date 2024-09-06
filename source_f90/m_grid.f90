@@ -1494,6 +1494,12 @@ DO in=1,4
       gaufolz(i,j,in) = gaufolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
     END DO
   END DO; END DO
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'Folding z:'
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') gaufolz(i,1:nz,in)
+    END DO
+  END IF
 END DO
 
 DEALLOCATE(eigvec,eigval,work,iwork)
@@ -1502,7 +1508,7 @@ WRITE(6,*) ' Setup of Gaussian folding in z direction completed'
 !     ===============================================================
 !     initialize folding matrix in r direction
 !     ===============================================================
-ndimact=nr
+ndimact=nr+1
 lwork=1+6*ndimact+2*ndimact**2
 liwork=3+5*ndimact
 ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
@@ -1514,7 +1520,7 @@ DO in=1,2; DO im=0,kmpsi
 !  DO ir=1,nr
 !    eigvec(ir,1:nr)=derr2af(ir,1:nr,im,in)*r(ir)
 !  END DO
-   eigvec(1:nr,1:nr)=gaufolr(1:nr,1:nr,im,in)+0.25D0*r2inv(1:nr,1:nr)
+   eigvec(1:ndimact,1:ndimact)=gaufolr(0:nr,0:nr,im,in)+0.25D0*r2inv(0:nr,0:nr)
   IF(ttestgauss) THEN
     WRITE(6,'(a)') 'H-Matrix r:'
     DO i=1,nr
@@ -1523,23 +1529,24 @@ DO in=1,2; DO im=0,kmpsi
   END IF
   CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
   WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,eigval
-  IF(ttestgauss) THEN
+!  IF(ttestgauss) THEN
+  IF(im==0) THEN
     WRITE(6,'(a)') 'eigenvectors:'
-    DO i=0,nr
+    DO i=1,nr
       WRITE(6,'(100(1pg13.5))') eigvec(i,:)
     END DO
 !    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(1):',eigvec(:,1)
 !    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(N):',eigvec(:,ndimact)
   END IF
   eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
-  gaufolr(1:nr,1:nr,im,in)=0D0
+  gaufolr(0:nr,0:nr,im,in)=0D0
   DO i=1,ndimact; DO j=1,ndimact
 !   sum over "Bessel" eigenstates                                                                                                              
 !    gaufolr(i,j,im,in)=0D0
     DO k = 1, ndimact
-      gaufolr(i,j,im,in) = gaufolr(i,j,im,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
+      gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in) + eigvec(i,k)*eigval(k)*eigvec(j,k)
     END DO
-    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(j))/SQRT(r(i))
+    gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in)*SQRT(r(j-1))/SQRT(r(i-1))
 !    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
   END DO; END DO
 
@@ -1610,7 +1617,8 @@ SUBROUTINE test_Gaussfolding()
 IMPLICIT NONE
 
 REAL(8), ALLOCATABLE :: work(:,:,:),work2(:,:,:),workf(:,:,:)
-REAL(8) :: rad,tnorm1,r2exp1,tnorm2z,r2exp2z,tnorm2r,r2exp2r,tnorm2,r2exp2
+REAL(8) :: rad2,tnorm1,r2exp1,tnorm2z,r2exp2z,tnorm2r,r2exp2r,tnorm2,r2exp2
+REAL(8) :: tnorm1z2,r2exp1z2,tnorm2z2,r2exp2z2
 REAL(8),PARAMETER :: testwid=2D0
 INTEGER :: im,izpact,ibpidx,is,izpidx,ir,iz
 
@@ -1620,10 +1628,10 @@ DO im=0,kmpsi
 
 
   DO iz=0,nz; DO ir=0,nr
-    rad = SQRT(MAX(r(ir)**2+z(iz)**2,1D-100))
-    work(iz,ir,1) = rad**im*EXP(-(rad/testwid)**2)
+    rad2 = r(ir)**2+z(iz)**2
+    work(iz,ir,1) = r(ir)**im*EXP(-rad2/testwid**2)
     work(iz,ir,2) = 0D0
-    work2(iz,ir,1:2) = rad**2*work(iz,ir,1:2)
+    work2(iz,ir,1:2) = rad2*work(iz,ir,1:2)  !rad2*work(iz,ir,1:2)
   END DO; END DO
   tnorm1 = f1int(work(0:nz,0:nr,1))
   r2exp1 = f1int(work2(0:nz,0:nr,1))/tnorm1
@@ -1633,25 +1641,39 @@ DO im=0,kmpsi
   DO is=1,nsd
     CALL mulz(gaufolz(:,:,ibpidx),work(:,:,is),workf(:,:,is),1D0,0)
   END DO
-
   DO iz=0,nz; DO ir=0,nr
-    work2(iz,ir,1:2) = (r(ir)**2+z(iz)**2)*workf(iz,ir,1:2)
+    rad2 = r(ir)**2+z(iz)**2
+    work2(iz,ir,1:2) = rad2*workf(iz,ir,1:2)
   END DO; END DO
   tnorm2z = f1int(workf(0:nz,0:nr,1))
   r2exp2z = f1int(work2(0:nz,0:nr,1))/tnorm2z
+
+  IF(im==0) THEN
+    WRITE(6,'(a)') 'RHO along z:'
+    WRITE(6,'(0pf6.2,1pg13.5,1pg13.5,1pg13.5)') &
+      (z(iz),work(iz,1,1),workf(iz,1,1),work(iz,1,1)-workf(iz,1,1),iz=0,nz)
+  END IF
 
   CALL mulr(gaufolr(:,:,im,1),work(:,:,1),workf(:,:,1),1D0,0)
   CALL mulr(gaufolr(:,:,im,2),work(:,:,2),workf(:,:,2),1D0,0)   ! ??
 
   DO iz=0,nz; DO ir=0,nr
-    work2(iz,ir,1:2) = (r(ir)**2+z(iz)**2)*workf(iz,ir,1:2)
+    rad2 = r(ir)**2+z(iz)**2
+    work2(iz,ir,1:2) = rad2*workf(iz,ir,1:2)
   END DO; END DO
   tnorm2r = f1int(workf(0:nz,0:nr,1))
   r2exp2r = f1int(work2(0:nz,0:nr,1))/tnorm2r
 
-  work=workf
+  IF(im<3) THEN
+    WRITE(6,'(a)') 'RHO along r:'
+    WRITE(6,'(0pf6.2,1pg13.5,1pg13.5,1pg13.5)') &
+      (r(ir),work(icm,ir,1),workf(icm,ir,1),work(icm,ir,1)-workf(icm,ir,1),ir=0,nr)
+  END IF
+
+
+  work2=workf
   DO is=1,nsd
-    CALL mulz(gaufolz(:,:,ibpidx),work(:,:,is),workf(:,:,is),1D0,0)
+    CALL mulz(gaufolz(:,:,ibpidx),work2(:,:,is),workf(:,:,is),1D0,0)
   END DO
 
   DO iz=0,nz; DO ir=0,nr
@@ -1660,12 +1682,47 @@ DO im=0,kmpsi
   tnorm2 = f1int(workf(0:nz,0:nr,1))
   r2exp2 = f1int(work2(0:nz,0:nr,1))/tnorm2
 
-  WRITE(6,'(a,i3,3(/a,2f10.3))')  &
-   'TEST folding:  norm rms rms**2;  for m=',im,  &
-   'before       ',tnorm1,r2exp1,     &
-   'after z      ',tnorm2z,r2exp2z,   &
-   'after r      ',tnorm2r,r2exp2r,   &
-   'after        ',tnorm2,r2exp2
+  IF(im==0) THEN
+
+    DO iz=0,nz; DO ir=0,nr
+      work(iz,ir,1:2) = z(iz)**2*work(iz,ir,1:2)
+    END DO; END DO
+    tnorm1z2 = f1int(work(0:nz,0:nr,1))
+    DO iz=0,nz; DO ir=0,nr
+      work2(iz,ir,1:2) = z(iz)**2*work(iz,ir,1:2)
+    END DO; END DO
+    r2exp1z2 = f1int(work2(0:nz,0:nr,1))/tnorm1z2
+
+
+    DO is=1,nsd
+      CALL mulz(gaufolz(:,:,ibpidx),work(:,:,is),workf(:,:,is),1D0,0)
+    END DO
+    DO iz=0,nz; DO ir=0,nr
+     work2(iz,ir,1:2) = z(iz)**2*workf(iz,ir,1:2)
+    END DO; END DO
+    tnorm2z2 = f1int(workf(0:nz,0:nr,1))
+    r2exp2z2 = f1int(work2(0:nz,0:nr,1))/tnorm2z2
+
+
+   WRITE(6,'(a,i3,6(/a,3f10.3))')  &
+    'TEST folding:  norm rms rms**2;  for m=',im,  &
+    'before       ',tnorm1,r2exp1,0D0,     &
+     'after z      ',tnorm2z,r2exp2z,r2exp2z-r2exp1,   &
+    'after r      ',tnorm2r,r2exp2r,r2exp2r-r2exp1,   &
+    'after        ',tnorm2,r2exp2,r2exp2-r2exp1,     &
+     'before z**2  ',tnorm1z2,r2exp1z2,0D0,   &
+     'after z**2   ',tnorm2z2,r2exp2z2,r2exp2z2-r2exp1z2
+  
+  ELSE
+
+   WRITE(6,'(a,i3,6(/a,3f10.3))')  &
+    'TEST folding:  norm rms rms**2;  for m=',im,  &
+    'before       ',tnorm1,r2exp1,0D0,     &
+     'after z      ',tnorm2z,r2exp2z,r2exp2z-r2exp1,   &
+    'after r      ',tnorm2r,r2exp2r,r2exp2r-r2exp1,   &
+    'after        ',tnorm2,r2exp2,r2exp2-r2exp1
+  
+  END IF
 
 END DO
 
