@@ -3,7 +3,7 @@
 &force 
  name='SV-min',pairstab=-0D0,ipair=7,HFBwidth=1D0,
 /
-&grids tsym=T,nz=31,nr=31,dr=0.7D0,dz=0.7D0,idrtyp=0,
+&grids tsym=F,nz=61,nr=31,dr=0.5D0,dz=0.5D0,idrtyp=0,
 /
 &static nprot=8,nneut=12,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
 deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,
@@ -13,6 +13,8 @@ tvaryx0=T,inodiag=9999/
 &thermal /
 
 
+&grids tsym=F,nz=41,nr=21,dr=1D0,dz=1D0,idrtyp=0,
+&grids tsym=T,nz=31,nr=31,dr=0.7D0,dz=0.7D0,idrtyp=0,
 
 
 
