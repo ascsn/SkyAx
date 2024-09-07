@@ -1039,6 +1039,14 @@ DO im=0,kmpsi
           gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,3)
         END DO
       END DO
+      IF (im == 0) THEN
+        db(0:inx/2,0,im,1) = d2(0:inx/2,0,1)
+        db(0:inx/2,0,im,2) = d2(0:inx/2,0,3)
+      END IF
+      DO j=0,inx/2
+        gaufolr(j,j,im,1) = gaufolr(j,j,im,1) + 0.25D0*kval(j)*kval(j)
+        gaufolr(j,j,im,2) = gaufolr(j,j,im,2) + 0.25D0*kval(j)*kval(j)
+      END DO
     END IF
     
   ELSE
@@ -1451,7 +1459,7 @@ INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
 INTEGER            :: lwork,liwork,info
 REAL(8)            :: buf,buf1,buf2
 
-LOGICAL,PARAMETER :: ttestgauss=.FALSE.
+LOGICAL,PARAMETER :: ttestgauss=.TRUE.
 
 !ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
 
@@ -1530,7 +1538,7 @@ DO in=1,2; DO im=0,kmpsi
   CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
   WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,eigval
 !  IF(ttestgauss) THEN
-  IF(im==0) THEN
+  IF(im<2) THEN
     WRITE(6,'(a)') 'eigenvectors:'
     DO i=1,nr
       WRITE(6,'(100(1pg13.5))') eigvec(i,:)
@@ -1605,6 +1613,7 @@ DO is=1,nsd
   
   CALL mulz(gaufolz(:,:,ibpidx),fldin(:,:,is),work,1D0,0)
   CALL mulr(gaufolr(:,:,imact,ibpfld),work,fldout(:,:,is),1D0,0)
+  fldout(:,0,is)=0D0
 
 END DO
 DEALLOCATE(work)
@@ -1656,7 +1665,7 @@ DO im=0,kmpsi
 
   CALL mulr(gaufolr(:,:,im,1),work(:,:,1),workf(:,:,1),1D0,0)
   CALL mulr(gaufolr(:,:,im,2),work(:,:,2),workf(:,:,2),1D0,0)   ! ??
-
+  workf(0:nz,0,1:2)=0D0
   DO iz=0,nz; DO ir=0,nr
     rad2 = r(ir)**2+z(iz)**2
     work2(iz,ir,1:2) = rad2*workf(iz,ir,1:2)
