@@ -27,7 +27,7 @@ LOGICAL :: tfirst                            ! signals first run along a deforma
 
 REAL(8) :: devh2s,dnewoct,econs,oldoct,&
            qact0,qact2,qact3,qact4,qconsav,&
-           devh2prev=100,econprev=100,x0invmin
+           devh2prev=100,econprev=100,x0invmin,pcutact
 REAL(8) :: pairfacact                        ! actual pairing enhancement factor
 REAL(8) :: pairfcsav(2),fxisav,h1xisav,hgradxisav
 INTEGER :: iplold,ipold,iter,itesto,&
@@ -572,11 +572,14 @@ SUBROUTINE write_headers()
       10X,'power  =',f10.6,/, 10X,'e2     =',f10.3,/,  &
       10X,'h2m    =',2F10.3,/, 10X,'ifzpe  =',i5,/,  &
       10X,'riftm  =',f10.3)
-  WRITE(7,5005) pairfc,rho0pr,pairstab
+  pcutact=pair_cutoff
+  IF(tcutoff_WS) pcutact=-pcutact
+  WRITE(7,5005) pairfc,rho0pr,pairstab,pcutact
   5005 FORMAT(10X,'pairfc  =',f12.3,'  strength for p',' (mev)',/,  &
       10X,'pairfc  =',f12.3,'  strength for n',' (mev)',/,  &
       10X,'rho0pr  =',1pg12.4,'  density parameter in DDDI',/,  &
-      10X,'pairstab=',f12.3,'  BCS stabilizing pairing energy'/)
+      10X,'pairstab=',0pf12.3,'  BCS stabilizing pairing energy'/, &
+      10X,'cutoff  =',0pf12.3,'  pairing cutoff '/)
   END IF
   
   WRITE(7,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
