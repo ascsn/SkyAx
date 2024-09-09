@@ -1,9 +1,9 @@
 &main outnam='hfb',title='test 20O',iprint=1000,itmax=3000
 /
 &force 
- name='SV-min',pairstab=-0D0,ipair=8
+ name='SV-min',pairstab=-0D0,ipair=8,hfbwidth=1D0
 /
-&grids tsym=T,nz=17,nr=17,dr=1D0,dz=1D0,
+&grids tsym=F,nz=51,nr=25,dr=0.7D0,dz=0.7D0,
 /
 &static nprot=8,nneut=12,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
 deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-11,errvar=0.05,colerr=1D-9,itpini=0,
