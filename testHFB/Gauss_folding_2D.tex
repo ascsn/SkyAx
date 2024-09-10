@@ -69,6 +69,9 @@ The aim is to express Gaussian folding
   \varphi(\mathbf{r}')
 \end{equation}
 in cylindrical coordinates $(x,y,z)\longrightarrow(r,\phi,z)$.
+
+\section{Direct integration in coordinate space}
+
 One way is to perform the transformation in coordinate space.
 This reads
 \begin{equation}
@@ -130,6 +133,8 @@ The direct application of this closed expression on a finite grid will
 violate boundary conditions. One may ignore that if the fields are
 well localized within the grid and if the folding width is not too
 large. 
+
+\section{Expansion in Laplacian eigenstates on the grid}
 
 A better adjustment to the grid is achieved by the operator
 representation as we used it in the 1D code. Starting point is
@@ -271,11 +276,57 @@ The folding operator kernel is finally
   \frac{1}{\sqrt{r}}\tilde{\mathcal{G}}_r(r,r')\sqrt{r}
   \;.
 \end{equation}
-\centerline{\em ... to be continued ...}
+\centerline{\em ... boundary $r\rightarrow 0$, $r\rightarrow
+  R_\mathrmbox}$ to be discussed ...}
+
+\section{Expansion in Bessel functions}
+
+We come back to the idea of using the analytically given eigenstates 
+of the axial Laplacion, namely the Bessel function $J_m(x)$,
+directly. The Bessel functions are given as solution of
+\begin{equation}
+\end{equation}
+  \left(\hat{\Delta}_r-\frac{m^2}{r^2}\right)J_m(kr)
+  =
+  \left(
+  \partial_r^2
+  +
+  \frac{1}{r}\partial_r
+  -
+  \frac{m^2}{r^2}
+  \right)J_m(kr)
+  =
+  -k^2J_m(kr)
+\end{document}
+where $J_{-m}=J_m$, i.e. the sign of $m$ plays no role.
+The Bessel functions tro different $kT are orthogonal to each other.
+But they are not normalized. To use them as expansion basis, one has 
+first to nornmalize the $J_m$.
+
+Not all $k$ are possible in a finite numerical box with radius
+$R_\mathrm{box}$. Two kind of boundary conditions are used
+\begin{subequations}
+\begin{eqnarray}
+  J_m(k_nR_\mathrm{box})
+  &=&
+  0
+  \;,
+\\
+  J'_m(k'_nR_\mathrm{box})
+  &=&
+  0
+  \;.
+\end{eqnarray}
+\end{subequations}
+Both yield a series of discrete values $k_n$, or $k'_n$ respectively.
+The series is terimated from above due to finite resolution on the
+grid by spatial discretization. 
+After all, we obtain two expansions sets $\left\{J_m(k_nr)$ and
+$\left\{J_m(k'_nr)$ depending on the wanted boundary conditons.
+
+
 
 \end{document}
-
-
 
 \begin{equation}
 \end{equation}
