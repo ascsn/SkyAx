@@ -2,6 +2,7 @@
 %\documentstyle{article}
 \usepackage[latin2]{inputenc}
 \usepackage{amsmath}
+\usepackage{bm}
 
 \textwidth 14.2cm
 \textheight 22.5cm
@@ -69,17 +70,20 @@ The aim is to express Gaussian folding
   \varphi(\mathbf{r}')
 \end{equation}
 in cylindrical coordinates $(x,y,z)\longrightarrow(r,\phi,z)$.
-One way is to perform the transformation in coordinate space.
+One way is to perform the transformation in coordinate space, i.e.,
+\begin{equation}
+  (\bm{r} - \bm{r}')^2 = r^2 + r'^2 - 2rr'\cos({\phi -\phi'}) + (z-z')^2
+\end{equation}
 This reads
 \begin{equation}
   \psi(r,\phi,z)
   =
-  \in dz'\,d\phi'\,dr'\,r'\,e^{-\lambda(z-z')^2}
-  e^{(r-r')^2+2rr'(1-\cos(\phi-\phi'))}
+  \int dz'\,d\phi'\,dr'\,r'\,e^{-\lambda(z-z')^2}
+  e^{-\lambda[(r-r')^2+2rr'(1-\cos(\phi-\phi'))]}
   \varphi(r',\phi',z')
   \;.
 \end{equation}
-The fields $\psi$ and $\varphi$ are usually given with good azimuthal
+The fields $\psi$ and $\varphi$ are usually given with a good azimuthal
 angular momentum $m$, i.e.
 \begin{equation}
   \varphi(r',\phi',z')
@@ -91,8 +95,8 @@ and similarly for $\psi$. This reduces the transformation to
 \begin{eqnarray}
   \psi_m(r,z)
   &=&
-  \in dz'\,d\eta\,dr'\,r'\,e^{-\lambda(z-z')^2} e^{(r-r')^2-2rr'}
-  \varphi_m(r',z')\int d\eta e^{-2rr'\cos(\eta)-\mathrm{i}m\eta}
+  \int dz'\,dr'\,r'\,e^{-\lambda(z-z')^2} e^{-\lambda[(r-r')^2-2rr']}
+  \varphi_m(r',z')\int d\eta e^{2\lambda rr'\cos(\eta)-\mathrm{i}m\eta}
   \;,
 \\
   \eta&=&\phi-\phi'
@@ -104,26 +108,29 @@ We recall the definition of the Bessel functions
   J_n(x)
   =
   \frac{\mathrm{i}^{-n}}{2\pi}
-  \int_{-\pi}^\pi d\theta\,e^{\mathrm{i}x\cos(\theta)+\mathrm{i}m\theta}
+  \int_{-\pi}^\pi d\theta\,e^{\mathrm{i}x\cos(\theta)+\mathrm{i}n\theta}
+  =
+  \frac{\mathrm{i}^{n}}{2\pi}
+  \int_{-\pi}^\pi d\theta\,e^{\mathrm{i}x\cos(\theta)-\mathrm{i}n\theta}
 \end{equation}
 which means that we are actually looking for the modified Bessel 
 function
 \begin{eqnarray}
-  \int d\eta e^{-2rr'\cos(\eta)-\mathrm{i}m\eta}
+  \int d\eta e^{2\lambda rr'\cos(\eta)-\mathrm{i}m\eta}
   &=&
-  \int_{-\pi}^\pi d\eta\,e^{\mathrm{i}(\mathrm{i}rr')\cos(\eta)-\mathrm{i}m\eta}
+  \int_{-\pi}^\pi d\eta\,e^{\mathrm{i}(-2\mathrm{i}\lambda rr')\cos(\eta)-\mathrm{i}m\eta}
 \nonumber\\
   &=&
-  2\pi\mathrm{i}^n J_{|m|}(\mathrm{i}2rr')
+  2\pi\mathrm{i}^{-n} J_{|m|}(-2\mathrm{i}\lambda rr')
   =
-  2\pi(-)^n I_m(rr')
+  2\pi I_m(-2\lambda rr')
 \end{eqnarray}
-where $I_n$ are the modified Bessel functions. After all, we come to
+where $I_n=(\mathrm{i})^{-n}J_n(ix)$ are the modified Bessel functions. After all, we come to
 \footnote{All steps to here need yet checking.}
 \begin{equation}
   \psi_m(r,z)
   =
-  (-)^m 2\pi\in dz'\,dr'\,r'\,e^{-\lambda(z-z')^2} e^{(r-r')^2-2rr'}I_m(2rr')  \varphi_m(r',z')
+  2\pi\int dz'\,dr'\,r'\,e^{-\lambda(z-z')^2} e^{\lambda[(r-r')^2-2rr']}I_m(-2\lambda rr')  \varphi_m(r',z')
   \;.
 \end{equation}
 The direct application of this closed expression on a finite grid will
