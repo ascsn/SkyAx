@@ -59,7 +59,7 @@
 
 \title{Gaussian folding in 2D}
 \author{Discussion file: MSU -- FAU}
-\date{Started: 6. September 2024}
+\date{Started: 6. September 2024; last update: 10. September 2024}
 \maketitle
 
 The aim is to express Gaussian folding 
@@ -138,6 +138,8 @@ violate boundary conditions. One may ignore that if the fields are
 well localized within the grid and if the folding width is not too
 large. 
 
+\section{Expansion in Laplacean eigenstates on the grid}
+
 A better adjustment to the grid is achieved by the operator
 representation as we used it in the 1D code. Starting point is
 the 3D expression
@@ -147,8 +149,8 @@ the 3D expression
   \exp\left(\frac{\hat{\Delta}}{4\lambda}\right)
   \varphi(\mathbf{r})
 \end{equation}
-where $\hat{\Delta}$ is the Laplacian operator.
-The Laplacian reads in cylindrical coordinates when acting
+where $\hat{\Delta}$ is the Laplacean operator.
+The Laplacean reads in cylindrical coordinates when acting
 onto an eigenfunction of azimuthal angular momentum (see above)
 \begin{equation}
   \hat{\Delta}
@@ -178,7 +180,7 @@ that end, look at a typical axial matrix element
 \begin{equation}
   \langle\psi_m|\hat{\Delta}_r|\varphi_m\rangle
   =
-  \int dr\,r\,psi_m\left(\partial_r^2+\frac{1}{r}\partial_r\right)
+  \int dr\,r\,\psi_m\left(\partial_r^2+\frac{1}{r}\partial_r\right)
   \varphi_m
   \;.
 \end{equation}
@@ -187,7 +189,7 @@ One can show by partial integration that this is equivalent to
   \langle\psi_m|\hat{\Delta}_r|\varphi_m\rangle
   =
   \int dr\,r\,
-  \left[\left(\partial_r^2+\frac{1}{r}\partial_r\right)psi_m\right]
+  \left[\left(\partial_r^2+\frac{1}{r}\partial_r\right)\psi_m\right]
   \varphi_m
   \;.
 \end{equation}
@@ -204,11 +206,11 @@ This changes the matrix element to
 \begin{eqnarray}
   \langle\psi_m|\hat{\Delta}_r|\varphi_m\rangle
   &=&
-  \int dr\,\tilde{psi}_m\sqrt{r}\left(\partial_r^2+\frac{1}{r}\partial_r\right)
+  \int dr\,\tilde{\psi}_m\sqrt{r}\left(\partial_r^2+\frac{1}{r}\partial_r\right)
   \frac{1}{\sqrt{r}}\tilde{\varphi}_m
 \nonumber\\
   &=&
-  \int dr\,\tilde{psi}_m\left(\partial_r^2+\frac{1}{4r^2}\right)
+  \int dr\,\tilde{\psi}_m\left(\partial_r^2+\frac{1}{4r^2}\right)
   \tilde{\varphi}_m
   \;.
 \end{eqnarray}
@@ -224,7 +226,7 @@ The kernel $\partial_r^2+1/(4r^2)$
 is obviously Hermitian.
 
 The aim is evaluate a matrix representation of the axial part of the
-Gaussian folding operator in eq. (\ref{eq:folding_axial}). WE call it
+Gaussian folding operator in eq. (\ref{eq:folding_axial}). We call it
 for compact notation
 \begin{equation}
   \hat{\mathcal{G}}_r
@@ -278,11 +280,149 @@ The folding operator kernel is finally
   \frac{1}{\sqrt{r}}\tilde{\mathcal{G}}_r(r,r')\sqrt{r}
   \;.
 \end{equation}
-\centerline{\em ... to be continued ...}
+\centerline{\em ... boundary $r\rightarrow 0$, $r\rightarrow
+  R_\mathrm{box}$ yet to be discussed ...}
+
+\section{Expansion in Bessel functions}
+
+We come back to the idea of using the analytically given eigenstates 
+of the axial Laplacean, namely the Bessel function $J_m(x)$,
+directly. The Bessel functions are given as solution of
+\begin{equation}
+  \left(\hat{\Delta}_r-\frac{m^2}{r^2}\right)J_m(kr)
+  =
+  \left(
+  \partial_r^2
+  +
+  \frac{1}{r}\partial_r
+  -
+  \frac{m^2}{r^2}
+  \right)J_m(kr)
+  =
+  -k^2J_m(kr)
+\end{equation}
+where $J_{-m}=J_m$, i.e. the sign of $m$ plays no role.
+The Bessel functions to different $k_n$ are orthogonal to each other.
+But they are not normalized. To use them as expansion basis, one has 
+first to normalize the $J_m$.
+
+Not all $k$ are possible in a finite numerical box with radius
+$R_\mathrm{box}$. Two kind of boundary conditions are used
+\begin{subequations}
+\begin{eqnarray}
+  J_m(k_nR_\mathrm{box})
+  &=&
+  0
+  \;,
+\\
+  J'_m(k'_nR_\mathrm{box})
+  &=&
+  0
+  \;.
+\end{eqnarray}
+\end{subequations}
+Both yield a series of discrete values $k_n$, or $k'_n$ respectively.
+The series is terminated from above due to finite resolution on the
+grid by spatial discretization. 
+After all, we obtain two expansions sets $\left\{J_m(k_nr)\right\}$ and
+$\left\{J_m(k'_nr)\right\}$ depending on the wanted boundary conditions.
+
+\section{Testing through simple expectation values}
+
+For a test, we take up the analytical formula from the case of
+spherical 1D (see the discussion file \texttt{doc/test\_folding.pdf}
+in the 1D repository). Given a s.p. function in spherical representation
+\begin{subequations}
+\begin{equation}
+  \varphi(r_\mathrm{sph},\vartheta,\phi)
+  =
+  r_\mathrm{sph}^{l}Y_{ll}(\Omega)
+  \exp\left(-\frac{r_\mathrm{sph}^2}{\delta r_\mathrm{sph}^2}\right)
+\end{equation}
+yields the folded function
+\begin{equation}
+  \tilde{\varphi}(r_\mathrm{sph},\vartheta,\phi)
+  =
+  (-)^l\left(\frac{\delta r_\mathrm{sph}^2}{\Delta r^2+\delta r^2}\right)^{l+3/2}
+  r_\mathrm{sph}^{l}Y_{ll}(\Omega)
+  \exp\left(-\frac{r_\mathrm{sph}^2}{\Delta r^2+\delta r^2}\right)
+  \;.
+\end{equation}
+\end{subequations}
+This relation will now be reshaped into axial coordinates
+$(r,\Phi,z)$. The spherical harmonics $Y_{ll}$ is independent of $z$
+Thus the relation becomes
+\begin{subequations}
+\begin{eqnarray}
+  \varphi(r,\phi,z)
+  &=&
+  r_\mathrm{sph}^{l}e^{\mathrm{i}m\phi}
+  \exp\left(-\frac{r_\mathrm{sph}^2+z^2}{\delta r^2}\right)
+  \;,
+\\
+  \tilde{\varphi}(r,\phi,z)
+  &=&
+  (-)^l\left(\frac{\delta r_\mathrm{sph}^2}{\Delta r^2+\delta r^2}\right)^{l+3/2}
+  r_\mathrm{sph}^{l}e^{\mathrm{i}m\phi}
+  \exp\left(-\frac{r_\mathrm{sph}^2+z^2}{\Delta r^2+\delta r^2}\right)
+  \;.
+\end{eqnarray}
+\end{subequations}
+To test folding in $z$ direction, we consider the $z^2$ expectation
+value which is
+\begin{subequations}
+\begin{equation}
+  \langle z^2\rangle_\varphi
+  =
+  \frac{\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)z^2}
+       {\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)}
+  =
+  \frac{\delta r^2}{2}
+\end{equation}
+and for the folded test function
+\begin{equation}
+  \langle z^2\rangle{\tilde\varphi}
+  =
+  \frac{\delta r^2+\Delta r^2}{2}
+  \;.
+\end{equation}
+\end{subequations}
+The change through $z$-folding is thus  $\Delta r^2/2$.
+
+For the $r$ direction, we consider the expectation value
+\begin{equation}
+  \langle r^2\rangle_\varphi
+  =
+  \frac{\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)r^2}
+       {\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)}
+  \;.
+\end{equation}
+Using the integrals
+\begin{eqnarray*}
+  \int_0^\infty dx\,x^{2k}\,e^{-\lambda x^2}
+  &=&
+  \frac{1}{2}\,\sqrt{\frac{\pi}{\lambda}}\,\frac{(2k-1)!!}{2^k\lambda^k}
+\\
+  \int_0^\infty dx\,x^{2k+1}\,e^{-\lambda x^2}
+  &=&
+  \frac{1}{2}\,\frac{k!}{\lambda^{k+1}}
+\end{eqnarray*}
+we derive
+\begin{equation}
+  \langle r^2\rangle_\varphi
+  =
+  \frac{l+2}{2}\delta r^2
+  \;,\;
+  \langle r^2\rangle_{\tilde\varphi}
+  =
+  \frac{l+2}{2}(\delta r^2+\Delta r^2)
+  \;.
+\end{equation}
+These are the tests used in subroutine \texttt{test\_Gaussfolding} in
+the file \texttt{m\_grid.f90}.
+
 
 \end{document}
-
-
 
 \begin{equation}
 \end{equation}
