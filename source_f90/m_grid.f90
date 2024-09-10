@@ -1444,8 +1444,8 @@ SUBROUTINE init_Gaussfolding()
 !                                  axial 2D
 ! To switch uncomment wanted version, comment out the other.
 
-!Call init_Gaussfolding_eigenstates
-Call init_Gaussfolding_bessel
+Call init_Gaussfolding_eigenstates
+!Call init_Gaussfolding_bessel
 
 END SUBROUTINE init_Gaussfolding
 
