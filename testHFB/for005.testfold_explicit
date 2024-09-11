@@ -1,13 +1,13 @@
 &main outnam='tst',title='test 120Sn',iprint=1000,itmax=1000
 /
 &force 
- name='SV-bas',pairstab=-0D0,HFBwidth=1D0,
+ name='none',pairstab=-0D0,HFBwidth=1D0,
  t0=-1879.640018,t1=313.7493427,t2=112.6762700,t3=12527.38921,
  x0=0.2585452462,x1=-0.3816889952,x2=-2.823640993,x3=0.1232283530,
  t4=111.2908590,b4p=45.936151,power=0.2553678900,
  h2m=20.749811,20.721249,
  chg=1D0,ex=1,riftm=0D0,zpe=1,
- ipair=7,v0prot=220.0,v0neut=,rho0pr=0.211591,
+ ipair=7,v0prot=220.0,v0neut=630,rho0pr=0.211591,
  pair_cutoff=-15D0,tregpair=F
 /
 &grids tsym=F,nz=81,nr=41,dr=0.5D0,dz=0.5D0,idrtyp=0,
