@@ -1,0 +1,4 @@
+cutoff=-99,hfbwidth=3.0d0,pair.strength=41820
+Nmass: 120, Ncharge: 50 energy: -1018.32082018704 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.840
+cutoff=-100,hfbwidth=3.0d0,pair.strength=41820
+Nmass: 120, Ncharge: 50 energy: -1018.32086432056 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.840
