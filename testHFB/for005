@@ -8,7 +8,7 @@
  h2m=20.749811,20.721249,
  chg=1D0,ex=1,riftm=0D0,zpe=1,
  ipair=7,v0prot=10,v0neut=41820,rho0pr=0.2011591,
- pair_cutoff=-41,tregpair=F
+ pair_cutoff=-100,tregpair=F
 /
 &grids tsym=F,nz=81,nr=41,dr=0.5D0,dz=0.5D0,idrtyp=0,
 /
