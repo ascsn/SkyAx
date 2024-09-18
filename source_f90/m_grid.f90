@@ -1140,7 +1140,7 @@ REAL(8), INTENT(IN)                         :: fua(0:nz,0:nr)
 REAL(8), INTENT(IN)                         :: fub(0:nz,0:nr)
 
   IF (.NOT.ALLOCATED(int_weight)) CALL init_int_weight
-  !f2int=SUM(int_weight*fua*fub)  
+!  f2int=SUM(int_weight*fua*fub)  
   f2int=DDOT((nz+1)*(nr+1),fua*fub,1,int_weight,1)
 RETURN
 END FUNCTION f2int

@@ -101,7 +101,7 @@ DO jst=istmin,istmax
   END IF
 !  WRITE(6,'(a,i4,4(1pg13.5))') 'HPSI:',jst,v2a,uva, &
 !     wfovlp(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst)),SUM(pairpt(0:nz,0:nr,iq))
-  IF(tqq) CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,istmin,istmax,&
+  IF(tqq) CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),hfbpsi,iq,jst,istmin,istmax,&
                             spevar(jst),spenrg(jst),&     
                             qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&  
                             qh4,qhdig,devmf2,devgap,devh2,devoc2)
