@@ -8,3 +8,4 @@ source_f90/*.o
 source_f90/*.mod
 .history
 .vscode/*
+skyax.*
