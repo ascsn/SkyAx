@@ -577,9 +577,15 @@ SUBROUTINE write_headers()
   WRITE(7,5005) pairfc,rho0pr,pairstab,pcutact
   5005 FORMAT(10X,'pairfc  =',f12.3,'  strength for p',' (mev)',/,  &
       10X,'pairfc  =',f12.3,'  strength for n',' (mev)',/,  &
-      10X,'rho0pr  =',1pg12.4,'  density parameter in DDDI',/,  &
-      10X,'pairstab=',0pf12.3,'  BCS stabilizing pairing energy'/, &
+      10X,'rho0pr  =',1pg12.4,'  density parameter in DDDI',/)
+  END IF
+  WRITE(7,5015) pairfc,rho0pr,pairstab,pcutact
+  5015 FORMAT(10X,'pairstab=',0pf12.3,'  BCS stabilizing pairing energy'/, &
       10X,'cutoff  =',0pf12.3,'  pairing cutoff '/)
+  IF(tcutoff_uvspace) THEN
+    WRITE(7,'(10x,a)') 'cutoff in u*v space'
+  ELSE
+    WRITE(7,'(10x,a)') 'cutoff in v**2 space'
   END IF
   
   WRITE(7,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
