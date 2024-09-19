@@ -1361,7 +1361,7 @@ SUBROUTINE init_int_weight
 
   ALLOCATE (int_weight(0:nz,0:nr))
   int_weight = one
-  int_weight(:,0) = int_weight(:,0) * drezw
+  int_weight(:,0) = int_weight(:,0) * drezw   ! Euler-McLaurin correction
   int_weight(0,:) = int_weight(0,:) * oh
 
   r = sr
@@ -1707,7 +1707,7 @@ DO in=1,4
     END DO
   END DO; END DO
   IF(ttestgauss) THEN
-    WRITE(6,'(a)') 'Folding z:'
+    WRITE(6,'(a,i3)') 'Folding z: in=',in
     DO i=1,ndimact
       WRITE(6,'(100(1pg13.5))') gaufolz(i,1:nz,in)
     END DO
@@ -1771,6 +1771,13 @@ DO in=1,2; DO im=0,kmpsi
     gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in)*SQRT(r(j-1))/SQRT(r(i-1))
 !    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
   END DO; END DO
+
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,2i3)') 'Folding r: im,in=',im,in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') gaufolr(i-1,0:nr,im,in)
+    END DO
+  END IF
 
 END DO; END DO
 DEALLOCATE(eigvec,eigval,work,iwork)
