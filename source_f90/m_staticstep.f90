@@ -999,6 +999,8 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     CALL pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
         wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
         nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
+!    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
+!         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
     vsqobs(1:nsttot) = vsqf(1:nsttot)
     IF(thfb .AND. iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
       IF(tFayans) THEN

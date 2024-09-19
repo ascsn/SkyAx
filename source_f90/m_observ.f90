@@ -190,6 +190,9 @@ INTEGER,SAVE :: lconp(0:4)     ! pointer to active constraints
 INTEGER,SAVE :: maxcon       ! max. nr. of active constraints
 REAL(8) :: qval(4)           ! storage for actual multipole mooments
 REAL(8),ALLOCATABLE ::  work(:,:)
+REAL(8), ALLOCATABLE :: paircrtest(:,:,:),pairpttest(:,:,:)
+REAL(8) :: densint0,densintfold,densintdiff, epairtestnfold
+LOGICAL, PARAMETER :: testfolding=.TRUE.
 
 !**********************************************************************
 !         block to compute the shell energy, the field energy         *
@@ -197,6 +200,7 @@ REAL(8),ALLOCATABLE ::  work(:,:)
 !**********************************************************************
 
 ALLOCATE(work(0:nz,0:nr))
+IF(testfolding) ALLOCATE(paircrtest(0:nz,0:nr,kqm),pairpttest(0:nz,0:nr,kqm))
 !  constraint energy
 
 work=0D0
@@ -242,14 +246,18 @@ IF(ipair == 4) THEN                         ! compute entropy
   epair(2) = gap(2)*epair(2)
 END IF
 
-paircr(0:nz,0:nr,1:2)  = zero
+paircr(0:nz,0:nr,1:2)  = 0D0
+paircrtest(0:nz,0:nr,1:2)  = 0D0
 !     accumulate new pair-density
 IF(thfbfold) THEN
   DO jst=1,nst(1)+nst(2)
     iq    = icharg(jst)
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
-    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)
@@ -268,6 +276,10 @@ IF(.NOT.tFayans) THEN
     work(0:nz,0:nr)=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
     pairpt(0:nz,0:nr,1)  = -pairfc(1) * work * paircr(0:nz,0:nr,1)
     pairpt(0:nz,0:nr,2)  = -pairfc(2) * work * paircr(0:nz,0:nr,2)
+    IF(testfolding) THEN
+      pairpttest(:,:,1)  = -pairfc(1) * work * paircrtest(:,:,1)
+      pairpttest(:,:,2)  = -pairfc(2) * work * paircrtest(:,:,2)
+    END IF
   END IF
 
   IF(ipair <= 6 .OR. ipair == 9) THEN
@@ -285,6 +297,30 @@ IF(.NOT.tFayans) THEN
   END IF
   etpair= epairtestp+ epairtestn
   IF(ipair <= 4)  etpair=epair(1)+epair(2)
+END IF
+
+IF(testfolding) THEN
+  densint0 = f1int(paircrtest(:,:,2))
+  densintfold = f1int(paircr(:,:,2))
+  work(:,:)=paircrtest(:,:,2)*pairpttest(:,:,2)
+  epairtestnfold = f1int(work)  
+  pairpttest = (pairpt-pairpttest)**2
+  paircrtest = (paircr-paircrtest)**2
+  densintdiff = SQRT(f1int(paircrtest(:,:,2)))
+  WRITE(6,'(a,8(1pg15.7))') 'COMPOBS densities:', &
+     densint0,densintfold,densintdiff,densint0-densintfold, &
+     epairtestn,epairtestnfold,epairtestn-epairtestnfold, &
+     f1int(pairpttest(:,:,2))
+  OPEN(317,file='pairpttest')
+    WRITE(317,'(a)') '# paipttest observ:'
+    DO ir=0,nr
+      DO iz=0,nz
+        WRITE(317,'(2i3,2(1pg13.5))') iz,ir,pairpttest(iz,ir,2),paircrtest(iz,ir,2)
+      END DO
+      WRITE(317,'(1x)')
+    END DO
+  CLOSE(317)
+  DEALLOCATE(paircrtest,pairpttest)
 END IF
 
 
@@ -310,10 +346,10 @@ END IF
 IF(itest >= 1 .OR. iter==itmax) THEN
   WRITE(6,'(a,i5,a,2f12.4)') ' iter=',iter,  &
       ', energies: from rearr. vs. from densities=',energr,energy
-  WRITE(7,'(a,2f12.4/a,4(1pg12.5)/a,2(1pg12.5)/a,i5,1pg13.5)')  &
+  WRITE(7,'(a,2f12.4/a,4(1pg12.5)/a,5(1pg12.5)/a,i5,1pg13.5)')  &
       '  energies: from rearr. vs. from densities=',energr,energy,  &
       '  ekin,epot,etot=',ekin,epot,etot1,energy,  &
-      '  epair-direct  =',epairtestp,epairtestn, &
+      '  epair-direct  =',epairtestp,epairtestn,etpair,epair, &
       '  sum_s.p.energ.=',iter,SUM(spenrg(1:nst(1))*wate(1:nst(1))*vsqf(1:nst(1)))
 END IF
 !Copy previous s.p. energies to speold
