@@ -62,15 +62,20 @@ REAL(8) ::  epairtestp,epairtestn,epairtest
 REAL(8) ::  buff(2),geff,rhofac
 
 REAL(8), ALLOCATABLE :: work(:,:)
+REAL(8), ALLOCATABLE :: paircrtest(:,:,:),pairpttest(:,:,:)
 
 INTEGER :: i,iq,jst,iz,ir
 REAL(8) :: uv,v0prot,v0neut,v2
+REAL(8) :: densint0,densintfold,densintdiff,epairtestnfold
+LOGICAL, PARAMETER :: testfolding=.TRUE.
 
 ALLOCATE(work(0:nz,0:nr))
+IF(testfolding) ALLOCATE(paircrtest(0:nz,0:nr,kqm),pairpttest(0:nz,0:nr,kqm))
 work=0D0
 
 !     zero field before accumulation
-paircr(:,:,:) = zero
+paircr(:,:,:) = 0D0
+paircrtest(:,:,:) = 0D0
 
 ! reset rearrangement potential
 IF(tregpair) regpairadd=1D0
@@ -82,7 +87,10 @@ IF(thfbfold) THEN
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
     CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
-    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
 !    WRITE(6,'(a,3i4)') 'SPRADIUS before for jst,parity,m=',jst,nparz(1,jst),mpsi(jst)
 !    CALL spradius(psi(0:nz,0:nr,1:2,jst))
 !    WRITE(6,'(a,i4)') 'SPRADIUS after for jst=',jst
@@ -97,6 +105,7 @@ ELSE
     CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
   END DO
 END IF
+
 
 !     now multiply with strength to obtain local pair-potential
 IF(tFayans) THEN
@@ -118,6 +127,10 @@ ELSE
     ELSE
       pairpt(0:nz,0:nr,1)  = v0prot * paircr(0:nz,0:nr,1)
       pairpt(0:nz,0:nr,2)  = v0neut * paircr(0:nz,0:nr,2)
+      IF(testfolding) THEN
+        pairpttest(:,:,1)  = v0prot * paircrtest(:,:,1)
+        pairpttest(:,:,2)  = v0neut * paircrtest(:,:,2)
+      END IF
     END IF
   ELSE
     IF(tregpair .AND. iter>50) THEN
@@ -133,6 +146,10 @@ ELSE
     ELSE
       pairpt(:,:,1)  = v0prot * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,1)
       pairpt(:,:,2)  = v0neut * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,2)
+      IF(testfolding) THEN
+        pairpttest(:,:,1)  = v0prot * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircrtest(:,:,1)
+        pairpttest(:,:,2)  = v0neut * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircrtest(:,:,2)
+      END IF
     END IF
   END IF
 END IF
@@ -144,6 +161,38 @@ epairtestp=f1int(work)
 work(:,:)=paircr(:,:,2)*pairpt(:,:,2)
 epairtestn = f1int(work)  
 epairtest= epairtestp+ epairtestn
+
+
+IF(testfolding) THEN
+  densint0 = f1int(paircrtest(:,:,2))
+  densintfold = f1int(paircr(:,:,2))
+  work(:,:)=paircrtest(:,:,2)*pairpttest(:,:,2)
+  epairtestnfold = f1int(work)  
+  pairpttest = (pairpt-pairpttest)**2
+  paircrtest = (paircr-paircrtest)**2
+  densintdiff = SQRT(f1int(paircrtest(:,:,2)))
+  WRITE(6,'(a,8(1pg15.7))') 'COMPARE densities:', &
+     densint0,densintfold,densintdiff,densint0-densintfold, &
+     epairtestn,epairtestnfold,epairtestn-epairtestnfold, &
+     f1int(pairpttest(:,:,2))
+  OPEN(317,file='pairpttest_obs')
+    DO ir=0,nr
+      DO iz=0,nz
+        WRITE(317,'(2i3,2(1pg13.5))') iz,ir,pairpttest(iz,ir,2),paircrtest(iz,ir,2)
+      END DO
+      WRITE(317,'(1x)')
+    END DO
+  CLOSE(317)
+  DEALLOCATE(paircrtest,pairpttest)
+ELSE
+  densint0 = f1int(paircr(:,:,2))
+  work(:,:)=paircr(:,:,2)*pairpt(:,:,2)
+  epairtestnfold = f1int(work)  
+  WRITE(6,'(a,8(1pg15.7))') 'TEST densities:', &
+     densint0,epairtestn,epairtestnfold,epairtestn-epairtestnfold
+END IF
+
+
 
 ! finally compute the actual gaps as s.p. expectation values with
 ! the pair potential
