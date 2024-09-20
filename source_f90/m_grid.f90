@@ -1361,7 +1361,7 @@ SUBROUTINE init_int_weight
 
   ALLOCATE (int_weight(0:nz,0:nr))
   int_weight = one
-  int_weight(:,0) = int_weight(:,0) * drezw
+  int_weight(:,0) = int_weight(:,0) * drezw   ! Euler-McLaurin correction
   int_weight(0,:) = int_weight(0,:) * oh
 
   r = sr
@@ -1707,7 +1707,7 @@ DO in=1,4
     END DO
   END DO; END DO
   IF(ttestgauss) THEN
-    WRITE(6,'(a)') 'Folding z:'
+    WRITE(6,'(a,i3)') 'Folding z: in=',in
     DO i=1,ndimact
       WRITE(6,'(100(1pg13.5))') gaufolz(i,1:nz,in)
     END DO
@@ -1772,6 +1772,13 @@ DO in=1,2; DO im=0,kmpsi
 !    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
   END DO; END DO
 
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,2i3)') 'Folding r: im,in=',im,in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') gaufolr(i-1,0:nr,im,in)
+    END DO
+  END IF
+
 END DO; END DO
 DEALLOCATE(eigvec,eigval,work,iwork)
 DEALLOCATE(eigvali)
@@ -1817,7 +1824,7 @@ INTEGER, INTENT(IN)        :: ibpfld
 
 REAL(8), ALLOCATABLE :: work(:,:)
 
-INTEGER :: imact,izpact,ibpidx,is,izpidx
+INTEGER :: imact,izpact,ibpidx,is,izpidx,iz
 
 ALLOCATE(work(0:nz,0:nr))
 DO is=1,nsd
@@ -1828,7 +1835,14 @@ DO is=1,nsd
   
   CALL mulz(gaufolz(:,:,ibpidx),fldin(:,:,is),work,1D0,0)
   CALL mulr(gaufolr(:,:,imact,ibpfld),work,fldout(:,:,is),1D0,0)
-  fldout(:,0,is)=0D0
+
+  IF(imact==0) THEN
+    DO iz=0,nz
+      CALL extrapolate(fldout(iz,:,is),1)
+    END DO
+  ELSE
+    fldout(:,0,is)=0D0
+  END IF
 
 END DO
 DEALLOCATE(work)
@@ -1943,6 +1957,29 @@ DEALLOCATE(work,work2,workf)
 
 RETURN
 END SUBROUTINE test_Gaussfolding
+
+SUBROUTINE extrapolate(field,iparit)                                                                                                                                 
+IMPLICIT NONE
+!   extrapolates the 'field' given at 'i'=2...ngrid  to its         
+!   value at 'i'=1 according to the 'parity'  
+
+REAL(8), INTENT(IN OUT) :: field(:)
+INTEGER, INTENT(IN) :: iparit
+
+!REAL(8), PARAMETER :: four,dthree/4D0,0.333333333333D0/
+REAL(8), PARAMETER :: trhalf=1.5D0,trfift=0.6D0,oneten=0.1D0
+
+IF(iparit>0) THEN
+!      five point quality        
+!      field(1) = (four*field(2)-field(3))*dthree 
+!      seven point quality    
+  field(1) = trhalf*field(2)-trfift*field(3)+oneten*field(4)
+ELSE
+  field(1) = 0D0
+END IF
+
+RETURN
+END SUBROUTINE extrapolate
 
 
 END MODULE grid
