@@ -1824,7 +1824,7 @@ INTEGER, INTENT(IN)        :: ibpfld
 
 REAL(8), ALLOCATABLE :: work(:,:)
 
-INTEGER :: imact,izpact,ibpidx,is,izpidx
+INTEGER :: imact,izpact,ibpidx,is,izpidx,iz
 
 ALLOCATE(work(0:nz,0:nr))
 DO is=1,nsd
@@ -1835,7 +1835,14 @@ DO is=1,nsd
   
   CALL mulz(gaufolz(:,:,ibpidx),fldin(:,:,is),work,1D0,0)
   CALL mulr(gaufolr(:,:,imact,ibpfld),work,fldout(:,:,is),1D0,0)
-  fldout(:,0,is)=0D0
+
+  IF(imact==0) THEN
+    DO iz=0,nz
+      CALL extrapolate(fldout(iz,:,is),1)
+    END DO
+  ELSE
+    fldout(:,0,is)=0D0
+  END IF
 
 END DO
 DEALLOCATE(work)
@@ -1950,6 +1957,29 @@ DEALLOCATE(work,work2,workf)
 
 RETURN
 END SUBROUTINE test_Gaussfolding
+
+SUBROUTINE extrapolate(field,iparit)                                                                                                                                 
+IMPLICIT NONE
+!   extrapolates the 'field' given at 'i'=2...ngrid  to its         
+!   value at 'i'=1 according to the 'parity'  
+
+REAL(8), INTENT(IN OUT) :: field(:)
+INTEGER, INTENT(IN) :: iparit
+
+!REAL(8), PARAMETER :: four,dthree/4D0,0.333333333333D0/
+REAL(8), PARAMETER :: trhalf=1.5D0,trfift=0.6D0,oneten=0.1D0
+
+IF(iparit>0) THEN
+!      five point quality        
+!      field(1) = (four*field(2)-field(3))*dthree 
+!      seven point quality    
+  field(1) = trhalf*field(2)-trfift*field(3)+oneten*field(4)
+ELSE
+  field(1) = 0D0
+END IF
+
+RETURN
+END SUBROUTINE extrapolate
 
 
 END MODULE grid
