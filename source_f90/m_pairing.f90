@@ -67,7 +67,7 @@ REAL(8), ALLOCATABLE :: paircrtest(:,:,:),pairpttest(:,:,:)
 INTEGER :: i,iq,jst,iz,ir
 REAL(8) :: uv,v0prot,v0neut,v2
 REAL(8) :: densint0,densintfold,densintdiff,epairtestnfold
-LOGICAL, PARAMETER :: testfolding=.TRUE.
+LOGICAL, PARAMETER :: testfolding=.FALSE.
 
 ALLOCATE(work(0:nz,0:nr))
 IF(testfolding) ALLOCATE(paircrtest(0:nz,0:nr,kqm),pairpttest(0:nz,0:nr,kqm))
@@ -87,10 +87,10 @@ IF(thfbfold) THEN
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
     CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
-!    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-!    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
-    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+!    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
 !    WRITE(6,'(a,3i4)') 'SPRADIUS before for jst,parity,m=',jst,nparz(1,jst),mpsi(jst)
 !    CALL spradius(psi(0:nz,0:nr,1:2,jst))
 !    WRITE(6,'(a,i4)') 'SPRADIUS after for jst=',jst
@@ -119,10 +119,10 @@ ELSE
       DO ir=0,nr; DO iz=0,nz
         geff = geff_regpair(fer(1),pair_cutoff,pot(iz,ir,1),bmass(iz,ir,1),v0prot) 
         pairpt(iz,ir,1)  = paircr(iz,ir,1) * geff
-        regpairadd(iz,ir,1) = 1D0 !(geff/v0prot)**2
+        regpairadd(iz,ir,1) = 1D0 !(geff/v0prot)**2   ???
         geff = geff_regpair(fer(2),pair_cutoff,pot(iz,ir,2),bmass(iz,ir,2),v0neut) 
         pairpt(iz,ir,2)  = paircr(iz,ir,2) * geff
-        regpairadd(iz,ir,2) = 1D0 !(geff/v0neut)**2
+        regpairadd(iz,ir,2) = 1D0 !(geff/v0neut)**2   ???
       END DO; END DO
     ELSE
       pairpt(0:nz,0:nr,1)  = v0prot * paircr(0:nz,0:nr,1)

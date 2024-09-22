@@ -192,7 +192,7 @@ REAL(8) :: qval(4)           ! storage for actual multipole mooments
 REAL(8),ALLOCATABLE ::  work(:,:)
 REAL(8), ALLOCATABLE :: paircrtest(:,:,:),pairpttest(:,:,:)
 REAL(8) :: densint0,densintfold,densintdiff, epairtestnfold
-LOGICAL, PARAMETER :: testfolding=.TRUE.
+LOGICAL, PARAMETER :: testfolding=.FALSE.
 
 !**********************************************************************
 !         block to compute the shell energy, the field energy         *
@@ -247,17 +247,17 @@ IF(ipair == 4) THEN                         ! compute entropy
 END IF
 
 paircr(0:nz,0:nr,1:2)  = 0D0
-paircrtest(0:nz,0:nr,1:2)  = 0D0
+IF(testfolding) paircrtest(0:nz,0:nr,1:2)  = 0D0
 !     accumulate new pair-density
 IF(thfbfold) THEN
   DO jst=1,nst(1)+nst(2)
     iq    = icharg(jst)
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
-!    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-!    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
-    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+!    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)
