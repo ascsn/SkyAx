@@ -1033,8 +1033,8 @@ DO im=0,kmpsi
     END IF
 
     IF(thfbfold) THEN
-      DO i=0,inx/2
-        DO j=0,inx/2
+      DO i=0,inx/2.1
+        DO j=0,inx/2-1
           gaufolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,1)
           gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,3)
         END DO
@@ -1043,7 +1043,7 @@ DO im=0,kmpsi
 !        db(0:inx/2,0,im,1) = d2(0:inx/2,0,1)
 !        db(0:inx/2,0,im,2) = d2(0:inx/2,0,3)
 !      END IF
-      DO j=0,inx/2
+      DO j=0,inx/2-1
         gaufolr(j,j,im,1) = gaufolr(j,j,im,1) + 0.25D0*kval(j)*kval(j)
         gaufolr(j,j,im,2) = gaufolr(j,j,im,2) + 0.25D0*kval(j)*kval(j)
       END DO
@@ -1067,8 +1067,8 @@ DO im=0,kmpsi
     END DO
   
     IF(thfbfold) THEN
-      DO i=0,inx/2
-        DO j=0,inx/2
+      DO i=0,inx/2-1
+        DO j=0,inx/2-1
           gaufolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,2)
           gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,4)
         END DO
