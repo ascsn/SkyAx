@@ -1033,17 +1033,17 @@ DO im=0,kmpsi
     END IF
 
     IF(thfbfold) THEN
-      DO i=0,inx/2
-        DO j=0,inx/2
+      DO i=0,inx/2.1
+        DO j=0,inx/2-1
           gaufolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,1)
           gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,3)
         END DO
       END DO
-      IF (im == 0) THEN
-        db(0:inx/2,0,im,1) = d2(0:inx/2,0,1)
-        db(0:inx/2,0,im,2) = d2(0:inx/2,0,3)
-      END IF
-      DO j=0,inx/2
+!      IF (im == 0) THEN
+!        db(0:inx/2,0,im,1) = d2(0:inx/2,0,1)
+!        db(0:inx/2,0,im,2) = d2(0:inx/2,0,3)
+!      END IF
+      DO j=0,inx/2-1
         gaufolr(j,j,im,1) = gaufolr(j,j,im,1) + 0.25D0*kval(j)*kval(j)
         gaufolr(j,j,im,2) = gaufolr(j,j,im,2) + 0.25D0*kval(j)*kval(j)
       END DO
@@ -1067,8 +1067,8 @@ DO im=0,kmpsi
     END DO
   
     IF(thfbfold) THEN
-      DO i=0,inx/2
-        DO j=0,inx/2
+      DO i=0,inx/2-1
+        DO j=0,inx/2-1
           gaufolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,2)
           gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,4)
         END DO
@@ -1663,7 +1663,7 @@ INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
 INTEGER            :: lwork,liwork,info,ndimksum
 REAL(8)            :: buf,buf1,buf2
 
-LOGICAL,PARAMETER :: ttestgauss=.TRUE.
+LOGICAL,PARAMETER :: ttestgauss=.FALSE.
 
 !ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
 
