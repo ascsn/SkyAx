@@ -1039,10 +1039,10 @@ DO im=0,kmpsi
           gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,3)
         END DO
       END DO
-      IF (im == 0) THEN
-        db(0:inx/2,0,im,1) = d2(0:inx/2,0,1)
-        db(0:inx/2,0,im,2) = d2(0:inx/2,0,3)
-      END IF
+!      IF (im == 0) THEN
+!        db(0:inx/2,0,im,1) = d2(0:inx/2,0,1)
+!        db(0:inx/2,0,im,2) = d2(0:inx/2,0,3)
+!      END IF
       DO j=0,inx/2
         gaufolr(j,j,im,1) = gaufolr(j,j,im,1) + 0.25D0*kval(j)*kval(j)
         gaufolr(j,j,im,2) = gaufolr(j,j,im,2) + 0.25D0*kval(j)*kval(j)
@@ -1663,7 +1663,7 @@ INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
 INTEGER            :: lwork,liwork,info,ndimksum
 REAL(8)            :: buf,buf1,buf2
 
-LOGICAL,PARAMETER :: ttestgauss=.TRUE.
+LOGICAL,PARAMETER :: ttestgauss=.FALSE.
 
 !ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
 
