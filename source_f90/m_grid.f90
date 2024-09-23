@@ -1033,7 +1033,7 @@ DO im=0,kmpsi
     END IF
 
     IF(thfbfold) THEN
-      DO i=0,inx/2.1
+      DO i=0,inx/2-1
         DO j=0,inx/2-1
           gaufolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,1)
           gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,3)
