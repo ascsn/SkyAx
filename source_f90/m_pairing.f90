@@ -75,7 +75,7 @@ work=0D0
 
 !     zero field before accumulation
 paircr(:,:,:) = 0D0
-paircrtest(:,:,:) = 0D0
+IF(testfolding) paircrtest(:,:,:) = 0D0
 
 ! reset rearrangement potential
 IF(tregpair) regpairadd=1D0
