@@ -188,8 +188,8 @@ ELSE
   densint0 = f1int(paircr(:,:,2))
   work(:,:)=paircr(:,:,2)*pairpt(:,:,2)
   epairtestnfold = f1int(work)  
-  WRITE(6,'(a,8(1pg15.7))') 'TEST densities:', &
-     densint0,epairtestn,epairtestnfold,epairtestn-epairtestnfold
+!  WRITE(6,'(a,8(1pg15.7))') 'TEST densities:', &
+!     densint0,epairtestn,epairtestnfold,epairtestn-epairtestnfold
 END IF
 
 
