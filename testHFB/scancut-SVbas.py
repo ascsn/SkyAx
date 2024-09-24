@@ -17,7 +17,7 @@ pairStrengthsHFB = ["342", "1610", "10815", "30301"]
 ipair = [7]  # for BCS
 
 # Set hfbwidth
-hfbwidth = "0.0d0"
+hfbwidth = "1.0d0"
 
 def preprocess_line(line):
     # Add a space before negative signs that are not part of the scientific notation
@@ -60,7 +60,7 @@ def read_gaps(file_path):
 for j in ipair:
     if j == 7:
         cond = "bcs"
-        pairStrength = "573"
+        pairStrength = "2297"
         combined = zip(hfbwidths, pairStrengthsBCS)
     else:
         cond = "hfb"
@@ -95,7 +95,7 @@ for j in ipair:
                 "&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,\n"
             )
             f.write(
-                "deocc(1)=7.0D0,deocc(2)=7.0D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,\n"
+                "deocc(1)=6.0D0,deocc(2)=6.0D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,\n"
             )
             f.write("tvaryx0=T,inodiag=9999/\n")
             f.write("&constraint\n")        
