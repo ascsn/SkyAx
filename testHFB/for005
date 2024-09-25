@@ -7,13 +7,13 @@
  t4=124.633,b4p=34.1116989,power=0.3,
  h2m=20.749811,20.721249,
  chg=1D0,ex=1,riftm=0D0,zpe=1,
- ipair=7,v0prot=10,v0neut=2297,rho0pr=0.2011591,
- pair_cutoff=-100,tregpair=F
+ ipair=7,v0prot=10,v0neut=1610,rho0pr=0.2011591,
+ pair_cutoff=-60,tregpair=F
 /
 &grids tsym=F,nz=81,nr=41,dr=0.5D0,dz=0.5D0,idrtyp=0,
 /
 &static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
-deocc(1)=6.0D0,deocc(2)=6.0D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,
+deocc(1)=11.0D0,deocc(2)=11.0D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,
 tvaryx0=T,inodiag=9999/
 &constraint
 /

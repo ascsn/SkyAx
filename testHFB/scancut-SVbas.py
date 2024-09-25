@@ -14,7 +14,7 @@ pairStrengthsBCS = ["573", "1860", "5920", "19210", "41820"]
 # HFB pairing strengths
 pairStrengthsHFB = ["342", "1610", "10815", "30301"]
 
-ipair = [7]  # for BCS
+ipair = [8]  # 7 for BCS 8 for HFB
 
 # Set hfbwidth
 hfbwidth = "1.0d0"
@@ -64,12 +64,13 @@ for j in ipair:
         combined = zip(hfbwidths, pairStrengthsBCS)
     else:
         cond = "hfb"
+        pairStrength = "1610"
         combined = list(zip(hfbwidths, pairStrengthsHFB))
 
     # for hfbwidth, pairStrength in combined:
     print(f"cond = {cond}, hfbwidth={hfbwidth}, pairStrength = {pairStrength}")
     fileName = f"collect_cat_{edf}_{nucleus}_{hfbwidth}_{cond}.dat"
-    for i in range(100, 101):
+    for i in range(60, 61):
         with open("for005", "w") as f:
             f.write(
                 "&main outnam='tst',title='test 120Sn',iprint=1000,itmax=1000\n"
@@ -95,7 +96,7 @@ for j in ipair:
                 "&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,\n"
             )
             f.write(
-                "deocc(1)=6.0D0,deocc(2)=6.0D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,\n"
+                "deocc(1)=11.0D0,deocc(2)=11.0D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,\n"
             )
             f.write("tvaryx0=T,inodiag=9999/\n")
             f.write("&constraint\n")        

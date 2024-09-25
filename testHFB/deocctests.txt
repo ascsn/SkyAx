@@ -1,0 +1,106 @@
+# BCS calculations
+deocc(1, 2) = 6.0
+cutoff=-10,hfbwidth=0.0d0,pair.strength=630.5; # nr. of bound nucleons=   69.802
+Nmass: 120, Ncharge: 50 energy: -1021.95287529578 epairp: -0.0 epairn: -19.5 rmsc: 4.6442 proton gap: -1.4450E-04 neutron gap: -1.873
+
+cutoff=-40,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   60.182
+Nmass: 120, Ncharge: 50 energy: -1125.34041388089 epairp: -0.0 epairn: -185.9 rmsc: 4.8925 proton gap: -6.6625E-04 neutron gap: -8.033
+
+cutoff=-60,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   60.145
+Nmass: 120, Ncharge: 50 energy: -1126.06687334726 epairp: -0.0 epairn: -186.8 rmsc: 4.8945 proton gap: -6.6644E-04 neutron gap: -8.060
+
+deocc(1, 2) = 7.0
+cutoff=-10,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   69.802
+Nmass: 120, Ncharge: 50 energy: -1021.95291500479 epairp: -0.0 epairn: -19.5 rmsc: 4.6442 proton gap: -1.4451E-04 neutron gap: -1.873
+
+cutoff=-40,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   53.301
+Nmass: 120, Ncharge: 50 energy: -1289.64018379238 epairp: -0.0 epairn: -377.0 rmsc: 5.5219 proton gap: -7.7127E-04 neutron gap: -13.68
+
+cutoff=-60,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   53.200
+Nmass: 120, Ncharge: 50 energy: -1292.95179906479 epairp: -0.0 epairn: -380.7 rmsc: 5.5341 proton gap: -7.7306E-04 neutron gap: -13.81
+
+deocc(1, 2) = 8.0
+cutoff=-10,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   69.802
+Nmass: 120, Ncharge: 50 energy: -1021.95310145485 epairp: -0.0 epairn: -19.5 rmsc: 4.6442 proton gap: -1.4451E-04 neutron gap: -1.873
+
+cutoff=-40,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   49.149
+Nmass: 120, Ncharge: 50 energy: -1443.94009029230 epairp: -0.0 epairn: -554.6 rmsc: 6.1329 proton gap: -8.2424E-04 neutron gap: -18.95
+
+cutoff=-60,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   48.789
+Nmass: 120, Ncharge: 50 energy: -1458.24722769885 epairp: -0.0 epairn: -573.9 rmsc: 6.1904 proton gap: -8.2262E-04 neutron gap: -19.20
+
+deocc(1, 2) = 9.0
+cutoff=-10,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   69.802
+Nmass: 120, Ncharge: 50 energy: -1021.95310127496 epairp: -0.0 epairn: -19.5 rmsc: 4.6442 proton gap: -1.4451E-04 neutron gap: -1.873
+
+cutoff=-40,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   45.085
+Nmass: 120, Ncharge: 50 energy: -1594.64784194333 epairp: -0.0 epairn: -755.7 rmsc: 6.9430 proton gap: -8.1896E-04 neutron gap: -21.44
+
+cutoff=-60,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   44.547
+Nmass: 120, Ncharge: 50 energy: -1618.97313831117 epairp: -0.0 epairn: -786.5 rmsc: 7.0508 proton gap: -9.1551E-04 neutron gap: -22.00
+
+deocc(1, 2) = 10.0
+cutoff=-10,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   69.802
+Nmass: 120, Ncharge: 50 energy: -1021.95307803475 epairp: -0.0 epairn: -19.5 rmsc: 4.6442 proton gap: -1.4451E-04 neutron gap: -1.873
+
+cutoff=-40,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   43.432
+Nmass: 120, Ncharge: 50 energy: -1764.21506010624 epairp: -0.0 epairn: -808.3 rmsc: 8.1103 proton gap: -1.0796E-03 neutron gap: -20.18
+
+cutoff=-60,hfbwidth=0.0d0,pair.strength=630.5 # nr. of bound nucleons=   42.399
+Nmass: 120, Ncharge: 50 energy: -1807.23743603407 epairp: -0.0 epairn: -857.6 rmsc: 8.3753 proton gap: -1.1694E-03 neutron gap: -20.88
+
+deocc(1, 2) = 11.0 : Code breaks
+
+# Foldwidth = 1 Cases:
+
+deocc(1, 2) = 6.0
+cutoff=-10,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.682
+Nmass: 120, Ncharge: 50 energy: -1025.26360992358 epairp: -0.0 epairn: -29.8 rmsc: 4.6422 proton gap: -4.7752E-05 neutron gap: -2.459
+
+cutoff=-40,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.340
+Nmass: 120, Ncharge: 50 energy: -1027.34777821541 epairp: -0.0 epairn: -38.5 rmsc: 4.6434 proton gap: -5.3955E-05 neutron gap: -2.609
+
+cutoff=-60,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.339
+Nmass: 120, Ncharge: 50 energy: -1027.35133097478 epairp: -0.0 epairn: -38.5 rmsc: 4.6434 proton gap: -5.3991E-05 neutron gap: -2.609
+
+deocc(1, 2) = 7.0
+cutoff=-10,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.682
+Nmass: 120, Ncharge: 50 energy: -1025.26365828786 epairp: -0.0 epairn: -29.8 rmsc: 4.6422 proton gap: -4.7751E-05 neutron gap: -2.459
+
+cutoff=-40,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.221
+Nmass: 120, Ncharge: 50 energy: -1028.17094989758 epairp: -0.0 epairn: -42.2 rmsc: 4.6436 proton gap: -5.4535E-05 neutron gap: -2.610
+
+cutoff=-60,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.220
+Nmass: 120, Ncharge: 50 energy: -1028.17606918906 epairp: -0.0 epairn: -42.2 rmsc: 4.6436 proton gap: -5.4621E-05 neutron gap: -2.610
+
+deocc(1, 2) = 8.0
+cutoff=-10,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.682
+Nmass: 120, Ncharge: 50 energy: -1025.26358541464 epairp: -0.0 epairn: -29.8 rmsc: 4.6422 proton gap: -4.7748E-05 neutron gap: -2.459
+
+cutoff=-40,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.189
+Nmass: 120, Ncharge: 50 energy: -1028.34371729056 epairp: -0.0 epairn: -43.1 rmsc: 4.6437 proton gap: -5.9695E-05 neutron gap: -2.538
+
+cutoff=-60,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.187
+Nmass: 120, Ncharge: 50 energy: -1028.35551827258 epairp: -0.0 epairn: -43.1 rmsc: 4.6437 proton gap: -5.9940E-05 neutron gap: -2.538
+
+deocc(1, 2) = 9.0
+cutoff=-10,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.682
+Nmass: 120, Ncharge: 50 energy: -1025.26362915134 epairp: -0.0 epairn: -29.8 rmsc: 4.6422 proton gap: -4.7746E-05 neutron gap: -2.459
+
+cutoff=-40,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.166    
+Nmass: 120, Ncharge: 50 energy: -1028.43818081949 epairp: -0.0 epairn: -43.6 rmsc: 4.6437 proton gap: -6.5812E-05 neutron gap: -2.460
+
+cutoff=-60,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.164    
+Nmass: 120, Ncharge: 50 energy: -1028.45234896920 epairp: -0.0 epairn: -43.7 rmsc: 4.6437 proton gap: -6.6300E-05 neutron gap: -2.460
+
+deocc(1, 2) = 10.0
+cutoff=-10,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.682    
+Nmass: 120, Ncharge: 50 energy: -1025.26362884244 epairp: -0.0 epairn: -29.8 rmsc: 4.6422 proton gap: -4.7745E-05 neutron gap: -2.459
+
+cutoff=-40,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.143    
+Nmass: 120, Ncharge: 50 energy: -1028.52591729678 epairp: -0.0 epairn: -44.2 rmsc: 4.6437 proton gap: -7.0865E-05 neutron gap: -2.382
+
+cutoff=-60,hfbwidth=1.0d0,pair.strength=2297 # nr. of bound nucleons=   69.141    
+Nmass: 120, Ncharge: 50 energy: -1028.52675626251 epairp: -0.0 epairn: -44.3 rmsc: 4.6437 proton gap: -7.1750E-05 neutron gap: -2.377
+
+deocc(1, 2) = 11.0 : Code breaks
