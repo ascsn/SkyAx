@@ -6,19 +6,21 @@ nucleus = "120Sn"
 edf = "SVbas"
 
 # Set HFB widths
-hfbwidths = ["0.0d0", "1.0d0", "0.0d0", "1.0d0", "0.0d0", "1.0d0"] #, "1.5d0", "2.0d0", "3.0d0"]
-
+hfbwidths = ["0.0d0", "1.0d0", "1.5d0", "2.0d0", "3.0d0"]
+# hfbwidths = ["0.0d0"]
 # BCS pairing strengths
-# pairStrengthsBCS = ["573", "1860", "5920", "19210", "41820"]
-pairStrengthsBCS = ["530", "1620", "136", "1500",  "129.8", "1500"]
+# pairStrengthsBCS = ["142.5", "1860", "5920", "19210", "41820"]
+# pairStrengthsBCS = ["530", "1620", "136", "1500",  "139", "1500"]
+# pairStrengthsBCS = ["450"]
+pairStrengthsBCS = ["630.5", "2297","5984", "12360", "36100"] #Cutoff 100
 
 # HFB pairing strengths
 pairStrengthsHFB = ["530", "1610", "136", "1500", "130", "1500"]#, "10815", "30301"]
 
-ipair = [7, 8]  # 7 for BCS 8 for HFB
+ipair = [7]  # 7 for BCS 8 for HFB
 
 # Set hfbwidth
-hfbwidth = "1.0d0"
+hfbwidth = "0.0d0"
 
 def preprocess_line(line):
     # Add a space before negative signs that are not part of the scientific notation
@@ -42,7 +44,7 @@ def read_energy(file_path):
             if "epairp" in line:
                 next_line = lines[idx + 1]
                 parts = preprocess_line(next_line).split()
-                energy_info = f"energy: {parts[12]} epairp: {parts[13]} epairn: {parts[14]} rmsc: {parts[18]}"
+                energy_info = f"energy: {parts[12]} epairp: {parts[13]} epairn: {parts[14]} rmsc: {parts[18]} beta2: {parts[3]}"
                 break
     return energy_info
 
@@ -58,7 +60,10 @@ def read_gaps(file_path):
     return f"{proton_gap} {neutron_gap}"
 
 deoccList = ["6.D0", "7.D0", "8.D0", "9.D0", "10.D0", "11.D0", "12.D0", "13.D0"]      
-runList = [[10, 11], [10, 11], [40, 41], [40, 41], [60, 61], [60, 61]]
+# runList = [[10, 11], [10, 11], [40, 41], [40, 41], [60, 61], [60, 61]]
+# deoccList = ["12.D0"]         
+runList = [[15,101],[15,101],[15,101],[15,101],[15,101]]
+
 for j in ipair:
     for val in deoccList:
         if j == 7:
@@ -67,13 +72,13 @@ for j in ipair:
             combined = zip(hfbwidths, pairStrengthsBCS, runList)
         else:
             cond = "hfb"
-            pairStrength = "1500"
+            pairStrength = "1500"                                       
             combined = list(zip(hfbwidths, pairStrengthsHFB, runList))
 
         print("Val =", val)
         for hfbwidth, pairStrength, runVal in combined:
             print(f"cond = {cond}, hfbwidth={hfbwidth}, pairStrength = {pairStrength}, deocc={val}")
-            fileName = f"collect_cat_{edf}_{nucleus}_{hfbwidth}_{cond}.dat"
+            fileName = f"collect_cat_{edf}_{nucleus}_{hfbwidth}_{cond}_cut100.dat"
             a, b = runVal
             for i in range(a, b):
                 with open("for005", "w") as f:
