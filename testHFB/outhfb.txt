@@ -1,0 +1,3990 @@
+ Using predefined force SV-bas  
+ ipair input=           8
+ reset IFOCSV=0
+ after ssetup: for type= 1 nr. of particles=   50.00    
+               nr. of empty places=   170.0     nr. of possible particles=   220.0    
+ after ssetup: for type= 2 nr. of particles=   70.00    
+               nr. of empty places=   196.0     nr. of possible particles=   266.0    
+ qsoll:           0  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000
+           1          17
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm x0inv
+    1   -951.93    0.074    0.000   -30.000     0.000   -30.000    0.000      0.402
+    2   -963.97    0.074    0.000     1.549    -1.903   -30.000    0.000      0.362
+    3   -972.45    0.055    0.000     1.403    -2.059   -30.000    0.000      0.364
+    4   -983.32    0.054    0.000     1.406    -1.957   -30.000    0.000      0.327
+    5  -1010.52    0.054    0.000     1.277    -1.570   -30.000    0.000      0.329
+    6  -1065.20    0.054    0.000     1.211    -1.290   -30.000    0.000      0.331
+    7  -1117.22    0.055    0.000     1.144    -1.332   -30.000    0.000      0.332
+    8  -1150.62    0.056    0.000     1.074    -1.537   -30.000    0.000      0.334
+    9  -1172.25    0.058    0.000     1.012    -1.734   -30.000    0.000      0.336
+   10  -1184.33    0.060    0.000     0.960    -1.991   -30.000    0.000      0.337
+   11  -1188.05    0.062    0.000     0.913    -2.504   -30.000    0.000      0.339
+
+ colrun: max error=    0.10000E-08 actual error=    0.60042E-05 50 iterations
+
+   12  -1188.12    0.064    0.000     0.871    -4.284   -30.000    0.000      0.341
+
+ colrun: max error=    0.10000E-08 actual error=    0.70762E-05 50 iterations
+
+   13  -1185.94    0.065    0.000     0.830    -2.736   -30.000    0.000      0.307
+
+ colrun: max error=    0.10000E-08 actual error=    0.73550E-05 50 iterations
+
+   14  -1181.69    0.067    0.000     0.790    -2.444   -30.000    0.000      0.276
+
+ colrun: max error=    0.10000E-08 actual error=    0.73924E-05 50 iterations
+
+   15  -1176.93    0.068    0.000     0.756    -2.393   -30.000    0.000      0.248
+
+ colrun: max error=    0.10000E-08 actual error=    0.73040E-05 50 iterations
+
+   16  -1172.08    0.069    0.000     0.729    -2.383   -30.000    0.000      0.223
+
+ colrun: max error=    0.10000E-08 actual error=    0.71327E-05 50 iterations
+
+   17  -1167.01    0.071    0.000     0.705    -2.362   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.68970E-05 50 iterations
+
+   18  -1162.26    0.072    0.000     0.685    -2.388   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.66533E-05 50 iterations
+
+   19  -1157.83    0.073    0.000     0.668    -2.418   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.64140E-05 50 iterations
+
+   20  -1153.64    0.074    0.000     0.650    -2.440   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.61805E-05 50 iterations
+
+   21  -1149.82    0.075    0.000     0.631    -2.478   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.59559E-05 50 iterations
+
+   22  -1146.32    0.076    0.000     0.611    -2.515   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.57406E-05 50 iterations
+
+   23  -1143.08    0.076    0.000     0.591    -2.548   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.55337E-05 50 iterations
+
+   24  -1140.14    0.077    0.000     0.570    -2.588   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.53360E-05 50 iterations
+
+   25  -1137.44    0.078    0.000     0.550    -2.626   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.51470E-05 50 iterations
+
+   26  -1134.97    0.079    0.000     0.530    -2.661   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.49662E-05 50 iterations
+
+   27  -1132.71    0.079    0.000     0.510    -2.700   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.47935E-05 50 iterations
+
+   28  -1130.64    0.080    0.000     0.491    -2.737   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.46285E-05 50 iterations
+
+   29  -1128.73    0.081    0.000     0.473    -2.771   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.44707E-05 50 iterations
+
+   30  -1126.97    0.081    0.000     0.455    -2.807   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.43200E-05 50 iterations
+
+   31  -1125.35    0.082    0.000     0.438    -2.841   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.41758E-05 50 iterations
+
+   32  -1123.85    0.082    0.000     0.422    -2.874   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.40379E-05 50 iterations
+
+   33  -1122.45    0.083    0.000     0.406    -2.907   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.39060E-05 50 iterations
+
+   34  -1121.16    0.083    0.000     0.391    -2.937   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37797E-05 50 iterations
+
+   35  -1119.95    0.084    0.000     0.377    -2.967   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.36588E-05 50 iterations
+
+   36  -1118.82    0.084    0.000     0.362    -2.996   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.35429E-05 50 iterations
+
+   37  -1117.77    0.085    0.000     0.349    -3.024   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.34319E-05 50 iterations
+
+   38  -1116.77    0.085    0.000     0.336    -3.050   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.33254E-05 50 iterations
+
+   39  -1115.83    0.086    0.000     0.323    -3.076   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.32231E-05 50 iterations
+
+   40  -1114.95    0.086    0.000     0.310    -3.100   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31250E-05 50 iterations
+
+   41  -1114.11    0.086    0.000     0.298    -3.123   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.30306E-05 50 iterations
+
+   42  -1113.31    0.087    0.000     0.286    -3.144   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29399E-05 50 iterations
+
+   43  -1112.55    0.087    0.000     0.274    -3.165   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.28526E-05 50 iterations
+
+   44  -1111.82    0.088    0.000     0.262    -3.184   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.27685E-05 50 iterations
+
+   45  -1111.12    0.088    0.000     0.251    -3.202   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26875E-05 50 iterations
+
+   46  -1110.45    0.088    0.000     0.240    -3.219   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26094E-05 50 iterations
+
+   47  -1109.81    0.089    0.000     0.228    -3.235   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.25340E-05 50 iterations
+
+   48  -1109.18    0.089    0.000     0.217    -3.250   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24612E-05 50 iterations
+
+   49  -1108.58    0.089    0.000     0.206    -3.264   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23908E-05 50 iterations
+
+   50  -1108.00    0.090    0.000     0.195    -3.277   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23228E-05 50 iterations
+
+   51  -1105.44    0.090    0.000     0.185    -2.635   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22569E-05 50 iterations
+
+   52  -1104.88    0.090    0.000     0.174    -3.300   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21931E-05 50 iterations
+
+   53  -1104.34    0.091    0.000     0.163    -3.310   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21313E-05 50 iterations
+
+   54  -1103.81    0.091    0.000     0.153    -3.319   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20714E-05 50 iterations
+
+   55  -1103.29    0.091    0.000     0.142    -3.328   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20132E-05 50 iterations
+
+   56  -1102.79    0.092    0.000     0.132    -3.336   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19567E-05 50 iterations
+
+   57  -1102.29    0.092    0.000     0.121    -3.344   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19019E-05 50 iterations
+
+   58  -1101.80    0.092    0.000     0.111    -3.351   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18485E-05 50 iterations
+
+   59  -1101.31    0.093    0.000     0.100    -3.357   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17966E-05 50 iterations
+
+   60  -1100.83    0.093    0.000     0.090    -3.363   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17460E-05 50 iterations
+
+   61  -1100.36    0.093    0.000     0.079    -3.368   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16968E-05 50 iterations
+
+   62  -1099.90    0.093    0.000     0.069    -3.373   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16489E-05 50 iterations
+
+   63  -1099.44    0.094    0.000     0.059    -3.377   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16021E-05 50 iterations
+
+   64  -1098.98    0.094    0.000     0.048    -3.382   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15565E-05 50 iterations
+
+   65  -1098.53    0.094    0.000     0.038    -3.386   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15119E-05 50 iterations
+
+   66  -1098.08    0.095    0.000     0.028    -3.389   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14684E-05 50 iterations
+
+   67  -1097.63    0.095    0.000     0.017    -3.392   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14259E-05 50 iterations
+
+   68  -1097.19    0.095    0.000     0.007    -3.395   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13844E-05 50 iterations
+
+   69  -1096.75    0.096    0.000    -0.004    -3.398   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13438E-05 50 iterations
+
+   70  -1096.32    0.096    0.000    -0.014    -3.401   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13041E-05 50 iterations
+
+   71  -1095.89    0.096    0.000    -0.025    -3.403   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12652E-05 50 iterations
+
+   72  -1095.45    0.096    0.000    -0.035    -3.406   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12271E-05 50 iterations
+
+   73  -1095.03    0.097    0.000    -0.046    -3.408   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11898E-05 50 iterations
+
+   74  -1094.60    0.097    0.000    -0.056    -3.410   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11533E-05 50 iterations
+
+   75  -1094.18    0.097    0.000    -0.067    -3.412   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11175E-05 50 iterations
+
+   76  -1093.76    0.097    0.000    -0.077    -3.414   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10824E-05 50 iterations
+
+   77  -1093.34    0.098    0.000    -0.088    -3.416   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10480E-05 50 iterations
+
+   78  -1092.92    0.098    0.000    -0.099    -3.417   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10142E-05 50 iterations
+
+   79  -1092.50    0.098    0.000    -0.109    -3.419   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.98107E-06 50 iterations
+
+   80  -1092.09    0.099    0.000    -0.120    -3.421   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.94854E-06 50 iterations
+
+   81  -1091.67    0.099    0.000    -0.130    -3.422   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.91659E-06 50 iterations
+
+   82  -1091.26    0.099    0.000    -0.141    -3.424   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.88522E-06 50 iterations
+
+   83  -1090.85    0.099    0.000    -0.151    -3.425   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.85440E-06 50 iterations
+
+   84  -1090.44    0.100    0.000    -0.162    -3.427   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.82411E-06 50 iterations
+
+   85  -1090.04    0.100    0.000    -0.172    -3.428   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.79435E-06 50 iterations
+
+   86  -1089.63    0.100    0.000    -0.183    -3.430   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76509E-06 50 iterations
+
+   87  -1089.23    0.100    0.000    -0.193    -3.431   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73633E-06 50 iterations
+
+   88  -1088.83    0.101    0.000    -0.203    -3.433   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.70805E-06 50 iterations
+
+   89  -1088.43    0.101    0.000    -0.213    -3.434   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.68023E-06 50 iterations
+
+   90  -1088.03    0.101    0.000    -0.223    -3.435   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.65286E-06 50 iterations
+
+   91  -1087.63    0.102    0.000    -0.233    -3.437   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.62594E-06 50 iterations
+
+   92  -1087.23    0.102    0.000    -0.243    -3.438   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.59946E-06 50 iterations
+
+   93  -1086.84    0.102    0.000    -0.252    -3.440   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.57339E-06 50 iterations
+
+   94  -1086.44    0.102    0.000    -0.261    -3.441   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.54774E-06 50 iterations
+
+   95  -1086.05    0.103    0.000    -0.270    -3.443   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.52249E-06 50 iterations
+
+   96  -1085.66    0.103    0.000    -0.278    -3.444   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.49764E-06 50 iterations
+
+   97  -1085.27    0.103    0.000    -0.286    -3.446   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.47317E-06 50 iterations
+
+   98  -1084.89    0.103    0.000    -0.293    -3.447   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.44908E-06 50 iterations
+
+   99  -1084.50    0.104    0.000    -0.301    -3.449   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.42536E-06 50 iterations
+
+  100  -1084.12    0.104    0.000    -0.307    -3.450   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.40201E-06 50 iterations
+
+  101  -1083.73    0.104    0.000    -0.313    -3.451   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37901E-06 50 iterations
+
+  102  -1083.35    0.104    0.000    -0.319    -3.453   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.35637E-06 50 iterations
+
+  103  -1082.97    0.105    0.000    -0.324    -3.455   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.33406E-06 50 iterations
+
+  104  -1082.59    0.105    0.000    -0.328    -3.457   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31210E-06 50 iterations
+
+  105  -1082.22    0.105    0.000    -0.332    -3.458   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29046E-06 50 iterations
+
+  106  -1081.84    0.105    0.000    -0.335    -3.460   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26915E-06 50 iterations
+
+  107  -1081.47    0.106    0.000    -0.338    -3.462   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24816E-06 50 iterations
+
+  108  -1081.09    0.106    0.000    -0.340    -3.463   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22749E-06 50 iterations
+
+  109  -1080.72    0.106    0.000    -0.341    -3.465   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20712E-06 50 iterations
+
+  110  -1080.36    0.106    0.000    -0.341    -3.467   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18707E-06 50 iterations
+
+  111  -1079.99    0.107    0.000    -0.341    -3.468   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16731E-06 50 iterations
+
+  112  -1079.62    0.107    0.000    -0.340    -3.470   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14784E-06 50 iterations
+
+  113  -1079.26    0.107    0.000    -0.339    -3.472   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12867E-06 50 iterations
+
+  114  -1078.90    0.107    0.000    -0.337    -3.474   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10979E-06 50 iterations
+
+  115  -1078.54    0.108    0.000    -0.335    -3.476   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.91185E-07 50 iterations
+
+  116  -1078.18    0.108    0.000    -0.332    -3.477   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72862E-07 50 iterations
+
+  117  -1077.82    0.108    0.000    -0.328    -3.479   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.54813E-07 50 iterations
+
+  118  -1077.46    0.108    0.000    -0.324    -3.481   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37036E-07 50 iterations
+
+  119  -1077.11    0.108    0.000    -0.320    -3.483   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19526E-07 50 iterations
+
+  120  -1076.76    0.109    0.000    -0.315    -3.485   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.44124E-08 50 iterations
+
+  121  -1076.41    0.109    0.000    -0.310    -3.487   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15273E-07 50 iterations
+
+  122  -1076.06    0.109    0.000    -0.305    -3.489   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31434E-07 50 iterations
+
+  123  -1075.71    0.109    0.000    -0.300    -3.491   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.47909E-07 50 iterations
+
+  124  -1075.36    0.110    0.000    -0.294    -3.493   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.64133E-07 50 iterations
+
+  125  -1075.02    0.110    0.000    -0.288    -3.495   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.80110E-07 50 iterations
+
+  126  -1074.68    0.110    0.000    -0.282    -3.497   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.95842E-07 50 iterations
+
+  127  -1074.34    0.110    0.000    -0.276    -3.499   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11133E-06 50 iterations
+
+  128  -1074.00    0.110    0.000    -0.270    -3.501   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12658E-06 50 iterations
+
+  129  -1073.66    0.111    0.000    -0.263    -3.503   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14160E-06 50 iterations
+
+  130  -1073.32    0.111    0.000    -0.257    -3.505   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15638E-06 50 iterations
+
+  131  -1072.99    0.111    0.000    -0.250    -3.507   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17093E-06 50 iterations
+
+  132  -1072.66    0.111    0.000    -0.244    -3.509   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18526E-06 50 iterations
+
+  133  -1072.33    0.111    0.000    -0.237    -3.511   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19936E-06 50 iterations
+
+  134  -1072.00    0.112    0.000    -0.231    -3.513   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21323E-06 50 iterations
+
+  135  -1071.67    0.112    0.000    -0.224    -3.515   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22689E-06 50 iterations
+
+  136  -1071.34    0.112    0.000    -0.218    -3.517   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24032E-06 50 iterations
+
+  137  -1071.02    0.112    0.000    -0.212    -3.519   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.25354E-06 50 iterations
+
+  138  -1070.70    0.112    0.000    -0.205    -3.521   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26655E-06 50 iterations
+
+  139  -1070.38    0.113    0.000    -0.199    -3.523   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.27935E-06 50 iterations
+
+  140  -1070.06    0.113    0.000    -0.193    -3.526   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29193E-06 50 iterations
+
+  141  -1069.74    0.113    0.000    -0.187    -3.528   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.30431E-06 50 iterations
+
+  142  -1069.42    0.113    0.000    -0.180    -3.530   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31649E-06 50 iterations
+
+  143  -1069.11    0.113    0.000    -0.174    -3.532   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.32846E-06 50 iterations
+
+  144  -1068.80    0.114    0.000    -0.169    -3.534   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.34023E-06 50 iterations
+
+  145  -1068.49    0.114    0.000    -0.163    -3.537   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.35180E-06 50 iterations
+
+  146  -1068.18    0.114    0.000    -0.157    -3.539   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.36317E-06 50 iterations
+
+  147  -1067.87    0.114    0.000    -0.151    -3.541   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37435E-06 50 iterations
+
+  148  -1067.57    0.114    0.000    -0.146    -3.543   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.38534E-06 50 iterations
+
+  149  -1067.26    0.114    0.000    -0.140    -3.545   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.39614E-06 50 iterations
+
+  150  -1066.96    0.115    0.000    -0.135    -3.548   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.40674E-06 50 iterations
+
+  151  -1066.80    0.115    0.000    -0.130    -3.836   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.41716E-06 50 iterations
+
+  152  -1066.50    0.115    0.000    -0.124    -3.552   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.42739E-06 50 iterations
+
+  153  -1066.21    0.115    0.000    -0.119    -3.555   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.43744E-06 50 iterations
+
+  154  -1065.91    0.115    0.000    -0.114    -3.557   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.44731E-06 50 iterations
+
+  155  -1065.62    0.115    0.000    -0.109    -3.559   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.45700E-06 50 iterations
+
+  156  -1065.32    0.116    0.000    -0.104    -3.561   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.46651E-06 50 iterations
+
+  157  -1065.03    0.116    0.000    -0.100    -3.564   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.47584E-06 50 iterations
+
+  158  -1064.74    0.116    0.000    -0.095    -3.566   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.48500E-06 50 iterations
+
+  159  -1064.46    0.116    0.000    -0.090    -3.568   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.49398E-06 50 iterations
+
+  160  -1064.17    0.116    0.000    -0.086    -3.571   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.50280E-06 50 iterations
+
+  161  -1063.89    0.116    0.000    -0.082    -3.573   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.51144E-06 50 iterations
+
+  162  -1063.60    0.116    0.000    -0.077    -3.575   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.51992E-06 50 iterations
+
+  163  -1063.32    0.117    0.000    -0.073    -3.578   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.52823E-06 50 iterations
+
+  164  -1063.04    0.117    0.000    -0.069    -3.580   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.53637E-06 50 iterations
+
+  165  -1062.76    0.117    0.000    -0.065    -3.582   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.54435E-06 50 iterations
+
+  166  -1062.49    0.117    0.000    -0.061    -3.585   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.55217E-06 50 iterations
+
+  167  -1062.21    0.117    0.000    -0.057    -3.587   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.55983E-06 50 iterations
+
+  168  -1061.94    0.117    0.000    -0.053    -3.589   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.56733E-06 50 iterations
+
+  169  -1061.67    0.117    0.000    -0.050    -3.592   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.57468E-06 50 iterations
+
+  170  -1061.40    0.117    0.000    -0.046    -3.594   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.58187E-06 50 iterations
+
+  171  -1061.13    0.118    0.000    -0.042    -3.597   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.58891E-06 50 iterations
+
+  172  -1060.86    0.118    0.000    -0.039    -3.599   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.59579E-06 50 iterations
+
+  173  -1060.60    0.118    0.000    -0.035    -3.601   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.60253E-06 50 iterations
+
+  174  -1060.33    0.118    0.000    -0.032    -3.604   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.60911E-06 50 iterations
+
+  175  -1060.07    0.118    0.000    -0.029    -3.606   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.61555E-06 50 iterations
+
+  176  -1059.81    0.118    0.000    -0.026    -3.609   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.62185E-06 50 iterations
+
+  177  -1059.55    0.118    0.000    -0.022    -3.611   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.62800E-06 50 iterations
+
+  178  -1059.29    0.118    0.000    -0.019    -3.613   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.63400E-06 50 iterations
+
+  179  -1059.04    0.118    0.000    -0.016    -3.616   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.63987E-06 50 iterations
+
+  180  -1058.78    0.119    0.000    -0.014    -3.618   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.64560E-06 50 iterations
+
+  181  -1058.53    0.119    0.000    -0.011    -3.621   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.65119E-06 50 iterations
+
+  182  -1058.27    0.119    0.000    -0.008    -3.623   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.65664E-06 50 iterations
+
+  183  -1058.02    0.119    0.000    -0.005    -3.625   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.66196E-06 50 iterations
+
+  184  -1057.77    0.119    0.000    -0.003    -3.628   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.66715E-06 50 iterations
+
+  185  -1057.53    0.119    0.000     0.000    -3.630   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.67220E-06 50 iterations
+
+  186  -1057.28    0.119    0.000     0.003    -3.633   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.67712E-06 50 iterations
+
+  187  -1057.04    0.119    0.000     0.005    -3.635   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.68192E-06 50 iterations
+
+  188  -1056.79    0.119    0.000     0.007    -3.637   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.68659E-06 50 iterations
+
+  189  -1056.55    0.119    0.000     0.010    -3.640   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.69113E-06 50 iterations
+
+  190  -1056.31    0.119    0.000     0.012    -3.642   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.69555E-06 50 iterations
+
+  191  -1056.07    0.119    0.000     0.014    -3.645   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.69984E-06 50 iterations
+
+  192  -1055.83    0.119    0.000     0.016    -3.647   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.70402E-06 50 iterations
+
+  193  -1055.60    0.119    0.000     0.019    -3.650   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.70807E-06 50 iterations
+
+  194  -1055.36    0.120    0.000     0.021    -3.652   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71201E-06 50 iterations
+
+  195  -1055.13    0.120    0.000     0.023    -3.654   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71583E-06 50 iterations
+
+  196  -1054.89    0.120    0.000     0.025    -3.657   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71953E-06 50 iterations
+
+  197  -1054.66    0.120    0.000     0.027    -3.659   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72312E-06 50 iterations
+
+  198  -1054.43    0.120    0.000     0.028    -3.662   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72660E-06 50 iterations
+
+  199  -1054.20    0.120    0.000     0.030    -3.664   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72996E-06 50 iterations
+
+  200  -1053.98    0.120    0.000     0.032    -3.666   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73322E-06 50 iterations
+
+  201  -1053.99    0.120    0.000     0.034    -4.906   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73637E-06 50 iterations
+
+  202  -1053.77    0.120    0.000     0.035    -3.671   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73941E-06 50 iterations
+
+  203  -1053.54    0.120    0.000     0.037    -3.674   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74235E-06 50 iterations
+
+  204  -1053.32    0.120    0.000     0.038    -3.676   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74518E-06 50 iterations
+
+  205  -1053.10    0.120    0.000     0.040    -3.679   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74791E-06 50 iterations
+
+  206  -1052.88    0.120    0.000     0.041    -3.681   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75053E-06 50 iterations
+
+  207  -1052.66    0.120    0.000     0.043    -3.683   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75306E-06 50 iterations
+
+  208  -1052.44    0.120    0.000     0.044    -3.686   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75549E-06 50 iterations
+
+  209  -1052.23    0.120    0.000     0.046    -3.688   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75782E-06 50 iterations
+
+  210  -1052.01    0.120    0.000     0.047    -3.690   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76006E-06 50 iterations
+
+  211  -1051.80    0.120    0.000     0.048    -3.693   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76220E-06 50 iterations
+
+  212  -1051.59    0.120    0.000     0.049    -3.695   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76425E-06 50 iterations
+
+  213  -1051.38    0.120    0.000     0.050    -3.698   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76621E-06 50 iterations
+
+  214  -1051.17    0.120    0.000     0.051    -3.700   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76807E-06 50 iterations
+
+  215  -1050.96    0.120    0.000     0.053    -3.702   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76985E-06 50 iterations
+
+  216  -1050.75    0.120    0.000     0.054    -3.705   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77154E-06 50 iterations
+
+  217  -1050.55    0.120    0.000     0.055    -3.707   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77314E-06 50 iterations
+
+  218  -1050.34    0.120    0.000     0.056    -3.709   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77466E-06 50 iterations
+
+  219  -1050.14    0.120    0.000     0.056    -3.712   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77609E-06 50 iterations
+
+  220  -1049.93    0.120    0.000     0.057    -3.714   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77744E-06 50 iterations
+
+  221  -1049.73    0.120    0.000     0.058    -3.716   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77871E-06 50 iterations
+
+  222  -1049.53    0.120    0.000     0.059    -3.719   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77990E-06 50 iterations
+
+  223  -1049.33    0.120    0.000     0.060    -3.721   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78101E-06 50 iterations
+
+  224  -1049.13    0.120    0.000     0.060    -3.723   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78204E-06 50 iterations
+
+  225  -1048.94    0.120    0.000     0.061    -3.726   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78299E-06 50 iterations
+
+  226  -1048.74    0.120    0.000     0.062    -3.728   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78387E-06 50 iterations
+
+  227  -1048.55    0.120    0.000     0.062    -3.730   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78467E-06 50 iterations
+
+  228  -1048.35    0.120    0.000     0.063    -3.733   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78540E-06 50 iterations
+
+  229  -1048.16    0.120    0.000     0.064    -3.735   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78606E-06 50 iterations
+
+  230  -1047.97    0.120    0.000     0.064    -3.737   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78665E-06 50 iterations
+
+  231  -1047.78    0.120    0.000     0.065    -3.740   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78717E-06 50 iterations
+
+  232  -1047.59    0.120    0.000     0.065    -3.742   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78761E-06 50 iterations
+
+  233  -1047.40    0.120    0.000     0.065    -3.744   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78800E-06 50 iterations
+
+  234  -1047.21    0.120    0.000     0.066    -3.746   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78831E-06 50 iterations
+
+  235  -1047.02    0.120    0.000     0.066    -3.749   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78856E-06 50 iterations
+
+  236  -1046.84    0.120    0.000     0.067    -3.751   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78875E-06 50 iterations
+
+  237  -1046.65    0.120    0.000     0.067    -3.753   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78887E-06 50 iterations
+
+  238  -1046.47    0.120    0.000     0.067    -3.756   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78893E-06 50 iterations
+
+  239  -1046.29    0.120    0.000     0.067    -3.758   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78893E-06 50 iterations
+
+  240  -1046.10    0.120    0.000     0.068    -3.760   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78886E-06 50 iterations
+
+  241  -1045.92    0.120    0.000     0.068    -3.762   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78874E-06 50 iterations
+
+  242  -1045.74    0.120    0.000     0.068    -3.765   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78857E-06 50 iterations
+
+  243  -1045.56    0.120    0.000     0.068    -3.767   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78833E-06 50 iterations
+
+  244  -1045.39    0.120    0.000     0.068    -3.769   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78804E-06 50 iterations
+
+  245  -1045.21    0.119    0.000     0.068    -3.771   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78769E-06 50 iterations
+
+  246  -1045.03    0.119    0.000     0.068    -3.773   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78729E-06 50 iterations
+
+  247  -1044.86    0.119    0.000     0.068    -3.776   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78684E-06 50 iterations
+
+  248  -1044.68    0.119    0.000     0.068    -3.778   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78633E-06 50 iterations
+
+  249  -1044.51    0.119    0.000     0.068    -3.780   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78578E-06 50 iterations
+
+  250  -1044.34    0.119    0.000     0.068    -3.782   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78517E-06 50 iterations
+
+  251  -1044.45    0.119    0.000     0.068    -3.978   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.78478E-06 50 iterations
+
+  252  -1044.28    0.119    0.000     0.068    -3.787   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78408E-06 50 iterations
+
+  253  -1044.11    0.119    0.000     0.068    -3.789   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78329E-06 50 iterations
+
+  254  -1043.94    0.119    0.000     0.068    -3.791   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78246E-06 50 iterations
+
+  255  -1043.77    0.119    0.000     0.067    -3.793   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78158E-06 50 iterations
+
+  256  -1043.60    0.119    0.000     0.067    -3.795   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78067E-06 50 iterations
+
+  257  -1043.44    0.119    0.000     0.067    -3.797   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77972E-06 50 iterations
+
+  258  -1043.27    0.119    0.000     0.067    -3.800   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77872E-06 50 iterations
+
+  259  -1043.11    0.119    0.000     0.066    -3.802   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77769E-06 50 iterations
+
+  260  -1042.94    0.119    0.000     0.066    -3.804   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77662E-06 50 iterations
+
+  261  -1042.78    0.118    0.000     0.066    -3.806   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77550E-06 50 iterations
+
+  262  -1042.62    0.118    0.000     0.065    -3.808   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77435E-06 50 iterations
+
+  263  -1042.46    0.118    0.000     0.065    -3.810   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77317E-06 50 iterations
+
+  264  -1042.30    0.118    0.000     0.065    -3.812   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77194E-06 50 iterations
+
+  265  -1042.14    0.118    0.000     0.064    -3.814   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77068E-06 50 iterations
+
+  266  -1041.98    0.118    0.000     0.064    -3.816   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76939E-06 50 iterations
+
+  267  -1041.82    0.118    0.000     0.063    -3.818   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76806E-06 50 iterations
+
+  268  -1041.66    0.118    0.000     0.063    -3.820   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76670E-06 50 iterations
+
+  269  -1041.50    0.118    0.000     0.062    -3.822   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76530E-06 50 iterations
+
+  270  -1041.35    0.118    0.000     0.062    -3.824   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76388E-06 50 iterations
+
+  271  -1041.19    0.118    0.000     0.061    -3.826   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76242E-06 50 iterations
+
+  272  -1041.04    0.118    0.000     0.061    -3.828   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76093E-06 50 iterations
+
+  273  -1040.88    0.118    0.000     0.060    -3.830   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75942E-06 50 iterations
+
+  274  -1040.73    0.117    0.000     0.060    -3.832   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75787E-06 50 iterations
+
+  275  -1040.58    0.117    0.000     0.059    -3.834   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75629E-06 50 iterations
+
+  276  -1040.43    0.117    0.000     0.058    -3.836   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75469E-06 50 iterations
+
+  277  -1040.28    0.117    0.000     0.058    -3.838   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75306E-06 50 iterations
+
+  278  -1040.13    0.117    0.000     0.057    -3.840   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75140E-06 50 iterations
+
+  279  -1039.98    0.117    0.000     0.056    -3.842   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74971E-06 50 iterations
+
+  280  -1039.83    0.117    0.000     0.056    -3.843   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74800E-06 50 iterations
+
+  281  -1039.68    0.117    0.000     0.055    -3.845   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74626E-06 50 iterations
+
+  282  -1039.53    0.117    0.000     0.054    -3.847   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74450E-06 50 iterations
+
+  283  -1039.38    0.117    0.000     0.054    -3.849   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74271E-06 50 iterations
+
+  284  -1039.24    0.117    0.000     0.053    -3.851   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74091E-06 50 iterations
+
+  285  -1039.09    0.116    0.000     0.052    -3.853   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73908E-06 50 iterations
+
+  286  -1038.95    0.116    0.000     0.051    -3.855   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73723E-06 50 iterations
+
+  287  -1038.80    0.116    0.000     0.050    -3.856   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73535E-06 50 iterations
+
+  288  -1038.66    0.116    0.000     0.050    -3.858   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73346E-06 50 iterations
+
+  289  -1038.51    0.116    0.000     0.049    -3.860   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73155E-06 50 iterations
+
+  290  -1038.37    0.116    0.000     0.048    -3.862   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72962E-06 50 iterations
+
+  291  -1038.23    0.116    0.000     0.047    -3.864   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72767E-06 50 iterations
+
+  292  -1038.09    0.116    0.000     0.046    -3.865   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72571E-06 50 iterations
+
+  293  -1037.95    0.116    0.000     0.045    -3.867   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72372E-06 50 iterations
+
+  294  -1037.81    0.115    0.000     0.044    -3.869   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.72172E-06 50 iterations
+
+  295  -1037.67    0.115    0.000     0.044    -3.871   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71971E-06 50 iterations
+
+  296  -1037.53    0.115    0.000     0.043    -3.872   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71768E-06 50 iterations
+
+  297  -1037.39    0.115    0.000     0.042    -3.874   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71563E-06 50 iterations
+
+  298  -1037.25    0.115    0.000     0.041    -3.876   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71357E-06 50 iterations
+
+  299  -1037.11    0.115    0.000     0.040    -3.878   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71150E-06 50 iterations
+
+  300  -1036.98    0.115    0.000     0.039    -3.879   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.70941E-06 50 iterations
+
+  301  -1037.13    0.115    0.000     0.038    -3.841   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.72509E-06 50 iterations
+
+  302  -1037.41    0.115    0.000     0.663    -3.554   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74638E-06 50 iterations
+
+  303  -1048.05    0.115    0.000     1.396    -1.994   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.45993E-06 50 iterations
+
+  304  -1035.64    0.115    0.000     1.405    -1.922   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76751E-06 50 iterations
+
+  305  -1035.67    0.114    0.000     1.379    -4.656   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.82954E-06 50 iterations
+
+  306  -1033.75    0.114    0.000     1.360    -2.731   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.92117E-06 50 iterations
+
+  307  -1033.59    0.114    0.000     1.345    -3.808   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.95102E-06 50 iterations
+
+  308  -1033.33    0.114    0.000     1.331    -3.601   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.97493E-06 50 iterations
+
+  309  -1033.33    0.114    0.000     1.318    -5.628   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.98596E-06 50 iterations
+
+  310  -1033.34    0.114    0.000     1.306    -5.164   -30.000    0.000      0.202
+
+ colrun: max error=    0.10000E-08 actual error=    0.99369E-06 50 iterations
+
+  311  -1033.38    0.114    0.000     1.293    -4.427   -30.000    0.000      0.203
+
+ colrun: max error=    0.10000E-08 actual error=    0.99826E-06 50 iterations
+
+  312  -1033.41    0.114    0.000     1.281    -4.469   -30.000    0.000      0.204
+
+ colrun: max error=    0.10000E-08 actual error=    0.10014E-05 50 iterations
+
+  313  -1033.44    0.113    0.000     1.269    -4.491   -30.000    0.000      0.205
+
+ colrun: max error=    0.10000E-08 actual error=    0.10033E-05 50 iterations
+
+  314  -1033.47    0.113    0.000     1.256    -4.593   -30.000    0.000      0.206
+
+ colrun: max error=    0.10000E-08 actual error=    0.10042E-05 50 iterations
+
+  315  -1033.49    0.113    0.000     1.244    -4.772   -30.000    0.000      0.207
+
+ colrun: max error=    0.10000E-08 actual error=    0.10043E-05 50 iterations
+
+  316  -1033.49    0.113    0.000     1.232    -5.271   -30.000    0.000      0.208
+
+ colrun: max error=    0.10000E-08 actual error=    0.10035E-05 50 iterations
+
+  317  -1033.48    0.113    0.000     1.220    -5.079   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.99904E-06 50 iterations
+
+  318  -1033.45    0.113    0.000     1.209    -4.534   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.99362E-06 50 iterations
+
+  319  -1033.41    0.113    0.000     1.198    -4.406   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.98749E-06 50 iterations
+
+  320  -1033.36    0.112    0.000     1.187    -4.277   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.98098E-06 50 iterations
+
+  321  -1033.29    0.112    0.000     1.176    -4.188   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.97415E-06 50 iterations
+
+  322  -1033.21    0.112    0.000     1.166    -4.116   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.96703E-06 50 iterations
+
+  323  -1033.12    0.112    0.000     1.156    -4.061   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.95967E-06 50 iterations
+
+  324  -1033.02    0.112    0.000     1.145    -4.018   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.95209E-06 50 iterations
+
+  325  -1032.92    0.112    0.000     1.135    -3.985   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.94429E-06 50 iterations
+
+  326  -1032.80    0.112    0.000     1.125    -3.959   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.93627E-06 50 iterations
+
+  327  -1032.68    0.111    0.000     1.115    -3.940   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.92805E-06 50 iterations
+
+  328  -1032.56    0.111    0.000     1.106    -3.926   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.91962E-06 50 iterations
+
+  329  -1032.44    0.111    0.000     1.096    -3.917   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.91098E-06 50 iterations
+
+  330  -1032.31    0.111    0.000     1.087    -3.912   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.90211E-06 50 iterations
+
+  331  -1032.18    0.111    0.000     1.077    -3.911   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.89303E-06 50 iterations
+
+  332  -1032.06    0.111    0.000     1.068    -3.913   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.88377E-06 50 iterations
+
+  333  -1031.93    0.111    0.000     1.059    -3.915   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.87436E-06 50 iterations
+
+  334  -1031.81    0.110    0.000     1.050    -3.917   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.86490E-06 50 iterations
+
+  335  -1031.68    0.110    0.000     1.041    -3.916   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.85548E-06 50 iterations
+
+  336  -1031.56    0.110    0.000     1.032    -3.914   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.84617E-06 50 iterations
+
+  337  -1031.43    0.110    0.000     1.023    -3.911   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.83701E-06 50 iterations
+
+  338  -1031.30    0.110    0.000     1.014    -3.909   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.82802E-06 50 iterations
+
+  339  -1031.18    0.110    0.000     1.006    -3.910   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.81920E-06 50 iterations
+
+  340  -1031.05    0.110    0.000     0.997    -3.913   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.81056E-06 50 iterations
+
+  341  -1030.93    0.109    0.000     0.988    -3.920   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.80209E-06 50 iterations
+
+  342  -1030.80    0.109    0.000     0.980    -3.930   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.79378E-06 50 iterations
+
+  343  -1030.69    0.109    0.000     0.972    -3.943   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.78561E-06 50 iterations
+
+  344  -1030.57    0.109    0.000     0.964    -3.957   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.77758E-06 50 iterations
+
+  345  -1030.46    0.109    0.000     0.955    -3.970   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76966E-06 50 iterations
+
+  346  -1030.35    0.109    0.000     0.947    -3.980   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.76184E-06 50 iterations
+
+  347  -1030.25    0.109    0.000     0.939    -3.985   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.75410E-06 50 iterations
+
+  348  -1030.14    0.108    0.000     0.932    -3.989   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.74640E-06 50 iterations
+
+  349  -1030.04    0.108    0.000     0.924    -3.995   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73873E-06 50 iterations
+
+  350  -1029.94    0.108    0.000     0.916    -4.004   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.73105E-06 50 iterations
+
+  351  -1030.38    0.108    0.000     0.909    -3.366   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.72359E-06 50 iterations
+
+  352  -1030.28    0.108    0.000     0.901    -4.037   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.71584E-06 50 iterations
+
+  353  -1030.19    0.108    0.000     0.894    -4.058   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.70805E-06 50 iterations
+
+  354  -1030.11    0.107    0.000     0.886    -4.084   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.70027E-06 50 iterations
+
+  355  -1030.03    0.107    0.000     0.879    -4.106   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.69257E-06 50 iterations
+
+  356  -1029.95    0.107    0.000     0.872    -4.124   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.68504E-06 50 iterations
+
+  357  -1029.88    0.107    0.000     0.864    -4.135   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.67768E-06 50 iterations
+
+  358  -1029.80    0.107    0.000     0.857    -4.136   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.67052E-06 50 iterations
+
+  359  -1029.72    0.107    0.000     0.850    -4.129   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.66354E-06 50 iterations
+
+  360  -1029.65    0.107    0.000     0.843    -4.116   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.65675E-06 50 iterations
+
+  361  -1029.56    0.106    0.000     0.836    -4.102   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.65012E-06 50 iterations
+
+  362  -1029.48    0.106    0.000     0.829    -4.088   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.64365E-06 50 iterations
+
+  363  -1029.39    0.106    0.000     0.823    -4.077   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.63732E-06 50 iterations
+
+  364  -1029.31    0.106    0.000     0.816    -4.068   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.63110E-06 50 iterations
+
+  365  -1029.22    0.106    0.000     0.809    -4.061   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.62498E-06 50 iterations
+
+  366  -1029.13    0.106    0.000     0.802    -4.058   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.61894E-06 50 iterations
+
+  367  -1029.04    0.106    0.000     0.795    -4.058   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.61295E-06 50 iterations
+
+  368  -1028.95    0.106    0.000     0.789    -4.062   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.60699E-06 50 iterations
+
+  369  -1028.86    0.105    0.000     0.782    -4.070   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.60103E-06 50 iterations
+
+  370  -1028.77    0.105    0.000     0.775    -4.083   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.59504E-06 50 iterations
+
+  371  -1028.69    0.105    0.000     0.769    -4.101   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.58901E-06 50 iterations
+
+  372  -1028.62    0.105    0.000     0.762    -4.123   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.58296E-06 50 iterations
+
+  373  -1028.54    0.105    0.000     0.756    -4.147   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.57693E-06 50 iterations
+
+  374  -1028.47    0.105    0.000     0.749    -4.169   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.57097E-06 50 iterations
+
+  375  -1028.41    0.105    0.000     0.743    -4.190   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.56514E-06 50 iterations
+
+  376  -1028.34    0.105    0.000     0.737    -4.210   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.55944E-06 50 iterations
+
+  377  -1028.28    0.104    0.000     0.730    -4.231   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.55389E-06 50 iterations
+
+  378  -1028.22    0.104    0.000     0.724    -4.248   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.54849E-06 50 iterations
+
+  379  -1028.17    0.104    0.000     0.718    -4.258   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.54322E-06 50 iterations
+
+  380  -1028.11    0.104    0.000     0.712    -4.256   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.53809E-06 50 iterations
+
+  381  -1028.05    0.104    0.000     0.705    -4.245   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.53308E-06 50 iterations
+
+  382  -1027.99    0.104    0.000     0.699    -4.229   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.52818E-06 50 iterations
+
+  383  -1027.93    0.104    0.000     0.693    -4.211   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.52339E-06 50 iterations
+
+  384  -1027.86    0.104    0.000     0.687    -4.196   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.51870E-06 50 iterations
+
+  385  -1027.79    0.103    0.000     0.681    -4.182   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.51411E-06 50 iterations
+
+  386  -1027.73    0.103    0.000     0.675    -4.170   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.50960E-06 50 iterations
+
+  387  -1027.65    0.103    0.000     0.669    -4.159   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.50518E-06 50 iterations
+
+  388  -1027.58    0.103    0.000     0.663    -4.150   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.50083E-06 50 iterations
+
+  389  -1027.51    0.103    0.000     0.657    -4.142   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.49655E-06 50 iterations
+
+  390  -1027.43    0.103    0.000     0.651    -4.136   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.49235E-06 50 iterations
+
+  391  -1027.36    0.103    0.000     0.645    -4.130   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.48820E-06 50 iterations
+
+  392  -1027.28    0.103    0.000     0.640    -4.125   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.48412E-06 50 iterations
+
+  393  -1027.20    0.103    0.000     0.634    -4.121   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.48010E-06 50 iterations
+
+  394  -1027.12    0.102    0.000     0.628    -4.117   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.47613E-06 50 iterations
+
+  395  -1027.04    0.102    0.000     0.622    -4.114   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.47221E-06 50 iterations
+
+  396  -1026.96    0.102    0.000     0.616    -4.111   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.46835E-06 50 iterations
+
+  397  -1026.88    0.102    0.000     0.610    -4.109   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.46454E-06 50 iterations
+
+  398  -1026.80    0.102    0.000     0.605    -4.108   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.46077E-06 50 iterations
+
+  399  -1026.72    0.102    0.000     0.599    -4.107   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.45705E-06 50 iterations
+
+  400  -1026.64    0.102    0.000     0.594    -4.106   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.45338E-06 50 iterations
+
+  401  -1026.81    0.102    0.000     0.588    -3.795   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.44991E-06 50 iterations
+
+  402  -1026.73    0.102    0.000     0.583    -4.106   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.44633E-06 50 iterations
+
+  403  -1026.65    0.101    0.000     0.577    -4.106   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.44276E-06 50 iterations
+
+  404  -1026.57    0.101    0.000     0.572    -4.108   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.43923E-06 50 iterations
+
+  405  -1026.49    0.101    0.000     0.566    -4.110   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.43575E-06 50 iterations
+
+  406  -1026.41    0.101    0.000     0.561    -4.113   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.43230E-06 50 iterations
+
+  407  -1026.33    0.101    0.000     0.555    -4.117   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.42889E-06 50 iterations
+
+  408  -1026.25    0.101    0.000     0.550    -4.122   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.42552E-06 50 iterations
+
+  409  -1026.18    0.101    0.000     0.545    -4.129   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.42219E-06 50 iterations
+
+  410  -1026.10    0.101    0.000     0.539    -4.138   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.41889E-06 50 iterations
+
+  411  -1026.03    0.101    0.000     0.534    -4.149   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.41563E-06 50 iterations
+
+  412  -1025.96    0.100    0.000     0.529    -4.163   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.41240E-06 50 iterations
+
+  413  -1025.89    0.100    0.000     0.524    -4.181   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.40921E-06 50 iterations
+
+  414  -1025.83    0.100    0.000     0.519    -4.202   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.40605E-06 50 iterations
+
+  415  -1025.77    0.100    0.000     0.514    -4.225   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.40293E-06 50 iterations
+
+  416  -1025.71    0.100    0.000     0.508    -4.246   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.39984E-06 50 iterations
+
+  417  -1025.65    0.100    0.000     0.503    -4.262   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.39677E-06 50 iterations
+
+  418  -1025.60    0.100    0.000     0.498    -4.268   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.39374E-06 50 iterations
+
+  419  -1025.54    0.100    0.000     0.493    -4.267   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.39074E-06 50 iterations
+
+  420  -1025.48    0.099    0.000     0.488    -4.262   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.38776E-06 50 iterations
+
+  421  -1025.43    0.099    0.000     0.483    -4.257   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.38481E-06 50 iterations
+
+  422  -1025.37    0.099    0.000     0.479    -4.251   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.38189E-06 50 iterations
+
+  423  -1025.31    0.099    0.000     0.474    -4.247   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37899E-06 50 iterations
+
+  424  -1025.25    0.099    0.000     0.469    -4.243   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37612E-06 50 iterations
+
+  425  -1025.19    0.099    0.000     0.464    -4.239   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37327E-06 50 iterations
+
+  426  -1025.13    0.099    0.000     0.459    -4.236   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.37045E-06 50 iterations
+
+  427  -1025.07    0.099    0.000     0.454    -4.234   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.36765E-06 50 iterations
+
+  428  -1025.01    0.098    0.000     0.450    -4.232   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.36487E-06 50 iterations
+
+  429  -1024.95    0.098    0.000     0.445    -4.231   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.36212E-06 50 iterations
+
+  430  -1024.89    0.098    0.000     0.440    -4.230   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.35939E-06 50 iterations
+
+  431  -1024.83    0.098    0.000     0.435    -4.229   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.35668E-06 50 iterations
+
+  432  -1024.77    0.098    0.000     0.431    -4.229   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.35400E-06 50 iterations
+
+  433  -1024.71    0.098    0.000     0.426    -4.229   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.35135E-06 50 iterations
+
+  434  -1024.65    0.098    0.000     0.422    -4.229   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.34871E-06 50 iterations
+
+  435  -1024.59    0.098    0.000     0.417    -4.230   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.34610E-06 50 iterations
+
+  436  -1024.53    0.097    0.000     0.413    -4.231   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.34352E-06 50 iterations
+
+  437  -1024.47    0.097    0.000     0.409    -4.231   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.34096E-06 50 iterations
+
+  438  -1024.41    0.097    0.000     0.404    -4.233   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.33842E-06 50 iterations
+
+  439  -1024.35    0.097    0.000     0.400    -4.234   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.33590E-06 50 iterations
+
+  440  -1024.29    0.097    0.000     0.396    -4.235   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.33341E-06 50 iterations
+
+  441  -1024.23    0.097    0.000     0.391    -4.237   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.33095E-06 50 iterations
+
+  442  -1024.17    0.097    0.000     0.387    -4.238   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.32851E-06 50 iterations
+
+  443  -1024.11    0.096    0.000     0.383    -4.240   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.32609E-06 50 iterations
+
+  444  -1024.06    0.096    0.000     0.379    -4.242   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.32369E-06 50 iterations
+
+  445  -1024.00    0.096    0.000     0.375    -4.244   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.32132E-06 50 iterations
+
+  446  -1023.94    0.096    0.000     0.371    -4.246   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31897E-06 50 iterations
+
+  447  -1023.88    0.096    0.000     0.367    -4.249   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31665E-06 50 iterations
+
+  448  -1023.82    0.096    0.000     0.363    -4.251   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31435E-06 50 iterations
+
+  449  -1023.77    0.096    0.000     0.359    -4.253   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.31207E-06 50 iterations
+
+  450  -1023.71    0.095    0.000     0.355    -4.256   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.30982E-06 50 iterations
+
+  451  -1023.80    0.095    0.000     0.352    -4.044   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.30771E-06 50 iterations
+
+  452  -1023.75    0.095    0.000     0.348    -4.261   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.30550E-06 50 iterations
+
+  453  -1023.69    0.095    0.000     0.344    -4.264   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.30330E-06 50 iterations
+
+  454  -1023.64    0.095    0.000     0.341    -4.267   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.30113E-06 50 iterations
+
+  455  -1023.58    0.095    0.000     0.337    -4.270   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29898E-06 50 iterations
+
+  456  -1023.53    0.095    0.000     0.334    -4.273   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29685E-06 50 iterations
+
+  457  -1023.47    0.094    0.000     0.330    -4.276   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29475E-06 50 iterations
+
+  458  -1023.42    0.094    0.000     0.327    -4.279   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29267E-06 50 iterations
+
+  459  -1023.36    0.094    0.000     0.323    -4.282   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.29061E-06 50 iterations
+
+  460  -1023.31    0.094    0.000     0.320    -4.285   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.28857E-06 50 iterations
+
+  461  -1023.26    0.094    0.000     0.316    -4.289   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.28656E-06 50 iterations
+
+  462  -1023.21    0.094    0.000     0.313    -4.292   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.28457E-06 50 iterations
+
+  463  -1023.15    0.094    0.000     0.310    -4.295   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.28259E-06 50 iterations
+
+  464  -1023.10    0.093    0.000     0.306    -4.299   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.28064E-06 50 iterations
+
+  465  -1023.05    0.093    0.000     0.303    -4.302   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.27870E-06 50 iterations
+
+  466  -1023.00    0.093    0.000     0.300    -4.306   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.27678E-06 50 iterations
+
+  467  -1022.95    0.093    0.000     0.297    -4.310   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.27487E-06 50 iterations
+
+  468  -1022.90    0.093    0.000     0.294    -4.314   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.27298E-06 50 iterations
+
+  469  -1022.85    0.093    0.000     0.291    -4.318   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.27111E-06 50 iterations
+
+  470  -1022.80    0.092    0.000     0.288    -4.323   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26925E-06 50 iterations
+
+  471  -1022.76    0.092    0.000     0.285    -4.328   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26741E-06 50 iterations
+
+  472  -1022.71    0.092    0.000     0.282    -4.332   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26558E-06 50 iterations
+
+  473  -1022.66    0.092    0.000     0.280    -4.337   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26378E-06 50 iterations
+
+  474  -1022.62    0.092    0.000     0.277    -4.342   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26199E-06 50 iterations
+
+  475  -1022.57    0.092    0.000     0.275    -4.347   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.26021E-06 50 iterations
+
+  476  -1022.52    0.091    0.000     0.272    -4.352   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.25846E-06 50 iterations
+
+  477  -1022.48    0.091    0.000     0.269    -4.358   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.25672E-06 50 iterations
+
+  478  -1022.43    0.091    0.000     0.267    -4.363   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.25500E-06 50 iterations
+
+  479  -1022.39    0.091    0.000     0.264    -4.369   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.25330E-06 50 iterations
+
+  480  -1022.35    0.091    0.000     0.262    -4.375   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.25162E-06 50 iterations
+
+  481  -1022.31    0.091    0.000     0.259    -4.381   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24995E-06 50 iterations
+
+  482  -1022.26    0.090    0.000     0.257    -4.387   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24830E-06 50 iterations
+
+  483  -1022.22    0.090    0.000     0.254    -4.394   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24667E-06 50 iterations
+
+  484  -1022.18    0.090    0.000     0.252    -4.401   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24506E-06 50 iterations
+
+  485  -1022.14    0.090    0.000     0.250    -4.408   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24346E-06 50 iterations
+
+  486  -1022.10    0.090    0.000     0.247    -4.415   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24188E-06 50 iterations
+
+  487  -1022.06    0.090    0.000     0.245    -4.422   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.24031E-06 50 iterations
+
+  488  -1022.03    0.089    0.000     0.243    -4.430   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23876E-06 50 iterations
+
+  489  -1021.99    0.089    0.000     0.241    -4.439   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23723E-06 50 iterations
+
+  490  -1021.95    0.089    0.000     0.238    -4.447   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23570E-06 50 iterations
+
+  491  -1021.92    0.089    0.000     0.236    -4.456   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23418E-06 50 iterations
+
+  492  -1021.88    0.089    0.000     0.234    -4.465   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23267E-06 50 iterations
+
+  493  -1021.85    0.088    0.000     0.232    -4.475   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.23116E-06 50 iterations
+
+  494  -1021.81    0.088    0.000     0.229    -4.485   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22964E-06 50 iterations
+
+  495  -1021.78    0.088    0.000     0.227    -4.495   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22811E-06 50 iterations
+
+  496  -1021.75    0.088    0.000     0.225    -4.506   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22657E-06 50 iterations
+
+  497  -1021.72    0.088    0.000     0.223    -4.517   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22503E-06 50 iterations
+
+  498  -1021.69    0.088    0.000     0.220    -4.529   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22352E-06 50 iterations
+
+  499  -1021.66    0.087    0.000     0.218    -4.541   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22206E-06 50 iterations
+
+  500  -1021.63    0.087    0.000     0.215    -4.553   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.22064E-06 50 iterations
+
+  501  -1021.71    0.087    0.000     0.212    -4.117   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.21935E-06 50 iterations
+
+  502  -1021.68    0.087    0.000     0.210    -4.578   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21798E-06 50 iterations
+
+  503  -1021.65    0.087    0.000     0.208    -4.591   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21661E-06 50 iterations
+
+  504  -1021.63    0.087    0.000     0.205    -4.604   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21525E-06 50 iterations
+
+  505  -1021.60    0.086    0.000     0.203    -4.617   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21390E-06 50 iterations
+
+  506  -1021.58    0.086    0.000     0.200    -4.629   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21255E-06 50 iterations
+
+  507  -1021.56    0.086    0.000     0.197    -4.642   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.21121E-06 50 iterations
+
+  508  -1021.53    0.086    0.000     0.195    -4.653   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20988E-06 50 iterations
+
+  509  -1021.51    0.086    0.000     0.192    -4.664   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20855E-06 50 iterations
+
+  510  -1021.49    0.085    0.000     0.189    -4.674   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20722E-06 50 iterations
+
+  511  -1021.47    0.085    0.000     0.186    -4.683   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20589E-06 50 iterations
+
+  512  -1021.45    0.085    0.000     0.183    -4.690   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20455E-06 50 iterations
+
+  513  -1021.43    0.085    0.000     0.180    -4.696   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20322E-06 50 iterations
+
+  514  -1021.41    0.085    0.000     0.176    -4.700   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20187E-06 50 iterations
+
+  515  -1021.39    0.085    0.000     0.173    -4.703   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.20053E-06 50 iterations
+
+  516  -1021.37    0.085    0.000     0.169    -4.704   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19917E-06 50 iterations
+
+  517  -1021.35    0.084    0.000     0.165    -4.706   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19781E-06 50 iterations
+
+  518  -1021.33    0.084    0.000     0.161    -4.708   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19644E-06 50 iterations
+
+  519  -1021.31    0.084    0.000     0.158    -4.707   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19507E-06 50 iterations
+
+  520  -1021.29    0.084    0.000     0.154    -4.701   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19368E-06 50 iterations
+
+  521  -1021.27    0.084    0.000     0.149    -4.692   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19229E-06 50 iterations
+
+  522  -1021.24    0.084    0.000     0.145    -4.681   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.19090E-06 50 iterations
+
+  523  -1021.22    0.084    0.000     0.141    -4.667   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18949E-06 50 iterations
+
+  524  -1021.20    0.083    0.000     0.136    -4.651   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18808E-06 50 iterations
+
+  525  -1021.18    0.083    0.000     0.131    -4.635   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18666E-06 50 iterations
+
+  526  -1021.15    0.083    0.000     0.127    -4.621   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18527E-06 50 iterations
+
+  527  -1021.13    0.083    0.000     0.121    -4.610   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18387E-06 50 iterations
+
+  528  -1021.10    0.083    0.000     0.115    -4.599   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18251E-06 50 iterations
+
+  529  -1021.07    0.083    0.000     0.107    -4.586   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.18121E-06 50 iterations
+
+  530  -1021.05    0.083    0.000     0.100    -4.572   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17997E-06 50 iterations
+
+  531  -1021.02    0.083    0.000     0.093    -4.563   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17872E-06 50 iterations
+
+  532  -1020.99    0.082    0.000     0.082    -4.551   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17760E-06 50 iterations
+
+  533  -1020.96    0.082    0.000     0.059    -4.537   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17643E-06 50 iterations
+
+  534  -1020.93    0.082    0.000     0.051    -4.521   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17519E-06 50 iterations
+
+  535  -1020.90    0.082    0.000     0.044    -4.507   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17388E-06 50 iterations
+
+  536  -1020.87    0.082    0.000     0.036    -4.494   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17250E-06 50 iterations
+
+  537  -1020.83    0.082    0.000     0.030    -4.484   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.17107E-06 50 iterations
+
+  538  -1020.80    0.082    0.000     0.025    -4.474   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16964E-06 50 iterations
+
+  539  -1020.76    0.082    0.000     0.022    -4.466   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16819E-06 50 iterations
+
+  540  -1020.73    0.082    0.000     0.018    -4.459   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16671E-06 50 iterations
+
+  541  -1020.69    0.081    0.000     0.014    -4.452   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16523E-06 50 iterations
+
+  542  -1020.65    0.081    0.000     0.010    -4.447   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16373E-06 50 iterations
+
+  543  -1020.62    0.081    0.000     0.005    -4.442   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16222E-06 50 iterations
+
+  544  -1020.58    0.081    0.000     0.001    -4.438   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.16069E-06 50 iterations
+
+  545  -1020.54    0.081    0.000    -0.004    -4.434   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15915E-06 50 iterations
+
+  546  -1020.51    0.081    0.000    -0.009    -4.431   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15761E-06 50 iterations
+
+  547  -1020.47    0.081    0.000    -0.013    -4.429   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15606E-06 50 iterations
+
+  548  -1020.43    0.081    0.000    -0.018    -4.426   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15453E-06 50 iterations
+
+  549  -1020.39    0.081    0.000    -0.024    -4.425   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15299E-06 50 iterations
+
+  550  -1020.35    0.081    0.000    -0.030    -4.423   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.15146E-06 50 iterations
+
+  551  -1020.37    0.081    0.000    -0.036    -4.845   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.14998E-06 50 iterations
+
+  552  -1020.33    0.080    0.000    -0.042    -4.421   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14846E-06 50 iterations
+
+  553  -1020.29    0.080    0.000    -0.048    -4.420   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14694E-06 50 iterations
+
+  554  -1020.25    0.080    0.000    -0.053    -4.419   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14541E-06 50 iterations
+
+  555  -1020.21    0.080    0.000    -0.059    -4.419   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14390E-06 50 iterations
+
+  556  -1020.17    0.080    0.000    -0.064    -4.418   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14240E-06 50 iterations
+
+  557  -1020.13    0.080    0.000    -0.069    -4.418   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.14090E-06 50 iterations
+
+  558  -1020.09    0.080    0.000    -0.074    -4.418   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13942E-06 50 iterations
+
+  559  -1020.06    0.080    0.000    -0.079    -4.418   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13794E-06 50 iterations
+
+  560  -1020.02    0.080    0.000    -0.084    -4.418   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13648E-06 50 iterations
+
+  561  -1019.98    0.080    0.000    -0.089    -4.419   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13503E-06 50 iterations
+
+  562  -1019.94    0.080    0.000    -0.095    -4.419   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13359E-06 50 iterations
+
+  563  -1019.90    0.079    0.000    -0.100    -4.419   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13217E-06 50 iterations
+
+  564  -1019.86    0.079    0.000    -0.105    -4.420   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.13078E-06 50 iterations
+
+  565  -1019.82    0.079    0.000    -0.110    -4.420   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12939E-06 50 iterations
+
+  566  -1019.78    0.079    0.000    -0.115    -4.421   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12802E-06 50 iterations
+
+  567  -1019.75    0.079    0.000    -0.119    -4.421   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12665E-06 50 iterations
+
+  568  -1019.71    0.079    0.000    -0.124    -4.422   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12530E-06 50 iterations
+
+  569  -1019.67    0.079    0.000    -0.129    -4.423   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12398E-06 50 iterations
+
+  570  -1019.63    0.079    0.000    -0.133    -4.424   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12266E-06 50 iterations
+
+  571  -1019.59    0.079    0.000    -0.138    -4.425   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12136E-06 50 iterations
+
+  572  -1019.55    0.079    0.000    -0.143    -4.426   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.12006E-06 50 iterations
+
+  573  -1019.52    0.079    0.000    -0.147    -4.427   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11877E-06 50 iterations
+
+  574  -1019.48    0.079    0.000    -0.151    -4.428   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11749E-06 50 iterations
+
+  575  -1019.44    0.078    0.000    -0.156    -4.429   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11623E-06 50 iterations
+
+  576  -1019.40    0.078    0.000    -0.160    -4.430   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11498E-06 50 iterations
+
+  577  -1019.36    0.078    0.000    -0.165    -4.431   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11374E-06 50 iterations
+
+  578  -1019.33    0.078    0.000    -0.169    -4.432   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11251E-06 50 iterations
+
+  579  -1019.29    0.078    0.000    -0.173    -4.433   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11129E-06 50 iterations
+
+  580  -1019.25    0.078    0.000    -0.177    -4.435   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.11008E-06 50 iterations
+
+  581  -1019.21    0.078    0.000    -0.182    -4.436   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10887E-06 50 iterations
+
+  582  -1019.18    0.078    0.000    -0.186    -4.437   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10768E-06 50 iterations
+
+  583  -1019.14    0.078    0.000    -0.190    -4.438   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10650E-06 50 iterations
+
+  584  -1019.10    0.078    0.000    -0.195    -4.440   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10534E-06 50 iterations
+
+  585  -1019.07    0.078    0.000    -0.199    -4.441   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10419E-06 50 iterations
+
+  586  -1019.03    0.078    0.000    -0.203    -4.442   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10306E-06 50 iterations
+
+  587  -1018.99    0.078    0.000    -0.208    -4.443   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10193E-06 50 iterations
+
+  588  -1018.96    0.077    0.000    -0.212    -4.445   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.10081E-06 50 iterations
+
+  589  -1018.92    0.077    0.000    -0.217    -4.446   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.99713E-07 50 iterations
+
+  590  -1018.88    0.077    0.000    -0.222    -4.447   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.98629E-07 50 iterations
+
+  591  -1018.85    0.077    0.000    -0.227    -4.449   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.97546E-07 50 iterations
+
+  592  -1018.81    0.077    0.000    -0.231    -4.450   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.96493E-07 50 iterations
+
+  593  -1018.77    0.077    0.000    -0.236    -4.452   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.95450E-07 50 iterations
+
+  594  -1018.74    0.077    0.000    -0.241    -4.453   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.94413E-07 50 iterations
+
+  595  -1018.70    0.077    0.000    -0.246    -4.455   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.93380E-07 50 iterations
+
+  596  -1018.67    0.077    0.000    -0.251    -4.456   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.92362E-07 50 iterations
+
+  597  -1018.63    0.077    0.000    -0.255    -4.458   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.91343E-07 50 iterations
+
+  598  -1018.60    0.077    0.000    -0.260    -4.459   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.90327E-07 50 iterations
+
+  599  -1018.56    0.077    0.000    -0.265    -4.461   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.89320E-07 50 iterations
+
+  600  -1018.53    0.077    0.000    -0.269    -4.462   -30.000    0.000      0.200
+
+ colrun: max error=    0.10000E-08 actual error=    0.88321E-07 50 iterations
+
+  601  -1018.53    0.077    0.000    -0.274    -5.299   -30.000    0.000      0.201
+
+ colrun: max error=    0.10000E-08 actual error=    0.87363E-07 50 iterations
+
+  602  -1018.56    0.076    0.000    -0.279    -4.504   -30.000    0.000      0.202
+
+ colrun: max error=    0.10000E-08 actual error=    0.86446E-07 50 iterations
+
+  603  -1018.60    0.076    0.000    -0.283    -4.405   -30.000    0.000      0.203
+
+ colrun: max error=    0.10000E-08 actual error=    0.85563E-07 50 iterations
+
+  604  -1018.64    0.076    0.000    -0.288    -4.400   -30.000    0.000      0.204
+
+ colrun: max error=    0.10000E-08 actual error=    0.84704E-07 50 iterations
+
+  605  -1018.68    0.076    0.000    -0.293    -4.426   -30.000    0.000      0.205
+
+ colrun: max error=    0.10000E-08 actual error=    0.83858E-07 50 iterations
+
+  606  -1018.72    0.076    0.000    -0.298    -4.464   -30.000    0.000      0.206
+
+ colrun: max error=    0.10000E-08 actual error=    0.83019E-07 50 iterations
+
+  607  -1018.75    0.076    0.000    -0.303    -4.506   -30.000    0.000      0.207
+
+ colrun: max error=    0.10000E-08 actual error=    0.82180E-07 50 iterations
+
+  608  -1018.78    0.076    0.000    -0.308    -4.550   -30.000    0.000      0.208
+
+ colrun: max error=    0.10000E-08 actual error=    0.81337E-07 50 iterations
+
+  609  -1018.80    0.076    0.000    -0.313    -4.595   -30.000    0.000      0.209
+
+ colrun: max error=    0.10000E-08 actual error=    0.80485E-07 50 iterations
+
+  610  -1018.83    0.076    0.000    -0.318    -4.640   -30.000    0.000      0.210
+
+ colrun: max error=    0.10000E-08 actual error=    0.79623E-07 50 iterations
+
+  611  -1018.85    0.076    0.000    -0.323    -4.684   -30.000    0.000      0.211
+
+ colrun: max error=    0.10000E-08 actual error=    0.78747E-07 50 iterations
+
+  612  -1018.87    0.076    0.000    -0.329    -4.727   -30.000    0.000      0.212
+
+ colrun: max error=    0.10000E-08 actual error=    0.77857E-07 50 iterations
+
+  613  -1018.88    0.076    0.000    -0.334    -4.770   -30.000    0.000      0.213
+
+ colrun: max error=    0.10000E-08 actual error=    0.76954E-07 50 iterations
+
+  614  -1018.90    0.076    0.000    -0.339    -4.812   -30.000    0.000      0.214
+
+ colrun: max error=    0.10000E-08 actual error=    0.76036E-07 50 iterations
+
+  615  -1018.91    0.075    0.000    -0.343    -4.853   -30.000    0.000      0.216
+
+ colrun: max error=    0.10000E-08 actual error=    0.75104E-07 50 iterations
+
+  616  -1018.93    0.075    0.000    -0.348    -4.894   -30.000    0.000      0.217
+
+ colrun: max error=    0.10000E-08 actual error=    0.74161E-07 50 iterations
+
+  617  -1018.94    0.075    0.000    -0.352    -4.933   -30.000    0.000      0.218
+
+ colrun: max error=    0.10000E-08 actual error=    0.73206E-07 50 iterations
+
+  618  -1018.95    0.075    0.000    -0.356    -4.971   -30.000    0.000      0.219
+
+ colrun: max error=    0.10000E-08 actual error=    0.72241E-07 50 iterations
+
+  619  -1018.96    0.075    0.000    -0.360    -5.008   -30.000    0.000      0.220
+
+ colrun: max error=    0.10000E-08 actual error=    0.71267E-07 50 iterations
+
+  620  -1018.97    0.075    0.000    -0.364    -5.044   -30.000    0.000      0.221
+
+ colrun: max error=    0.10000E-08 actual error=    0.70285E-07 50 iterations
+
+  621  -1018.98    0.075    0.000    -0.367    -5.079   -30.000    0.000      0.222
+
+ colrun: max error=    0.10000E-08 actual error=    0.69296E-07 50 iterations
+
+  622  -1018.98    0.075    0.000    -0.371    -5.112   -30.000    0.000      0.223
+
+ colrun: max error=    0.10000E-08 actual error=    0.68299E-07 50 iterations
+
+  623  -1018.99    0.075    0.000    -0.374    -5.144   -30.000    0.000      0.224
+
+ colrun: max error=    0.10000E-08 actual error=    0.67294E-07 50 iterations
+
+  624  -1019.00    0.075    0.000    -0.378    -5.175   -30.000    0.000      0.225
+
+ colrun: max error=    0.10000E-08 actual error=    0.66279E-07 50 iterations
+
+  625  -1019.01    0.075    0.000    -0.382    -5.204   -30.000    0.000      0.227
+
+ colrun: max error=    0.10000E-08 actual error=    0.65252E-07 50 iterations
+
+  626  -1019.01    0.074    0.000    -0.385    -5.231   -30.000    0.000      0.228
+
+ colrun: max error=    0.10000E-08 actual error=    0.64212E-07 50 iterations
+
+  627  -1019.02    0.074    0.000    -0.389    -5.257   -30.000    0.000      0.229
+
+ colrun: max error=    0.10000E-08 actual error=    0.63160E-07 50 iterations
+
+  628  -1019.02    0.074    0.000    -0.393    -5.282   -30.000    0.000      0.230
+
+ colrun: max error=    0.10000E-08 actual error=    0.62098E-07 50 iterations
+
+  629  -1019.03    0.074    0.000    -0.398    -5.306   -30.000    0.000      0.231
+
+ colrun: max error=    0.10000E-08 actual error=    0.61029E-07 50 iterations
+
+  630  -1019.03    0.074    0.000    -0.402    -5.328   -30.000    0.000      0.232
+
+ colrun: max error=    0.10000E-08 actual error=    0.59957E-07 50 iterations
+
+  631  -1019.04    0.074    0.000    -0.407    -5.348   -30.000    0.000      0.233
+
+ colrun: max error=    0.10000E-08 actual error=    0.58886E-07 50 iterations
+
+  632  -1019.04    0.074    0.000    -0.411    -5.367   -30.000    0.000      0.235
+
+ colrun: max error=    0.10000E-08 actual error=    0.57816E-07 50 iterations
+
+  633  -1019.05    0.074    0.000    -0.416    -5.385   -30.000    0.000      0.236
+
+ colrun: max error=    0.10000E-08 actual error=    0.56740E-07 50 iterations
+
+  634  -1019.05    0.074    0.000    -0.421    -5.402   -30.000    0.000      0.237
+
+ colrun: max error=    0.10000E-08 actual error=    0.55649E-07 50 iterations
+
+  635  -1019.05    0.074    0.000    -0.427    -5.417   -30.000    0.000      0.238
+
+ colrun: max error=    0.10000E-08 actual error=    0.54540E-07 50 iterations
+
+  636  -1019.06    0.074    0.000    -0.432    -5.432   -30.000    0.000      0.239
+
+ colrun: max error=    0.10000E-08 actual error=    0.53416E-07 50 iterations
+
+  637  -1019.06    0.073    0.000    -0.436    -5.445   -30.000    0.000      0.241
+
+ colrun: max error=    0.10000E-08 actual error=    0.52280E-07 50 iterations
+
+  638  -1019.06    0.073    0.000    -0.441    -5.457   -30.000    0.000      0.242
+
+ colrun: max error=    0.10000E-08 actual error=    0.51134E-07 50 iterations
+
+  639  -1019.07    0.073    0.000    -0.447    -5.468   -30.000    0.000      0.243
+
+ colrun: max error=    0.10000E-08 actual error=    0.49992E-07 50 iterations
+
+  640  -1019.07    0.073    0.000    -0.454    -5.478   -30.000    0.000      0.244
+
+ colrun: max error=    0.10000E-08 actual error=    0.48877E-07 50 iterations
+
+  641  -1019.07    0.073    0.000    -0.462    -5.488   -30.000    0.000      0.245
+
+ colrun: max error=    0.10000E-08 actual error=    0.47815E-07 50 iterations
+
+  642  -1019.08    0.073    0.000    -0.469    -5.496   -30.000    0.000      0.247
+
+ colrun: max error=    0.10000E-08 actual error=    0.46816E-07 50 iterations
+
+  643  -1019.08    0.073    0.000    -0.475    -5.504   -30.000    0.000      0.248
+
+ colrun: max error=    0.10000E-08 actual error=    0.45883E-07 50 iterations
+
+  644  -1019.08    0.073    0.000    -0.479    -5.512   -30.000    0.000      0.249
+
+ colrun: max error=    0.10000E-08 actual error=    0.45012E-07 50 iterations
+
+  645  -1019.09    0.073    0.000    -0.483    -5.519   -30.000    0.000      0.250
+
+ colrun: max error=    0.10000E-08 actual error=    0.44196E-07 50 iterations
+
+  646  -1019.09    0.073    0.000    -0.487    -5.526   -30.000    0.000      0.252
+
+ colrun: max error=    0.10000E-08 actual error=    0.43429E-07 50 iterations
+
+  647  -1019.09    0.072    0.000    -0.490    -5.532   -30.000    0.000      0.253
+
+ colrun: max error=    0.10000E-08 actual error=    0.42707E-07 50 iterations
+
+  648  -1019.10    0.072    0.000    -0.494    -5.539   -30.000    0.000      0.254
+
+ colrun: max error=    0.10000E-08 actual error=    0.42024E-07 50 iterations
+
+  649  -1019.10    0.072    0.000    -0.497    -5.545   -30.000    0.000      0.255
+
+ colrun: max error=    0.10000E-08 actual error=    0.41377E-07 50 iterations
+
+  650  -1019.10    0.072    0.000    -0.500    -5.551   -30.000    0.000      0.257
+
+ colrun: max error=    0.10000E-08 actual error=    0.40764E-07 50 iterations
+
+  651  -1019.10    0.072    0.000    -0.502    -5.697   -30.000    0.000      0.258
+
+ colrun: max error=    0.10000E-08 actual error=    0.40181E-07 50 iterations
+
+  652  -1019.11    0.072    0.000    -0.505    -5.562   -30.000    0.000      0.259
+
+ colrun: max error=    0.10000E-08 actual error=    0.39627E-07 50 iterations
+
+  653  -1019.11    0.072    0.000    -0.508    -5.567   -30.000    0.000      0.261
+
+ colrun: max error=    0.10000E-08 actual error=    0.39099E-07 50 iterations
+
+  654  -1019.11    0.072    0.000    -0.511    -5.572   -30.000    0.000      0.262
+
+ colrun: max error=    0.10000E-08 actual error=    0.38596E-07 50 iterations
+
+  655  -1019.11    0.072    0.000    -0.513    -5.577   -30.000    0.000      0.263
+
+ colrun: max error=    0.10000E-08 actual error=    0.38116E-07 50 iterations
+
+  656  -1019.12    0.072    0.000    -0.516    -5.582   -30.000    0.000      0.264
+
+ colrun: max error=    0.10000E-08 actual error=    0.37658E-07 50 iterations
+
+  657  -1019.12    0.071    0.000    -0.519    -5.587   -30.000    0.000      0.266
+
+ colrun: max error=    0.10000E-08 actual error=    0.37219E-07 50 iterations
+
+  658  -1019.12    0.071    0.000    -0.521    -5.591   -30.000    0.000      0.267
+
+ colrun: max error=    0.10000E-08 actual error=    0.36799E-07 50 iterations
+
+  659  -1019.13    0.071    0.000    -0.524    -5.595   -30.000    0.000      0.268
+
+ colrun: max error=    0.10000E-08 actual error=    0.36397E-07 50 iterations
+
+  660  -1019.13    0.071    0.000    -0.527    -5.599   -30.000    0.000      0.270
+
+ colrun: max error=    0.10000E-08 actual error=    0.36010E-07 50 iterations
+
+  661  -1019.13    0.071    0.000    -0.529    -5.603   -30.000    0.000      0.271
+
+ colrun: max error=    0.10000E-08 actual error=    0.35639E-07 50 iterations
+
+  662  -1019.13    0.071    0.000    -0.532    -5.606   -30.000    0.000      0.272
+
+ colrun: max error=    0.10000E-08 actual error=    0.35281E-07 50 iterations
+
+  663  -1019.14    0.071    0.000    -0.535    -5.610   -30.000    0.000      0.274
+
+ colrun: max error=    0.10000E-08 actual error=    0.34937E-07 50 iterations
+
+  664  -1019.14    0.071    0.000    -0.537    -5.613   -30.000    0.000      0.275
+
+ colrun: max error=    0.10000E-08 actual error=    0.34604E-07 50 iterations
+
+  665  -1019.14    0.071    0.000    -0.540    -5.616   -30.000    0.000      0.277
+
+ colrun: max error=    0.10000E-08 actual error=    0.34282E-07 50 iterations
+
+  666  -1019.14    0.071    0.000    -0.543    -5.619   -30.000    0.000      0.278
+
+ colrun: max error=    0.10000E-08 actual error=    0.33971E-07 50 iterations
+
+  667  -1019.15    0.070    0.000    -0.545    -5.622   -30.000    0.000      0.279
+
+ colrun: max error=    0.10000E-08 actual error=    0.33669E-07 50 iterations
+
+  668  -1019.15    0.070    0.000    -0.548    -5.624   -30.000    0.000      0.281
+
+ colrun: max error=    0.10000E-08 actual error=    0.33376E-07 50 iterations
+
+  669  -1019.15    0.070    0.000    -0.551    -5.627   -30.000    0.000      0.282
+
+ colrun: max error=    0.10000E-08 actual error=    0.33091E-07 50 iterations
+
+  670  -1019.15    0.070    0.000    -0.553    -5.629   -30.000    0.000      0.284
+
+ colrun: max error=    0.10000E-08 actual error=    0.32813E-07 50 iterations
+
+  671  -1019.15    0.070    0.000    -0.556    -5.631   -30.000    0.000      0.285
+
+ colrun: max error=    0.10000E-08 actual error=    0.32543E-07 50 iterations
+
+  672  -1019.16    0.070    0.000    -0.558    -5.633   -30.000    0.000      0.286
+
+ colrun: max error=    0.10000E-08 actual error=    0.32279E-07 50 iterations
+
+  673  -1019.16    0.070    0.000    -0.561    -5.635   -30.000    0.000      0.288
+
+ colrun: max error=    0.10000E-08 actual error=    0.32021E-07 50 iterations
+
+  674  -1019.16    0.070    0.000    -0.563    -5.637   -30.000    0.000      0.289
+
+ colrun: max error=    0.10000E-08 actual error=    0.31769E-07 50 iterations
+
+  675  -1019.16    0.070    0.000    -0.565    -5.639   -30.000    0.000      0.291
+
+ colrun: max error=    0.10000E-08 actual error=    0.31522E-07 50 iterations
+
+  676  -1019.17    0.069    0.000    -0.568    -5.640   -30.000    0.000      0.292
+
+ colrun: max error=    0.10000E-08 actual error=    0.31280E-07 50 iterations
+
+  677  -1019.17    0.069    0.000    -0.570    -5.642   -30.000    0.000      0.294
+
+ colrun: max error=    0.10000E-08 actual error=    0.31042E-07 50 iterations
+
+  678  -1019.17    0.069    0.000    -0.572    -5.643   -30.000    0.000      0.295
+
+ colrun: max error=    0.10000E-08 actual error=    0.30809E-07 50 iterations
+
+  679  -1019.17    0.069    0.000    -0.575    -5.645   -30.000    0.000      0.297
+
+ colrun: max error=    0.10000E-08 actual error=    0.30579E-07 50 iterations
+
+  680  -1019.18    0.069    0.000    -0.577    -5.646   -30.000    0.000      0.298
+
+ colrun: max error=    0.10000E-08 actual error=    0.30354E-07 50 iterations
+
+  681  -1019.18    0.069    0.000    -0.579    -5.648   -30.000    0.000      0.300
+
+ colrun: max error=    0.10000E-08 actual error=    0.30131E-07 50 iterations
+
+  682  -1019.18    0.069    0.000    -0.581    -5.649   -30.000    0.000      0.301
+
+ colrun: max error=    0.10000E-08 actual error=    0.29912E-07 50 iterations
+
+  683  -1019.18    0.069    0.000    -0.584    -5.651   -30.000    0.000      0.303
+
+ colrun: max error=    0.10000E-08 actual error=    0.29696E-07 50 iterations
+
+  684  -1019.19    0.069    0.000    -0.586    -5.652   -30.000    0.000      0.304
+
+ colrun: max error=    0.10000E-08 actual error=    0.29483E-07 50 iterations
+
+  685  -1019.19    0.068    0.000    -0.588    -5.654   -30.000    0.000      0.306
+
+ colrun: max error=    0.10000E-08 actual error=    0.29273E-07 50 iterations
+
+  686  -1019.19    0.068    0.000    -0.590    -5.655   -30.000    0.000      0.307
+
+ colrun: max error=    0.10000E-08 actual error=    0.29065E-07 50 iterations
+
+  687  -1019.19    0.068    0.000    -0.593    -5.656   -30.000    0.000      0.309
+
+ colrun: max error=    0.10000E-08 actual error=    0.28860E-07 50 iterations
+
+  688  -1019.19    0.068    0.000    -0.595    -5.658   -30.000    0.000      0.310
+
+ colrun: max error=    0.10000E-08 actual error=    0.28657E-07 50 iterations
+
+  689  -1019.20    0.068    0.000    -0.597    -5.659   -30.000    0.000      0.312
+
+ colrun: max error=    0.10000E-08 actual error=    0.28456E-07 50 iterations
+
+  690  -1019.20    0.068    0.000    -0.600    -5.660   -30.000    0.000      0.313
+
+ colrun: max error=    0.10000E-08 actual error=    0.28257E-07 50 iterations
+
+  691  -1019.20    0.068    0.000    -0.602    -5.662   -30.000    0.000      0.315
+
+ colrun: max error=    0.10000E-08 actual error=    0.28061E-07 50 iterations
+
+  692  -1019.20    0.068    0.000    -0.604    -5.663   -30.000    0.000      0.316
+
+ colrun: max error=    0.10000E-08 actual error=    0.27866E-07 50 iterations
+
+  693  -1019.21    0.068    0.000    -0.606    -5.664   -30.000    0.000      0.318
+
+ colrun: max error=    0.10000E-08 actual error=    0.27674E-07 50 iterations
+
+  694  -1019.21    0.067    0.000    -0.609    -5.665   -30.000    0.000      0.320
+
+ colrun: max error=    0.10000E-08 actual error=    0.27483E-07 50 iterations
+
+  695  -1019.21    0.067    0.000    -0.611    -5.667   -30.000    0.000      0.321
+
+ colrun: max error=    0.10000E-08 actual error=    0.27294E-07 50 iterations
+
+  696  -1019.21    0.067    0.000    -0.613    -5.668   -30.000    0.000      0.323
+
+ colrun: max error=    0.10000E-08 actual error=    0.27107E-07 50 iterations
+
+  697  -1019.21    0.067    0.000    -0.616    -5.669   -30.000    0.000      0.324
+
+ colrun: max error=    0.10000E-08 actual error=    0.26922E-07 50 iterations
+
+  698  -1019.22    0.067    0.000    -0.618    -5.670   -30.000    0.000      0.326
+
+ colrun: max error=    0.10000E-08 actual error=    0.26738E-07 50 iterations
+
+  699  -1019.22    0.067    0.000    -0.620    -5.671   -30.000    0.000      0.328
+
+ colrun: max error=    0.10000E-08 actual error=    0.26557E-07 50 iterations
+
+  700  -1019.22    0.067    0.000    -0.623    -5.673   -30.000    0.000      0.329
+
+ colrun: max error=    0.10000E-08 actual error=    0.26377E-07 50 iterations
+
+  701  -1019.22    0.067    0.000    -0.625    -6.482   -30.000    0.000      0.331
+
+ colrun: max error=    0.10000E-08 actual error=    0.26198E-07 50 iterations
+
+  702  -1019.22    0.067    0.000    -0.628    -5.675   -30.000    0.000      0.333
+
+ colrun: max error=    0.10000E-08 actual error=    0.26022E-07 50 iterations
+
+  703  -1019.23    0.066    0.000    -0.630    -5.676   -30.000    0.000      0.334
+
+ colrun: max error=    0.10000E-08 actual error=    0.25847E-07 50 iterations
+
+  704  -1019.23    0.066    0.000    -0.632    -5.677   -30.000    0.000      0.336
+
+ colrun: max error=    0.10000E-08 actual error=    0.25674E-07 50 iterations
+
+  705  -1019.23    0.066    0.000    -0.635    -5.678   -30.000    0.000      0.338
+
+ colrun: max error=    0.10000E-08 actual error=    0.25502E-07 50 iterations
+
+  706  -1019.23    0.066    0.000    -0.637    -5.679   -30.000    0.000      0.339
+
+ colrun: max error=    0.10000E-08 actual error=    0.25332E-07 50 iterations
+
+  707  -1019.23    0.066    0.000    -0.640    -5.680   -30.000    0.000      0.341
+
+ colrun: max error=    0.10000E-08 actual error=    0.25163E-07 50 iterations
+
+  708  -1019.24    0.066    0.000    -0.642    -5.681   -30.000    0.000      0.343
+
+ colrun: max error=    0.10000E-08 actual error=    0.24997E-07 50 iterations
+
+  709  -1019.24    0.066    0.000    -0.644    -5.682   -30.000    0.000      0.344
+
+ colrun: max error=    0.10000E-08 actual error=    0.24831E-07 50 iterations
+
+  710  -1019.24    0.066    0.000    -0.647    -5.684   -30.000    0.000      0.346
+
+ colrun: max error=    0.10000E-08 actual error=    0.24668E-07 50 iterations
+
+  711  -1019.24    0.066    0.000    -0.649    -5.685   -30.000    0.000      0.348
+
+ colrun: max error=    0.10000E-08 actual error=    0.24506E-07 50 iterations
+
+  712  -1019.24    0.065    0.000    -0.652    -5.686   -30.000    0.000      0.350
+
+ colrun: max error=    0.10000E-08 actual error=    0.24345E-07 50 iterations
+
+  713  -1019.25    0.065    0.000    -0.654    -5.687   -30.000    0.000      0.351
+
+ colrun: max error=    0.10000E-08 actual error=    0.24186E-07 50 iterations
+
+  714  -1019.25    0.065    0.000    -0.657    -5.688   -30.000    0.000      0.353
+
+ colrun: max error=    0.10000E-08 actual error=    0.24028E-07 50 iterations
+
+  715  -1019.25    0.065    0.000    -0.659    -5.689   -30.000    0.000      0.355
+
+ colrun: max error=    0.10000E-08 actual error=    0.23872E-07 50 iterations
+
+  716  -1019.25    0.065    0.000    -0.662    -5.690   -30.000    0.000      0.357
+
+ colrun: max error=    0.10000E-08 actual error=    0.23717E-07 50 iterations
+
+  717  -1019.25    0.065    0.000    -0.664    -5.691   -30.000    0.000      0.358
+
+ colrun: max error=    0.10000E-08 actual error=    0.23563E-07 50 iterations
+
+  718  -1019.26    0.065    0.000    -0.667    -5.692   -30.000    0.000      0.360
+
+ colrun: max error=    0.10000E-08 actual error=    0.23411E-07 50 iterations
+
+  719  -1019.26    0.065    0.000    -0.669    -5.693   -30.000    0.000      0.362
+
+ colrun: max error=    0.10000E-08 actual error=    0.23260E-07 50 iterations
+
+  720  -1019.26    0.064    0.000    -0.672    -5.694   -30.000    0.000      0.364
+
+ colrun: max error=    0.10000E-08 actual error=    0.23110E-07 50 iterations
+
+  721  -1019.26    0.064    0.000    -0.674    -5.695   -30.000    0.000      0.366
+
+ colrun: max error=    0.10000E-08 actual error=    0.22961E-07 50 iterations
+
+  722  -1019.27    0.064    0.000    -0.677    -5.696   -30.000    0.000      0.368
+
+ colrun: max error=    0.10000E-08 actual error=    0.22813E-07 50 iterations
+
+  723  -1019.27    0.064    0.000    -0.680    -5.697   -30.000    0.000      0.369
+
+ colrun: max error=    0.10000E-08 actual error=    0.22666E-07 50 iterations
+
+  724  -1019.27    0.064    0.000    -0.682    -5.698   -30.000    0.000      0.371
+
+ colrun: max error=    0.10000E-08 actual error=    0.22520E-07 50 iterations
+
+  725  -1019.27    0.064    0.000    -0.685    -5.698   -30.000    0.000      0.373
+
+ colrun: max error=    0.10000E-08 actual error=    0.22375E-07 50 iterations
+
+  726  -1019.27    0.064    0.000    -0.688    -5.699   -30.000    0.000      0.375
+
+ colrun: max error=    0.10000E-08 actual error=    0.22230E-07 50 iterations
+
+  727  -1019.28    0.064    0.000    -0.690    -5.700   -30.000    0.000      0.377
+
+ colrun: max error=    0.10000E-08 actual error=    0.22085E-07 50 iterations
+
+  728  -1019.28    0.064    0.000    -0.693    -5.701   -30.000    0.000      0.379
+
+ colrun: max error=    0.10000E-08 actual error=    0.21941E-07 50 iterations
+
+  729  -1019.28    0.063    0.000    -0.696    -5.702   -30.000    0.000      0.381
+
+ colrun: max error=    0.10000E-08 actual error=    0.21796E-07 50 iterations
+
+  730  -1019.28    0.063    0.000    -0.699    -5.703   -30.000    0.000      0.382
+
+ colrun: max error=    0.10000E-08 actual error=    0.21651E-07 50 iterations
+
+  731  -1019.28    0.063    0.000    -0.702    -5.704   -30.000    0.000      0.384
+
+ colrun: max error=    0.10000E-08 actual error=    0.21506E-07 50 iterations
+
+  732  -1019.29    0.063    0.000    -0.705    -5.704   -30.000    0.000      0.386
+
+ colrun: max error=    0.10000E-08 actual error=    0.21360E-07 50 iterations
+
+  733  -1019.29    0.063    0.000    -0.709    -5.705   -30.000    0.000      0.388
+
+ colrun: max error=    0.10000E-08 actual error=    0.21213E-07 50 iterations
+
+  734  -1019.29    0.063    0.000    -0.712    -5.706   -30.000    0.000      0.390
+
+ colrun: max error=    0.10000E-08 actual error=    0.21065E-07 50 iterations
+
+  735  -1019.29    0.063    0.000    -0.716    -5.706   -30.000    0.000      0.392
+
+ colrun: max error=    0.10000E-08 actual error=    0.20918E-07 50 iterations
+
+  736  -1019.29    0.063    0.000    -0.719    -5.707   -30.000    0.000      0.394
+
+ colrun: max error=    0.10000E-08 actual error=    0.20770E-07 50 iterations
+
+  737  -1019.30    0.063    0.000    -0.723    -5.707   -30.000    0.000      0.396
+
+ colrun: max error=    0.10000E-08 actual error=    0.20623E-07 50 iterations
+
+  738  -1019.30    0.062    0.000    -0.727    -5.708   -30.000    0.000      0.398
+
+ colrun: max error=    0.10000E-08 actual error=    0.20480E-07 50 iterations
+
+  739  -1019.30    0.062    0.000    -0.731    -5.708   -30.000    0.000      0.400
+
+ colrun: max error=    0.10000E-08 actual error=    0.20340E-07 50 iterations
+
+  740  -1019.30    0.062    0.000    -0.735    -5.709   -30.000    0.000      0.402
+
+ colrun: max error=    0.10000E-08 actual error=    0.20206E-07 50 iterations
+
+  741  -1019.30    0.062    0.000    -0.739    -5.709   -30.000    0.000      0.404
+
+ colrun: max error=    0.10000E-08 actual error=    0.20079E-07 50 iterations
+
+  742  -1019.31    0.062    0.000    -0.743    -5.709   -30.000    0.000      0.406
+
+ colrun: max error=    0.10000E-08 actual error=    0.19961E-07 50 iterations
+
+  743  -1019.31    0.062    0.000    -0.746    -5.710   -30.000    0.000      0.408
+
+ colrun: max error=    0.10000E-08 actual error=    0.19851E-07 50 iterations
+
+  744  -1019.31    0.062    0.000    -0.750    -5.710   -30.000    0.000      0.410
+
+ colrun: max error=    0.10000E-08 actual error=    0.19749E-07 50 iterations
+
+  745  -1019.31    0.062    0.000    -0.753    -5.711   -30.000    0.000      0.412
+
+ colrun: max error=    0.10000E-08 actual error=    0.19654E-07 50 iterations
+
+  746  -1019.31    0.061    0.000    -0.756    -5.712   -30.000    0.000      0.414
+
+ colrun: max error=    0.10000E-08 actual error=    0.19565E-07 50 iterations
+
+  747  -1019.32    0.061    0.000    -0.759    -5.713   -30.000    0.000      0.416
+
+ colrun: max error=    0.10000E-08 actual error=    0.19482E-07 50 iterations
+
+  748  -1019.32    0.061    0.000    -0.761    -5.714   -30.000    0.000      0.418
+
+ colrun: max error=    0.10000E-08 actual error=    0.19402E-07 50 iterations
+
+  749  -1019.32    0.061    0.000    -0.764    -5.715   -30.000    0.000      0.421
+
+ colrun: max error=    0.10000E-08 actual error=    0.19325E-07 50 iterations
+
+  750  -1019.32    0.061    0.000    -0.767    -5.716   -30.000    0.000      0.423
+
+ colrun: max error=    0.10000E-08 actual error=    0.19250E-07 50 iterations
+
+  751  -1019.32    0.061    0.000    -0.770    -7.153   -30.000    0.000      0.380
+
+ colrun: max error=    0.10000E-08 actual error=    0.19009E-07 50 iterations
+
+  752  -1019.32    0.061    0.000    -0.772    -5.736   -30.000    0.000      0.382
+
+ colrun: max error=    0.10000E-08 actual error=    0.18763E-07 50 iterations
+
+  753  -1019.32    0.061    0.000    -0.774    -5.740   -30.000    0.000      0.384
+
+ colrun: max error=    0.10000E-08 actual error=    0.18532E-07 50 iterations
+
+  754  -1019.33    0.061    0.000    -0.776    -5.744   -30.000    0.000      0.386
+
+ colrun: max error=    0.10000E-08 actual error=    0.18316E-07 50 iterations
+
+  755  -1019.33    0.060    0.000    -0.778    -5.747   -30.000    0.000      0.388
+
+ colrun: max error=    0.10000E-08 actual error=    0.18113E-07 50 iterations
+
+  756  -1019.33    0.060    0.000    -0.780    -5.750   -30.000    0.000      0.390
+
+ colrun: max error=    0.10000E-08 actual error=    0.17924E-07 50 iterations
+
+  757  -1019.33    0.060    0.000    -0.782    -5.753   -30.000    0.000      0.392
+
+ colrun: max error=    0.10000E-08 actual error=    0.17747E-07 50 iterations
+
+  758  -1019.33    0.060    0.000    -0.783    -5.755   -30.000    0.000      0.394
+
+ colrun: max error=    0.10000E-08 actual error=    0.17582E-07 50 iterations
+
+  759  -1019.34    0.060    0.000    -0.785    -5.758   -30.000    0.000      0.396
+
+ colrun: max error=    0.10000E-08 actual error=    0.17427E-07 50 iterations
+
+  760  -1019.34    0.060    0.000    -0.787    -5.760   -30.000    0.000      0.398
+
+ colrun: max error=    0.10000E-08 actual error=    0.17282E-07 50 iterations
+
+  761  -1019.34    0.060    0.000    -0.790    -5.762   -30.000    0.000      0.400
+
+ colrun: max error=    0.10000E-08 actual error=    0.17147E-07 50 iterations
+
+  762  -1019.34    0.060    0.000    -0.792    -5.764   -30.000    0.000      0.402
+
+ colrun: max error=    0.10000E-08 actual error=    0.17019E-07 50 iterations
+
+  763  -1019.34    0.059    0.000    -0.794    -5.766   -30.000    0.000      0.404
+
+ colrun: max error=    0.10000E-08 actual error=    0.16900E-07 50 iterations
+
+  764  -1019.34    0.059    0.000    -0.796    -5.768   -30.000    0.000      0.406
+
+ colrun: max error=    0.10000E-08 actual error=    0.16787E-07 50 iterations
+
+  765  -1019.35    0.059    0.000    -0.798    -5.769   -30.000    0.000      0.408
+
+ colrun: max error=    0.10000E-08 actual error=    0.16681E-07 50 iterations
+
+  766  -1019.35    0.059    0.000    -0.800    -5.771   -30.000    0.000      0.410
+
+ colrun: max error=    0.10000E-08 actual error=    0.16581E-07 50 iterations
+
+  767  -1019.35    0.059    0.000    -0.803    -5.772   -30.000    0.000      0.412
+
+ colrun: max error=    0.10000E-08 actual error=    0.16486E-07 50 iterations
+
+  768  -1019.35    0.059    0.000    -0.805    -5.774   -30.000    0.000      0.414
+
+ colrun: max error=    0.10000E-08 actual error=    0.16396E-07 50 iterations
+
+  769  -1019.35    0.059    0.000    -0.807    -5.775   -30.000    0.000      0.416
+
+ colrun: max error=    0.10000E-08 actual error=    0.16310E-07 50 iterations
+
+  770  -1019.35    0.059    0.000    -0.810    -5.776   -30.000    0.000      0.418
+
+ colrun: max error=    0.10000E-08 actual error=    0.16228E-07 50 iterations
+
+  771  -1019.36    0.059    0.000    -0.812    -5.777   -30.000    0.000      0.420
+
+ colrun: max error=    0.10000E-08 actual error=    0.16149E-07 50 iterations
+
+  772  -1019.36    0.058    0.000    -0.815    -5.778   -30.000    0.000      0.422
+
+ colrun: max error=    0.10000E-08 actual error=    0.16074E-07 50 iterations
+
+  773  -1019.36    0.058    0.000    -0.817    -5.779   -30.000    0.000      0.424
+
+ colrun: max error=    0.10000E-08 actual error=    0.16001E-07 50 iterations
+
+  774  -1019.36    0.058    0.000    -0.820    -5.780   -30.000    0.000      0.427
+
+ colrun: max error=    0.10000E-08 actual error=    0.15930E-07 50 iterations
+
+  775  -1019.36    0.058    0.000    -0.823    -5.781   -30.000    0.000      0.429
+
+ colrun: max error=    0.10000E-08 actual error=    0.15862E-07 50 iterations
+
+  776  -1019.36    0.058    0.000    -0.825    -5.782   -30.000    0.000      0.431
+
+ colrun: max error=    0.10000E-08 actual error=    0.15796E-07 50 iterations
+
+  777  -1019.37    0.058    0.000    -0.828    -5.783   -30.000    0.000      0.433
+
+ colrun: max error=    0.10000E-08 actual error=    0.15731E-07 50 iterations
+
+  778  -1019.37    0.058    0.000    -0.830    -5.784   -30.000    0.000      0.435
+
+ colrun: max error=    0.10000E-08 actual error=    0.15668E-07 50 iterations
+
+  779  -1019.37    0.058    0.000    -0.833    -5.785   -30.000    0.000      0.437
+
+ colrun: max error=    0.10000E-08 actual error=    0.15606E-07 50 iterations
+
+  780  -1019.37    0.058    0.000    -0.836    -5.786   -30.000    0.000      0.440
+
+ colrun: max error=    0.10000E-08 actual error=    0.15545E-07 50 iterations
+
+  781  -1019.37    0.057    0.000    -0.839    -5.786   -30.000    0.000      0.442
+
+ colrun: max error=    0.10000E-08 actual error=    0.15485E-07 50 iterations
+
+  782  -1019.37    0.057    0.000    -0.841    -5.787   -30.000    0.000      0.444
+
+ colrun: max error=    0.10000E-08 actual error=    0.15425E-07 50 iterations
+
+  783  -1019.38    0.057    0.000    -0.844    -5.788   -30.000    0.000      0.446
+
+ colrun: max error=    0.10000E-08 actual error=    0.15366E-07 50 iterations
+
+  784  -1019.38    0.057    0.000    -0.847    -5.789   -30.000    0.000      0.448
+
+ colrun: max error=    0.10000E-08 actual error=    0.15308E-07 50 iterations
+
+  785  -1019.38    0.057    0.000    -0.850    -5.790   -30.000    0.000      0.451
+
+ colrun: max error=    0.10000E-08 actual error=    0.15250E-07 50 iterations
+
+  786  -1019.38    0.057    0.000    -0.853    -5.790   -30.000    0.000      0.453
+
+ colrun: max error=    0.10000E-08 actual error=    0.15192E-07 50 iterations
+
+  787  -1019.38    0.057    0.000    -0.856    -5.791   -30.000    0.000      0.455
+
+ colrun: max error=    0.10000E-08 actual error=    0.15134E-07 50 iterations
+
+  788  -1019.38    0.057    0.000    -0.859    -5.792   -30.000    0.000      0.457
+
+ colrun: max error=    0.10000E-08 actual error=    0.15077E-07 50 iterations
+
+  789  -1019.39    0.057    0.000    -0.861    -5.793   -30.000    0.000      0.460
+
+ colrun: max error=    0.10000E-08 actual error=    0.15019E-07 50 iterations
+
+  790  -1019.39    0.056    0.000    -0.864    -5.793   -30.000    0.000      0.462
+
+ colrun: max error=    0.10000E-08 actual error=    0.14962E-07 50 iterations
+
+  791  -1019.39    0.056    0.000    -0.867    -5.794   -30.000    0.000      0.464
+
+ colrun: max error=    0.10000E-08 actual error=    0.14904E-07 50 iterations
+
+  792  -1019.39    0.056    0.000    -0.870    -5.795   -30.000    0.000      0.467
+
+ colrun: max error=    0.10000E-08 actual error=    0.14846E-07 50 iterations
+
+  793  -1019.39    0.056    0.000    -0.873    -5.796   -30.000    0.000      0.469
+
+ colrun: max error=    0.10000E-08 actual error=    0.14788E-07 50 iterations
+
+  794  -1019.39    0.056    0.000    -0.876    -5.797   -30.000    0.000      0.471
+
+ colrun: max error=    0.10000E-08 actual error=    0.14730E-07 50 iterations
+
+  795  -1019.40    0.056    0.000    -0.879    -5.797   -30.000    0.000      0.474
+
+ colrun: max error=    0.10000E-08 actual error=    0.14672E-07 50 iterations
+
+  796  -1019.40    0.056    0.000    -0.882    -5.798   -30.000    0.000      0.476
+
+ colrun: max error=    0.10000E-08 actual error=    0.14613E-07 50 iterations
+
+  797  -1019.40    0.056    0.000    -0.885    -5.799   -30.000    0.000      0.478
+
+ colrun: max error=    0.10000E-08 actual error=    0.14555E-07 50 iterations
+
+  798  -1019.40    0.056    0.000    -0.888    -5.800   -30.000    0.000      0.481
+
+ colrun: max error=    0.10000E-08 actual error=    0.14496E-07 50 iterations
+
+  799  -1019.40    0.055    0.000    -0.891    -5.801   -30.000    0.000      0.483
+
+ colrun: max error=    0.10000E-08 actual error=    0.14437E-07 50 iterations
+
+  800  -1019.40    0.055    0.000    -0.894    -5.802   -30.000    0.000      0.486
+
+ colrun: max error=    0.10000E-08 actual error=    0.14378E-07 50 iterations
+
+  801  -1019.40    0.055    0.000    -0.897    -6.337   -30.000    0.000      0.437
+
+ colrun: max error=    0.10000E-08 actual error=    0.14194E-07 50 iterations
+
+  802  -1019.41    0.055    0.000    -0.900    -5.824   -30.000    0.000      0.439
+
+ colrun: max error=    0.10000E-08 actual error=    0.14006E-07 50 iterations
+
+  803  -1019.41    0.055    0.000    -0.903    -5.827   -30.000    0.000      0.441
+
+ colrun: max error=    0.10000E-08 actual error=    0.13826E-07 50 iterations
+
+  804  -1019.41    0.055    0.000    -0.905    -5.830   -30.000    0.000      0.444
+
+ colrun: max error=    0.10000E-08 actual error=    0.13657E-07 50 iterations
+
+  805  -1019.41    0.055    0.000    -0.907    -5.832   -30.000    0.000      0.446
+
+ colrun: max error=    0.10000E-08 actual error=    0.13498E-07 50 iterations
+
+  806  -1019.41    0.055    0.000    -0.909    -5.835   -30.000    0.000      0.448
+
+ colrun: max error=    0.10000E-08 actual error=    0.13349E-07 50 iterations
+
+  807  -1019.41    0.055    0.000    -0.911    -5.837   -30.000    0.000      0.450
+
+ colrun: max error=    0.10000E-08 actual error=    0.13210E-07 50 iterations
+
+  808  -1019.41    0.054    0.000    -0.913    -5.839   -30.000    0.000      0.453
+
+ colrun: max error=    0.10000E-08 actual error=    0.13080E-07 50 iterations
+
+  809  -1019.42    0.054    0.000    -0.916    -5.841   -30.000    0.000      0.455
+
+ colrun: max error=    0.10000E-08 actual error=    0.12959E-07 50 iterations
+
+  810  -1019.42    0.054    0.000    -0.918    -5.843   -30.000    0.000      0.457
+
+ colrun: max error=    0.10000E-08 actual error=    0.12847E-07 50 iterations
+
+  811  -1019.42    0.054    0.000    -0.920    -5.845   -30.000    0.000      0.459
+
+ colrun: max error=    0.10000E-08 actual error=    0.12743E-07 50 iterations
+
+  812  -1019.42    0.054    0.000    -0.923    -5.847   -30.000    0.000      0.462
+
+ colrun: max error=    0.10000E-08 actual error=    0.12646E-07 50 iterations
+
+  813  -1019.42    0.054    0.000    -0.925    -5.848   -30.000    0.000      0.464
+
+ colrun: max error=    0.10000E-08 actual error=    0.12557E-07 50 iterations
+
+  814  -1019.42    0.054    0.000    -0.927    -5.850   -30.000    0.000      0.466
+
+ colrun: max error=    0.10000E-08 actual error=    0.12474E-07 50 iterations
+
+  815  -1019.42    0.054    0.000    -0.930    -5.852   -30.000    0.000      0.469
+
+ colrun: max error=    0.10000E-08 actual error=    0.12397E-07 50 iterations
+
+  816  -1019.43    0.054    0.000    -0.932    -5.853   -30.000    0.000      0.471
+
+ colrun: max error=    0.10000E-08 actual error=    0.12326E-07 50 iterations
+
+  817  -1019.43    0.054    0.000    -0.935    -5.854   -30.000    0.000      0.473
+
+ colrun: max error=    0.10000E-08 actual error=    0.12260E-07 50 iterations
+
+  818  -1019.43    0.053    0.000    -0.937    -5.856   -30.000    0.000      0.476
+
+ colrun: max error=    0.10000E-08 actual error=    0.12199E-07 50 iterations
+
+  819  -1019.43    0.053    0.000    -0.940    -5.857   -30.000    0.000      0.478
+
+ colrun: max error=    0.10000E-08 actual error=    0.12142E-07 50 iterations
+
+  820  -1019.43    0.053    0.000    -0.942    -5.858   -30.000    0.000      0.481
+
+ colrun: max error=    0.10000E-08 actual error=    0.12089E-07 50 iterations
+
+  821  -1019.43    0.053    0.000    -0.945    -5.859   -30.000    0.000      0.483
+
+ colrun: max error=    0.10000E-08 actual error=    0.12039E-07 50 iterations
+
+  822  -1019.43    0.053    0.000    -0.948    -5.861   -30.000    0.000      0.485
+
+ colrun: max error=    0.10000E-08 actual error=    0.11992E-07 50 iterations
+
+  823  -1019.44    0.053    0.000    -0.950    -5.862   -30.000    0.000      0.488
+
+ colrun: max error=    0.10000E-08 actual error=    0.11949E-07 50 iterations
+
+  824  -1019.44    0.053    0.000    -0.953    -5.863   -30.000    0.000      0.490
+
+ colrun: max error=    0.10000E-08 actual error=    0.11907E-07 50 iterations
+
+  825  -1019.44    0.053    0.000    -0.955    -5.864   -30.000    0.000      0.493
+
+ colrun: max error=    0.10000E-08 actual error=    0.11868E-07 50 iterations
+
+  826  -1019.44    0.053    0.000    -0.958    -5.865   -30.000    0.000      0.495
+
+ colrun: max error=    0.10000E-08 actual error=    0.11831E-07 50 iterations
+
+  827  -1019.44    0.053    0.000    -0.961    -5.866   -30.000    0.000      0.498
+
+ colrun: max error=    0.10000E-08 actual error=    0.11796E-07 50 iterations
+
+  828  -1019.44    0.052    0.000    -0.963    -5.867   -30.000    0.000      0.500
+
+ colrun: max error=    0.10000E-08 actual error=    0.11762E-07 50 iterations
+
+  829  -1019.44    0.052    0.000    -0.966    -5.868   -30.000    0.000      0.503
+
+ colrun: max error=    0.10000E-08 actual error=    0.11729E-07 50 iterations
+
+  830  -1019.45    0.052    0.000    -0.968    -5.869   -30.000    0.000      0.505
+
+ colrun: max error=    0.10000E-08 actual error=    0.11698E-07 50 iterations
+
+  831  -1019.45    0.052    0.000    -0.971    -5.870   -30.000    0.000      0.508
+
+ colrun: max error=    0.10000E-08 actual error=    0.11667E-07 50 iterations
+
+  832  -1019.45    0.052    0.000    -0.974    -5.871   -30.000    0.000      0.510
+
+ colrun: max error=    0.10000E-08 actual error=    0.11637E-07 50 iterations
+
+  833  -1019.45    0.052    0.000    -0.976    -5.872   -30.000    0.000      0.513
+
+ colrun: max error=    0.10000E-08 actual error=    0.11608E-07 50 iterations
+
+  834  -1019.45    0.052    0.000    -0.979    -5.873   -30.000    0.000      0.515
+
+ colrun: max error=    0.10000E-08 actual error=    0.11580E-07 50 iterations
+
+  835  -1019.45    0.052    0.000    -0.981    -5.874   -30.000    0.000      0.518
+
+ colrun: max error=    0.10000E-08 actual error=    0.11552E-07 50 iterations
+
+  836  -1019.45    0.052    0.000    -0.984    -5.875   -30.000    0.000      0.520
+
+ colrun: max error=    0.10000E-08 actual error=    0.11524E-07 50 iterations
+
+  837  -1019.46    0.051    0.000    -0.987    -5.876   -30.000    0.000      0.523
+
+ colrun: max error=    0.10000E-08 actual error=    0.11497E-07 50 iterations
+
+  838  -1019.46    0.051    0.000    -0.989    -5.877   -30.000    0.000      0.526
+
+ colrun: max error=    0.10000E-08 actual error=    0.11470E-07 50 iterations
+
+  839  -1019.46    0.051    0.000    -0.992    -5.878   -30.000    0.000      0.528
+
+ colrun: max error=    0.10000E-08 actual error=    0.11443E-07 50 iterations
+
+  840  -1019.46    0.051    0.000    -0.994    -5.879   -30.000    0.000      0.531
+
+ colrun: max error=    0.10000E-08 actual error=    0.11416E-07 50 iterations
+
+  841  -1019.46    0.051    0.000    -0.997    -5.881   -30.000    0.000      0.534
+
+ colrun: max error=    0.10000E-08 actual error=    0.11389E-07 50 iterations
+
+  842  -1019.46    0.051    0.000    -1.000    -5.882   -30.000    0.000      0.536
+
+ colrun: max error=    0.10000E-08 actual error=    0.11362E-07 50 iterations
+
+  843  -1019.46    0.051    0.000    -1.002    -5.883   -30.000    0.000      0.539
+
+ colrun: max error=    0.10000E-08 actual error=    0.11336E-07 50 iterations
+
+  844  -1019.46    0.051    0.000    -1.005    -5.884   -30.000    0.000      0.542
+
+ colrun: max error=    0.10000E-08 actual error=    0.11309E-07 50 iterations
+
+  845  -1019.47    0.051    0.000    -1.007    -5.885   -30.000    0.000      0.544
+
+ colrun: max error=    0.10000E-08 actual error=    0.11282E-07 50 iterations
+
+  846  -1019.47    0.051    0.000    -1.010    -5.886   -30.000    0.000      0.547
+
+ colrun: max error=    0.10000E-08 actual error=    0.11256E-07 50 iterations
+
+  847  -1019.47    0.050    0.000    -1.013    -5.887   -30.000    0.000      0.550
+
+ colrun: max error=    0.10000E-08 actual error=    0.11229E-07 50 iterations
+
+  848  -1019.47    0.050    0.000    -1.015    -5.888   -30.000    0.000      0.553
+
+ colrun: max error=    0.10000E-08 actual error=    0.11202E-07 50 iterations
+
+  849  -1019.47    0.050    0.000    -1.018    -5.889   -30.000    0.000      0.555
+
+ colrun: max error=    0.10000E-08 actual error=    0.11175E-07 50 iterations
+
+  850  -1019.47    0.050    0.000    -1.021    -5.890   -30.000    0.000      0.558
+
+ colrun: max error=    0.10000E-08 actual error=    0.11148E-07 50 iterations
+
+  851  -1019.47    0.050    0.000    -1.023    -6.221   -30.000    0.000      0.502
+
+ colrun: max error=    0.10000E-08 actual error=    0.11023E-07 50 iterations
+
+  852  -1019.47    0.050    0.000    -1.026    -5.915   -30.000    0.000      0.505
+
+ colrun: max error=    0.10000E-08 actual error=    0.10892E-07 50 iterations
+
+  853  -1019.47    0.050    0.000    -1.028    -5.918   -30.000    0.000      0.507
+
+ colrun: max error=    0.10000E-08 actual error=    0.10767E-07 50 iterations
+
+  854  -1019.48    0.050    0.000    -1.030    -5.921   -30.000    0.000      0.510
+
+ colrun: max error=    0.10000E-08 actual error=    0.10649E-07 50 iterations
+
+  855  -1019.48    0.050    0.000    -1.031    -5.923   -30.000    0.000      0.512
+
+ colrun: max error=    0.10000E-08 actual error=    0.10537E-07 50 iterations
+
+  856  -1019.48    0.050    0.000    -1.033    -5.926   -30.000    0.000      0.515
+
+ colrun: max error=    0.10000E-08 actual error=    0.10434E-07 50 iterations
+
+  857  -1019.48    0.049    0.000    -1.035    -5.928   -30.000    0.000      0.518
+
+ colrun: max error=    0.10000E-08 actual error=    0.10337E-07 50 iterations
+
+  858  -1019.48    0.049    0.000    -1.037    -5.930   -30.000    0.000      0.520
+
+ colrun: max error=    0.10000E-08 actual error=    0.10248E-07 50 iterations
+
+  859  -1019.48    0.049    0.000    -1.039    -5.932   -30.000    0.000      0.523
+
+ colrun: max error=    0.10000E-08 actual error=    0.10166E-07 50 iterations
+
+  860  -1019.48    0.049    0.000    -1.041    -5.934   -30.000    0.000      0.525
+
+ colrun: max error=    0.10000E-08 actual error=    0.10091E-07 50 iterations
+
+  861  -1019.48    0.049    0.000    -1.043    -5.936   -30.000    0.000      0.528
+
+ colrun: max error=    0.10000E-08 actual error=    0.10023E-07 50 iterations
+
+  862  -1019.49    0.049    0.000    -1.045    -5.938   -30.000    0.000      0.531
+
+ colrun: max error=    0.10000E-08 actual error=    0.99599E-08 50 iterations
+
+  863  -1019.49    0.049    0.000    -1.047    -5.940   -30.000    0.000      0.533
+
+ colrun: max error=    0.10000E-08 actual error=    0.99029E-08 50 iterations
+
+  864  -1019.49    0.049    0.000    -1.049    -5.941   -30.000    0.000      0.536
+
+ colrun: max error=    0.10000E-08 actual error=    0.98511E-08 50 iterations
+
+  865  -1019.49    0.049    0.000    -1.052    -5.943   -30.000    0.000      0.539
+
+ colrun: max error=    0.10000E-08 actual error=    0.98040E-08 50 iterations
+
+  866  -1019.49    0.049    0.000    -1.054    -5.945   -30.000    0.000      0.541
+
+ colrun: max error=    0.10000E-08 actual error=    0.97612E-08 50 iterations
+
+  867  -1019.49    0.048    0.000    -1.056    -5.946   -30.000    0.000      0.544
+
+ colrun: max error=    0.10000E-08 actual error=    0.97222E-08 50 iterations
+
+  868  -1019.49    0.048    0.000    -1.058    -5.947   -30.000    0.000      0.547
+
+ colrun: max error=    0.10000E-08 actual error=    0.96866E-08 50 iterations
+
+  869  -1019.49    0.048    0.000    -1.061    -5.949   -30.000    0.000      0.549
+
+ colrun: max error=    0.10000E-08 actual error=    0.96541E-08 50 iterations
+
+  870  -1019.49    0.048    0.000    -1.063    -5.950   -30.000    0.000      0.552
+
+ colrun: max error=    0.10000E-08 actual error=    0.96243E-08 50 iterations
+
+  871  -1019.50    0.048    0.000    -1.066    -5.951   -30.000    0.000      0.555
+
+ colrun: max error=    0.10000E-08 actual error=    0.95968E-08 50 iterations
+
+  872  -1019.50    0.048    0.000    -1.068    -5.952   -30.000    0.000      0.558
+
+ colrun: max error=    0.10000E-08 actual error=    0.95713E-08 50 iterations
+
+  873  -1019.50    0.048    0.000    -1.070    -5.954   -30.000    0.000      0.561
+
+ colrun: max error=    0.10000E-08 actual error=    0.95474E-08 50 iterations
+
+  874  -1019.50    0.048    0.000    -1.073    -5.955   -30.000    0.000      0.563
+
+ colrun: max error=    0.10000E-08 actual error=    0.95251E-08 50 iterations
+
+  875  -1019.50    0.048    0.000    -1.075    -5.956   -30.000    0.000      0.566
+
+ colrun: max error=    0.10000E-08 actual error=    0.95039E-08 50 iterations
+
+  876  -1019.50    0.048    0.000    -1.078    -5.957   -30.000    0.000      0.569
+
+ colrun: max error=    0.10000E-08 actual error=    0.94837E-08 50 iterations
+
+  877  -1019.50    0.048    0.000    -1.080    -5.958   -30.000    0.000      0.572
+
+ colrun: max error=    0.10000E-08 actual error=    0.94643E-08 50 iterations
+
+  878  -1019.50    0.047    0.000    -1.083    -5.959   -30.000    0.000      0.575
+
+ colrun: max error=    0.10000E-08 actual error=    0.94456E-08 50 iterations
+
+  879  -1019.50    0.047    0.000    -1.085    -5.960   -30.000    0.000      0.578
+
+ colrun: max error=    0.10000E-08 actual error=    0.94273E-08 50 iterations
+
+  880  -1019.51    0.047    0.000    -1.088    -5.961   -30.000    0.000      0.580
+
+ colrun: max error=    0.10000E-08 actual error=    0.94094E-08 50 iterations
+
+  881  -1019.51    0.047    0.000    -1.090    -5.962   -30.000    0.000      0.583
+
+ colrun: max error=    0.10000E-08 actual error=    0.93918E-08 50 iterations
+
+  882  -1019.51    0.047    0.000    -1.093    -5.963   -30.000    0.000      0.586
+
+ colrun: max error=    0.10000E-08 actual error=    0.93743E-08 50 iterations
+
+  883  -1019.51    0.047    0.000    -1.095    -5.964   -30.000    0.000      0.589
+
+ colrun: max error=    0.10000E-08 actual error=    0.93569E-08 50 iterations
+
+  884  -1019.51    0.047    0.000    -1.098    -5.965   -30.000    0.000      0.592
+
+ colrun: max error=    0.10000E-08 actual error=    0.93396E-08 50 iterations
+
+  885  -1019.51    0.047    0.000    -1.100    -5.966   -30.000    0.000      0.595
+
+ colrun: max error=    0.10000E-08 actual error=    0.93222E-08 50 iterations
+
+  886  -1019.51    0.047    0.000    -1.103    -5.967   -30.000    0.000      0.598
+
+ colrun: max error=    0.10000E-08 actual error=    0.93046E-08 50 iterations
+
+  887  -1019.51    0.047    0.000    -1.105    -5.968   -30.000    0.000      0.601
+
+ colrun: max error=    0.10000E-08 actual error=    0.92870E-08 50 iterations
+
+  888  -1019.51    0.046    0.000    -1.108    -5.968   -30.000    0.000      0.604
+
+ colrun: max error=    0.10000E-08 actual error=    0.92692E-08 50 iterations
+
+  889  -1019.52    0.046    0.000    -1.110    -5.969   -30.000    0.000      0.607
+
+ colrun: max error=    0.10000E-08 actual error=    0.92512E-08 50 iterations
+
+  890  -1019.52    0.046    0.000    -1.113    -5.970   -30.000    0.000      0.610
+
+ colrun: max error=    0.10000E-08 actual error=    0.92329E-08 50 iterations
+
+  891  -1019.52    0.046    0.000    -1.115    -5.971   -30.000    0.000      0.613
+
+ colrun: max error=    0.10000E-08 actual error=    0.92144E-08 50 iterations
+
+  892  -1019.52    0.046    0.000    -1.118    -5.972   -30.000    0.000      0.616
+
+ colrun: max error=    0.10000E-08 actual error=    0.91957E-08 50 iterations
+
+  893  -1019.52    0.046    0.000    -1.121    -5.973   -30.000    0.000      0.619
+
+ colrun: max error=    0.10000E-08 actual error=    0.91766E-08 50 iterations
+
+  894  -1019.52    0.046    0.000    -1.123    -5.974   -30.000    0.000      0.622
+
+ colrun: max error=    0.10000E-08 actual error=    0.91573E-08 50 iterations
+
+  895  -1019.52    0.046    0.000    -1.126    -5.975   -30.000    0.000      0.626
+
+ colrun: max error=    0.10000E-08 actual error=    0.91377E-08 50 iterations
+
+  896  -1019.52    0.046    0.000    -1.128    -5.977   -30.000    0.000      0.629
+
+ colrun: max error=    0.10000E-08 actual error=    0.91178E-08 50 iterations
+
+  897  -1019.52    0.046    0.000    -1.131    -5.978   -30.000    0.000      0.632
+
+ colrun: max error=    0.10000E-08 actual error=    0.90976E-08 50 iterations
+
+  898  -1019.53    0.046    0.000    -1.133    -5.979   -30.000    0.000      0.635
+
+ colrun: max error=    0.10000E-08 actual error=    0.90771E-08 50 iterations
+
+  899  -1019.53    0.045    0.000    -1.136    -5.980   -30.000    0.000      0.638
+
+ colrun: max error=    0.10000E-08 actual error=    0.90562E-08 50 iterations
+
+  900  -1019.53    0.045    0.000    -1.139    -5.981   -30.000    0.000      0.641
+
+ colrun: max error=    0.10000E-08 actual error=    0.90351E-08 50 iterations
+
+  901  -1019.53    0.045    0.000    -1.141    -6.240   -30.000    0.000      0.577
+
+ colrun: max error=    0.10000E-08 actual error=    0.89340E-08 50 iterations
+
+  902  -1019.53    0.045    0.000    -1.144    -6.007   -30.000    0.000      0.580
+
+ colrun: max error=    0.10000E-08 actual error=    0.88274E-08 50 iterations
+
+  903  -1019.53    0.045    0.000    -1.145    -6.010   -30.000    0.000      0.583
+
+ colrun: max error=    0.10000E-08 actual error=    0.87240E-08 50 iterations
+
+  904  -1019.53    0.045    0.000    -1.147    -6.013   -30.000    0.000      0.586
+
+ colrun: max error=    0.10000E-08 actual error=    0.86255E-08 50 iterations
+
+  905  -1019.53    0.045    0.000    -1.149    -6.015   -30.000    0.000      0.589
+
+ colrun: max error=    0.10000E-08 actual error=    0.85325E-08 50 iterations
+
+  906  -1019.53    0.045    0.000    -1.151    -6.017   -30.000    0.000      0.592
+
+ colrun: max error=    0.10000E-08 actual error=    0.84454E-08 50 iterations
+
+  907  -1019.53    0.045    0.000    -1.153    -6.019   -30.000    0.000      0.595
+
+ colrun: max error=    0.10000E-08 actual error=    0.83644E-08 50 iterations
+
+  908  -1019.53    0.045    0.000    -1.155    -6.021   -30.000    0.000      0.598
+
+ colrun: max error=    0.10000E-08 actual error=    0.82897E-08 50 iterations
+
+  909  -1019.53    0.045    0.000    -1.157    -6.023   -30.000    0.000      0.601
+
+ colrun: max error=    0.10000E-08 actual error=    0.82210E-08 50 iterations
+
+  910  -1019.54    0.044    0.000    -1.159    -6.025   -30.000    0.000      0.604
+
+ colrun: max error=    0.10000E-08 actual error=    0.81582E-08 50 iterations
+
+  911  -1019.54    0.044    0.000    -1.161    -6.027   -30.000    0.000      0.607
+
+ colrun: max error=    0.10000E-08 actual error=    0.81010E-08 50 iterations
+
+  912  -1019.54    0.044    0.000    -1.163    -6.028   -30.000    0.000      0.610
+
+ colrun: max error=    0.10000E-08 actual error=    0.80491E-08 50 iterations
+
+  913  -1019.54    0.044    0.000    -1.165    -6.030   -30.000    0.000      0.613
+
+ colrun: max error=    0.10000E-08 actual error=    0.80021E-08 50 iterations
+
+  914  -1019.54    0.044    0.000    -1.167    -6.032   -30.000    0.000      0.616
+
+ colrun: max error=    0.10000E-08 actual error=    0.79596E-08 50 iterations
+
+  915  -1019.54    0.044    0.000    -1.169    -6.034   -30.000    0.000      0.619
+
+ colrun: max error=    0.10000E-08 actual error=    0.79212E-08 50 iterations
+
+  916  -1019.54    0.044    0.000    -1.171    -6.035   -30.000    0.000      0.622
+
+ colrun: max error=    0.10000E-08 actual error=    0.78865E-08 50 iterations
+
+  917  -1019.54    0.044    0.000    -1.173    -6.036   -30.000    0.000      0.625
+
+ colrun: max error=    0.10000E-08 actual error=    0.78551E-08 50 iterations
+
+  918  -1019.54    0.044    0.000    -1.176    -6.038   -30.000    0.000      0.628
+
+ colrun: max error=    0.10000E-08 actual error=    0.78266E-08 50 iterations
+
+  919  -1019.54    0.044    0.000    -1.178    -6.039   -30.000    0.000      0.631
+
+ colrun: max error=    0.10000E-08 actual error=    0.78007E-08 50 iterations
+
+  920  -1019.55    0.044    0.000    -1.180    -6.040   -30.000    0.000      0.635
+
+ colrun: max error=    0.10000E-08 actual error=    0.77770E-08 50 iterations
+
+  921  -1019.55    0.044    0.000    -1.182    -6.041   -30.000    0.000      0.638
+
+ colrun: max error=    0.10000E-08 actual error=    0.77552E-08 50 iterations
+
+  922  -1019.55    0.043    0.000    -1.185    -6.043   -30.000    0.000      0.641
+
+ colrun: max error=    0.10000E-08 actual error=    0.77349E-08 50 iterations
+
+  923  -1019.55    0.043    0.000    -1.187    -6.044   -30.000    0.000      0.644
+
+ colrun: max error=    0.10000E-08 actual error=    0.77160E-08 50 iterations
+
+  924  -1019.55    0.043    0.000    -1.189    -6.045   -30.000    0.000      0.647
+
+ colrun: max error=    0.10000E-08 actual error=    0.76981E-08 50 iterations
+
+  925  -1019.55    0.043    0.000    -1.192    -6.046   -30.000    0.000      0.651
+
+ colrun: max error=    0.10000E-08 actual error=    0.76811E-08 50 iterations
+
+  926  -1019.55    0.043    0.000    -1.194    -6.046   -30.000    0.000      0.654
+
+ colrun: max error=    0.10000E-08 actual error=    0.76648E-08 50 iterations
+
+  927  -1019.55    0.043    0.000    -1.196    -6.047   -30.000    0.000      0.657
+
+ colrun: max error=    0.10000E-08 actual error=    0.76491E-08 50 iterations
+
+  928  -1019.55    0.043    0.000    -1.199    -6.048   -30.000    0.000      0.660
+
+ colrun: max error=    0.10000E-08 actual error=    0.76337E-08 50 iterations
+
+  929  -1019.55    0.043    0.000    -1.201    -6.049   -30.000    0.000      0.664
+
+ colrun: max error=    0.10000E-08 actual error=    0.76186E-08 50 iterations
+
+  930  -1019.55    0.043    0.000    -1.204    -6.050   -30.000    0.000      0.667
+
+ colrun: max error=    0.10000E-08 actual error=    0.76036E-08 50 iterations
+
+  931  -1019.56    0.043    0.000    -1.206    -6.051   -30.000    0.000      0.670
+
+ colrun: max error=    0.10000E-08 actual error=    0.75888E-08 50 iterations
+
+  932  -1019.56    0.043    0.000    -1.208    -6.052   -30.000    0.000      0.674
+
+ colrun: max error=    0.10000E-08 actual error=    0.75740E-08 50 iterations
+
+  933  -1019.56    0.043    0.000    -1.211    -6.053   -30.000    0.000      0.677
+
+ colrun: max error=    0.10000E-08 actual error=    0.75591E-08 50 iterations
+
+  934  -1019.56    0.042    0.000    -1.213    -6.054   -30.000    0.000      0.680
+
+ colrun: max error=    0.10000E-08 actual error=    0.75442E-08 50 iterations
+
+  935  -1019.56    0.042    0.000    -1.216    -6.055   -30.000    0.000      0.684
+
+ colrun: max error=    0.10000E-08 actual error=    0.75291E-08 50 iterations
+
+  936  -1019.56    0.042    0.000    -1.218    -6.056   -30.000    0.000      0.687
+
+ colrun: max error=    0.10000E-08 actual error=    0.75139E-08 50 iterations
+
+  937  -1019.56    0.042    0.000    -1.220    -6.056   -30.000    0.000      0.691
+
+ colrun: max error=    0.10000E-08 actual error=    0.74985E-08 50 iterations
+
+  938  -1019.56    0.042    0.000    -1.223    -6.057   -30.000    0.000      0.694
+
+ colrun: max error=    0.10000E-08 actual error=    0.74829E-08 50 iterations
+
+  939  -1019.56    0.042    0.000    -1.225    -6.058   -30.000    0.000      0.698
+
+ colrun: max error=    0.10000E-08 actual error=    0.74670E-08 50 iterations
+
+  940  -1019.56    0.042    0.000    -1.228    -6.059   -30.000    0.000      0.701
+
+ colrun: max error=    0.10000E-08 actual error=    0.74509E-08 50 iterations
+
+  941  -1019.56    0.042    0.000    -1.230    -6.060   -30.000    0.000      0.705
+
+ colrun: max error=    0.10000E-08 actual error=    0.74345E-08 50 iterations
+
+  942  -1019.57    0.042    0.000    -1.233    -6.061   -30.000    0.000      0.708
+
+ colrun: max error=    0.10000E-08 actual error=    0.74179E-08 50 iterations
+
+  943  -1019.57    0.042    0.000    -1.235    -6.062   -30.000    0.000      0.712
+
+ colrun: max error=    0.10000E-08 actual error=    0.74010E-08 50 iterations
+
+  944  -1019.57    0.042    0.000    -1.237    -6.063   -30.000    0.000      0.715
+
+ colrun: max error=    0.10000E-08 actual error=    0.73838E-08 50 iterations
+
+  945  -1019.57    0.042    0.000    -1.240    -6.064   -30.000    0.000      0.719
+
+ colrun: max error=    0.10000E-08 actual error=    0.73663E-08 50 iterations
+
+  946  -1019.57    0.041    0.000    -1.242    -6.064   -30.000    0.000      0.722
+
+ colrun: max error=    0.10000E-08 actual error=    0.73486E-08 50 iterations
+
+  947  -1019.57    0.041    0.000    -1.245    -6.065   -30.000    0.000      0.726
+
+ colrun: max error=    0.10000E-08 actual error=    0.73307E-08 50 iterations
+
+  948  -1019.57    0.041    0.000    -1.247    -6.066   -30.000    0.000      0.730
+
+ colrun: max error=    0.10000E-08 actual error=    0.73124E-08 50 iterations
+
+  949  -1019.57    0.041    0.000    -1.250    -6.067   -30.000    0.000      0.733
+
+ colrun: max error=    0.10000E-08 actual error=    0.72940E-08 50 iterations
+
+  950  -1019.57    0.041    0.000    -1.252    -6.068   -30.000    0.000      0.737
+
+ colrun: max error=    0.10000E-08 actual error=    0.72752E-08 50 iterations
+
+  951  -1019.57    0.041    0.000    -1.255    -6.335   -30.000    0.000      0.663
+
+ colrun: max error=    0.10000E-08 actual error=    0.71923E-08 50 iterations
+
+  952  -1019.57    0.041    0.000    -1.257    -6.096   -30.000    0.000      0.667
+
+ colrun: max error=    0.10000E-08 actual error=    0.71038E-08 50 iterations
+
+  953  -1019.57    0.041    0.000    -1.259    -6.100   -30.000    0.000      0.670
+
+ colrun: max error=    0.10000E-08 actual error=    0.70171E-08 50 iterations
+
+  954  -1019.57    0.041    0.000    -1.260    -6.102   -30.000    0.000      0.673
+
+ colrun: max error=    0.10000E-08 actual error=    0.69340E-08 50 iterations
+
+  955  -1019.57    0.041    0.000    -1.262    -6.104   -30.000    0.000      0.677
+
+ colrun: max error=    0.10000E-08 actual error=    0.68552E-08 50 iterations
+
+  956  -1019.58    0.041    0.000    -1.264    -6.105   -30.000    0.000      0.680
+
+ colrun: max error=    0.10000E-08 actual error=    0.67814E-08 50 iterations
+
+  957  -1019.58    0.041    0.000    -1.266    -6.107   -30.000    0.000      0.683
+
+ colrun: max error=    0.10000E-08 actual error=    0.67129E-08 50 iterations
+
+  958  -1019.58    0.041    0.000    -1.268    -6.109   -30.000    0.000      0.687
+
+ colrun: max error=    0.10000E-08 actual error=    0.66498E-08 50 iterations
+
+  959  -1019.58    0.040    0.000    -1.269    -6.110   -30.000    0.000      0.690
+
+ colrun: max error=    0.10000E-08 actual error=    0.65921E-08 50 iterations
+
+  960  -1019.58    0.040    0.000    -1.271    -6.112   -30.000    0.000      0.694
+
+ colrun: max error=    0.10000E-08 actual error=    0.65397E-08 50 iterations
+
+  961  -1019.58    0.040    0.000    -1.273    -6.114   -30.000    0.000      0.697
+
+ colrun: max error=    0.10000E-08 actual error=    0.64924E-08 50 iterations
+
+  962  -1019.58    0.040    0.000    -1.275    -6.116   -30.000    0.000      0.701
+
+ colrun: max error=    0.10000E-08 actual error=    0.64498E-08 50 iterations
+
+  963  -1019.58    0.040    0.000    -1.277    -6.117   -30.000    0.000      0.704
+
+ colrun: max error=    0.10000E-08 actual error=    0.64116E-08 50 iterations
+
+  964  -1019.58    0.040    0.000    -1.279    -6.119   -30.000    0.000      0.708
+
+ colrun: max error=    0.10000E-08 actual error=    0.63775E-08 50 iterations
+
+  965  -1019.58    0.040    0.000    -1.281    -6.121   -30.000    0.000      0.711
+
+ colrun: max error=    0.10000E-08 actual error=    0.63470E-08 50 iterations
+
+  966  -1019.58    0.040    0.000    -1.283    -6.122   -30.000    0.000      0.715
+
+ colrun: max error=    0.10000E-08 actual error=    0.63198E-08 50 iterations
+
+  967  -1019.58    0.040    0.000    -1.285    -6.123   -30.000    0.000      0.718
+
+ colrun: max error=    0.10000E-08 actual error=    0.62955E-08 50 iterations
+
+  968  -1019.59    0.040    0.000    -1.288    -6.124   -30.000    0.000      0.722
+
+ colrun: max error=    0.10000E-08 actual error=    0.62736E-08 50 iterations
+
+  969  -1019.59    0.040    0.000    -1.290    -6.125   -30.000    0.000      0.726
+
+ colrun: max error=    0.10000E-08 actual error=    0.62539E-08 50 iterations
+
+  970  -1019.59    0.040    0.000    -1.292    -6.126   -30.000    0.000      0.729
+
+ colrun: max error=    0.10000E-08 actual error=    0.62360E-08 50 iterations
+
+  971  -1019.59    0.040    0.000    -1.294    -6.127   -30.000    0.000      0.733
+
+ colrun: max error=    0.10000E-08 actual error=    0.62196E-08 50 iterations
+
+  972  -1019.59    0.039    0.000    -1.296    -6.128   -30.000    0.000      0.737
+
+ colrun: max error=    0.10000E-08 actual error=    0.62044E-08 50 iterations
+
+  973  -1019.59    0.039    0.000    -1.298    -6.129   -30.000    0.000      0.740
+
+ colrun: max error=    0.10000E-08 actual error=    0.61901E-08 50 iterations
+
+  974  -1019.59    0.039    0.000    -1.301    -6.130   -30.000    0.000      0.744
+
+ colrun: max error=    0.10000E-08 actual error=    0.61767E-08 50 iterations
+
+  975  -1019.59    0.039    0.000    -1.303    -6.131   -30.000    0.000      0.748
+
+ colrun: max error=    0.10000E-08 actual error=    0.61638E-08 50 iterations
+
+  976  -1019.59    0.039    0.000    -1.305    -6.132   -30.000    0.000      0.751
+
+ colrun: max error=    0.10000E-08 actual error=    0.61514E-08 50 iterations
+
+  977  -1019.59    0.039    0.000    -1.307    -6.132   -30.000    0.000      0.755
+
+ colrun: max error=    0.10000E-08 actual error=    0.61393E-08 50 iterations
+
+  978  -1019.59    0.039    0.000    -1.310    -6.133   -30.000    0.000      0.759
+
+ colrun: max error=    0.10000E-08 actual error=    0.61276E-08 50 iterations
+
+  979  -1019.59    0.039    0.000    -1.312    -6.134   -30.000    0.000      0.763
+
+ colrun: max error=    0.10000E-08 actual error=    0.61160E-08 50 iterations
+
+  980  -1019.59    0.039    0.000    -1.314    -6.135   -30.000    0.000      0.767
+
+ colrun: max error=    0.10000E-08 actual error=    0.61045E-08 50 iterations
+
+  981  -1019.59    0.039    0.000    -1.316    -6.136   -30.000    0.000      0.770
+
+ colrun: max error=    0.10000E-08 actual error=    0.60930E-08 50 iterations
+
+  982  -1019.60    0.039    0.000    -1.319    -6.137   -30.000    0.000      0.774
+
+ colrun: max error=    0.10000E-08 actual error=    0.60815E-08 50 iterations
+
+  983  -1019.60    0.039    0.000    -1.321    -6.137   -30.000    0.000      0.778
+
+ colrun: max error=    0.10000E-08 actual error=    0.60698E-08 50 iterations
+
+  984  -1019.60    0.039    0.000    -1.323    -6.138   -30.000    0.000      0.782
+
+ colrun: max error=    0.10000E-08 actual error=    0.60577E-08 50 iterations
+
+  985  -1019.60    0.039    0.000    -1.325    -6.138   -30.000    0.000      0.786
+
+ colrun: max error=    0.10000E-08 actual error=    0.60453E-08 50 iterations
+
+  986  -1019.60    0.038    0.000    -1.328    -6.138   -30.000    0.000      0.790
+
+ colrun: max error=    0.10000E-08 actual error=    0.60323E-08 50 iterations
+
+  987  -1019.60    0.038    0.000    -1.330    -6.139   -30.000    0.000      0.794
+
+ colrun: max error=    0.10000E-08 actual error=    0.60188E-08 50 iterations
+
+  988  -1019.60    0.038    0.000    -1.332    -6.140   -30.000    0.000      0.798
+
+ colrun: max error=    0.10000E-08 actual error=    0.60051E-08 50 iterations
+
+  989  -1019.60    0.038    0.000    -1.334    -6.142   -30.000    0.000      0.802
+
+ colrun: max error=    0.10000E-08 actual error=    0.59912E-08 50 iterations
+
+  990  -1019.60    0.038    0.000    -1.337    -6.142   -30.000    0.000      0.806
+
+ colrun: max error=    0.10000E-08 actual error=    0.59773E-08 50 iterations
+
+  991  -1019.60    0.038    0.000    -1.339    -6.143   -30.000    0.000      0.810
+
+ colrun: max error=    0.10000E-08 actual error=    0.59635E-08 50 iterations
+
+  992  -1019.60    0.038    0.000    -1.341    -6.144   -30.000    0.000      0.814
+
+ colrun: max error=    0.10000E-08 actual error=    0.59496E-08 50 iterations
+
+  993  -1019.60    0.038    0.000    -1.343    -6.145   -30.000    0.000      0.818
+
+ colrun: max error=    0.10000E-08 actual error=    0.59355E-08 50 iterations
+
+  994  -1019.60    0.038    0.000    -1.346    -6.146   -30.000    0.000      0.822
+
+ colrun: max error=    0.10000E-08 actual error=    0.59214E-08 50 iterations
+
+  995  -1019.61    0.038    0.000    -1.348    -6.147   -30.000    0.000      0.826
+
+ colrun: max error=    0.10000E-08 actual error=    0.59073E-08 50 iterations
+
+  996  -1019.61    0.038    0.000    -1.350    -6.147   -30.000    0.000      0.830
+
+ colrun: max error=    0.10000E-08 actual error=    0.58929E-08 50 iterations
+
+  997  -1019.61    0.038    0.000    -1.352    -6.146   -30.000    0.000      0.834
+
+ colrun: max error=    0.10000E-08 actual error=    0.58781E-08 50 iterations
+
+  998  -1019.61    0.038    0.000    -1.355    -6.146   -30.000    0.000      0.839
+
+ colrun: max error=    0.10000E-08 actual error=    0.58625E-08 50 iterations
+
+  999  -1019.61    0.038    0.000    -1.357    -6.146   -30.000    0.000      0.843
+
+ colrun: max error=    0.10000E-08 actual error=    0.58460E-08 50 iterations
+
+ 1000  -1019.61    0.038    0.000    -1.359    -6.148   -30.000    0.000      0.847
+
+ colrun: max error=    0.10000E-08 actual error=    0.58290E-08 50 iterations
+
+ iter= 1000, energies: from rearr. vs. from densities=      0.0000  -1019.6085
+rms_C^2:   21.533       20.958      0.72970     -0.16436      3.29670E-02  8.02675E-02 -4.61026E-02 -5.78210E-02   21.533    
+  rms_C:   4.6404       4.6404    
+
+ colrun: max error=    0.10000E-08 actual error=    0.50548E-07 50 iterations
+
+ iter= 1000, energies: from rearr. vs. from densities=      0.0000  -1019.6101
+rms_C^2:   21.532       20.958      0.72970     -0.16436      3.29670E-02  8.02780E-02 -4.60709E-02 -5.78211E-02   21.533    
+  rms_C:   4.6403       4.6403    

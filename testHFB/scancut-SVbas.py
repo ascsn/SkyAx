@@ -9,18 +9,20 @@ edf = "SVbas"
 
 # Set HFB widths
 #hfbwidths = ["0.0d0", "1.0d0", "1.5d0", "2.0d0", "3.0d0"]
-hfbwidths = ["0.0d0", "0.0d0", "0.0d0", "0.0d0", "0.0d0" ,"0.0d0"]
+hfbwidths = ["0.0d0"]#, "0.0d0", "0.0d0", "0.0d0", "0.0d0" ,"0.0d0"]
 # BCS pairing strengths
 # pairStrengthsBCS = ["142.5", "1860", "5920", "19210", "41820"]
 # pairStrengthsBCS = ["530", "1620", "136", "1500",  "139", "1500"]
-pairStrengthsBCS = ["630.5", "630.5", "630.5", "630.5", "630.5", "630.5 "]
+# pairStrengthsBCS = ["432"]#, "630.5", "630.5", "630.5", "630.5", "630.5 "]
 #pairStrengthsBCS = ["630.5", "2297","5984", "12360", "36100"] #Cutoff 100
+pairStrengthsBCS = [ "537", "478", "451", "438", "433", "432"]
 
 # HFB pairing strengths
 #pairStrengthsHFB = ["530", "1610", "136", "1500", "130", "1500"]#, "10815", "30301"]
-pairStrengthsHFB = ["530"] #, "530", "530", "530", "530", "530"]
+pairStrengthsHFB = ["300"]
+# pairStrengthsHFB =["537","478","451","438","433","432"]
 
-ipair = [7]  # 7 for BCS 8 for HFB
+ipair = [8]  # 7 for BCS 8 for HFB
 
 # Set hfbwidth
 hfbwidth = "0.0d0"
@@ -110,10 +112,10 @@ def find_max_energy(file_path):
 
 
 
-deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]      
-runList = [[10, 11],[20,21], [40, 41], [60, 61], [80, 81], [100, 101]]
-# deoccList = ["18.D0"]         
-# runList = [[100,101]]#,[15,101],[15,101],[15,101],[15,101]]
+# deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]      
+# runList = [[10, 11],[20,21], [40, 41], [60, 61], [80, 81], [100, 101]]
+deoccList = ["16.D0"]              
+runList = [[10,11]]#,[15,101],[15,101],[15,101],[15,101]]
 
 for j in ipair:
     for val in deoccList:
@@ -126,7 +128,7 @@ for j in ipair:
             pairStrength = "1500"                                       
             combined = list(zip(hfbwidths, pairStrengthsHFB, runList))
 
-        print("Val =", val)
+        print("Val =", val, "j=", j)
         for hfbwidth, pairStrength, runVal in combined:
             print(f"cond = {cond}, hfbwidth={hfbwidth}, pairStrength = {pairStrength}, deocc={val}")
             fileName = f"test_collect_cat_{edf}_{nucleus}_{hfbwidth}_{cond}.dat"
@@ -148,7 +150,7 @@ for j in ipair:
                     f.write(" t4=124.633,b4p=34.1116989,power=0.3,\n")
                     f.write(" h2m=20.749811,20.721249,\n")
                     f.write(" chg=1D0,ex=1,riftm=0D0,zpe=1,\n")
-                    f.write(f" ipair=7,v0prot=10,v0neut={pairStrength},rho0pr=0.2011591,\n")
+                    f.write(f" ipair={j},v0prot=10,v0neut={pairStrength},rho0pr=0.2011591,\n")
                     f.write(f" pair_cutoff=-{i},tregpair=F\n")
                     f.write("/\n")
                     # f.write("&grids tsym=F,nz=81,nr=41,dr=0.5D0,dz=0.5D0,idrtyp=0,\n")
@@ -168,7 +170,7 @@ for j in ipair:
                 os.system("ulimit -s unlimited")
                 os.system("export OMP_STACKSIZE=4500m")
                 subprocess.run(
-                    ["../skyax.gfortran.omp"], 
+                    ["../skyax.gfortran.seq"], 
                     stdin=open("for005"),
                     stdout=subprocess.DEVNULL,
                 )

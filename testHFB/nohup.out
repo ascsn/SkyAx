@@ -151,3 +151,492 @@ cond = bcs, hfbwidth=0.0d0, pairStrength = 630.5, deocc=18.D0
 cond = bcs, hfbwidth=0.0d0, pairStrength = 630.5, deocc=18.D0
 cond = bcs, hfbwidth=0.0d0, pairStrength = 630.5 , deocc=18.D0
 bcs Done!
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Val = 6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=6.D0
+Val = 8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=8.D0
+Val = 10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=10.D0
+Val = 12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=12.D0
+Val = 13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=13.D0
+Val = 14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=14.D0
+Val = 16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=16.D0
+Val = 18.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=18.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 342, deocc=18.D0
+Traceback (most recent call last):
+  File "/mnt/ufs18/home-247/lalitsud/Witek/SkyAx/testHFB/scancut-SVbas.py", line 184, in <module>
+    energy_info = read_energy("ensurf.tst")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/ufs18/home-247/lalitsud/Witek/SkyAx/testHFB/scancut-SVbas.py", line 49, in read_energy
+    next_line = lines[idx + 1]
+                ~~~~~^^^^^^^^^
+IndexError: list index out of range
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Val = 6.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=6.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=6.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=6.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=6.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=6.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=6.D0
+Val = 8.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=8.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=8.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=8.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=8.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=8.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=8.D0
+Val = 10.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=10.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=10.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=10.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=10.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=10.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=10.D0
+Val = 12.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=12.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=12.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=12.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=12.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=12.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=12.D0
+Val = 13.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=13.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=13.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=13.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=13.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=13.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=13.D0
+Val = 14.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=14.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=14.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=14.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=14.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=14.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=14.D0
+Val = 16.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=16.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=16.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=16.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=16.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=16.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=16.D0
+Val = 18.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 537, deocc=18.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 478, deocc=18.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 451, deocc=18.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 438, deocc=18.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 433, deocc=18.D0
+cond = bcs, hfbwidth=0.0d0, pairStrength = 432, deocc=18.D0
+bcs Done!
+Traceback (most recent call last):
+  File "/mnt/ufs18/home-247/lalitsud/Witek/SkyAx/testHFB/scancut-SVbas.py", line 129, in <module>
+    combined = list(zip(hfbwidths, pairStrengthsHFB, runList))
+                                   ^^^^^^^^^^^^^^^^
+NameError: name 'pairStrengthsHFB' is not defined. Did you mean: 'pariStrengthsHFB'?
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Val = 6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=6.D0
+Val = 8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=8.D0
+Val = 10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=10.D0
+Val = 12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=12.D0
+Val = 13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=13.D0
+Val = 14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=14.D0
+Val = 16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=16.D0
+Val = 18.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=18.D0
+hfb Done!
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG
+STOP normal termination 
+Val = 6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 433, deocc=6.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 432, deocc=6.D0
+Val = 8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 433, deocc=8.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 432, deocc=8.D0
+Val = 10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 433, deocc=10.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 432, deocc=10.D0
+Val = 12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 433, deocc=12.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 432, deocc=12.D0
+Val = 13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 433, deocc=13.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 432, deocc=13.D0
+Val = 14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 433, deocc=14.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 432, deocc=14.D0
+Val = 16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 433, deocc=16.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 432, deocc=16.D0
+Val = 18.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 537, deocc=18.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 478, deocc=18.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 451, deocc=18.D0
+cond = hfb, hfbwidth=0.0d0, pairStrength = 438, deocc=18.D0
+Traceback (most recent call last):
+  File "/mnt/ufs18/home-247/lalitsud/Witek/SkyAx/testHFB/scancut-SVbas.py", line 186, in <module>
+    energy_info = read_energy("ensurf.tst")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/ufs18/home-247/lalitsud/Witek/SkyAx/testHFB/scancut-SVbas.py", line 51, in read_energy
+    next_line = lines[idx + 1]
+                ~~~~~^^^^^^^^^
+IndexError: list index out of range
