@@ -7,7 +7,7 @@ q/SHELL 	       = /bin/bash
 # ----- define the compiler being used---------------------------------------
 #
 gf gf_omp gf_d  : export COMPILER_SKYAX = gfortran
-ifort ifort_omp ifort_dbg : export COMPILER_SKYAX = ifort
+ifort ifort_omp ifort_dbg ifort_domp: export COMPILER_SKYAX = ifort
 #
 # ----- define compiler flags and linker flags-------------------------------
 #
@@ -19,6 +19,7 @@ gf_d      : export COMPILERFLAGS_SKYAX = -g -fbacktrace -Wall -fbounds-check -fi
 ifort     : export COMPILERFLAGS_SKYAX = -O3 -xhost -mcmodel=large
 ifort_dbg : export COMPILERFLAGS_SKYAX = -g -traceback -CB -mcmodel=large -check uninit
 ifort_omp : export COMPILERFLAGS_SKYAX = -O3 -xhost -qopenmp -mcmodel=large
+ifort_domp : export COMPILERFLAGS_SKYAX = -g -traceback -CB -qopenmp -mcmodel=large -check uninit
 #
 # ----- executables----------------------------------------------------------
 #
@@ -28,13 +29,14 @@ gf_d      : export EXEC_SKYAX = skyax.gfortran.dbg
 ifort     : export EXEC_SKYAX = skyax.ifort.seq
 ifort_dbg : export EXEC_SKYAX = skyax.ifort.dbg
 ifort_omp : export EXEC_SKYAX = skyax.ifort.omp
+ifort_domp : export EXEC_SKYAX = skyax.ifort.domp
 #
 # ----- libraries--------------------------------------------------------------
 #
 # Uncomment below for general lapack and blas libraries
 # gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
 # Uncomment below for ICER, MSU.
-gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
+gf gf_d gf_omp ifort ifort_omp ifort_dbg ifort_domp: export LIBS_SKYAX = -llapack -lblas
 #gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -lopenblas
 #gf gf_d ifort : export LIBS_SKYAX = -L$(/usr/lib) -lblas -L$(/usr/lib) -llapack 
 #
@@ -73,7 +75,7 @@ params:
 	@echo 
 
 
-gf gf_d gf_omp ifort ifort_omp ifort_dbg: 
+gf gf_d gf_omp ifort ifort_omp ifort_dbg ifort_domp: 
 	@$(MAKE) -f $(firstword $(MAKEFILE_LIST)) makeit
 
 #
