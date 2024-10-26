@@ -232,22 +232,25 @@ symcondiso = 0D0
 IF(thfb) THEN
   nlo=nst(1)+1
   nhi=nst(1)+nst(2)
-!  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
+  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
 END IF
-
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
-!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,temp,wtime1,wtime2,v2act) &
+!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act,symcond) &
 !$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh)
-!$ mythread=OMP_GET_THREAD_NUM()
+!!!$ mythread=OMP_GET_THREAD_NUM()
 DO  i=1,nom         ! loop over all blocks
+  mythread=OMP_GET_THREAD_NUM()
   im=load_m(mythread,i)
+!  IF(im>0) WRITE(6,*) 'IM=',im,i,mythread
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
   nlo=mlo(im)        ! lowest state for given 'im''
   nadd=nhi-nlo+1     ! number of states in 'im' block
   kpsic=mim(im)      ! actual 'm' value for 'im,'
   iq=miq(im)         ! actual isospin 'iq' for given 'im'
+!  WRITE(6,'(6(a,i4)/)') 'mblock=',im,  &
+!       '          nlo=',nlo,'   nhi=',nhi, '   lz=',kpsic,'   chg=',iq
   IF(itest >= 2)  WRITE(7,'(6(a,i4)/)') 'mblock=',im,  &
        '          nlo=',nlo,'   nhi=',nhi, '   lz=',kpsic,'   chg=',iq
   !$ wtime1 = OMP_GET_WTIME()
@@ -255,7 +258,7 @@ DO  i=1,nom         ! loop over all blocks
 !    WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt:',iter,pairpt(1,1,1:2)
     IF(thfb) THEN
       CALL hfbstep(temp,symcond,nlo,nhi,iter,.TRUE.)
-!      WRITE(6,'(a,3i4,1pg13.5)') 'HFB:',i,nlo,nhi,symcond
+      WRITE(6,'(a,3i4,1pg13.5)') 'HFB:',i,nlo,nhi,symcond
       symcondiso(iq) = symcondiso(iq) + symcond
     ELSE
     IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
@@ -1076,10 +1079,15 @@ num_threads=1
 ALLOCATE(load_m(0:num_threads-1,nom),loadweight(nom))
 load_m=0
 loadweight=-1.0d0
-WRITE(*,*)num_threads,nom
+WRITE(*,*) 'INIT_LOAD:',num_threads,nom
 DO i=1,nom
   CALL add_block(load_m,MOD(i-1,num_threads),i)
 END DO
+WRITE(6,*) 'LOAD_M:'
+DO i=1,nom
+  WRITE(6,'(200i3)') load_m(:,i)
+END DO
+
 END SUBROUTINE init_load
 
 !---------------------------------------------------------------------------  

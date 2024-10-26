@@ -1071,7 +1071,7 @@ REAL(8),ALLOCATABLE,SAVE  :: expmat(:,:),forward(:,:)
 INTEGER :: i1,i2,iz
 REAL(8) :: workz(0:nz),sh2
 REAL(8),SAVE :: shiftold=1D99
-LOGICAL,PARAMETER :: tunitary=.TRUE. ! switch between 1. order and 4. order unitary cm shift
+LOGICAL,PARAMETER :: tunitary=.FALSE. ! switch between 1. order and 4. order unitary cm shift
 ! External procedures defined in LAPACK
 EXTERNAL DGETRF
 EXTERNAL DGETRI

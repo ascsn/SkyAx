@@ -53,6 +53,8 @@ REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
 
 IF(thfbfold) ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 
+!  iq=OMP_GET_THREAD_NUM()
+!  WRITE(6,*) 'HFBSTEP: mythread=',iq
 
 ! set isospin (protons or neutrons)
 IF(istmin <= nst(1)) THEN
