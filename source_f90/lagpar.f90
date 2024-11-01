@@ -47,12 +47,14 @@ LOGICAL, PARAMETER :: tbcs=.FALSE.    ! testswitch
 LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
 
 REAL(8) :: v2a,uva
-INTEGER :: mist,npzist,jst,ist,is,iq
+INTEGER :: mist,npzist,jst,ist,is,iq,mythread
 
 REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
 
 IF(thfbfold) ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 
+!  iq=OMP_GET_THREAD_NUM()
+!  WRITE(6,*) 'HFBSTEP: mythread=',iq
 
 ! set isospin (protons or neutrons)
 IF(istmin <= nst(1)) THEN
@@ -67,11 +69,15 @@ END IF
 !STOP "testp"
 !IF(iq==2) WRITE(6,'(a,1pg13.5)') 'PAIRPT:',pairpt(1,1,iq)
 symcond = 0D0
+!$  mythread=OMP_GET_THREAD_NUM()
+!  WRITE(6,*) 'HFBSTEP 1: mythread=',mythread
 !     compute and store action of HFB Hamiltonian
 DO jst=istmin,istmax
+!  WRITE(6,*) 'HFBSTEP 2: mythread,jst=',mythread,jst
   CALL hpsi(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst),jst)
   v2a = vsqf(jst)
   uva = SQRT(MAX(v2a-v2a*v2a,xsmall))
+!  WRITE(6,*) 'HFBSTEP 3: mythread,jst=',mythread,jst,v2a,uva
   IF(tbcs) THEN
     v2a=1D0
     uva=0D0
@@ -105,6 +111,7 @@ DO jst=istmin,istmax
                             spevar(jst),spenrg(jst),&     
                             qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&  
                             qh4,qhdig,devmf2,devgap,devh2,devoc2)
+!  WRITE(6,*) 'HFBSTEP 4: mythread,jst=',mythread,jst,qq0,qq2
 END DO
 IF(thfbfold) DEALLOCATE(psip,psin)
 
@@ -117,6 +124,7 @@ symatrix = 0D0
 DO ist=istmin,istmax
   mist = mpsi(ist)
   npzist = nparz(1,ist)
+!  WRITE(6,*) 'HFBSTEP 5: mythread,ist=',mythread,ist,mist,npzist
   DO jst=istmin,ist
     IF(mpsi(jst)==mist .AND. nparz(1,jst)==npzist) THEN
       hlagr(ist,jst) = wfovlp(psi(0:nz,0:nr,1:2,ist),hfbpsi(0:nz,0:nr,1:2,jst))
@@ -157,6 +165,7 @@ DO ist=istmin,istmax
                           wfovlp(hfbpsi(:,:,:,ist),hfbpsi(:,:,:,ist))
 END DO
 DEALLOCATE(hlagr,symatrix)
+!  WRITE(6,*) 'HFBSTEP 6: mythread,devmf2=',mythread,devmf2
 
 
 !     kinetic energy damping
@@ -167,6 +176,7 @@ DO ist=istmin,istmax
         wfovlp(hfbpsi(0:nz,0:nr,1:2,ist),hfbpsi(0:nz,0:nr,1:2,ist)),  &
         wfovlp(psi(0:nz,0:nr,1:2,ist),psi(0:nz,0:nr,1:2,ist))
   END IF
+!  WRITE(6,*) 'HFBSTEP 7: mythread,norm=',mythread,SUM(hfbpsi(0:nz,0:nr,1:2,ist)**2)
   CALL damp_hfb(hfbpsi(:,:,:,ist),vsqf(ist),ist)
   IF(tbcs .AND. iq==1 .AND. mpsi(ist)==0) THEN
     WRITE(7,'(a,i4,3(1pg13.5))') 'HFB overlaps after:',  &
@@ -175,6 +185,8 @@ DO ist=istmin,istmax
         wfovlp(psi(0:nz,0:nr,1:2,ist),psi(0:nz,0:nr,1:2,ist))
   END IF
   IF(tqq) CALL accumulate_variances_2(ist,istmin,istmax,hfbpsi(:,:,:,ist),qdh,hdh,hddh,hdhdh)  
+!  WRITE(6,*) 'HFBSTEP 8: mythread,v2=',mythread,vsqf(ist),&
+!   SUM(psi(0:nz,0:nr,1:2,ist)**2),SUM(hfbpsi(0:nz,0:nr,1:2,ist)**2)
   psi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
   IF(tbcs .AND. iq==1 .AND. mpsi(ist)==0) THEN
     WRITE(7,'(a,i4)') 'ortho-normality after: ist=',ist
@@ -209,6 +221,7 @@ USE wavefr
 USE levels
 USE fields, ONLY: pairpt
 USE init, ONLY: idanuc
+!$ use omp_lib
 
 REAL(8), INTENT(IN OUT) :: psiact(0:nz,0:nr,nsd)
 REAL(8), INTENT(IN)     :: v2act
@@ -218,9 +231,11 @@ REAL(8), PARAMETER :: v2limh=1D-6,delmix=0.8D0  ! flexible damping parameters
 !REAL(8), PARAMETER :: xsmall=1D-99
 LOGICAL, PARAMETER :: ttest=.FALSE.
 
+REAL(8),ALLOCATABLE :: psip(:,:,:)
 REAL(8) :: pptmax,e0sav,x0sav,uvact
 INTEGER :: iq,is,mm
 
+ALLOCATE(psip(0:nz,0:nr,nsd))
 e0sav = e0inv
 x0sav = x0inv
 iq = icharg(istact)
@@ -230,14 +245,20 @@ uvact = SQRT(MAX(v2act-v2act*v2act,xsmall))
 pptmax = maxval(ABS(pairpt(0:nz,0:nr,iq)))
 IF(ttest) WRITE(7,'(a,i3,1pg13.5)') 'iq,pptmax=',iq,pptmax
 
-e0inv = e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix
-x0inv = x0inv/MAX(v2act,v2limh)
 IF(ttest) WRITE(7,'(a,3(1pg13.5))')  &
     'IDANUC with v2act,e0inv,x0inv=',v2act,e0inv,x0inv
 CALL idanuc
 
 !  step   = x0inv/e0inv
-CALL damnuc(psiact,psip,istact)
+!IF(num_threads==1) THEN
+IF(num_threads==-1) THEN
+  e0inv = e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix
+  x0inv = x0inv/MAX(v2act,v2limh)
+  CALL damnuc(psiact,psip,istact)
+ELSE
+!!!!$  WRITE(6,*) 'OpenMP switch',OMP_GET_THREAD_NUM() !mythread
+  CALL damnuc_HFB(psiact,psip,istact,e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix,x0inv/MAX(v2act,v2limh))
+END IF
 psiact = psip
 
 !  set boundary zeroes if parity requires it.
@@ -249,8 +270,112 @@ END DO
 
 e0inv = e0sav
 x0inv = x0sav
-CALL idanuc
+IF(num_threads==1) CALL idanuc
 
+DEALLOCATE(psip)
 
 RETURN
 END SUBROUTINE damp_hfb
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: damnuc_HFB
+!> @brief
+!!Kinetic energy damping as in subroutinbe 'damnuc'. This version uses
+!!dynamic damping arrays 'rdnuc_dyn' and 'zudnuc_dyn' to allow OpenMP
+!in HFB calculations. 
+!!Unlike 'damnuc', the routine embodies also the construction of the
+!!damping arrays to accommodate changing damping operators. This part
+!!is taken from the subroutine 'idanuc'.
+!>
+!> @param[in] psiin
+!> REAL(8), array, takes the input wave function.
+!> @param[out] psiout
+!> REAL(8), array, returns the Hamiltonian applied to the input wave 
+!!function.
+!> @param[in] ist
+!> INTEGER, absolute adress of the state.
+!--------------------------------------------------------------------------- 
+
+SUBROUTINE damnuc_HFB(psiin,psiout,ist,e0act,x0act)
+
+USE paramr
+USE dynpar
+USE wavefr
+USE levels
+USE grid
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)  :: e0act,x0act
+REAL(8), INTENT(IN)  :: psiin(0:nz,0:nr,nsd)
+REAL(8), INTENT(OUT) :: psiout(0:nz,0:nr,nsd)
+INTEGER, INTENT(IN)  :: ist
+
+REAL(8),ALLOCATABLE :: zdnuc_dyn(:,:,:)        !<Damping operator for the nucleons in z-direction.
+REAL(8),ALLOCATABLE :: rdnuc_dyn(:,:,:)        !<Damping operator for the nucleons in r-direction.
+
+
+REAL(8) :: step,befac
+INTEGER :: mm, is, i, impsi, ipi
+
+ALLOCATE(zdnuc_dyn(0:nz,0:nz,4), rdnuc_dyn(0:nr,0:nr,0:kmpsi))
+
+! first, the construction of the damping matrices
+
+  befac  = h2mav/(two*e0act)
+!     nucleon damping in z-direction
+  zdnuc_dyn(0:nz,0:nz,:) = -befac * derz2f(0:nz,0:nz,:)
+  DO i=0,nz
+    zdnuc_dyn(i,i,:) = one + zdnuc_dyn(i,i,:)
+  END DO
+!     inversion 
+  DO ipi=1,4    
+    CALL matr_inv(zdnuc_dyn(0:nz,0:nz,ipi),nz+1,nz+1)
+    IF (ipi == 2.OR.ipi == 4) THEN
+      zdnuc_dyn(0,0:nz,ipi) = 0.0D0
+      zdnuc_dyn(0:nz,0,ipi) = 0.0D0  ! addition PK
+    END IF
+  END DO
+
+!     the nucleon damping in r-direction
+  rdnuc_dyn(0:nr,0:nr,0:kmpsi) = -befac * derr2af(0:nr,0:nr,0:kmpsi,1)
+  DO i=0,nr
+    rdnuc_dyn(i,i,0:kmpsi) =  one + rdnuc_dyn(i,i,0:kmpsi)
+  END DO
+  
+  DO impsi=0,kmpsi
+    CALL matr_inv(rdnuc_dyn(0:nr,0:nr,impsi),nr+1,nr+1)
+    IF (impsi > 0) THEN
+      rdnuc_dyn(0,0:nr,impsi) = 0D0
+      rdnuc_dyn(0:nr,0,impsi) = 0D0 ! addition PK
+    END IF
+  END DO
+
+
+!     the straightforward imaginary-time step in case of "e0act=0"
+
+IF(e0act == 0D0) THEN
+  psiout(0:nz,0:nr,1:2) = x0act*psiin(0:nz,0:nr,1:2)
+ELSE
+  
+!     now the full kinetic energy damping
+  CALL damp_nucleon(rdnuc_dyn(0:nr,0:nr,:),zdnuc_dyn(0:nz,0:nz,:),psiin(0:nz,0:nr,:),&
+                    psiout(0:nz,0:nr,:),nparz(1,ist),mpsi(ist),x0act/e0act)
+
+!       set boundary zeroes if parity requires it.
+  DO is=1,2
+    mm = mpsi(ist)+is-1
+    IF (mm > 0) THEN
+      psiout(0:nz,0,is)  =  0D0
+    END IF
+    IF (nparz(is,ist) == 2) THEN
+      psiout(0,0:nr,is)  =  0D0
+    END IF
+  END DO
+  
+END IF
+
+DEALLOCATE(zdnuc_dyn, rdnuc_dyn)
+
+RETURN
+END SUBROUTINE damnuc_HFB
