@@ -35,8 +35,8 @@ ifort_omp : export EXEC_SKYAX = skyax.ifort.omp
 # gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
 # Uncomment below for ICER, MSU.
 # gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
-gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -lopenblas
-#gf gf_d ifort : export LIBS_SKYAX = -L$(/usr/lib) -lblas -L$(/usr/lib) -llapack 
+gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -lmkl
+#gf gf_d ifort : export LIBS_SKYAX = -L$(y/usr/lib) -lblas -L$(/usr/lib) -llapack 
 #
 # ----- restart make, clean or print info------------------------------------
 #
