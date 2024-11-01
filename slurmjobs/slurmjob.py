@@ -3,13 +3,14 @@ import subprocess
 
 nucleus = f"120Sn"
 edf = f"SVbas"
-hfbwidths = ["0.0d0", "0.0d0", "0.0d0", "0.0d0", "0.0d0", "0.0d0"]
+hfbwidths = ["1.0d0", "1.0d0", "1.0d0", "1.0d0", "1.0d0", "1.0d0"]
 pairStrengthsBCS = ["537", "478", "451", "438", "433", "432"]
-pairStrengthsHFB = ["500", "460", "450", "438", "433", "432"]
+# pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] # HFBWIDTH = 0
+pairStrengthsHFB = ["728", "562", "508", "474", "428", "489"] # HFBWIDTH = 1.0
 ipair = [8]
 # deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
-deoccList = ["18.D0"]   
-runList = [[10, 11], [20,21], [40,41], [60,61],[80,81],[100,101]]
+deoccList = ["16.D0"]   
+runList = [[10,11], [20,21], [40,41], [60,61],[80,81],[100,101]]
 
 # Directory to store job scripts
 job_script_dir = "job_scripts"
@@ -22,7 +23,7 @@ def create_and_submit_job_script(job_name, hfbwidth, pairStrength, deocc_val, ip
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --propagate=CORE
-#SBATCH --time=05:59:59
+#SBATCH --time=12:59:59
 #SBATCH --mem-per-cpu=4G
 #SBATCH -A ptg
 #SBATCH -e /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/errs/error_{job_name}.err
@@ -50,6 +51,7 @@ echo \"&grids tsym=F,nz=51,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,\" >> for005_{inpNum
 echo \"/ \" >> for005_{inpNum}
 echo \"&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,\" >> for005_{inpNum}
 echo \"deocc(1)={deocc_val},deocc(2)={deocc_val},errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,\" >> for005_{inpNum}
+echo \"tvaryx0=T,inodiag=9999 \" >> for005_{inpNum}
 echo \"/ \" >> for005_{inpNum}
 echo \"&constraint\" >> for005_{inpNum}
 echo \"/ \" >> for005_{inpNum}
@@ -59,14 +61,14 @@ echo \"/ \" >> for005_{inpNum}
 # Run the program
 ulimit -s unlimited
 export OMP_STACKSIZE=4500m
-cd ../source_f90/
-make clean
-make ifort_omp
-cd ../slurmjobs
+# cd ../source_f90/
+# make clean
+# make ifort_omp
+# cd ../slurmjobs
 ../skyax.ifort.omp < for005_{inpNum} > {job_name}_output.log
 
 # Post-process output
-source ~/anaconda3/bin/activate
+module load Conda
 conda activate slpy
 python3 process_results.py --output {job_name}_output.log --deocc {deocc_val} --run_val {run_start} --pair_strength {pairStrength} --ipair {ipair_val}"
 """

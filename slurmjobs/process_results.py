@@ -4,6 +4,13 @@ import re
 import pandas as pd
 from io import StringIO
 
+BASE_PATH=os.getcwd()
+
+pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] #Final values [20] - 462
+deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
+runList = [[10,11], [20,21], [40,41], [60,61],[80,81],[100,101]]
+
+
 def preprocess_line(line):
     line = re.sub(r"(\d)(-)", r"\1 -", line)
     return line
@@ -69,11 +76,31 @@ def find_max_energy(file_path):
                         max_energy = filtered_df['delta'].max()
     return f"Max_SP_energy: {max_energy}" if max_energy else "Max SP energy not found"
 
-def main(output_file, deocc, run_val, pair_strength, ipair):
+# def main(output_file, deocc, run_val, pair_strength, ipair):
+def main():
+    # Open file names
+    fileList = []
+    for file in os.listdir(BASE_PATH):
+        fileList.append(file)
     # Define output paths
-    ensurf_file = "ensurf.tst"
-    details_file = "out_details.tst"
+    ensurf_file = "ensurf.job"
+    details_file = "out_details.job"
     summary_file = "summary_results.txt"
+
+    # Convert runList to a set of tuples for easy matching
+    run_set = {tuple(run) for run in runList}
+
+    # Filter files based on the lists
+    filtered_files = []
+    for file in fileList:
+        # Extract information from the filename using regular expressions
+        match = re.match(r"job_hfb_0\.0d0_(\d+\.?\d*)_(\d+\.D0)_(\d+)_(\d+)_output\.log", file)
+        if match:
+            strength, deocc, run1, run2 = match.groups()
+            if (strength in pairStrengthsHFB and
+                    deocc in deoccList and
+                    (int(run1), int(run2)) in run_set):
+                filtered_files.append(file)
 
     # Read data
     nmass_ncharge = read_nmass_ncharge(ensurf_file)
@@ -91,12 +118,13 @@ def main(output_file, deocc, run_val, pair_strength, ipair):
     print("Results processed and saved to", summary_file)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process Fortran job results.")
-    parser.add_argument("--output", required=True, help="The output file name.")
-    parser.add_argument("--deocc", required=True, help="Deoccupation value.")
-    parser.add_argument("--run_val", required=True, help="Run value.")
-    parser.add_argument("--pair_strength", required=True, help="Pair strength value.")
-    parser.add_argument("--ipair", required=True, help="Ipair value.")
-    args = parser.parse_args()
+    main()
+    # parser = argparse.ArgumentParser(description="Process Fortran job results.")
+    # parser.add_argument("--output", required=True, help="The output file name.")
+    # parser.add_argument("--deocc", required=True, help="Deoccupation value.")
+    # parser.add_argument("--run_val", required=True, help="Run value.")
+    # parser.add_argument("--pair_strength", required=True, help="Pair strength value.")
+    # parser.add_argument("--ipair", required=True, help="Ipair value.")
+    # args = parser.parse_args()
     
-    main(args.output, args.deocc, args.run_val, args.pair_strength, args.ipair)
+    # main(args.output, args.deocc, args.run_val, args.pair_strength, args.ipair)
