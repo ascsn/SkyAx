@@ -780,6 +780,8 @@ USE dynpar
 USE levels
 USE grid
 USE wavefr, ONLY: wfovlp,wfproj,wfovpc
+!$ use omp_lib
+
 IMPLICIT NONE
 
 REAL(8), INTENT(IN OUT)     :: psiw(0:nz,0:nr,nsd,nhi)
@@ -792,7 +794,7 @@ REAL(8) :: eord(nhwd)
 INTEGER :: isort(nhwd)
 
 REAL(8) :: emin,ovlp,sum2,wnor
-INTEGER :: i,imin,in,in1,inw,is,isav,ist,jn,jnw,jst,n,npari,nparj
+INTEGER :: i,imin,in,in1,inw,is,isav,ist,jn,jnw,jst,n,npari,nparj,mythread
 
 IF(tstab .AND. iford /= 1)  &
     STOP ' TSTAB=.TRUE. needs energy ordering in SCHMIT. set IFORD=1'
@@ -802,6 +804,7 @@ IF(tstab .AND. iford /= 1)  &
 !     energy ordering on workspace 'eord' to pointer 'isort'          *
 !                                                                     *
 !**********************************************************************
+!  mythread=OMP_GET_THREAD_NUM()
 IF(nhi > nhwd) STOP ' in SCHMIT: #states "nhi" > supply "nhwd" '
 DO in=1,nhi
   eord(in)  = spenrg(in+istadd)
@@ -824,7 +827,7 @@ IF(iford == 1) THEN
     isort(n)     = isav
   END DO
 END IF
-
+!IF(thfb) WRITE(6,*) 'SCHMIT 1: mythread=',mythread
 !**********************************************************************
 !                                                                     *
 !     Perform Gram-Schmidt orthonormalization of ordered w.f.         *
@@ -835,6 +838,7 @@ DO  in=1,nhi
   inw = ist-istadd
   npari   = npar(ist)
   in1    = in-1
+!IF(thfb) WRITE(6,*) 'SCHMIT 2: mythread,ist=',mythread,ist,SUM(psiw(0:nz,0:nr,1:2,inw)**2)
   
   DO  jn=1,in1
     jst = isort(jn)
@@ -846,6 +850,7 @@ DO  in=1,nhi
     
 !     compute overlap
     ovlp   = wfovlp(psiw(0:nz,0:nr,1:2,inw),psiw(0:nz,0:nr,1:2,jnw))
+!IF(thfb) WRITE(6,*) 'SCHMIT 2: mythread,ist,jst=',mythread,ist,jst,ovlp
     
 !     extract psi(jn)-component in psi(in)
     psiw(0:nz,0:nr,1:2,inw)=psiw(0:nz,0:nr,1:2,inw) -ovlp*psiw(0:nz,0:nr,1:2,jnw)
@@ -854,6 +859,7 @@ DO  in=1,nhi
   
 !     normalise state psi(in), and add up partial norm.
   wnor   = wfovlp(psiw(0:nz,0:nr,1:2,inw),psiw(0:nz,0:nr,1:2,inw))
+!IF(thfb) WRITE(6,*) 'SCHMIT 2: mythread,wnor=',mythread,wnor
   IF(wnor < smal) THEN
     WRITE(7,'(a,4i5,g12.4)')  &
         ' SCHMIT: ist,inw,istadd,nhi,wnor=',ist,inw,istadd,nhi,wnor

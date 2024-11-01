@@ -22,7 +22,7 @@ USE steputil
 !$ use omp_lib
 
 IMPLICIT NONE
-INTEGER, PUBLIC :: inodiag=50    !< Number of iterations without diagonalizing the Hamiltonian matrix
+INTEGER, PUBLIC :: inodiag=500    !< Number of iterations without diagonalizing the Hamiltonian matrix
 INTEGER, PUBLIC :: iterstat      !< to communicate actual iteration number
 REAL(8), PUBLIC :: devhh2              !< counter for variance (h*h)
 REAL(8), PUBLIC :: hdh                 !< counter for <hD h>
@@ -236,21 +236,21 @@ IF(thfb) THEN
 END IF
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
-!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act,symcond) &
-!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh)
+!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &
+!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond)
 !!!$ mythread=OMP_GET_THREAD_NUM()
 DO  i=1,nom         ! loop over all blocks
-  mythread=OMP_GET_THREAD_NUM()
+!$  mythread=OMP_GET_THREAD_NUM()
   im=load_m(mythread,i)
-!  IF(im>0) WRITE(6,*) 'IM=',im,i,mythread
+!  IF(thfb.AND.im>0) WRITE(6,*) 'IM=',im,i,mythread
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
   nlo=mlo(im)        ! lowest state for given 'im''
   nadd=nhi-nlo+1     ! number of states in 'im' block
   kpsic=mim(im)      ! actual 'm' value for 'im,'
   iq=miq(im)         ! actual isospin 'iq' for given 'im'
-!  WRITE(6,'(6(a,i4)/)') 'mblock=',im,  &
-!       '          nlo=',nlo,'   nhi=',nhi, '   lz=',kpsic,'   chg=',iq
+!  IF(thfb) WRITE(6,'(6(a,i4)/)') 'mythread=',mythread,' mblock=',im,  &
+!       ' nlo=',nlo,' nhi=',nhi, ' lz=',kpsic,' chg=',iq
   IF(itest >= 2)  WRITE(7,'(6(a,i4)/)') 'mblock=',im,  &
        '          nlo=',nlo,'   nhi=',nhi, '   lz=',kpsic,'   chg=',iq
   !$ wtime1 = OMP_GET_WTIME()
@@ -258,7 +258,7 @@ DO  i=1,nom         ! loop over all blocks
 !    WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt:',iter,pairpt(1,1,1:2)
     IF(thfb) THEN
       CALL hfbstep(temp,symcond,nlo,nhi,iter,.TRUE.)
-      WRITE(6,'(a,3i4,1pg13.5)') 'HFB:',i,nlo,nhi,symcond
+!      WRITE(6,'(a,4i4,1pg13.5)') 'HFB:',mythread,i,nlo,nhi,symcond
       symcondiso(iq) = symcondiso(iq) + symcond
     ELSE
     IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
@@ -308,6 +308,7 @@ DO  i=1,nom         ! loop over all blocks
     END IF
     
 !   Schmidt orthonormmalization of the states  ( needed after "diag_wf")
+!    IF(thfb) WRITE(6,*) 'BEFORE SCHMIT:',mythread,SUM(psi(0:nz,0:nr,1:2,nlo:nhi)**2)
     CALL schmit(psi(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
   END IF
   
@@ -324,6 +325,8 @@ DO  i=1,nom         ! loop over all blocks
         CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
                     rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq),  &
                     rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
+!      IF(thfb) WRITE(6,'(a,2i4,2(1pg13.5))') 'HFB 3:',mythread,jst,SUM(rhot),&
+!         SUM(psi(0:nz,0:nr,1:2,jst)**2)
       END IF
     END IF
   END DO
@@ -331,6 +334,7 @@ DO  i=1,nom         ! loop over all blocks
   IF(tswicon .AND.iter > 0.AND.iter <= itcons) THEN
     rhoti=rhoti+rhot
   ELSE
+!    IF(thfb) WRITE(6,'(a,2i4,1pg13.5)') 'HFB 4:',mythread,jst,SUM(rhot)
     rho=rho+rhot
     tau=tau+taut
     drhols=drhols+drholst
