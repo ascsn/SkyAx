@@ -846,6 +846,7 @@ DO ist=1,LEN
       vsqf(ist),cmpn(1,ist),cmpn(2,ist),(spenrg(ist)+70.0)/hboma
 END DO
 WRITE(7,'(a)') ' '
+WRITE(6,'(a)') 's.p. states initialized'
 
 !**********************************************************************
 !                                                                     *
@@ -880,7 +881,10 @@ END DO
 
 
 IF(itest>0) WRITE(7,'(a)') ' SSETUP finished'
+! WRITE(7,'(a)') ' SSETUP finished'
 DEALLOCATE(wrk1,wrk2)
+
+FLUSH (7)
 
 RETURN
 END SUBROUTINE ssetup

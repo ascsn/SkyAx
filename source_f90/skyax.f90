@@ -362,10 +362,10 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 
 
 
-        IF(MOD(iter,iprint)==1) THEN
+!        IF(MOD(iter,iprint)==1) THEN
           WRITE(6,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm x0inv'
           WRITE(7,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv'
-        END IF
+!        END IF
         IF(iter /= 0) THEN
           WRITE(6,5050)  &
               iter,energy,beta2,beta3, LOG10(MAX(devh2,smal)),&
@@ -574,12 +574,12 @@ SUBROUTINE write_headers()
       10X,'riftm  =',f10.3)
   pcutact=pair_cutoff
   IF(tcutoff_WS) pcutact=-pcutact
-  WRITE(7,5005) pairfc,rho0pr,pairstab,pcutact
+  WRITE(7,5005) pairfc,rho0pr
   5005 FORMAT(10X,'pairfc  =',f12.3,'  strength for p',' (mev)',/,  &
       10X,'pairfc  =',f12.3,'  strength for n',' (mev)',/,  &
       10X,'rho0pr  =',1pg12.4,'  density parameter in DDDI',/)
   END IF
-  WRITE(7,5015) pairfc,rho0pr,pairstab,pcutact
+  WRITE(7,5015) pairstab,pcutact
   5015 FORMAT(10X,'pairstab=',0pf12.3,'  BCS stabilizing pairing energy'/, &
       10X,'cutoff  =',0pf12.3,'  pairing cutoff '/)
   IF(tcutoff_uvspace) THEN
