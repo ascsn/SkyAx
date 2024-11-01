@@ -134,7 +134,7 @@ REAL(8),ALLOCATABLE :: rhot(:,:,:), taut(:,:,:), drholst(:,:,:),rholsrt(:,:,:),r
 
 
 ALLOCATE(wrk1(0:nz,0:nr),wrk2(0:nz,0:nr),wrk4(0:nz,0:nr))
-ALLOCATE(hmatr(1:npsi(2),1:npsi(2)),psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+ALLOCATE(hmatr(1:npsi(2),1:npsi(2)))
 ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
 wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0;psip=0D0;psin=0D0;rhot=0D0;taut=0D0;drholst=0D0;rholsrt=0D0;rholszt=0D0
 
@@ -239,6 +239,7 @@ IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &
 !$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond)
 !!!$ mythread=OMP_GET_THREAD_NUM()
+ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 DO  i=1,nom         ! loop over all blocks
 !$  mythread=OMP_GET_THREAD_NUM()
   im=load_m(mythread,i)
@@ -351,6 +352,7 @@ DO  i=1,nom         ! loop over all blocks
   !$ wtime2 = OMP_GET_WTIME()
   !$ loadweight(im)=wtime2-wtime1
 END DO
+DEALLOCATE(psip,psin)
 !$OMP END PARALLEL
 
 IF(loadweight(1)>0.0d0.AND.num_threads>1.AND.MOD(iter,10)==1) CALL loadbalancing()
@@ -525,7 +527,7 @@ END IF
 CALL mfhmlt(iter)
 !CALL user_interface_6()    ! to replace 'mfhmlt' for alternative mean-field
 
-DEALLOCATE(psin,psip,hmatr)
+DEALLOCATE(hmatr)
 IF(tdiag) DEALLOCATE(temp)
 DEALLOCATE(wrk1,wrk2,wrk4)
 DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
