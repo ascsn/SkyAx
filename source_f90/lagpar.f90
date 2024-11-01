@@ -256,7 +256,7 @@ IF(num_threads==-1) THEN
   x0inv = x0inv/MAX(v2act,v2limh)
   CALL damnuc(psiact,psip,istact)
 ELSE
-!$  WRITE(6,*) 'OpenMP switch',OMP_GET_THREAD_NUM() !mythread
+!!!!$  WRITE(6,*) 'OpenMP switch',OMP_GET_THREAD_NUM() !mythread
   CALL damnuc_HFB(psiact,psip,istact,e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix,x0inv/MAX(v2act,v2limh))
 END IF
 psiact = psip
@@ -283,7 +283,7 @@ END SUBROUTINE damp_hfb
 !> @brief
 !!Kinetic energy damping as in subroutinbe 'damnuc'. This version uses
 !!dynamic damping arrays 'rdnuc_dyn' and 'zudnuc_dyn' to allow OpenMP
-!!in HFB calculations. 
+!in HFB calculations. 
 !!Unlike 'damnuc', the routine embodies also the construction of the
 !!damping arrays to accommodate changing damping operators. This part
 !!is taken from the subroutine 'idanuc'.
