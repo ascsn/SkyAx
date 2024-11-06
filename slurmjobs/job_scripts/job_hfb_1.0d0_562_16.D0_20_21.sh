@@ -1,7 +1,7 @@
 #!/bin/bash --login
 #SBATCH --job-name=job_hfb_1.0d0_562_16.D0_20_21
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=14
 #SBATCH --propagate=CORE
 #SBATCH --time=12:59:59
 #SBATCH --mem-per-cpu=4G
@@ -48,6 +48,6 @@ export OMP_STACKSIZE=4500m
 ../skyax.ifort.omp < for005_1 > job_hfb_1.0d0_562_16.D0_20_21_output.log
 
 # Post-process output
-source ~/anaconda3/bin/activate
+module load Conda
 conda activate slpy
 python3 process_results.py --output job_hfb_1.0d0_562_16.D0_20_21_output.log --deocc 16.D0 --run_val 20 --pair_strength 562 --ipair 8"

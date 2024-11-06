@@ -6,7 +6,8 @@ import numpy as np
 
 BASE_PATH=os.getcwd()
 
-pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] #Final values [20] - 462
+# pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] #Final values [20] - 462
+pairStrengthsHFB = ["1734", "1470", "1328", "1284", "1270", "1268"]
 deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
 runList = [[10,11], [20,21], [40,41], [60,61],[80,81],[100,101]]
 
@@ -38,6 +39,41 @@ with open('ensurf.job', 'r') as f:
 
 data = pd.read_csv('ensurf.job', delim_whitespace=True, comment='#', names=columns, skiprows=8)
 
+
+
+def extract_last_energy(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Ensure the file has at least one line
+    if len(lines) > 0:
+        # If there are two or more lines, extract the energies from both
+        energies = []
+        
+        # Check if there is a second-to-last line and extract energy
+        if len(lines) >= 3:
+            target_line_1 = lines[-3].strip()
+            match_1 = re.search(r"(-?\d+\.\d+)$", target_line_1)
+            if match_1:
+                energies.append(float(match_1.group(1)))
+        
+        # Extract energy from the last line
+        target_line_2 = lines[-2].strip()
+        match_2 = re.search(r"(-?\d+\.\d+)$", target_line_2)
+        if match_2:
+            energies.append(float(match_2.group(1)))
+        
+        # Return the list of energies (1 or 2 energies depending on the file)
+        if energies:
+            return energies
+        else:
+            print("No matching energy value found.")
+            return None
+    else:
+        print("File is empty.")
+        return None
+    
+
 def extract_second_energy(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -61,9 +97,10 @@ def extract_second_energy(file_path):
 def extract_energy(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
+        # print(re.search(r"(-?\d+\.\d+)$", lines[-3].strip()).group(1))
         # Extract the energy value from the last relevant line
-        # match = re.search(r"energies:\s*from rearr\.\s*vs\.\s*from densities=\s*[\d.]+\s*(-?\d+\.\d+)", line)
-        match = re.search(r"(-?\d+\.\d+)$", lines[-3].strip())  # Matches the last floating number
+        match = re.search(r"energies:\s*from rearr\.\s*vs\.\s*from densities=\s*[\d.]+\s*(-?\d+\.\d+)", line)
+        # match = re.search(r"(-?\d+\.\d+)$", lines[-3].strip())  # Matches the last floating number
         return float(match.group(1)) if match else None
         
 
@@ -75,8 +112,10 @@ data['energy_rounded'] = np.round(data['energy'], 4)
 # Process each file
 for file_path in files:
     # Extract energy from the file
-    energy = extract_energy(file_path)
-    energy1 = extract_second_energy(file_path)
+    # energy = extract_energy(file_path)
+    energy = extract_second_energy(file_path)
+    # energy = extract_last_energy(file_path)
+    print("Energies", energy, file_path)
     
     # Find matches in the main data and create dictionary
     match_rows = data[data["energy_rounded"] == energy]
@@ -87,43 +126,52 @@ for file_path in files:
         matched_data.append((file_path, match_rows))
 
 # pattern = r"job_hfb_0\.0d0_(\d+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
-pattern = r"job_hfb_0\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
+pattern = r"job_hfb_1\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
+# pattern = r"job_hfb_1\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
+
 
 finalDF = pd.DataFrame()
 
 # Process each file and its corresponding DataFrame row
-for filename, df in file_dict.items():
-    # Extract values from the filename
-    file_match = re.search(pattern, filename)
-    dfdict = dict()
-    if file_match:
-        pair_strength, deocc, cutoff = file_match.groups()
-        dfdict["Cutoff"] = cutoff
-        dfdict["Deocc"] = str(deocc).zfill(2)
-        dfdict["Pair Strength"] = pair_strength
-        
-        # Extract specific values from the DataFrame
-        energy = df['energy'].iloc[0]
-        rmsc = df['rmsc'].iloc[0]
-        rmsn = df['rmsn'].iloc[0]
-        N_boundn = df['N_boundn'].iloc[0]
-        epairn = df["epairn"].iloc[0]
-                
-        dfdict["Energy"] = energy
-        dfdict["epairn"] = epairn
-        dfdict["RMSC"] = rmsc
-        dfdict["RMSN"] = rmsn
-        dfdict["N_boundn"] = N_boundn
+try:
+    for filename, df in file_dict.items():
+        # Extract values from the filename
+        file_match = re.search(pattern, filename)
+        dfdict = dict()
+        if file_match:
+            pair_strength, deocc, cutoff = file_match.groups()
+            dfdict["Cutoff"] = cutoff
+            dfdict["Deocc"] = str(deocc).zfill(2)
+            dfdict["Pair Strength"] = pair_strength
+            
+            # Extract specific values from the DataFrame
+            energy = df['energy'].iloc[0]
+            rmsc = df['rmsc'].iloc[0]
+            rmsn = df['rmsn'].iloc[0]
+            N_boundn = df['N_boundn'].iloc[0]
+            epairn = df["epairn"].iloc[0]
 
-        dfupdate = pd.DataFrame([dfdict])
-        finalDF = pd.concat([finalDF, dfupdate], ignore_index=True)
+            # print stuff
+            print("Energy:",energy)
+                    
+            dfdict["Energy"] = energy
+            dfdict["epairn"] = epairn
+            dfdict["RMSC"] = rmsc
+            dfdict["RMSN"] = rmsn
+            dfdict["N_boundn"] = N_boundn
 
-finalDF = finalDF.sort_values(['Cutoff', 'Deocc'], ascending=[True, True])
+            dfupdate = pd.DataFrame([dfdict])
+            finalDF = pd.concat([finalDF, dfupdate], ignore_index=True)
 
-with open("summary.txt", 'w') as f:
-    f.write(f"Nucleus: {test_label}\n")
-    f.write(f"Nmass: {nmass} \t Ncharge: {ncharge}\n")
-    f.write(finalDF.to_string(header=True, index=False))
+    finalDF = finalDF.sort_values(['Cutoff', 'Deocc'], ascending=[True, True])
+
+    with open("summary_1.txt", 'w') as f:
+        f.write(f"Nucleus: {test_label}\n")
+        f.write(f"Nmass: {nmass} \t Ncharge: {ncharge}\n")
+        f.write(finalDF.to_string(header=True, index=False))
+
+except KeyError:
+    print("Data file empty")
 
 # print(finalDF)
         

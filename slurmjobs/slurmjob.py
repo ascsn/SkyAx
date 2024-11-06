@@ -6,10 +6,11 @@ edf = f"SVbas"
 hfbwidths = ["1.0d0", "1.0d0", "1.0d0", "1.0d0", "1.0d0", "1.0d0"]
 pairStrengthsBCS = ["537", "478", "451", "438", "433", "432"]
 # pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] # HFBWIDTH = 0
-pairStrengthsHFB = ["728", "562", "508", "474", "428", "489"] # HFBWIDTH = 1.0
+pairStrengthsHFB = ["1734", "1470", "1328", "1284", "1270", "1268"] # HFBWIDTH = 1.0
+# pairStrengthsHFB = ["1736", "1470", "1328", "1284", "1270", "1268"]
 ipair = [8]
-# deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
-deoccList = ["16.D0"]   
+deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
+# deoccList = ["16.D0"]    
 runList = [[10,11], [20,21], [40,41], [60,61],[80,81],[100,101]]
 
 # Directory to store job scripts
@@ -21,7 +22,7 @@ def create_and_submit_job_script(job_name, hfbwidth, pairStrength, deocc_val, ip
     job_script_content = f"""#!/bin/bash --login
 #SBATCH --job-name={job_name}
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 #SBATCH --propagate=CORE
 #SBATCH --time=12:59:59
 #SBATCH --mem-per-cpu=4G
