@@ -999,6 +999,7 @@ REAL(8),ALLOCATABLE,SAVE :: dfield(:,:),qfield(:,:),ofield(:,:),&
                             hfield(:,:),qsqfield(:,:)
 INTEGER :: ir,iz
 
+!REAL(8) ::asum,r2sum,zact,ract,rvol,r2
 
 !Prepare helper fields if called for the first time
 IF(.NOT.ALLOCATED(rmsfield)) THEN
@@ -1038,7 +1039,35 @@ ELSE
   o    = f1int(rhoini(0:nz,0:nr)*ofield)* oh * oh * SQRT(seven/pi)
 END IF
 
-!WRITE(*,*) 'OBS: zcm,d=',zcm,d
+!! check
+!asum=0D0
+!r2sum=0D0
+!DO ir=0,nr
+!  ract = dr*ir
+!  IF(ir>0) THEN
+!    rvol=dr*ir
+!  ELSE
+!    rvol = dr*drezw
+!  END IF
+!  DO iz=0,nz
+!   zact = dz*iz
+!   r2 = ract**2+zact**2
+!   IF(iz>0) THEN
+!     asum = asum + rvol*rhoini(iz,ir)
+!     r2sum = r2sum + r2*rvol*rhoini(iz,ir)
+!   ELSE
+!     asum = asum + rvol*rhoini(iz,ir)/2D0
+!     r2sum = r2sum + r2*rvol*rhoini(iz,ir)/2D0
+!   END IF
+!  END DO
+!END DO
+!asum=2D0*3.1415926D0*asum
+!r2sum=2D0*3.1415926D0*r2sum
+!
+!
+!WRITE(*,'(a,5(1pg14.6))') 'OBS: nr.,rms(2)=',asum/2D0,SQRT(r2sum/asum),rms
+!WRITE(*,'(a,5(1pg14.6))') 'OBS: zcm,d=',zcm,d/atnum
+
 RETURN
 END SUBROUTINE obs
 
@@ -1446,8 +1475,8 @@ IF(tpri_formf) THEN
   END DO
 END IF
 CALL rms_back(fo,rms,r4)
-CALL rms_back(fop,rmsp,r4p)
-CALL rms_back(fon,rmsn,r4n)
+!CALL rms_back(fop,rmsp,r4p)
+!CALL rms_back(fon,rmsn,r4n)
 CALL rms_back(foc0,rmsc0,r4c0)
 
 WRITE(7,'(a,4(1pg13.5))') ' from formfactors:    r_c,r_tot,r_prot,r_neutr=',&
