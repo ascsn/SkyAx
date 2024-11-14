@@ -138,7 +138,7 @@ REAL(8) :: r2p,r2c,r4p,r4c,zcm
           '#   z     r   rho_charge  rho_proton  difference'
   DO ir=0,nr 
     DO iz=0,nz
-      WRITE(307,'(2f6.1,3(1pg12.4))') (z(iz)-zcm),r(ir),rhoC2D(iz,ir),&
+      WRITE(307,'(2f6.1,3(1pg14.6))') (z(iz)-zcm),r(ir),rhoC2D(iz,ir),&
              rho(iz,ir,1),rhoC2D(iz,ir)-rho(iz,ir,1)
     END DO
     WRITE(307,'(1x)')
