@@ -999,6 +999,7 @@ REAL(8),ALLOCATABLE,SAVE :: dfield(:,:),qfield(:,:),ofield(:,:),&
                             hfield(:,:),qsqfield(:,:)
 INTEGER :: ir,iz
 
+!REAL(8) ::asum,r2sum,zact,ract,rvol,r2
 
 !Prepare helper fields if called for the first time
 IF(.NOT.ALLOCATED(rmsfield)) THEN
@@ -1038,7 +1039,35 @@ ELSE
   o    = f1int(rhoini(0:nz,0:nr)*ofield)* oh * oh * SQRT(seven/pi)
 END IF
 
-!WRITE(*,*) 'OBS: zcm,d=',zcm,d
+!! check
+!asum=0D0
+!r2sum=0D0
+!DO ir=0,nr
+!  ract = dr*ir
+!  IF(ir>0) THEN
+!    rvol=dr*ir
+!  ELSE
+!    rvol = dr*drezw
+!  END IF
+!  DO iz=0,nz
+!   zact = dz*iz
+!   r2 = ract**2+zact**2
+!   IF(iz>0) THEN
+!     asum = asum + rvol*rhoini(iz,ir)
+!     r2sum = r2sum + r2*rvol*rhoini(iz,ir)
+!   ELSE
+!     asum = asum + rvol*rhoini(iz,ir)/2D0
+!     r2sum = r2sum + r2*rvol*rhoini(iz,ir)/2D0
+!   END IF
+!  END DO
+!END DO
+!asum=2D0*3.1415926D0*asum
+!r2sum=2D0*3.1415926D0*r2sum
+!
+!
+!WRITE(*,'(a,5(1pg14.6))') 'OBS: nr.,rms(2)=',asum/2D0,SQRT(r2sum/asum),rms
+!WRITE(*,'(a,5(1pg14.6))') 'OBS: zcm,d=',zcm,d/atnum
+
 RETURN
 END SUBROUTINE obs
 
@@ -1375,7 +1404,8 @@ USE fields, ONLY: drhols
 IMPLICIT NONE
 
 REAL(8), PARAMETER :: delrad=0.3D0    ! assumed spherical grid spacing
-REAL(8), PARAMETER :: cutk=4D0,cutdel=0.4D0    ! soft cutoff in k space
+!REAL(8), PARAMETER :: cutk=4D0,cutdel=0.4D0    ! soft cutoff in k space
+REAL(8), PARAMETER :: cutk=3.5D0,cutdel=0.3D0    ! soft cutoff in k space
 
 REAL(8) :: foc(kfrm),fop(kfrm),fon(kfrm),fo(kfrm),foc0(kfrm)
 REAL(8) :: rhoback(kfrm),fob(kfrm)   ! auxiliary arrays for back transformation
@@ -1383,16 +1413,18 @@ REAL(8) :: rhoback(kfrm),fob(kfrm)   ! auxiliary arrays for back transformation
 REAL(8) :: cmwid,delk,delrac,q1,qr,rleng,rmax,zmax,zpeact
 !REAL(8) :: r2lsp,r2lsn,r2mcor,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
 REAL(8) :: r2lsp,r2lsn,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
+REAL(8) :: rmspback,rmsnback
 INTEGER :: iq,ikmax
 
 !     determine grid in spherical coordinate space from backward F.B. trafo
 zmax   = ((nz)+sz-icm)*dz-zcm
 rmax   = (nr+sr)*dr
 rleng  = MIN(zmax,rmax)
+!ikmax  = 2*INT(rleng/delrad)+1
 ikmax  = INT(rleng/delrad)+1
-IF(ikmax > kfrm) STOP ' in RADIUS: KFRM too small'
 delrac = rleng/ikmax
-delk   =  pi/rleng
+delk   =  pi/rleng  !/2D0
+IF(ikmax > kfrm) STOP ' in RADIUS: KFRM too small'
 
 !     width parameter for c.m. correction
 IF(ifzpe == 0) THEN
@@ -1446,17 +1478,17 @@ IF(tpri_formf) THEN
   END DO
 END IF
 CALL rms_back(fo,rms,r4)
-CALL rms_back(fop,rmsp,r4p)
-CALL rms_back(fon,rmsn,r4n)
+CALL rms_back(fop,rmspback,r4p)
+CALL rms_back(fon,rmsnback,r4n)
 CALL rms_back(foc0,rmsc0,r4c0)
 
-WRITE(7,'(a,4(1pg13.5))') ' from formfactors:    r_c,r_tot,r_prot,r_neutr=',&
-    rmsc,rms,rmsp,rmsn
-WRITE(7,'(a,4(1pg13.5))') '                  r4_c,r4_tot,r4_prot,r4_neutr=',&
+WRITE(7,'(a,4(1pg13.5))') ' from formfactors(incl.c.m.):r_c,r_tot,r_prot,r_neutr=',&
+    rmsc,rms,rmspback,rmsnback
+WRITE(7,'(a,4(1pg13.5))') '                         r4_c,r4_tot,r4_prot,r4_neutr=',&
     r4c,r4,r4p,r4n
-WRITE(7,'(a,4(1pg13.5))') ' from charge formfactor:  r,R,sigma,r_unsafe=',  &
+WRITE(7,'(a,4(1pg13.5))') ' from charge formfactor:           r,R,sigma,r_unsafe=',  &
     rmsc,rdmsc,surfc,r4c
-WRITE(7,'(a,12f8.4)') 'FF:',rmsc,rdmsc,surfc,r4c,rmsc0,rdmsc0,surfc0,r4c0,rmsp,rdmsp,surfp,r4p
+WRITE(7,'(a,12f8.4)') 'FF:',rmsc,rdmsc,surfc,r4c,rmsc0,rdmsc0,surfc0,r4c0,rmspback,rdmsp,surfp,r4p
 
 
 ! the block to compute the nucleon corrections to rms radii directly
@@ -1470,16 +1502,17 @@ r2lsp = -(xmgpr-isign_rso*d4m)*rlsmomp2/nprot
 r2lsn = -xmgne*rlsmomn2/nprot
 r2cmcor = -6D0*cmwid
 WRITE(6,'(a,9(1pg13.5))') 'rms_C^2:', &
-   rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
-   rmsp*rmsp-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
+   rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
+   rmspback*rmspback-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
 WRITE(6,'(a,7(1pg13.5))') '  rms_C:', &
-   SQRT(rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
 !WRITE(7,'(a,9(1pg13.5))') 'rms_C^2:', &
 WRITE(7,'(a,9f9.4)') 'rms_C^2:', &
-   rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
-   rmsp*rmsp-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
+   rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
+   rmspback*rmspback-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
 WRITE(7,'(a,7(1pg13.5))') '  rms_C:', &
-   SQRT(rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc, !&
+!   SQRT(6D0*(foc(1)-foc(2))/(delk**2)/foc(1))
 
 
 RETURN
@@ -1505,7 +1538,7 @@ DO iq=2,ikmax
   fob(iq)=foa(iq)/(1D0+EXP(((qa-cutk)/cutdel)))
 END DO
 !                                                         r=0.0 separately
-IF(tprint) WRITE(78,'(a)') '# teest density from back Fourier'
+IF(tprint) WRITE(78,'(a)') '# test density from back Fourier'
 acc    = 0D0
 DO iq=2,ikmax
   qa     = delk*iq-delk
@@ -1680,6 +1713,9 @@ IF(ifrso) THEN
   END DO
   sumsp  = f1int(wrk1)
   sumsn  = f1int(wrk2)
+ELSE
+  sumsp  = 0D0
+  sumsn  = 0D0
 END IF
 
 !      isoscalar and isovector electrical formactors on 'schses'
@@ -1696,7 +1732,7 @@ sumc   = sump*schsep+sumn*schsen
 
 schsm  = ( gp1/(one+qa/gm1)+gp2/(one+qa/gm2)+gp3/(one+qa/gm3)+gp4/(one+qa/gm4) )
 schsmp = -schsm*xmgpr + isign_rso*schsep*d4m   ! +  for correct scheme
-schsmn = -schsm*xmgne !- schsen*d4m
+schsmn = -schsm*xmgne + isign_rso*schsen*d4m
 
 
 !      factor for darwin correction 'darfac'

@@ -136,8 +136,8 @@ REAL(8),ALLOCATABLE :: rhot(:,:,:), taut(:,:,:), drholst(:,:,:),rholsrt(:,:,:),r
 ALLOCATE(wrk1(0:nz,0:nr),wrk2(0:nz,0:nr),wrk4(0:nz,0:nr))
 ALLOCATE(hmatr(1:npsi(2),1:npsi(2)))
 ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
-wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0;psip=0D0;psin=0D0;rhot=0D0;taut=0D0;drholst=0D0;rholsrt=0D0;rholszt=0D0
-
+wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0;rhot=0D0;taut=0D0;drholst=0D0;rholsrt=0D0;rholszt=0D0
+!psip=0D0;psin=0D0;
 !IF(ifqq==1 .AND. inodiag<itmax) &
 !  STOP "option IFQQ=1 incompatible with mean-field diagonalization"
 
@@ -556,8 +556,8 @@ IMPLICIT NONE
   IF (tshiftcm) THEN
     zcm = zcmobs(rho(0:nz,0:nr,:))
     DO jst=1,nst(1)+nst(2)
-     CALL shiftcm(zcm,jst)
-      ! CALL shiftcm(zcm/2D0,jst)
+      CALL shiftcm(zcm,jst)
+!      CALL shiftcm(zcm/2D0,jst)
     END DO
   END IF
 !  zcm = zcmobs(rho(0:nz,0:nr,:))

@@ -10,7 +10,7 @@
                the axial Skyrme-Hartree-Fock Code
                       >>> version x.x.x <<<       
 
-          SkyAx runs with   6 OMP threads.
+          SkyAx runs with   1 OMP threads.
 
 
           Title: test 132Sn                                                                      
