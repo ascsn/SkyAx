@@ -1,16 +1,16 @@
-&main outnam='tst',title='test 120Sn',iprint=1000,itmax=1000
+&main outnam='tst',title='test 132Sn',iprint=1000,itmax=1000
 /
 &force
- name='none',pairstab=-0D0,HFBwidth=0.0d0,
+ name='none',pairstab=-0D0,HFBwidth=1.0d0,
  t0=-1879.640018,t1=313.7493427,t2=112.6762700,t3=12527.38921,
  x0=0.2585452462,x1=-0.3816889952,x2=-2.823640993,x3=0.1232283530,
  t4=124.633,b4p=34.1116989,power=0.3,
  h2m=20.749811,20.721249,
  chg=1D0,ex=1,riftm=0D0,zpe=1,
- ipair=7,v0prot=10,v0neut=630.5,rho0pr=0.2011591,
- pair_cutoff=-60,tregpair=F
+ ipair=8,v0prot=10,v0neut=1734,rho0pr=0.2011591,
+ pair_cutoff=-10,tregpair=F
 /
-&grids tsym=F,nz=51,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+&grids tsym=F,nz=101,nr=50,dr=0.35D0,dz=0.35D0,idrtyp=0,
 /
 &static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
 deocc(1)=11.0D0,deocc(2)=11.0D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,

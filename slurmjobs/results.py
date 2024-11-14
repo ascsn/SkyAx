@@ -6,13 +6,13 @@ import numpy as np
 
 BASE_PATH=os.getcwd()
 
-# pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] #Final values [20] - 462
-pairStrengthsHFB = ["1734", "1470", "1328", "1284", "1270", "1268"]
-deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
-runList = [[10,11], [20,21], [40,41], [60,61],[80,81],[100,101]]
+pairStrengthsBCS = ["2000", "1800", "1800", "1800"]
+pairStrengthsHFB = ["2000", "1800", "1800", "1800"] # HFBWIDTH = 1.0
+# deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
+runList = [[10,11], [25,26], [40,41], [60,61]]
 
 # Define file path pattern to match all job files
-file_pattern = 'job_hfb_*.log'
+file_pattern = 'job_170Yb_*.log'
 
 # Verify files matched by glob
 files = glob.glob(file_pattern)
@@ -126,8 +126,9 @@ for file_path in files:
         matched_data.append((file_path, match_rows))
 
 # pattern = r"job_hfb_0\.0d0_(\d+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
-pattern = r"job_hfb_1\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
+# pattern = r"job__1\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
 # pattern = r"job_hfb_1\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
+pattern = r"job_(\d+[A-Za-z]+)_(bcs|hfb)_(\d+\.\d+d0)_(\d+)_([\d.]+)\.D0_(\d+)_(\d+)_output\.log"
 
 
 finalDF = pd.DataFrame()
@@ -137,24 +138,31 @@ try:
     for filename, df in file_dict.items():
         # Extract values from the filename
         file_match = re.search(pattern, filename)
+        print("file_match", file_match)
         dfdict = dict()
         if file_match:
-            pair_strength, deocc, cutoff = file_match.groups()
+            print("groups", file_match.groups())
+            Nucleus, pairType, hfbwidth, pair_strength, deocc, cutoff, cutoffHigh = file_match.groups()
+            print("pair", pair_strength, deocc, cutoff)
             dfdict["Cutoff"] = cutoff
-            dfdict["Deocc"] = str(deocc).zfill(2)
+            # dfdict["Deocc"] = str(deocc).zfill(2)
             dfdict["Pair Strength"] = pair_strength
+            dfdict["Pair Type"] = pairType
+            dfdict["hfb width"] = hfbwidth
             
             # Extract specific values from the DataFrame
             energy = df['energy'].iloc[0]
             rmsc = df['rmsc'].iloc[0]
             rmsn = df['rmsn'].iloc[0]
             N_boundn = df['N_boundn'].iloc[0]
+            epairp = df["epairp"].iloc[0]
             epairn = df["epairn"].iloc[0]
 
             # print stuff
             print("Energy:",energy)
                     
             dfdict["Energy"] = energy
+            dfdict["epairp"] = epairp
             dfdict["epairn"] = epairn
             dfdict["RMSC"] = rmsc
             dfdict["RMSN"] = rmsn
@@ -163,9 +171,9 @@ try:
             dfupdate = pd.DataFrame([dfdict])
             finalDF = pd.concat([finalDF, dfupdate], ignore_index=True)
 
-    finalDF = finalDF.sort_values(['Cutoff', 'Deocc'], ascending=[True, True])
+    finalDF = finalDF.sort_values(by=['Cutoff', 'Pair Type'], ascending=[True, True])
 
-    with open("summary_1.txt", 'w') as f:
+    with open("summary_170Yb.txt", 'w') as f:
         f.write(f"Nucleus: {test_label}\n")
         f.write(f"Nmass: {nmass} \t Ncharge: {ncharge}\n")
         f.write(finalDF.to_string(header=True, index=False))
