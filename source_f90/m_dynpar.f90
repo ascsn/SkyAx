@@ -43,7 +43,7 @@ LOGICAL :: tpri_conver=.FALSE.  !< switches printing of convergence protocol on 
 LOGICAL :: tpri_bubble=.FALSE.  !< switches printing of central depresion on 'bubble.*'
 LOGICAL :: tpri_2d=.FALSE.      !< switches printing of 2D plots in 'plot\_2D.***' for converged calculations.
 LOGICAL :: tpri_radii=.TRUE.      !< switches printing of charge radii and surface thickness
-LOGICAL :: tpri_formf=.FALSE.      !< switches printing of formfactors and charge distribution
+LOGICAL :: tpri_formf=.TRUE.      !< switches printing of formfactors and charge distribution
 
 
 
@@ -119,7 +119,7 @@ INTEGER,PRIVATE:: zpe=ixxxl                 !<If 0, m-m/A recipe for c.m. correc
 REAL(8) :: h2mav                            !<Average mass paramter
 REAL(8) :: riftm1                           !<Parameter for contribution of t1 and t2 term for spin-orbit.
 INTEGER :: ifls                             !<Switch for contribution from t1,t2 to spin-orbit force.
-INTEGER :: ifzpe                            !<If 0, m-m/A recipe for c.m. correction, if 1 no c.m. correction.
+INTEGER :: ifzpe                            !<If 0, m-m/A recipe for c.m. correction, if -1 no c.m. correction.
 INTEGER :: ifex                             !<Some forces are fitted excluding the Coulombexchange term. 
 !!For <tt> ex=1 </tt> it is included (this is the normal case), for <tt> ex=0 </tt> not.
 
