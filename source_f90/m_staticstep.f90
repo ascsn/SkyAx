@@ -556,8 +556,8 @@ IMPLICIT NONE
   IF (tshiftcm) THEN
     zcm = zcmobs(rho(0:nz,0:nr,:))
     DO jst=1,nst(1)+nst(2)
-!      CALL shiftcm(zcm,jst)
-      CALL shiftcm(zcm/2D0,jst)
+      CALL shiftcm(zcm,jst)
+!      CALL shiftcm(zcm/2D0,jst)
     END DO
   END IF
 !  zcm = zcmobs(rho(0:nz,0:nr,:))
