@@ -1,0 +1,84 @@
+This file contains comparisons 2D <--> 1D for 120Sn and 132Sn
+conmputed with SV-bas and different pairing options as indicated.
+
+
+We start with a doubly magic nucleus to exclude the impact of pairing
+and consider 132Sn with:  HFBwidth=0 cutoff=10 closed-shell Vpair=10.
+-------------------------------------------------------------------------
+dim grid       E_B    E_apir  r_tot  r_prot  r_neut   T      N
+ 2D 0.7   -1103.20880  -0.0  4.7904  4.6524  4.8726  50.00  82.00
+ 2D 0.5   -1103.21470  -0.0  4.7901  4.6521  4.8723  50.00  82.00   symmetric grid
+ 2D 0.5   -1103.21475  -0.0  4.7901  4.6521  4.8723  50.00  82.00   asymmetric grid
+ 2D 0.35  -1103.21501  -0.0  4.7901  4.6521  4.8723  50.00  82.00
+ 1D 0.3   -1103.33749   0.0  4.7950  4.6573  4.8771
+ 1D 0.1   -1103.22112   0.0  4.7952  4.6574  4.8773
+-------------------------------------------------------------------------
+==> Grid size is not crucial in 2D, but energy is 0.1 MeV affected in 1D.
+    --> the spacing of 0.3 fm is a bit to rough.
+    Radii differ by 0.005 fm between 1D and 2D; the older 2D code did not
+    show this problem and 1D agree with 2D radii.
+    --> bug in 2D radius yet to be found!
+
+
+Now we turn to 120Sn to check the impact of pairing and consider
+120Sn with: width=0 cut=5  HFB V=600.
+-------------------------------------------------------------------------
+dim grid       E_B    E_apir  r_tot  r_prot  r_neut   T      N
+ 2D 0.5  -1019.76421  -11.6  4.6458  4.5704  4.6989  50.00  70.00
+ 2D 0.35 -1019.76303  -11.6  4.6458  4.5704  4.6989  50.00  70.00
+                             4.6548  4.5794  4.7079                corrected +0.009
+ 1D 0.3  -1019.91871  -11.6  4.6546  4.5787  4.7080
+ 1D 0.1  -1019.81526  -11.6  4.6548  4.5788  4.7083
+-------------------------------------------------------------------------
+==> We see, again, the impact of grid spacing in 1D.
+    Comparing 1D (0.1 grid) with 2D, we see a bit more different E_B
+    than in 132Sn.
+    --> Could that be due to the slow HFB convergence and may be
+        improved by adding more iterations?
+    The radii differ, again, visibly between 1D and 2D with a typical
+    difference of 0.009 fm for that case.
+
+
+As pairing is active, it is interesting to check also BCS for
+120Sn with: width=0 cut=5  BCS V=600.
+-------------------------------------------------------------------------
+dim grid       E_B    E_apir  r_tot  r_prot  r_neut   T      N
+ 2D 0.5  -1019.63456  -11.2  4.6526  4.5737  4.7082  50.00  70.00
+                             4.6586  4.5797  4.7142                corrected +0.006
+ 1D 0.3  -1019.74779  -11.2  4.6583  4.5796  4.7138
+ 1D 0.1  -1019.64448  -11.3  4.6585  4.5797  4.7140
+-------------------------------------------------------------------------
+==> The agreement for energy is perfect for 1D with 0.1 grid.
+    The slight mismatch for the pairing energy is hard to judge
+    because only 3 digits are printed.
+    The difference in radii is here about 0.006 fm.
+
+Finally a test with finite folding, again for 120Sn with:
+HFBwidth=1 cut=10 HFB V=1734
+-------------------------------------------------------------------------
+dim grid       E_B    E_apir  r_tot  r_prot  r_neut   T      N
+ 2D 0.5  -1019.54098  -13.2  4.6539  4.5740  4.7102  50.00  69.95
+                            4.6609  4.5810  4.7172                corrected +0.007
+ 1D 0.3  -1018.91042  -10.0  4.6591  4.5797  4.7150                (3800 iterations)
+        -1019.97550  -14.8  4.6612  4.5802  4.7183                (10000 iterations)
+ 1D 0.1  -1019.87492  -14.8  4.6614  4.5804  4.7184                (10000 iterations)
+-------------------------------------------------------------------------
+==> There are considerable differences in E_B and pairing energy.
+    Disquieting is that the result (test case 1D) depends so much
+    on the iterations. Thus it may be that the mismatch 2D<-->1D
+    is cause by too few 2D iterations.
+    --> Yet to be checked.
+
+
+Preliminary conclusions:
+1. The major difference concerns radii. The 2D code must be corrected
+   in that respect.
+2. The situation for zero folding is already quite good conerninc energy 
+   and pairing energy if high numerical precision is taken. In practice,
+   we can correct less precise calculations (grid spaving!) by empirically
+   derived energy correction.
+3. Finite-range folding seem to be much more critical concerning
+   convergence. This has yet to be studied in more detail.
+
+
+

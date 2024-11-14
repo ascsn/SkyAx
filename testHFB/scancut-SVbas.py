@@ -8,30 +8,31 @@ nucleus = "120Sn"
 edf = "SVbas"
 
 # Set HFB widths
-#hfbwidths = ["0.0d0", "1.0d0", "1.5d0", "2.0d0", "3.0d0"]
-hfbwidths = ["0.0d0"]#, "0.0d0", "0.0d0", "0.0d0", "0.0d0" ,"0.0d0"]
+hfbwidths = ["1.0d0", "1.0d0", "1.0d0", "1.0d0", "1.0d0", "1.0d0"]
+
 # BCS pairing strengths
 # pairStrengthsBCS = ["142.5", "1860", "5920", "19210", "41820"]
 # pairStrengthsBCS = ["530", "1620", "136", "1500",  "139", "1500"]
 # pairStrengthsBCS = ["432"]#, "630.5", "630.5", "630.5", "630.5", "630.5 "]
-#pairStrengthsBCS = ["630.5", "2297","5984", "12360", "36100"] #Cutoff 100
-pairStrengthsBCS = [ "537", "478", "451", "438", "433", "432"]
+# pairStrengthsBCS = ["630.5", "2297","5984", "12360", "36100"] #Cutoff 100
+pairStrengthsBCS = ["537", "478", "451", "438", "433", "432"]
 
 # HFB pairing strengths
-#pairStrengthsHFB = ["530", "1610", "136", "1500", "130", "1500"]#, "10815", "30301"]
-pairStrengthsHFB = ["300"]
+# pairStrengthsHFB = ["530", "1610", "136", "1500", "130", "1500"]#, "10815", "30301"]
+pairStrengthsHFB = ["728", "562", "508", "474", "428", "489"]  # HFBWIDTH = 1.0
 # pairStrengthsHFB =["537","478","451","438","433","432"]
 
 ipair = [8]  # 7 for BCS 8 for HFB
 
 # Set hfbwidth
-hfbwidth = "0.0d0"
+# hfbwidth = "0.0d0"
 
 
 def preprocess_line(line):
     # Add a space before negative signs that are not part of the scientific notation
     line = re.sub(r"(\d)(-)", r"\1 -", line)
     return line
+
 
 def read_nmass_ncharge(file_path):
     with open(file_path, "r") as f:
@@ -69,12 +70,12 @@ def read_gaps(file_path):
 def find_max_energy(file_path):
 
     # Read the entire file into memory
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         content = file.read()
 
     # Use regex to find all relevant tables
     # The regex assumes that each table starts with 'Nr' and ends with a blank line
-    tables = re.findall(r'Nr.*?(?=\n\s*\n)', content, re.DOTALL)
+    tables = re.findall(r"Nr.*?(?=\n\s*\n)", content, re.DOTALL)
 
     # Initialize a list to hold DataFrames for each table
     dataframes = []
@@ -82,11 +83,11 @@ def find_max_energy(file_path):
     # Process each table
     for table in tables:
         # Split the table into lines and clean up
-        lines = table.strip().split('\n')
-        
+        lines = table.strip().split("\n")
+
         # Load the relevant data into a pandas DataFrame
         try:
-            df = pd.read_csv(StringIO('\n'.join(lines)), delim_whitespace=True)
+            df = pd.read_csv(StringIO("\n".join(lines)), delim_whitespace=True)
             dataframes.append(df)
         except pd.errors.EmptyDataError:
             print("Empty DataFrame encountered for a table. Skipping...")
@@ -94,28 +95,27 @@ def find_max_energy(file_path):
     # Display extracted DataFrames and find maximum energy for J_z = 0.5 in each
     for i, df in enumerate(dataframes):
         # print(f"Table {i + 1}:")
-        is_numeric = pd.to_numeric(df.iloc[-1], errors='coerce').notnull().all()
+        is_numeric = pd.to_numeric(df.iloc[-1], errors="coerce").notnull().all()
         if is_numeric == False:
-            df.drop(df.tail(1).index,inplace=True) # drop last n rows
+            df.drop(df.tail(1).index, inplace=True)  # drop last n rows
         # Filter for J_z = 0.5 and find the maximum energy
         # Somehow the column heads are messed up, so needs to be fixed (later)
-        if 'energy' in df.columns:
-            df['Iso'] = df['Iso'].astype(float)
-            filtered_df = df[df['Iso'] == 0.5]
+        if "energy" in df.columns:
+            df["Iso"] = df["Iso"].astype(float)
+            filtered_df = df[df["Iso"] == 0.5]
             if not filtered_df.empty:
-                max_energy = filtered_df['delta'].max()
+                max_energy = filtered_df["delta"].max()
                 # print(f"The maximum energy corresponding to J_z = 0.5 in Table {i + 1} is: {max_energy}\n")
             else:
                 print(f"No data for J_z = 0.5 found in Table {i + 1}.\n")
         if i == 4:
-            return f"Max_SP_energy: {max_energy}" 
+            return f"Max_SP_energy: {max_energy}"
 
 
-
-# deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]      
+# deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]
 # runList = [[10, 11],[20,21], [40, 41], [60, 61], [80, 81], [100, 101]]
-deoccList = ["16.D0"]              
-runList = [[10,11]]#,[15,101],[15,101],[15,101],[15,101]]
+deoccList = ["16.D0", "16.D0", "16.D0", "16.D0", "16.D0", "16.D0"]
+runList = [[10, 11], [20, 21], [40, 41], [60, 61], [80, 81], [100, 101]]
 
 for j in ipair:
     for val in deoccList:
@@ -125,12 +125,14 @@ for j in ipair:
             combined = zip(hfbwidths, pairStrengthsBCS, runList)
         else:
             cond = "hfb"
-            pairStrength = "1500"                                       
+            pairStrength = "1500"
             combined = list(zip(hfbwidths, pairStrengthsHFB, runList))
 
         print("Val =", val, "j=", j)
         for hfbwidth, pairStrength, runVal in combined:
-            print(f"cond = {cond}, hfbwidth={hfbwidth}, pairStrength = {pairStrength}, deocc={val}")
+            print(
+                f"cond = {cond}, hfbwidth={hfbwidth}, pairStrength = {pairStrength}, deocc={val}"
+            )
             fileName = f"test_collect_cat_{edf}_{nucleus}_{hfbwidth}_{cond}.dat"
             a, b = runVal
             for i in range(a, b):
@@ -150,7 +152,9 @@ for j in ipair:
                     f.write(" t4=124.633,b4p=34.1116989,power=0.3,\n")
                     f.write(" h2m=20.749811,20.721249,\n")
                     f.write(" chg=1D0,ex=1,riftm=0D0,zpe=1,\n")
-                    f.write(f" ipair={j},v0prot=10,v0neut={pairStrength},rho0pr=0.2011591,\n")
+                    f.write(
+                        f" ipair={j},v0prot=10,v0neut={pairStrength},rho0pr=0.2011591,\n"
+                    )
                     f.write(f" pair_cutoff=-{i},tregpair=F\n")
                     f.write("/\n")
                     # f.write("&grids tsym=F,nz=81,nr=41,dr=0.5D0,dz=0.5D0,idrtyp=0,\n")
@@ -163,14 +167,14 @@ for j in ipair:
                         f"deocc(1)={val},deocc(2)={val},errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,\n"
                     )
                     f.write("tvaryx0=T,inodiag=9999/\n")
-                    f.write("&constraint\n")        
+                    f.write("&constraint\n")
                     f.write("/\n")
                     f.write("&thermal /\n")
 
                 os.system("ulimit -s unlimited")
                 os.system("export OMP_STACKSIZE=4500m")
                 subprocess.run(
-                    ["../skyax.gfortran.seq"], 
+                    ["../skyax.ifort.omp"],
                     stdin=open("for005"),
                     stdout=subprocess.DEVNULL,
                 )

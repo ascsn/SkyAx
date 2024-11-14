@@ -10,10 +10,10 @@
                the axial Skyrme-Hartree-Fock Code
                       >>> version x.x.x <<<       
 
-          SkyAx runs with  16 OMP threads.
+          SkyAx runs with   6 OMP threads.
 
 
-          Title: test 120Sn                                                                      
+          Title: test 132Sn                                                                      
 
 
           qualifier of output files=tst
@@ -21,12 +21,12 @@
           total charge=   50
 
           mesh dimensions
-          nz =   51  maximum allowed =  199
-          nr =   25  maximum allowed =   99
+          nz =  101  maximum allowed =  199
+          nr =   50  maximum allowed =   99
 
           mesh spacings  
-          dz =0.700  fm
-          dr =0.700  fm
+          dz =0.350  fm
+          dr =0.350  fm
 
           calculations without z-reflection symmetry
           d/dr & d/dz from fourier.
@@ -50,22 +50,12 @@
           ifzpe  =    1
           riftm  =     0.000
           pairfc  =      10.000  strength for p (mev)
-          pairfc  =     630.500  strength for n (mev)
+          pairfc  =    1734.000  strength for n (mev)
           rho0pr  =  0.2012      density parameter in DDDI
-          pairstab=      -0.000  BCS stabilizing pairing energy
-          cutoff  =     -60.000  pairing cutoff 
 
-          pairfc  =      -0.000  strength for p (mev)
-          pairfc  =    -100.000  strength for n (mev)
-          rho0pr  =
-          pairstab=      10.000  BCS stabilizing pairing energy
-          cutoff  =     300.000  pairing cutoff 
+          pairstab=       0.000  BCS stabilizing pairing energy
+          cutoff  =     -10.000  pairing cutoff 
 
-          pairstab=       0.201  BCS stabilizing pairing energy
-          cutoff  =      -0.000  pairing cutoff 
-
-          pairstab=     -10.000  BCS stabilizing pairing energy
-          cutoff  =
           cutoff in u*v space
 
 
@@ -110,12 +100,12 @@
           addocc  =       0.300  mixing of new and old occ. numbers
 
           HFB parameters
-          iterbcs  =         300
-          iterhfb  =         600
+          iterbcs  =         500
+          iterhfb  =        1000
           iternat  =           0
           modnat   =     9999999
           pairenhance =      2.00
-          tnobcs   =T
+          tnobcs   = T
 
 
 
@@ -1755,4 +1745,506 @@
  1604   2  16.5    1    1    1 0.000  1.0  0.0 16.891
  
   Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
-    1   -951.68    0.074   -0.000   -30.000     0.000   -30.000   1.0871E-17  0.603
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    1   -951.88    0.074    0.0 00   -30.000     0.000   -30.000   3.3586E-17  0.603
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    2   -969.43    0.074    0.000     1.241    -1.742   -30.000   3.2606E-06  0.543
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    3   -979.00    0.068    0.000     1.060    -2.010   -30.000   3.2365E-06  0.545
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    4   -988.81    0.062    0.000     0.864    -2.004   -30.000   1.6691E-06  0.548
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    5  -1017.38    0.061    0.000     0.822    -1.551   -30.000   1.5471E-06  0.551
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    6  -1091.70    0.061   -0.003     1.365    -1.167   -30.000   8.1459E-04  0.496
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    7  -1166.76    0.063   -0.008     1.037    -1.192   -30.000   2.0217E-03  0.498
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    8  -1194.48    0.065   -0.015     0.765    -1.634   -30.000   3.5403E-03  0.501
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+    9  -1198.14    0.066   -0.023     0.609    -2.515   -30.000   5.2822E-03  0.503
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   10  -1195.33    0.067   -0.033     0.583    -2.629   -30.000   7.1366E-03  0.453
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   11  -1186.76    0.068   -0.043     0.570    -2.141   -30.000   8.8779E-03  0.408
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   12  -1175.41    0.068   -0.053     0.562    -2.015   -30.000   1.0321E-02  0.367
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   13  -1155.55    0.069   -0.061     1.416    -1.765   -30.000   1.0804E-02  0.330
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   14  -1160.50    0.069   -0.067     1.241    -2.370   -30.000   9.9577E-03  0.332
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   15  -1153.37    0.070   -0.073     1.079    -2.209   -30.000   8.5215E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   16  -1145.96    0.071   -0.077     0.916    -2.190   -30.000   6.7152E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   17  -1142.16    0.071   -0.080     0.778    -2.477   -30.000   4.7142E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   18  -1138.08    0.072   -0.082     0.668    -2.446   -30.000   2.6947E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   19  -1134.45    0.072   -0.084     0.591    -2.494   -30.000   8.0804E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   20  -1131.74    0.072   -0.085     0.537    -2.622   -30.000  -8.3143E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   21  -1129.47    0.073   -0.087     0.492    -2.697   -30.000  -2.1462E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   22  -1127.59    0.073   -0.087     0.450    -2.778   -30.000  -3.0950E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   23  -1126.11    0.073   -0.088     0.405    -2.881   -30.000  -3.6702E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   24  -1124.92    0.073   -0.088     0.358    -2.975   -30.000  -3.8927E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   25  -1123.96    0.073   -0.088     0.309    -3.071   -30.000  -3.8056E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   26  -1123.21    0.073   -0.088     0.260    -3.174   -30.000  -3.4675E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   27  -1122.62    0.073   -0.088     0.212    -3.278   -30.000  -2.9452E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   28  -1122.15    0.074   -0.088     0.164    -3.384   -30.000  -2.3079E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   29  -1121.80    0.074   -0.088     0.118    -3.496   -30.000  -1.6215E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   30  -1121.52    0.074   -0.088     0.074    -3.611   -30.000  -9.4429E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   31  -1121.31    0.074   -0.087     0.031    -3.731   -30.000  -3.2408E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   32  -1121.16    0.074   -0.087    -0.010    -3.857   -30.000   2.0366E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   33  -1121.04    0.074   -0.087    -0.049    -3.990   -30.000   6.1621E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   34  -1120.96    0.074   -0.086    -0.086    -4.130   -30.000   9.0320E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   35  -1120.90    0.074   -0.086    -0.121    -4.278   -30.000   1.0652E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   36  -1120.86    0.075   -0.085    -0.155    -4.436   -30.000   1.1119E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   37  -1120.83    0.075   -0.085    -0.188    -4.602   -30.000   1.0598E-03  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   38  -1120.81    0.075   -0.085    -0.219    -4.774   -30.000   9.2994E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   39  -1120.80    0.075   -0.084    -0.249    -4.941   -30.000   7.4542E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   40  -1120.79    0.075   -0.084    -0.277    -5.081   -30.000   5.2951E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   41  -1120.78    0.075   -0.084    -0.305    -5.161   -30.000   3.0384E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   42  -1120.78    0.075   -0.083    -0.331    -5.163   -30.000   8.7095E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   43  -1120.77    0.075   -0.083    -0.356    -5.103   -30.000  -1.0586E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   44  -1120.76    0.075   -0.083    -0.380    -5.013   -30.000  -2.6444E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   45  -1120.74    0.075   -0.082    -0.403    -4.915   -30.000  -3.8236E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   46  -1120.73    0.076   -0.082    -0.424    -4.822   -30.000  -4.5742E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   47  -1120.70    0.076   -0.082    -0.445    -4.737   -30.000  -4.9095E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   48  -1120.68    0.076   -0.081    -0.465    -4.661   -30.000  -4.8712E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   49  -1120.65    0.076   -0.081    -0.483    -4.594   -30.000  -4.5215E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   50  -1120.62    0.076   -0.081    -0.501    -4.534   -30.000  -3.9352E-04  0.300  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   51  -1118.67    0.076   -0.080    -0.518    -2.758   -30.000  -3.1920E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   52  -1118.62    0.076   -0.080    -0.534    -4.432   -30.000  -2.3699E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   53  -1118.58    0.076   -0.080    -0.549    -4.388   -30.000  -1.5395E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   54  -1118.53    0.076   -0.079    -0.563    -4.349   -30.000  -7.6043E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   55  -1118.47    0.076   -0.079    -0.577    -4.314   -30.000  -7.8477E-06  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   56  -1118.42    0.076   -0.079    -0.590    -4.282   -30.000   4.7522E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   57  -1118.35    0.076   -0.078    -0.602    -4.252   -30.000   8.8408E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   58  -1118.29    0.076   -0.078    -0.614    -4.225   -30.000   1.1449E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   59  -1118.22    0.076   -0.078    -0.625    -4.199   -30.000   1.2656E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   60  -1118.14    0.076   -0.078    -0.635    -4.176   -30.000   1.2632E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   61  -1118.06    0.076   -0.077    -0.645    -4.154   -30.000   1.1606E-04  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   62  -1117.98    0.076   -0.077    -0.654    -4.134   -30.000   9.8407E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   63  -1117.90    0.076   -0.077    -0.663    -4.115   -30.000   7.6095E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   64  -1117.81    0.076   -0.077    -0.672    -4.098   -30.000   5.1715E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   65  -1117.71    0.076   -0.076    -0.679    -4.081   -30.000   2.7568E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   66  -1117.62    0.076   -0.076    -0.687    -4.066   -30.000   5.5415E-06  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   67  -1117.52    0.076   -0.076    -0.694    -4.051   -30.000  -1.2960E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   68  -1117.42    0.076   -0.076    -0.701    -4.037   -30.000  -2.7037E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   69  -1117.31    0.076   -0.075    -0.707    -4.024   -30.000  -3.6272E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   70  -1117.20    0.076   -0.075    -0.713    -4.011   -30.000  -4.0679E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   71  -1117.09    0.076   -0.075    -0.719    -4.000   -30.000  -4.0635E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   72  -1116.97    0.076   -0.075    -0.724    -3.988   -30.000  -3.6784E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   73  -1116.86    0.076   -0.074    -0.729    -3.978   -30.000  -2.9951E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   74  -1116.74    0.076   -0.074    -0.733    -3.968   -30.000  -2.1043E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   75  -1116.61    0.076   -0.074    -0.738    -3.958   -30.000  -1.0975E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   76  -1116.49    0.076   -0.074    -0.742    -3.949   -30.000  -5.9957E-07  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   77  -1116.36    0.076   -0.073    -0.746    -3.941   -30.000   9.3490E-06  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   78  -1116.23    0.076   -0.073    -0.749    -3.932   -30.000   1.8287E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   79  -1116.10    0.076   -0.073    -0.752    -3.924   -30.000   2.5799E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   80  -1115.96    0.076   -0.073    -0.755    -3.917   -30.000   3.1638E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   81  -1115.82    0.076   -0.073    -0.758    -3.910   -30.000   3.5720E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   82  -1115.68    0.076   -0.072    -0.761    -3.903   -30.000   3.8097E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   83  -1115.54    0.076   -0.072    -0.763    -3.896   -30.000   3.8937E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   84  -1115.40    0.076   -0.072    -0.765    -3.890   -30.000   3.8483E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   85  -1115.25    0.076   -0.072    -0.767    -3.884   -30.000   3.7034E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   86  -1115.11    0.076   -0.071    -0.769    -3.878   -30.000   3.4911E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   87  -1114.96    0.076   -0.071    -0.770    -3.872   -30.000   3.2423E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   88  -1114.80    0.076   -0.071    -0.771    -3.867   -30.000   2.9850E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   89  -1114.65    0.076   -0.071    -0.773    -3.862   -30.000   2.7428E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   90  -1114.50    0.075   -0.071    -0.774    -3.857   -30.000   2.5339E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   91  -1114.34    0.075   -0.070    -0.774    -3.852   -30.000   2.3722E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   92  -1114.18    0.075   -0.070    -0.775    -3.847   -30.000   2.2599E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   93  -1114.02    0.075   -0.070    -0.776    -3.843   -30.000   2.1956E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   94  -1113.86    0.075   -0.070    -0.776    -3.839   -30.000   2.1832E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   95  -1113.70    0.075   -0.070    -0.777    -3.835   -30.000   2.2171E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   96  -1113.53    0.075   -0.069    -0.777    -3.831   -30.000   2.2883E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   97  -1113.37    0.075   -0.069    -0.777    -3.827   -30.000   2.3868E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   98  -1113.20    0.075   -0.069    -0.777    -3.823   -30.000   2.5018E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+   99  -1113.03    0.075   -0.069    -0.777    -3.820   -30.000   2.6231E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  100  -1112.86    0.075   -0.068    -0.777    -3.816   -30.000   2.7419E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  101  -1112.66    0.075   -0.068    -0.776    -3.741   -30.000   2.8508E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  102  -1112.49    0.075   -0.068    -0.776    -3.810   -30.000   2.9439E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  103  -1112.31    0.075   -0.068    -0.776    -3.807   -30.000   3.0175E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  104  -1112.14    0.074   -0.068    -0.775    -3.804   -30.000   3.0699E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  105  -1111.96    0.074   -0.067    -0.775    -3.801   -30.000   3.1010E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  106  -1111.79    0.074   -0.067    -0.774    -3.798   -30.000   3.1122E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  107  -1111.61    0.074   -0.067    -0.774    -3.796   -30.000   3.1061E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  108  -1111.43    0.074   -0.067    -0.773    -3.793   -30.000   3.0859E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  109  -1111.25    0.074   -0.067    -0.773    -3.791   -30.000   3.0553E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  110  -1111.07    0.074   -0.066    -0.772    -3.788   -30.000   3.0182E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  111  -1110.89    0.074   -0.066    -0.771    -3.786   -30.000   2.9781E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  112  -1110.70    0.074   -0.066    -0.770    -3.784   -30.000   2.9382E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  113  -1110.52    0.074   -0.066    -0.769    -3.782   -30.000   2.9009E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  114  -1110.33    0.074   -0.066    -0.768    -3.780   -30.000   2.8647E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  115  -1110.15    0.073   -0.065    -0.766    -3.778   -30.000   2.8324E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  116  -1109.96    0.073   -0.065    -0.765    -3.776   -30.000   2.8051E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  117  -1109.78    0.073   -0.065    -0.764    -3.774   -30.000   2.7840E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  118  -1109.59    0.073   -0.065    -0.764    -3.772   -30.000   2.7701E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  119  -1109.40    0.073   -0.064    -0.763    -3.770   -30.000   2.7633E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  120  -1109.21    0.073   -0.064    -0.763    -3.768   -30.000   2.7630E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  121  -1109.02    0.073   -0.064    -0.763    -3.767   -30.000   2.7673E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  122  -1108.83    0.073   -0.064    -0.762    -3.765   -30.000   2.7743E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  123  -1108.64    0.073   -0.064    -0.762    -3.764   -30.000   2.7819E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  124  -1108.45    0.073   -0.063    -0.761    -3.763   -30.000   2.7884E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  125  -1108.26    0.072   -0.063    -0.760    -3.761   -30.000   2.7945E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  126  -1108.06    0.072   -0.063    -0.760    -3.760   -30.000   2.7960E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  127  -1107.87    0.072   -0.063    -0.759    -3.759   -30.000   2.7925E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  128  -1107.68    0.072   -0.063    -0.758    -3.758   -30.000   2.7837E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  129  -1107.48    0.072   -0.062    -0.757    -3.756   -30.000   2.7704E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  130  -1107.29    0.072   -0.062    -0.756    -3.755   -30.000   2.7533E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  131  -1107.10    0.072   -0.062    -0.755    -3.754   -30.000   2.7332E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  132  -1106.90    0.072   -0.062    -0.754    -3.753   -30.000   2.7112E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  133  -1106.70    0.072   -0.062    -0.754    -3.752   -30.000   2.6819E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  134  -1106.51    0.071   -0.061    -0.753    -3.752   -30.000   2.6528E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  135  -1106.31    0.071   -0.061    -0.752    -3.751   -30.000   2.6254E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  136  -1106.11    0.071   -0.061    -0.752    -3.750   -30.000   2.6011E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  137  -1105.92    0.071   -0.061    -0.752    -3.749   -30.000   2.5805E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  138  -1105.72    0.071   -0.061    -0.751    -3.751   -30.000   2.5631E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  139  -1105.52    0.071   -0.060    -0.751    -3.744   -30.000   2.5418E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  140  -1105.32    0.071   -0.060    -0.750    -3.744   -30.000   2.5220E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  141  -1105.12    0.071   -0.060    -0.750    -3.743   -30.000   2.5048E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  142  -1104.92    0.071   -0.060    -0.750    -3.742   -30.000   2.4901E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  143  -1104.72    0.070   -0.060    -0.749    -3.742   -30.000   2.4775E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  144  -1104.52    0.070   -0.059    -0.749    -3.741   -30.000   2.4666E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  145  -1104.32    0.070   -0.059    -0.748    -3.741   -30.000   2.4568E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  146  -1104.12    0.070   -0.059    -0.748    -3.741   -30.000   2.4478E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  147  -1103.92    0.070   -0.059    -0.747    -3.740   -30.000   2.4392E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  148  -1103.72    0.070   -0.059    -0.747    -3.740   -30.000   2.4305E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  149  -1103.52    0.070   -0.058    -0.747    -3.740   -30.000   2.4215E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  150  -1103.32    0.070   -0.058    -0.746    -3.740   -30.000   2.4120E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  151  -1103.17    0.069   -0.058    -0.746    -3.878   -30.000   2.4018E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  152  -1102.97    0.069   -0.058    -0.745    -3.739   -30.000   2.3909E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  153  -1102.77    0.069   -0.058    -0.745    -3.739   -30.000   2.3794E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  154  -1102.57    0.069   -0.057    -0.745    -3.739   -30.000   2.3672E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  155  -1102.37    0.069   -0.057    -0.744    -3.739   -30.000   2.3545E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  156  -1102.17    0.069   -0.057    -0.744    -3.738   -30.000   2.3414E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  157  -1101.96    0.069   -0.057    -0.744    -3.738   -30.000   2.3281E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  158  -1101.76    0.069   -0.057    -0.744    -3.738   -30.000   2.3147E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  159  -1101.56    0.068   -0.056    -0.744    -3.738   -30.000   2.3014E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  160  -1101.36    0.068   -0.056    -0.743    -3.738   -30.000   2.2883E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  161  -1101.16    0.068   -0.056    -0.743    -3.738   -30.000   2.2755E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  162  -1100.96    0.068   -0.056    -0.743    -3.738   -30.000   2.2630E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  163  -1100.76    0.068   -0.056    -0.743    -3.738   -30.000   2.2510E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  164  -1100.55    0.068   -0.055    -0.743    -3.738   -30.000   2.2393E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  165  -1100.35    0.068   -0.055    -0.743    -3.738   -30.000   2.2279E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  166  -1100.15    0.067   -0.055    -0.743    -3.738   -30.000   2.2170E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  167  -1099.95    0.067   -0.055    -0.743    -3.738   -30.000   2.2063E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  168  -1099.75    0.067   -0.055    -0.743    -3.738   -30.000   2.1959E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  169  -1099.55    0.067   -0.054    -0.743    -3.738   -30.000   2.1857E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  170  -1099.35    0.067   -0.054    -0.743    -3.738   -30.000   2.1757E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  171  -1099.15    0.067   -0.054    -0.743    -3.738   -30.000   2.1657E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  172  -1098.95    0.067   -0.054    -0.743    -3.738   -30.000   2.1558E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  173  -1098.74    0.067   -0.054    -0.743    -3.738   -30.000   2.1460E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  174  -1098.54    0.066   -0.053    -0.743    -3.738   -30.000   2.1361E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  175  -1098.34    0.066   -0.053    -0.743    -3.738   -30.000   2.1263E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  176  -1098.14    0.066   -0.053    -0.743    -3.738   -30.000   2.1164E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  177  -1097.94    0.066   -0.053    -0.743    -3.739   -30.000   2.1065E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  178  -1097.74    0.066   -0.053    -0.743    -3.739   -30.000   2.0967E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  179  -1097.54    0.066   -0.052    -0.744    -3.739   -30.000   2.0870E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  180  -1097.34    0.066   -0.052    -0.744    -3.739   -30.000   2.0773E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  181  -1097.14    0.065   -0.052    -0.744    -3.739   -30.000   2.0677E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  182  -1096.94    0.065   -0.052    -0.744    -3.740   -30.000   2.0581E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  183  -1096.74    0.065   -0.052    -0.744    -3.740   -30.000   2.0485E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  184  -1096.54    0.065   -0.052    -0.745    -3.740   -30.000   2.0389E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  185  -1096.34    0.065   -0.051    -0.745    -3.740   -30.000   2.0294E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  186  -1096.14    0.065   -0.051    -0.745    -3.741   -30.000   2.0199E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  187  -1095.95    0.065   -0.051    -0.745    -3.741   -30.000   2.0135E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  188  -1095.75    0.064   -0.051    -0.746    -3.741   -30.000   2.0094E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  189  -1095.55    0.064   -0.051    -0.746    -3.742   -30.000   2.0070E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  190  -1095.35    0.064   -0.050    -0.746    -3.742   -30.000   2.0053E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  191  -1095.15    0.064   -0.050    -0.747    -3.742   -30.000   2.0038E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  192  -1094.95    0.064   -0.050    -0.747    -3.743   -30.000   2.0018E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  193  -1094.76    0.064   -0.050    -0.747    -3.743   -30.000   1.9987E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  194  -1094.56    0.064   -0.050    -0.748    -3.743   -30.000   1.9942E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  195  -1094.36    0.063   -0.049    -0.748    -3.744   -30.000   1.9881E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  196  -1094.16    0.063   -0.049    -0.748    -3.744   -30.000   1.9805E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  197  -1093.97    0.063   -0.049    -0.749    -3.744   -30.000   1.9716E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  198  -1093.77    0.063   -0.049    -0.749    -3.745   -30.000   1.9614E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  199  -1093.57    0.063   -0.049    -0.750    -3.745   -30.000   1.9502E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  200  -1093.38    0.063   -0.049    -0.750    -3.746   -30.000   1.9384E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  201  -1093.27    0.063   -0.048    -0.751    -3.996   -30.000   1.9263E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  202  -1093.07    0.062   -0.048    -0.751    -3.747   -30.000   1.9139E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  203  -1092.87    0.062   -0.048    -0.751    -3.747   -30.000   1.9016E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  204  -1092.68    0.062   -0.048    -0.752    -3.747   -30.000   1.8897E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  205  -1092.48    0.062   -0.048    -0.752    -3.748   -30.000   1.8783E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  206  -1092.29    0.062   -0.047    -0.753    -3.748   -30.000   1.8674E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  207  -1092.09    0.062   -0.047    -0.753    -3.749   -30.000   1.8571E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  208  -1091.90    0.062   -0.047    -0.754    -3.749   -30.000   1.8474E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  209  -1091.71    0.061   -0.047    -0.755    -3.750   -30.000   1.8381E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  210  -1091.51    0.061   -0.047    -0.755    -3.750   -30.000   1.8293E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  211  -1091.32    0.061   -0.047    -0.756    -3.751   -30.000   1.8208E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  212  -1091.12    0.061   -0.046    -0.756    -3.751   -30.000   1.8126E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  213  -1090.93    0.061   -0.046    -0.757    -3.752   -30.000   1.8044E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  214  -1090.74    0.061   -0.046    -0.757    -3.752   -30.000   1.7965E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  215  -1090.55    0.060   -0.046    -0.758    -3.753   -30.000   1.7887E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  216  -1090.35    0.060   -0.046    -0.759    -3.753   -30.000   1.7812E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  217  -1090.16    0.060   -0.046    -0.759    -3.754   -30.000   1.7738E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  218  -1089.97    0.060   -0.045    -0.760    -3.754   -30.000   1.7664E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  219  -1089.78    0.060   -0.045    -0.761    -3.755   -30.000   1.7585E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  220  -1089.59    0.060   -0.045    -0.761    -3.755   -30.000   1.7501E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  221  -1089.39    0.060   -0.045    -0.762    -3.756   -30.000   1.7414E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  222  -1089.20    0.059   -0.045    -0.763    -3.757   -30.000   1.7325E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  223  -1089.01    0.059   -0.044    -0.763    -3.757   -30.000   1.7234E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  224  -1088.82    0.059   -0.044    -0.764    -3.758   -30.000   1.7142E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  225  -1088.63    0.059   -0.044    -0.765    -3.758   -30.000   1.7050E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  226  -1088.44    0.059   -0.044    -0.765    -3.759   -30.000   1.6959E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  227  -1088.25    0.059   -0.044    -0.766    -3.759   -30.000   1.6867E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  228  -1088.07    0.059   -0.044    -0.767    -3.760   -30.000   1.6776E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  229  -1087.88    0.058   -0.043    -0.768    -3.761   -30.000   1.6685E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  230  -1087.69    0.058   -0.043    -0.768    -3.761   -30.000   1.6596E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  231  -1087.50    0.058   -0.043    -0.769    -3.762   -30.000   1.6507E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  232  -1087.31    0.058   -0.043    -0.770    -3.762   -30.000   1.6418E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  233  -1087.12    0.058   -0.043    -0.770    -3.763   -30.000   1.6331E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  234  -1086.94    0.058   -0.043    -0.771    -3.764   -30.000   1.6244E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  235  -1086.75    0.058   -0.042    -0.772    -3.764   -30.000   1.6157E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  236  -1086.56    0.057   -0.042    -0.773    -3.765   -30.000   1.6071E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  237  -1086.38    0.057   -0.042    -0.773    -3.766   -30.000   1.5986E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  238  -1086.19    0.057   -0.042    -0.774    -3.766   -30.000   1.5901E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  239  -1086.01    0.057   -0.042    -0.775    -3.767   -30.000   1.5818E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  240  -1085.82    0.057   -0.042    -0.776    -3.768   -30.000   1.5734E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  241  -1085.63    0.057   -0.041    -0.777    -3.768   -30.000   1.5652E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  242  -1085.45    0.056   -0.041    -0.777    -3.769   -30.000   1.5569E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  243  -1085.27    0.056   -0.041    -0.778    -3.769   -30.000   1.5486E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  244  -1085.08    0.056   -0.041    -0.779    -3.770   -30.000   1.5403E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  245  -1084.90    0.056   -0.041    -0.780    -3.771   -30.000   1.5320E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  246  -1084.71    0.056   -0.041    -0.780    -3.771   -30.000   1.5237E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  247  -1084.53    0.056   -0.041    -0.781    -3.772   -30.000   1.5153E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  248  -1084.35    0.056   -0.040    -0.782    -3.773   -30.000   1.5070E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  249  -1084.16    0.055   -0.040    -0.783    -3.773   -30.000   1.4986E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  250  -1083.98    0.055   -0.040    -0.784    -3.774   -30.000   1.4903E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  251  -1083.90    0.055   -0.040    -0.785    -4.098   -30.000   1.4819E-05  0.300
+  Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv
+  252  -1083.71    0.055   -0.040    -0.785    -3.776   -30.000   1.4736E-05  0.300
