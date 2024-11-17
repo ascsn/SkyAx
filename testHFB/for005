@@ -1,6 +1,7 @@
-&main outnam='job_hfb_1.0d0',title='test 120Sn',iprint=1000,itmax=1000
-/ 
-&force 
+&main outnam='tst132Sn',title='test 132Sn',iprint=1000,itmax=1000, 
+iterbcs=500, iterhfb=1000
+/
+&force
  name='none',pairstab=-0D0,HFBwidth=1.0d0,
  t0=-1879.640018,t1=313.7493427,t2=112.6762700,t3=12527.38921,
  x0=0.2585452462,x1=-0.3816889952,x2=-2.823640993,x3=0.1232283530,

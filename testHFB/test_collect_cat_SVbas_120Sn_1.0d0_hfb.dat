@@ -1,0 +1,27 @@
+deocc(1,2)= 16.D0
+cutoff=-10,hfbwidth=1.0d0,pair.strength=728
+Nmass: 120, Ncharge: 50 energy: -1015.59750566919 epairp: -0.0 epairn: -0.5 rmsc: 4.6497 beta2: 0.006 proton gap: -3.4846E-05 neutron gap: -0.1916 Max_SP_energy: 82.683
+deocc(1,2)= 16.D0
+cutoff=-20,hfbwidth=1.0d0,pair.strength=562
+Nmass: 120, Ncharge: 50 energy: -1015.54447191803 epairp: -0.0 epairn: -0.0 rmsc: 4.6512 beta2: 0.001 proton gap: -3.5573E-05 neutron gap: -4.9313E-03 Max_SP_energy: 86.272
+deocc(1,2)= 16.D0
+cutoff=-40,hfbwidth=1.0d0,pair.strength=508
+Nmass: 120, Ncharge: 50 energy: -1015.54183061591 epairp: -0.0 epairn: -0.0 rmsc: 4.6513 beta2: 0.001 proton gap: -9.6750E-05 neutron gap: -7.2196E-03 Max_SP_energy: 98.158
+deocc(1,2)= 16.D0
+cutoff=-60,hfbwidth=1.0d0,pair.strength=474
+Nmass: 120, Ncharge: 50 energy: -1015.54131989970 epairp: -0.0 epairn: -0.0 rmsc: 4.6513 beta2: 0.001 proton gap: -1.4471E-04 neutron gap: -9.3045E-03 Max_SP_energy: 105.546
+deocc(1,2)= 16.D0
+cutoff=-80,hfbwidth=1.0d0,pair.strength=428
+Nmass: 120, Ncharge: 50 energy: -1015.54025168138 epairp: -0.0 epairn: -0.0 rmsc: 4.6514 beta2: 0.001 proton gap: -1.5478E-04 neutron gap: -8.0099E-03 Max_SP_energy: 116.382
+deocc(1,2)= 16.D0
+cutoff=-100,hfbwidth=1.0d0,pair.strength=489
+Nmass: 120, Ncharge: 50 energy: -1015.54040293635 epairp: -0.0 epairn: -0.0 rmsc: 4.6513 beta2: 0.001 proton gap: -1.5612E-04 neutron gap: -1.0957E-02 Max_SP_energy: 94.872
+deocc(1,2)= 16.D0
+cutoff=-10,hfbwidth=1.0d0,pair.strength=728
+Nmass: 120, Ncharge: 50 energy: -1015.59750517643 epairp: -0.0 epairn: -0.5 rmsc: 4.6497 beta2: 0.006 proton gap: -3.4952E-05 neutron gap: -0.1916 Max_SP_energy: 83.028
+deocc(1,2)= 16.D0
+cutoff=-20,hfbwidth=1.0d0,pair.strength=562
+Nmass: 120, Ncharge: 50 energy: -1015.54447507115 epairp: -0.0 epairn: -0.0 rmsc: 4.6512 beta2: 0.001 proton gap: -3.5225E-05 neutron gap: -4.9422E-03 Max_SP_energy: 105.216
+deocc(1,2)= 16.D0
+cutoff=-40,hfbwidth=1.0d0,pair.strength=508
+Nmass: 120, Ncharge: 50 energy: -1015.54183477271 epairp: -0.0 epairn: -0.0 rmsc: 4.6513 beta2: 0.001 proton gap: -9.6888E-05 neutron gap: -7.2087E-03 Max_SP_energy: 102.199
