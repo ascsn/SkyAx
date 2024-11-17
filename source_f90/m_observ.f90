@@ -1511,7 +1511,7 @@ WRITE(7,'(a,9f9.4)') 'rms_C^2:', &
    rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
    rmspback*rmspback-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
 WRITE(7,'(a,7(1pg13.5))') '  rms_C:', &
-   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc, !&
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
 !   SQRT(6D0*(foc(1)-foc(2))/(delk**2)/foc(1))
 
 

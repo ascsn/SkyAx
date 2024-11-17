@@ -27,7 +27,7 @@ def create_and_submit_job_script(job_name, hfbwidth, ppairStrength, npairStrengt
 #SBATCH --cpus-per-task=16
 #SBATCH --propagate=CORE
 #SBATCH --time=12:59:59
-#SBATCH --mem-per-cpu=4G
+#SBATCH --mem-per-cpu=8G
 #SBATCH -A ptg
 #SBATCH -e /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/errs/error_{job_name}.err
 #SBATCH -o /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/errs/output_{job_name}.out
