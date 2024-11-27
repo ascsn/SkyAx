@@ -344,7 +344,7 @@ ELSE
   energy = energy-ezp+etpair
 END IF
 IF(itest >= 1 .OR. iter==itmax) THEN
-  WRITE(6,'(a,i5,a,2f12.4)') ' iter=',iter,  &
+  WRITE(6,'(a,i5,a,2f14.4)') ' iter=',iter,  &
       ', energies: from rearr. vs. from densities=',energr,energy
   WRITE(7,'(a,2f12.4/a,4(1pg12.5)/a,5(1pg12.5)/a,i5,1pg13.5)')  &
       '  energies: from rearr. vs. from densities=',energr,energy,  &
@@ -660,14 +660,14 @@ REAL(8) :: efree
           POSITION='APPEND')
   IF(ipair /= 4) THEN
     IF(.NOT.tsym) THEN
-      WRITE(90,'(12f7.3,f18.11,2f7.1,2f7.2,i5,4f8.4,3f11.6)')  &
+      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i5,4f8.4,3f11.6)')  &
           beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
           beta3,beta3p,beta3n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
     ELSE
-      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,i5,4f8.4,3f11.6)') &
+      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i5,4f8.4,3f11.6)') &
           beta2,beta2p,beta2n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
     END IF
     IF(ABS(apnum-npart(1)) > 1.0E-5  &
         .OR. ABS(annum-npart(2)) > 1.0E-5 ) WRITE(90,'(35x,a,2(1pg14.6))')  &

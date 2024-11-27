@@ -32,6 +32,18 @@ WRITE(7,'(10x,a)')'|| SSSSSSS K     K    Y    A     A X     X ||'
 WRITE(7,'(10x,a)')'============================================='
 WRITE(7,'(10x,a)')'     the axial Skyrme-Hartree-Fock Code'
 WRITE(7,'(10x,a)')'            >>> version x.x.x <<<       '
+
+WRITE(6,'(10x,a)')'============================================='
+WRITE(6,'(10x,a)')'|| SSSSSSS K     K Y     Y    A    X     X ||'
+WRITE(6,'(10x,a)')'|| S       K   K    Y   Y    A A    X   X  ||'
+WRITE(6,'(10x,a)')'|| S       K K       Y Y    A   A    X X   ||'
+WRITE(6,'(10x,a)')'|| SSSSSSS K          Y    A     A    X    ||'
+WRITE(6,'(10x,a)')'||       S K K        Y    AAAAAAA   X X   ||'
+WRITE(6,'(10x,a)')'||       S K   K      Y    A     A  X   X  ||'
+WRITE(6,'(10x,a)')'|| SSSSSSS K     K    Y    A     A X     X ||'
+WRITE(6,'(10x,a)')'============================================='
+WRITE(6,'(10x,a)')'     the axial Skyrme-Hartree-Fock Code'
+WRITE(6,'(10x,a)')'            >>> version x.x.x <<<       '
 END SUBROUTINE
 
 !---------------------------------------------------------------------------  

@@ -71,7 +71,9 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
         '# beta2   energy   rho_p(0,0)  rho_n(0,0)  bubbleness (total,prot,neuut)'
   END IF
   
-  OPEN(7,STATUS='unknown',FORM='formatted',FILE='out_details.'//outnam)
+!  OPEN(7,STATUS='unknown',FORM='formatted',FILE='out_details.'//outnam)
+  OPEN(7,STATUS='unknown',FORM='formatted',FILE=outnam)
+
   CALL write_skyax_header
   IF(ifoccs == 1) THEN
     WRITE(7,'(a)') ' WARNING: running IFOCCS=1 is a test version !'
@@ -504,7 +506,7 @@ CONTAINS
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: write_headers
 !> @brief
-!! Writes input parameters and conditions of actrual run on unit 7
+!! Writes input parameters and conditions of actual run on unit 7
 !> @details
 !!
 !--------------------------------------------------------------------------- 
@@ -518,8 +520,11 @@ SUBROUTINE write_headers()
   !$OMP END PARALLEL
   
   WRITE(7,'(/,10X,a,i3,a)')'SkyAx runs with ',number_threads,' OMP threads.'
+  WRITE(6,'(/,10X,a,i3,a)')'SkyAx runs with ',number_threads,' OMP threads.'
 
   WRITE(7,5001) title,outnam,nmass,nchg,nz,nzd-1,nr,nrd-1,dz,dr
+  WRITE(6,5001) title,outnam,nmass,nchg,nz,nzd-1,nr,nrd-1,dz,dr
+
   5001  FORMAT(//,10X,'Title: ',a,///, 10X,'qualifier of output files=',a,/,  &
       10X,'mass number=',i5,/, 10X,'total charge=',i5,//,  &
       10X,'mesh dimensions',/, 10X,'nz =',i5,'  maximum allowed =',i5,/,  &
@@ -527,8 +532,10 @@ SUBROUTINE write_headers()
       10X,'dz =',f5.3,'  fm',/, 10X,'dr =',f5.3,'  fm',/)
   IF(tsym) THEN
     WRITE(7,'(10x,a)') 'z-reflection symmetric calculation'
+    WRITE(6,'(10x,a)') 'z-reflection symmetric calculation'
   ELSE
     WRITE(7,'(10x,a)') 'calculations without z-reflection symmetry'
+    WRITE(6,'(10x,a)') 'calculations without z-reflection symmetry'
   END IF
   IF(idrtyp == 0) THEN
     WRITE(7,'(10x,a,2i5)') 'd/dr & d/dz from fourier.'
@@ -550,6 +557,11 @@ SUBROUTINE write_headers()
     WRITE(7,5003) avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
          fxi,h1xi,hgradxi,delfxi,isovectormodel,c0nabj,c1nabj,c0tau,c1tau,hcoul, &
          e2,h2m,ifzpe,ifex
+    WRITE(6,5003) avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
+         fxi,h1xi,hgradxi,delfxi,isovectormodel,c0nabj,c1nabj,c0tau,c1tau,hcoul, &
+         e2,h2m,ifzpe,ifex
+
+
     5003  FORMAT(/, 10X,'avp    =',f10.3,10X,'h1vp   =',f10.3,10X,'h2vp   =',f10.3,/, &
       10X,'avm    =',f10.3,10X,'h1vm   =',f10.3,10X,'h2vm   =',f10.3,/, &
       10X,'asp    =',f10.6,10X,'hsp    =',f10.6,10X,'hgradp =',f10.6,/, &
@@ -562,6 +574,7 @@ SUBROUTINE write_headers()
       10X,'h2m    =',2F12.6,/,10X,'ifzpe  =',i5,15X,'ifex   =',i5)
   ELSE
     WRITE(7,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm
+    WRITE(6,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm
     5002  FORMAT(/, 10X,'t0     =',f10.3,'  mev*fm^3',6X,/,  &
       10X,'t1     =',f10.3,'  mev*fm^5',6X,/,  &
       10X,'t2     =',f10.3,'  mev*fm^5',6X,/,  &
@@ -575,6 +588,7 @@ SUBROUTINE write_headers()
   pcutact=pair_cutoff
   IF(tcutoff_WS) pcutact=-pcutact
   WRITE(7,5005) pairfc,rho0pr
+  WRITE(6,5005) pairfc,rho0pr
   5005 FORMAT(10X,'pairfc  =',f12.3,'  strength for p',' (mev)',/,  &
       10X,'pairfc  =',f12.3,'  strength for n',' (mev)',/,  &
       10X,'rho0pr  =',1pg12.4,'  density parameter in DDDI',/)
@@ -584,11 +598,14 @@ SUBROUTINE write_headers()
       10X,'cutoff  =',0pf12.3,'  pairing cutoff '/)
   IF(tcutoff_uvspace) THEN
     WRITE(7,'(10x,a)') 'cutoff in u*v space'
+    WRITE(6,'(10x,a)') 'cutoff in u*v space'
   ELSE
     WRITE(7,'(10x,a)') 'cutoff in v**2 space'
+    WRITE(6,'(10x,a)') 'cutoff in v**2 space'
   END IF
   
   WRITE(7,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
+  WRITE(6,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
   5017  FORMAT(//,10X,'laplace equation parameters',//,  &
       10X,'colerr = ',g10.2,'  error for col iter',/,  &
       10X,'irepc  = ',i10,'  no. of iterations  ',/,  &
@@ -606,6 +623,7 @@ SUBROUTINE write_headers()
   END IF
   
   WRITE(7,5007) chg,chgx,e0inv,x0inv,addrho,addpot,addocc,tvaryX0
+  WRITE(6,5007) chg,chgx,e0inv,x0inv,addrho,addpot,addocc,tvaryX0
   5007  FORMAT(/,  &
       10X,'chg    =',f5.1,'  effective charge for direct field',/,  &
       10X,'chgx   =',f5.1,'  effective charge for exchange field',///,  &
@@ -618,6 +636,7 @@ SUBROUTINE write_headers()
       10X,'tvaryX0 =',L6,4x,'  dynamical tuning of step size x0inv',/)
  
   WRITE(7,5004) ipair,npiter,itpini
+  WRITE(6,5004) ipair,npiter,itpini
   5004 FORMAT(//,10X,'bcs pairing model parameters',//,  &
       10X,'ipair   =',i12,'  ipair=-1 nopairing',/,  &
       31X,                '  ipair=4 temperature CHF',/,  &
@@ -628,6 +647,7 @@ SUBROUTINE write_headers()
       10X,'npiter  =',i12,'  no. of pairing iterations',//,  &
       10X,'itpini  =',i12,'  no. iterations before pairing')
   WRITE(7,5014)    addocc
+  WRITE(6,5014)    addocc
   5014  FORMAT(  &
       10X,'addocc  =',f12.3,'  mixing of new and old occ. numbers')
   IF(ipair==6 .OR. ipair==8) &

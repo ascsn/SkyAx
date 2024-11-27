@@ -1,19 +1,19 @@
 import os
 import subprocess
-
+# Setting Epair = 15.5
 nucleus = f"170Yb"
 edf = f"SVbas"
-hfbwidths = ["1.0d0", "1.0d0", "1.0d0", "1.0d0"]
-ppairStrengthsBCS = ["4000", "2500", "1850", "1800"]
-npairStrengthsBCS = ["2500", "1600", "1600", "1400"]
+hfbwidths = ["1.0d0","1.0d0", "1.0d0", "1.0d0", "1.0d0"]
+ppairStrengthsBCS = ["674.6", "2335", "2031", "1976", "1958"]
+npairStrengthsBCS = ["2606.9", "2081", "1908", "1848", "1826"]
 # pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] # HFBWIDTH = 0
-ppairStrengthsHFB = ["3000", "1750", "1000", "1000"] # HFBWIDTH = 1.0
-npairStrengthsHFB = ["1500", "1200", "900", "1000"] # HFBWIDTH = 1.0
+ppairStrengthsHFB = ["674.6", "1862", "1674", "1563", "1533"] # HFBWIDTH = 1.0
+npairStrengthsHFB = ["606.9", "1713", "1556", "1448", "1419"] # HFBWIDTH = 1.0
 
 ipair = [7, 8]
-# deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
-deoccList = ["13.D0"]    
-runList = [[10,11], [25,26], [40,41], [60,61]]
+deoccList = ["2.D0","4.D0","6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
+# deoccList = ["13.D0"]    
+runList = [[5,6], [10,11], [20,21], [40,41], [60,61]]
 
 # Directory to store job scripts
 job_script_dir = "job_scripts"
@@ -24,21 +24,23 @@ def create_and_submit_job_script(job_name, hfbwidth, ppairStrength, npairStrengt
     job_script_content = f"""#!/bin/bash --login
 #SBATCH --job-name={job_name}
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=1
 #SBATCH --propagate=CORE
-#SBATCH --time=12:59:59
-#SBATCH --mem-per-cpu=8G
+#SBATCH --time=1-23:59:59
+#SBATCH --mem-per-cpu=4G
 #SBATCH -A ptg
 #SBATCH -e /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/errs/error_{job_name}.err
 #SBATCH -o /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/errs/output_{job_name}.out
 
 module purge
 module load powertools
-module load intel/2023b
-module load imkl/2023.2.0
+module load OpenBLAS/0.3.23-GCC-12.3.0
+module load intel/2023a
+# module load imkl/2023.1.0
 
 # Prepare input file
-echo \"&main outnam='{job_name}',title='test {nucleus}',iprint=1000,itmax=1000\" > for005_{inpNum}
+echo \"&main outnam='{job_name}',title='test {nucleus}',iprint=1000,itmax=10000,\" > for005_{inpNum}
+echo \" iterbcs=5000, iterhfb=10000 \" >> for005_{inpNum}
 echo \"/ \" >> for005_{inpNum}
 echo \"&force \" >> for005_{inpNum}
 echo \" name='none',pairstab=-0D0,HFBwidth={hfbwidth},\" >> for005_{inpNum}
@@ -68,7 +70,7 @@ export OMP_STACKSIZE=4500m
 # make clean
 # make ifort_omp
 # cd ../slurmjobs
-../skyax.ifort.omp < for005_{inpNum} > {job_name}_output.log
+../skyax.ifort.seq < for005_{inpNum} > {job_name}_out.log
 
 """
 

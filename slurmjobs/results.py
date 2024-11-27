@@ -6,20 +6,20 @@ import numpy as np
 
 BASE_PATH=os.getcwd()
 
-pairStrengthsBCS = ["2000", "1800", "1800", "1800"]
-pairStrengthsHFB = ["2000", "1800", "1800", "1800"] # HFBWIDTH = 1.0
+pairStrengthsBCS = ["674.6", "2335", "2031", "1976", "1958"]
+pairStrengthsHFB = ["674.6","1862", "1674", "1563", "1533"] # HFBWIDTH = 1.0
 # deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
-runList = [[10,11], [25,26], [40,41], [60,61]]
+runList = [[5,6], [10,11], [25,26], [40,41], [60,61]]
 
 # Define file path pattern to match all job files
-file_pattern = 'job_170Yb_*.log'
+file_pattern = 'job_170Yb_*out.log'
 
 # Verify files matched by glob
 files = glob.glob(file_pattern)
 
 columns = [
     "bet1", "bet1p", "bet1n", "bet2", "bet2p", "bet2n", "bet3", "bet3p", "bet3n", 
-    "bet4", "bet4p", "bet4n", "energy", "epairp", "epairn", "ferp", "fern", "iter", 
+    "bet4", "bet4p", "bet4n", "energy", "epairp", "epairn", "ferp", "fern", "gapp", "gapn",  "iter", 
     "rmsc", "rms", "rmsp", "rmsn", "N_boundp", "N_boundn", "last_value"
 ]
 with open('ensurf.job', 'r') as f:
@@ -37,9 +37,7 @@ with open('ensurf.job', 'r') as f:
                 ncharge = int(match.group(2))
         
 
-data = pd.read_csv('ensurf.job', delim_whitespace=True, comment='#', names=columns, skiprows=8)
-
-
+data = pd.read_csv('ensurf.job', sep='\\s+', comment='#', names=columns, skiprows=8)
 
 def extract_last_energy(file_path):
     with open(file_path, 'r') as file:
@@ -115,7 +113,7 @@ for file_path in files:
     # energy = extract_energy(file_path)
     energy = extract_second_energy(file_path)
     # energy = extract_last_energy(file_path)
-    print("Energies", energy, file_path)
+    # print("Energies", energy, file_path)
     
     # Find matches in the main data and create dictionary
     match_rows = data[data["energy_rounded"] == energy]
@@ -128,7 +126,9 @@ for file_path in files:
 # pattern = r"job_hfb_0\.0d0_(\d+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
 # pattern = r"job__1\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
 # pattern = r"job_hfb_1\.0d0_([\d.]+)_([\d.]+)\.D0_(\d+)_\d+_output\.log"
-pattern = r"job_(\d+[A-Za-z]+)_(bcs|hfb)_(\d+\.\d+d0)_(\d+)_([\d.]+)\.D0_(\d+)_(\d+)_output\.log"
+# pattern = r"job_(\d+[A-Za-z]+)_(bcs|hfb)_(\d+\.\d+d0)_(\d+)_([\d.]+)\.D0_(\d+)_(\d+)_out\.log"
+pattern = r"job_(\d+[A-Za-z]+)_(bcs|hfb)_(\d+\.\d+d0)_(\d+(?:\.\d+)?)_([\d]+)\.D0_(\d+)_(\d+)_out\.log"
+
 
 
 finalDF = pd.DataFrame()
@@ -145,7 +145,7 @@ try:
             Nucleus, pairType, hfbwidth, pair_strength, deocc, cutoff, cutoffHigh = file_match.groups()
             print("pair", pair_strength, deocc, cutoff)
             dfdict["Cutoff"] = cutoff
-            # dfdict["Deocc"] = str(deocc).zfill(2)
+            dfdict["Deocc"] = str(deocc).zfill(2)
             dfdict["Pair Strength"] = pair_strength
             dfdict["Pair Type"] = pairType
             dfdict["hfb width"] = hfbwidth
@@ -157,6 +157,11 @@ try:
             N_boundn = df['N_boundn'].iloc[0]
             epairp = df["epairp"].iloc[0]
             epairn = df["epairn"].iloc[0]
+            gapp = df["gapp"].iloc[0]
+            gapn = df["gapn"].iloc[0]
+            beta2 = df["bet2"].iloc[0]
+            beta2p = df["bet2p"].iloc[0]
+            beta2n = df["bet2n"].iloc[0]
 
             # print stuff
             print("Energy:",energy)
@@ -164,6 +169,11 @@ try:
             dfdict["Energy"] = energy
             dfdict["epairp"] = epairp
             dfdict["epairn"] = epairn
+            dfdict["gap_p"] = gapp
+            dfdict["gap_n"] = gapn
+            dfdict["beta2"] = beta2
+            dfdict["beta2p"] = beta2p
+            dfdict["beta2n"] = beta2n
             dfdict["RMSC"] = rmsc
             dfdict["RMSN"] = rmsn
             dfdict["N_boundn"] = N_boundn
@@ -171,7 +181,7 @@ try:
             dfupdate = pd.DataFrame([dfdict])
             finalDF = pd.concat([finalDF, dfupdate], ignore_index=True)
 
-    finalDF = finalDF.sort_values(by=['Cutoff', 'Pair Type'], ascending=[True, True])
+    finalDF = finalDF.sort_values(by=['Cutoff', 'Pair Type', 'Deocc'], ascending=[True, True, True])
 
     with open("summary_170Yb.txt", 'w') as f:
         f.write(f"Nucleus: {test_label}\n")

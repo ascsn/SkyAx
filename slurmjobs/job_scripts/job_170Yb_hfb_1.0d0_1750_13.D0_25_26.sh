@@ -24,7 +24,7 @@ echo " x0=0.2585452462,x1=-0.3816889952,x2=-2.823640993,x3=0.1232283530," >> for
 echo " t4=124.633,b4p=34.1116989,power=0.3," >> for005_5
 echo " h2m=20.749811,20.721249," >> for005_5
 echo " chg=1D0,ex=1,riftm=0D0,zpe=1," >> for005_5
-echo " ipair=8,v0prot=1750,v0neut=1200,rho0pr=0.2011591," >> for005_5
+echo " ipair=8,v0prot=1750,v0neut=1300,rho0pr=0.2011591," >> for005_5
 echo " pair_cutoff=-25,tregpair=F" >> for005_5
 echo "/ " >> for005_5
 echo "&grids tsym=F,nz=51,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0," >> for005_5

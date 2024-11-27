@@ -1,0 +1,18 @@
+Lmod has detected the following error: The previous module command attempted
+to load "imkl/2023.2.0" while "imkl/2023.1.0" was already loaded. This is
+likely due to loading a module with incompatible dependencies from the one
+currently loaded. Please use
+
+    $ module spider <original_module_name>
+
+To search for other versions that may have compatible dependencies. If there
+are no such versions, please unload your current modules with
+
+    $ module purge
+
+before attempting to load this module. For additional assistance, please
+contact ICER staff at https://contact.icer.msu.edu.
+
+
+
+normal termination 
