@@ -1,0 +1,10 @@
+#t 170Yb cut40 shells14                                                       
+# Plot potential energy surface for:
+ #test 170Yb cut40 shells14                                             
+# Nmass=  170, Ncharge=   70
+#  dz,dr:  0.700 0.700 nz,nr:  51  25
+# addrho,addpot,addocc:  0.150 1.000 0.300  c0,qeps: 0.800******
+# x0inv(fm),e0inv(mev):    0.60 110.00
+# bet1   bet1p  bet1n  bet2   bet2p  bet2n  bet3   bet3p  bet3n  bet4   bet4p  bet4n   energy           epairp epairn ferp   fern  gapp   gapn   iter   rmsc    rms    rmsp    rmsn     N_boundp  N_boundn
+  -0.000   0.000  -0.000   0.344   0.348   0.341   0.000   0.000   0.000   0.049   0.042   0.054 -1374.11251925140   -1.3   -2.0  -5.61  -7.59   -0.335   -0.35410001  5.2895  5.2979  5.2385  5.3467  69.982089  99.986168   6.355818
+                                   part.nr.=   70.0000      100.0000    

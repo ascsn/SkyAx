@@ -6,10 +6,10 @@ import numpy as np
 
 BASE_PATH=os.getcwd()
 
-pairStrengthsBCS = ["674.6", "2335", "2031", "1976", "1958"]
-pairStrengthsHFB = ["674.6","1862", "1674", "1563", "1533"] # HFBWIDTH = 1.0
-# deoccList = ["6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
-runList = [[5,6], [10,11], [25,26], [40,41], [60,61]]
+# pairStrengthsBCS = ["674.6", "2335", "2031", "1976", "1958"]
+pairStrengthsHFB = ["1563", "1533"] # HFBWIDTH = 1.0
+deoccList = ["12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
+runList = [[40,41], [60,61]]
 
 # Define file path pattern to match all job files
 file_pattern = 'job_170Yb_*out.log'

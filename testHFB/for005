@@ -1,22 +1,23 @@
-&main outnam='job_hfb_Yb170',title='test 170Yb',iprint=1000,itmax=1000
-/ 
-&force 
- name='none',pairstab=-0D0,HFBwidth=1.0d0,
- t0=-1879.640018,t1=313.7493427,t2=112.6762700,t3=12527.38921,
- x0=0.2585452462,x1=-0.3816889952,x2=-2.823640993,x3=0.1232283530,
- t4=124.633,b4p=34.1116989,power=0.3,
- h2m=20.749811,20.721249,
- chg=1D0,ex=1,riftm=0D0,zpe=1,
- ipair=8,v0prot=1000,v0neut=1734,rho0pr=0.2011591,
- pair_cutoff=-10,tregpair=F
-/ 
-&grids tsym=F,nz=101,nr=50,dr=0.35D0,dz=0.35D0,idrtyp=0,
-/ 
-&static nprot=70,nneut=100,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
-deocc(1)=11.D0,deocc(2)=11.D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,
-tvaryx0=T,inodiag=9999 
-/ 
-&constraint
-/ 
-&thermal 
-/ 
+&main outnam='job_Fay',title='test 170Yb',ipri_fields=4000,iprint=1000,itmax=1000,tpri_2d=F, itest=0, 
+ iterbcs=500, iterhfb=1000,pairenhance=1D0,iternat=10,modnat=1,  
+/  
+&force  
+ name='none', tFayans=.TRUE., ipair=8, pairstab=-0D0, ex=1, zpe=1, HFBwidth=1.D0, 
+ h2m(2)=20.72126, h2m(1)=20.74982,  
+ avp=-10.05903239,h1vp=0.6079313192,h2vp=0.2776243076, 
+ avm=47.20760687,h1vm=-0.3746093562,h2vm=54.42781346, 
+ asp=0.5283255600,hsp=0.0,hgradp=0.3274157900,c0nabj=0.1788187900,c1nabj=6.8951346000E-02, 
+ fxi=-4.519488100,h1xi=4.443955000,hgradxi=2.648612100,delfxi=-0.1881396400, 
+ pair_cutoff=-10,tcutoff_uvspace=.TRUE.  
+ isovectormodel=2  
+/  
+&grids tsym=.T.,nz=51,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0, 
+/  
+&static nprot=70,nneut=100,e0inv=110D0,x0inv=0.1D0,addrho=0.15D0,addocc=0.3D0, 
+deocc(1)=14.D0,deocc(2)=14.D0,errenr=1D-10,errvar=0.05,colerr=1D-9,itpini=0, 
+tvaryx0=F,inodiag=99999,irepc=100  
+/  
+&constraint 
+/  
+&thermal  
+/  

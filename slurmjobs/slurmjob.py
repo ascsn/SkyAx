@@ -3,17 +3,27 @@ import subprocess
 # Setting Epair = 15.5
 nucleus = f"170Yb"
 edf = f"SVbas"
-hfbwidths = ["1.0d0","1.0d0", "1.0d0", "1.0d0", "1.0d0"]
+# hfbwidths = ["1.0d0","1.0d0", "1.0d0", "1.0d0", "1.0d0"]
+# ppairStrengthsBCS = ["674.6", "2335", "2031", "1976", "1958"]
+# npairStrengthsBCS = ["2606.9", "2081", "1908", "1848", "1826"]
+# # pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] # HFBWIDTH = 0
+# ppairStrengthsHFB = ["674.6", "1862", "1674", "1563", "1533"] # HFBWIDTH = 1.0
+# npairStrengthsHFB = ["606.9", "1713", "1556", "1448", "1419"] # HFBWIDTH = 1.0
+
+hfbwidths = ["1.0d0","1.0d0"]
 ppairStrengthsBCS = ["674.6", "2335", "2031", "1976", "1958"]
 npairStrengthsBCS = ["2606.9", "2081", "1908", "1848", "1826"]
 # pairStrengthsHFB = ["628", "462", "408", "374", "328.3", "389.2"] # HFBWIDTH = 0
-ppairStrengthsHFB = ["674.6", "1862", "1674", "1563", "1533"] # HFBWIDTH = 1.0
-npairStrengthsHFB = ["606.9", "1713", "1556", "1448", "1419"] # HFBWIDTH = 1.0
+ppairStrengthsHFB = ["1563", "1533"] # HFBWIDTH = 1.0
+npairStrengthsHFB = ["1448", "1419"] # HFBWIDTH = 1.0
 
-ipair = [7, 8]
-deoccList = ["2.D0","4.D0","6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
-# deoccList = ["13.D0"]    
-runList = [[5,6], [10,11], [20,21], [40,41], [60,61]]
+
+ipair = [8]
+# deoccList = ["2.D0","4.D0","6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
+deoccList = ["12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]    
+# runList = [[5,6], [10,11], [20,21], [40,41], [60,61]]
+runList = [[40,41], [60,61]]
+
 
 # Directory to store job scripts
 job_script_dir = "job_scripts"
@@ -24,10 +34,10 @@ def create_and_submit_job_script(job_name, hfbwidth, ppairStrength, npairStrengt
     job_script_content = f"""#!/bin/bash --login
 #SBATCH --job-name={job_name}
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 #SBATCH --propagate=CORE
 #SBATCH --time=1-23:59:59
-#SBATCH --mem-per-cpu=4G
+#SBATCH --mem=64G
 #SBATCH -A ptg
 #SBATCH -e /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/errs/error_{job_name}.err
 #SBATCH -o /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/errs/output_{job_name}.out
@@ -40,7 +50,7 @@ module load intel/2023a
 
 # Prepare input file
 echo \"&main outnam='{job_name}',title='test {nucleus}',iprint=1000,itmax=10000,\" > for005_{inpNum}
-echo \" iterbcs=5000, iterhfb=10000 \" >> for005_{inpNum}
+#echo \" iterbcs=5000, iterhfb=10000 \" >> for005_{inpNum}
 echo \"/ \" >> for005_{inpNum}
 echo \"&force \" >> for005_{inpNum}
 echo \" name='none',pairstab=-0D0,HFBwidth={hfbwidth},\" >> for005_{inpNum}
@@ -56,7 +66,7 @@ echo \"&grids tsym=F,nz=51,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,\" >> for005_{inpNum
 echo \"/ \" >> for005_{inpNum}
 echo \"&static nprot=70,nneut=100,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,\" >> for005_{inpNum}
 echo \"deocc(1)={deocc_val},deocc(2)={deocc_val},errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,\" >> for005_{inpNum}
-echo \"tvaryx0=T,inodiag=9999 \" >> for005_{inpNum}
+echo \"tvaryx0=T,inodiag=99999 \" >> for005_{inpNum}
 echo \"/ \" >> for005_{inpNum}
 echo \"&constraint\" >> for005_{inpNum}
 echo \"/ \" >> for005_{inpNum}
@@ -70,7 +80,7 @@ export OMP_STACKSIZE=4500m
 # make clean
 # make ifort_omp
 # cd ../slurmjobs
-../skyax.ifort.seq < for005_{inpNum} > {job_name}_out.log
+../skyax.ifort.omp < for005_{inpNum} > {job_name}_out.log
 
 """
 
