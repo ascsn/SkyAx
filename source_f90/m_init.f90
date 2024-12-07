@@ -50,7 +50,7 @@ IMPLICIT NONE
             '  gapp   gapn   iter   rmsc    rms    rmsp    rmsn     N_boundp  N_boundn'
       ELSE
         WRITE(90,'(3a)') '# bet2   bet2p  bet2n  ',  &
-            'bet4   bet4p  bet4n     energy         epairp epairn ferp   fern  iter',  &
+            'bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter',  &
             '  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn '
       END IF
     ELSE
