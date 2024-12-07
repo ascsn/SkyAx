@@ -110,16 +110,26 @@ DO n1=1,nmaxa
   m1=mpsi(ist)
   np1=nparz(1,ist)
   CALL hpsi(psi(0:nz,0:nr,1:2,ist),psin,ist)
-  DO is=1,nsd
-    psip(0:nz,0:nr,is)=psi(0:nz,0:nr,is,ist)*pairpt(0:nz,0:nr,iso)
-    psip(0:nz,0:nr,is)=psi(0:nz,0:nr,is,ist)*pairpt(0:nz,0:nr,iso)
-  END DO
+  IF(thfbfold) THEN
+    psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iso)*psifold(0:nz,0:nr,1,ist)
+    psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iso)*psifold(0:nz,0:nr,2,ist)
+!    CALL Gaussfolding_spin(psin,psip,nparz(1,ist),mpsi(ist),1)
+  ELSE
+    DO is=1,nsd
+      psip(0:nz,0:nr,is)=psi(0:nz,0:nr,is,ist)*pairpt(0:nz,0:nr,iso)
+      psip(0:nz,0:nr,is)=psi(0:nz,0:nr,is,ist)*pairpt(0:nz,0:nr,iso)
+    END DO
+  END IF
   DO n2=1,nmaxa
     jst=n2+isonpl
     IF((toffdiag .OR. n2==n1) .AND.  &
           (mpsi(jst)==m1 .AND. nparz(1,jst)==np1) ) THEN
       hmatrix(n2,n1) = wfovlp(psi(0:nz,0:nr,1:2,jst),psin)
-      gapmatrix(n2,n1) = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(thfbfold) THEN
+        gapmatrix(n2,n1) = wfovlp(psifold(0:nz,0:nr,1:2,jst),psip)
+      ELSE
+        gapmatrix(n2,n1) = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      END IF
     END IF
   END DO
   IF(tprint) THEN
