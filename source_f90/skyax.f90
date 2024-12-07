@@ -71,8 +71,8 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
         '# beta2   energy   rho_p(0,0)  rho_n(0,0)  bubbleness (total,prot,neuut)'
   END IF
   
-!  OPEN(7,STATUS='unknown',FORM='formatted',FILE='out_details.'//outnam)
-  OPEN(7,STATUS='unknown',FORM='formatted',FILE=outnam)
+  OPEN(7,STATUS='unknown',FORM='formatted',FILE='out_details.'//outnam)
+!  OPEN(7,STATUS='unknown',FORM='formatted',FILE=outnam)
 
   CALL write_skyax_header
   IF(ifoccs == 1) THEN
