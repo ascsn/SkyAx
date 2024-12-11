@@ -6,12 +6,6 @@ import numpy as np
 
 BASE_PATH=os.getcwd()
 
-pairStrengthsBCS = ["7", "6.75", "6.75", "6.68", "6.68"]
-pairStrengthsHFB = ["10", "10", "7", "7", "5"] # HFBWIDTH = 1.0
-# deoccList = ["12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]
-deoccList = ['16.D0']   
-runList = [[5,6], [10,11], [20,21], [40,41], [60,61]]
-
 # Define file path pattern to match all job files
 file_pattern = 'job_170Yb_*out.log'
 
@@ -57,9 +51,8 @@ def preprocess_file(input_file, output_file):
 # data.columns = columns
 
 data = pd.read_csv('ensurf.job', sep='\\s+', comment='#', names=columns, skiprows=8)
-    
 
-def extract_second_energy(file_path):
+def extract_energy(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
@@ -70,7 +63,6 @@ def extract_second_energy(file_path):
         if match:
             # Append the second energy found to the list
             energies.append(float(match.group(2)))  # Extract the second energy
-    print("Energies", energies)
     # Return the second energy if it exists
     if len(energies) > 1:
         return energies[1]  # Return the second occurrence
@@ -78,19 +70,6 @@ def extract_second_energy(file_path):
         return energies[0]
     else:
         return None  # Or handle the case where it does not exist
-
-# Function to extract energy from the last three lines of a file
-def extract_energy(file_path):
-    with open(file_path, 'r') as f:
-        lines = f.readlines()
-        # print(re.search(r"(-?\d+\.\d+)$", lines[-3].strip()).group(1))
-        # Extract the energy value from the last relevant line
-        match =  re.search(r'iter=\s*\d+,\s*energies:\s*from rearr. vs. from densities=\s*([0-9.-]+)\s+([-+]?[0-9]*\.?[0-9]+)', line)
-        # match = re.search(r"energies:\s*from rearr\.\s*vs\.\s*from densities=\s*[\d.]+\s*(-?\d+\.\d+)", line)
-        # match = re.search(r"(-?\d+\.\d+)$", lines[-3].strip())  # Matches the last floating number
-        return float(match.group(1)) if match else None
-        
-
 
 # List to collect matched data
 matched_data = []
@@ -102,8 +81,7 @@ print("data energy:", data['energy'], data['energy_rounded'])
 # Process each file
 for file_path in files:
     # Extract energy from the file
-    # energy = extract_energy(file_path)
-    energy = extract_second_energy(file_path)
+    energy = extract_energy(file_path)
     print("Energies", energy, file_path)
     
     # Find matches in the main data and create dictionary
@@ -128,7 +106,7 @@ try:
     for filename, df in file_dict.items():
         # Extract values from the filename
         file_match = re.search(pattern, filename)
-        print("file_match", df['energy'].iloc[0])
+        print("file_match", file_match)
         dfdict = dict()
         if file_match:
             print("groups", file_match.groups())
@@ -136,9 +114,9 @@ try:
             # print("pair", Nucleus, pairType, hfbwidth, pair_strength, deocc, cutoff)
             dfdict["Cutoff"] = cutoff.zfill(2)
             dfdict["Deocc"] = str(deocc).zfill(2)
-            dfdict["Pair Strength"] = pair_strength
-            dfdict["Pair Type"] = pairType
-            dfdict["hfb width"] = hfbwidth
+            dfdict["Pair_Strength"] = pair_strength
+            dfdict["Pair_Type"] = pairType
+            dfdict["hfb_width"] = hfbwidth
             
             # Extract specific values from the DataFrame
             energy = df['energy'].iloc[0]
@@ -171,9 +149,9 @@ try:
             dfupdate = pd.DataFrame([dfdict])
             finalDF = pd.concat([finalDF, dfupdate], ignore_index=True)
 
-    finalDF = finalDF.sort_values(by=['Cutoff', 'Pair Type', 'Deocc'], ascending=[True, True, True])
+    finalDF = finalDF.sort_values(by=['Cutoff', 'Pair_Type', 'Deocc'], ascending=[True, True, True])
 
-    with open("summary_170Yb_Fayans_6.txt", 'w') as f:
+    with open("summary_170Yb_Fayans_13.txt", 'w') as f:
         f.write(f"Nucleus: {test_label}\n")
         f.write(f"Nmass: {nmass} \t Ncharge: {ncharge}\n")
         f.write(finalDF.to_string(header=True, index=False))
