@@ -247,13 +247,13 @@ IF(ttest) WRITE(7,'(a,i3,1pg13.5)') 'iq,pptmax=',iq,pptmax
 
 IF(ttest) WRITE(7,'(a,3(1pg13.5))')  &
     'IDANUC with v2act,e0inv,x0inv=',v2act,e0inv,x0inv
-CALL idanuc
 
 !  step   = x0inv/e0inv
 !IF(num_threads==1) THEN
 IF(num_threads==-1) THEN
   e0inv = e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix
   x0inv = x0inv/MAX(v2act,v2limh)
+  CALL idanuc
   CALL damnuc(psiact,psip,istact)
 ELSE
 !!!!$  WRITE(6,*) 'OpenMP switch',OMP_GET_THREAD_NUM() !mythread
@@ -270,7 +270,7 @@ END DO
 
 e0inv = e0sav
 x0inv = x0sav
-IF(num_threads==1) CALL idanuc
+IF(num_threads==-1) CALL idanuc
 
 DEALLOCATE(psip)
 
