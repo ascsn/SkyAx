@@ -342,8 +342,10 @@ ALLOCATE(zdnuc_dyn(0:nz,0:nz,4), rdnuc_dyn(0:nr,0:nr,0:kmpsi))
   DO i=0,nr
     rdnuc_dyn(i,i,0:kmpsi) =  one + rdnuc_dyn(i,i,0:kmpsi)
   END DO
-  
-  DO impsi=0,kmpsi
+
+  mm = mpsi(ist)
+  IF(mm<0) STOP 'DAMNUC_HFB not yet prepared for negative MPSI'
+  DO impsi=mm,mm+1
     CALL matr_inv(rdnuc_dyn(0:nr,0:nr,impsi),nr+1,nr+1)
     IF (impsi > 0) THEN
       rdnuc_dyn(0,0:nr,impsi) = 0D0
