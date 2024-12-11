@@ -42,17 +42,24 @@ LOGICAL, PARAMETER :: tprint=.FALSE.,tprint0=.FALSE.
 LOGICAL, PARAMETER :: tprint1=.FALSE.,tprinth=.FALSE.
 LOGICAL, PARAMETER :: toffdiag=.true.,tnewv2=.TRUE.
 LOGICAL, PARAMETER :: tbuffer=.TRUE.     ! use buffering for matrix products
+LOGICAL :: toccmix=.FALSE.
 !LOGICAL, PARAMETER :: tbuffert=.TRUE.    ! to test buffering selectively
 !INTEGER, PARAMETER :: ifcut=1
 !      INTEGER,PARAMETER :: iternat=0!100
 !      REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=0D0
 !REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=20D0
 REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=40D0
-
+REAL(8) :: conocc  
+  
 !--------------------------------------------------------------------
 
 IF(iternat<0) RETURN
+
 partnum=partnumin
+IF(addocc<1D0) THEN
+  toccmix=.TRUE.
+  conocc = 1D0-addocc
+END IF
 
 !?      isoadd = (iso-1)*ngrid
 !?      isnpad = (iso-1)*kjmx
@@ -76,7 +83,8 @@ IF(tprint0) WRITE(6,'(a,2i4,4(1pg13.5))')  &
     'HFB natural for iso,nmaxa,eferm,partnum=',iso,nmaxa,efermiso, partnum
 ALLOCATE(lambda(nmaxa,nmaxa),cmnew(nmaxa,nmaxa),gapnat(nmaxa))
 ALLOCATE(hmatrix(nmaxa,nmaxa),gapmatrix(nmaxa,nmaxa))
-!ALLOCATE(gwa(nmaxa),hcm(nmaxa,nmaxa))
+!ALLOCATE(hcm(nmaxa,nmaxa))
+IF(toccmix) ALLOCATE(gwa(nmaxa))
 ALLOCATE(hcm(nmaxa,nmaxa))
 ALLOCATE(paircut_uv(nmaxa),paircut_v2(nmaxa),phasfac(nmaxa),spenat(nmaxa))
 !ALLOCATE(jssav(nmaxa))
@@ -158,9 +166,11 @@ IF(tnewv2) THEN
   IF(pairstab /= 0)  &
       CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair(iso),  &
       pairstab,nmaxa,nmaxa,iab,tcutoff_uvspace)
+  IF(toccmix) gwa=v2a
   CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
       nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)  
+  IF(toccmix) v2a=addocc*v2a+conocc*gwa
   IF(tprint0) WRITE(6,'(a,6(1pg13.5))') 'after PAIRDN:',  &
       efermiso,epair(iso),gap(iso),efadd
   IF(tprint0 .AND. iso==2) THEN
@@ -515,6 +525,7 @@ CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv,paircut_v2,phasfac)
 DEALLOCATE(lambda,cmnew,gapnat,hmatrix,gapmatrix)
 DEALLOCATE(paircut_uv,paircut_v2,phasfac,spenat,v2a,uva,cm)
 DEALLOCATE(dummy,symcond,hcm)
+IF(toccmix) DEALLOCATE(gwa)
 
 IF(iso==1) THEN
   feradd(1)=efadd
