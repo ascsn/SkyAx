@@ -245,14 +245,14 @@ uvact = SQRT(MAX(v2act-v2act*v2act,xsmall))
 pptmax = maxval(ABS(pairpt(0:nz,0:nr,iq)))
 IF(ttest) WRITE(7,'(a,i3,1pg13.5)') 'iq,pptmax=',iq,pptmax
 
-IF(ttest) WRITE(7,'(a,3(1pg13.5))')  &
-    'IDANUC with v2act,e0inv,x0inv=',v2act,e0inv,x0inv
 
 !  step   = x0inv/e0inv
 !IF(num_threads==1) THEN
 IF(num_threads==-1) THEN
   e0inv = e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix
   x0inv = x0inv/MAX(v2act,v2limh)
+  IF(ttest) WRITE(7,'(a,3(1pg13.5))')  &
+    'IDANUC with v2act,e0inv,x0inv=',v2act,e0inv,x0inv
   CALL idanuc
   CALL damnuc(psiact,psip,istact)
 ELSE
