@@ -227,7 +227,6 @@ REAL(8), INTENT(IN OUT) :: psiact(0:nz,0:nr,nsd)
 REAL(8), INTENT(IN)     :: v2act
 INTEGER, INTENT(IN)     :: istact
 
-REAL(8), PARAMETER :: v2limh=1D-6,delmix=0.8D0  ! flexible damping parameters
 !REAL(8), PARAMETER :: xsmall=1D-99
 LOGICAL, PARAMETER :: ttest=.FALSE.
 
