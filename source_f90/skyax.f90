@@ -36,8 +36,9 @@ INTEGER :: iqact0,iqact2,iqact3,iqact4,itemp,ntempmax
 INTEGER :: iqact0o,iqact2o,iqact3o,iqact4o    ! save previous values
 INTEGER :: ipairsav            ! saves initial setting of pairing model
 
-NAMELIST /main/ iprint,itmax,itest, &
-                iterbcs,iterhfb,pairenhance,modnat,iternat,tnobcs, &
+NAMELIST /main/ iprint,itmax,itest,&
+                iterbcs,iterhfb,pairenhance,modnat,iternat,tnobcs,&
+                v2limh,delmix,&
                 title,outnam,&
                 ipri_fields,tpri_occup,tpri_conver,tpri_bubble,tpri_2d,&
                 tpri_radii,tpri_formf
