@@ -227,7 +227,6 @@ REAL(8), INTENT(IN OUT) :: psiact(0:nz,0:nr,nsd)
 REAL(8), INTENT(IN)     :: v2act
 INTEGER, INTENT(IN)     :: istact
 
-REAL(8), PARAMETER :: v2limh=1D-6,delmix=0.8D0  ! flexible damping parameters
 !REAL(8), PARAMETER :: xsmall=1D-99
 LOGICAL, PARAMETER :: ttest=.FALSE.
 
@@ -245,14 +244,14 @@ uvact = SQRT(MAX(v2act-v2act*v2act,xsmall))
 pptmax = maxval(ABS(pairpt(0:nz,0:nr,iq)))
 IF(ttest) WRITE(7,'(a,i3,1pg13.5)') 'iq,pptmax=',iq,pptmax
 
-IF(ttest) WRITE(7,'(a,3(1pg13.5))')  &
-    'IDANUC with v2act,e0inv,x0inv=',v2act,e0inv,x0inv
 
 !  step   = x0inv/e0inv
 !IF(num_threads==1) THEN
 IF(num_threads==-1) THEN
   e0inv = e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix
   x0inv = x0inv/MAX(v2act,v2limh)
+  IF(ttest) WRITE(7,'(a,3(1pg13.5))')  &
+    'IDANUC with v2act,e0inv,x0inv=',v2act,e0inv,x0inv
   CALL idanuc
   CALL damnuc(psiact,psip,istact)
 ELSE
