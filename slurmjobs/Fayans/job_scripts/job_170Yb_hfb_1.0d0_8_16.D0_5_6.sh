@@ -1,11 +1,11 @@
 #!/bin/bash --login
 #SBATCH --job-name=job_170Yb_hfb_1.0d0_8_16.D0_5_6
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=64
 #SBATCH --propagate=CORE
-#SBATCH --time=6-23:59:59
+#SBATCH --time=1-23:59:59
 ##SBATCH --mem=64G
-#SBATCH -A ptg
+##SBATCH -A ptg
 #SBATCH -e /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/Fayans/errs/error_job_170Yb_hfb_1.0d0_8_16.D0_5_6.err
 #SBATCH -o /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/Fayans/outs/output_job_170Yb_hfb_1.0d0_8_16.D0_5_6.out
 

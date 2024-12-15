@@ -3,8 +3,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
 #SBATCH --propagate=CORE
-#SBATCH --time=6-23:59:59
-##SBATCH --mem=64G
+#SBATCH --time=1-23:59:59
+#SBATCH --mem=64G
 #SBATCH -A ptg
 #SBATCH -e /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/Fayans/errs/error_job_170Yb_bcs_0.0d0_4.4_16.D0_40_41.err
 #SBATCH -o /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/Fayans/outs/output_job_170Yb_bcs_0.0d0_4.4_16.D0_40_41.out

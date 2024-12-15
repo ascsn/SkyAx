@@ -3,16 +3,16 @@ import subprocess
 # Setting Epair = 15.5
 nucleus = f"170Yb"
 edf = f"FyDr"
-hfbwidths = ["0.0d0","0.0d0", "0.0d0", "0.0d0", "0.0d0"]
-# hfbwidths = ["1.0d0","1.0d0", "1.0d0", "1.0d0", "1.0d0"]
+# hfbwidths = ["0.0d0","0.0d0", "0.0d0", "0.0d0", "0.0d0"]
+hfbwidths = ["1.0d0","1.0d0", "1.0d0", "1.0d0", "1.0d0"]
 
 
-pairStrengthsBCS = ["4.7", "4.59", "4.473", "4.45", "4.2"] # HFBWIDTH = 0
+# pairStrengthsBCS = ["4.7", "4.59", "4.473", "4.394", "4.15"] # HFBWIDTH = 0
 # pairStrengthsBCS = ["7", "6.75", "6.5", "6.6", "6.62"] # HFBWIDTH = 1
 
 pairStrengthsHFB = ["8", "8", "6.5", "6.6", "6.6"] # HFBWIDTH = 1
 
-ipair = [7]
+ipair = [8]
 # deoccList = ["2.D0","4.D0","6.D0", "8.D0", "10.D0","12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]   
 # deoccList = ["12.D0", "13.D0", "14.D0", "16.D0", "18.D0"]    
 deoccList = ["16.D0"]
@@ -29,11 +29,11 @@ def create_and_submit_job_script(job_name, hfbwidth, pairStrength, deocc_val, ip
     job_script_content = f"""#!/bin/bash --login
 #SBATCH --job-name={job_name}
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=64
 #SBATCH --propagate=CORE
-#SBATCH --time=6-23:59:59
+#SBATCH --time=1-23:59:59
 ##SBATCH --mem=64G
-#SBATCH -A ptg
+##SBATCH -A ptg
 #SBATCH -e /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/Fayans/errs/error_{job_name}.err
 #SBATCH -o /mnt/home/lalitsud/Witek/SkyAx/slurmjobs/Fayans/outs/output_{job_name}.out
 

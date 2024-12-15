@@ -151,7 +151,7 @@ try:
 
     finalDF = finalDF.sort_values(by=['Cutoff', 'Pair_Type', 'Deocc'], ascending=[True, True, True])
 
-    with open("summary_170Yb_Fayans_13.txt", 'w') as f:
+    with open("summary_170Yb_Fayans_hfb_1.txt", 'w') as f:
         f.write(f"Nucleus: {test_label}\n")
         f.write(f"Nmass: {nmass} \t Ncharge: {ncharge}\n")
         f.write(finalDF.to_string(header=True, index=False))
