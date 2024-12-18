@@ -1012,7 +1012,8 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
 !    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
 !         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
     vsqobs(1:nsttot) = vsqf(1:nsttot)
-    IF(thfb .AND. iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+!    IF(thfb .AND. iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+    IF(thfb .AND. iter>iterbcs .AND. MOD(iter,modnat)==0) THEN
       IF(tFayans) THEN
         CALL fy_hfbpot()
       END IF
