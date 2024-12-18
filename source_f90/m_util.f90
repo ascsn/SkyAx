@@ -211,5 +211,38 @@ DEALLOCATE(wrk1)
 RETURN
 END SUBROUTINE protfold
 
+SUBROUTINE stimer(iaction,text)
+
+!     Initializes timer and retrieves CPU times                                                                                                                      
+!       iaction  = 1  for initial call                                                                                                                               
+!                  2  for subsequent call                                                                                                                            
+!     The relative time is taken between step 2 and 1.                                                                                                               
+
+!USE dynpar
+
+INTEGER, INTENT(IN) :: iaction
+CHARACTER(*), INTENT(IN) :: text
+
+INTEGER, SAVE :: itimeold=0,itimenew=0,itimeinit
+
+!-----------------------------------------------------------------                                                                                                   
+
+
+IF(iaction == 1) THEN
+  CALL system_clock(itimeold)
+  itimeinit = itimeold
+ELSE IF(iaction == 2) THEN
+  CALL system_clock(itimenew)
+  WRITE(6,'(a,2(1pg13.5))') text//' time=',&
+   (itimenew-itimeold)*1D-4,(itimenew-itimeinit)*1D-4
+  itimeold = itimenew
+ELSE
+  STOP 'SYS.TIMER: this IACTION is not valid'
+END IF
+
+RETURN
+END SUBROUTINE stimer
+
+
 END MODULE
 

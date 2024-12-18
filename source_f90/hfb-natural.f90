@@ -6,7 +6,7 @@
 SUBROUTINE hfb_natural(iso,efermiso,partnumin)
 
 USE paramr
-
+USE util, ONLY: stimer
 !     Solves the HFB equations for natural orbitals as matrix equations
 !     in the space of given s.p. states for nucleon type 'iso'.
 !     Version for the 2D code.
@@ -42,6 +42,8 @@ LOGICAL, PARAMETER :: tprint=.FALSE.,tprint0=.FALSE.
 LOGICAL, PARAMETER :: tprint1=.FALSE.,tprinth=.FALSE.
 LOGICAL, PARAMETER :: toffdiag=.true.,tnewv2=.TRUE.
 LOGICAL, PARAMETER :: tbuffer=.TRUE.     ! use buffering for matrix products
+LOGICAL, PARAMETER :: ttimer=.FALSE.   ! test CPU usage
+
 LOGICAL :: toccmix=.FALSE.
 !LOGICAL, PARAMETER :: tbuffert=.TRUE.    ! to test buffering selectively
 !INTEGER, PARAMETER :: ifcut=1
@@ -113,6 +115,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 hmatrix=0D0
 gapmatrix=0D0
 cm=0D0
+CALL stimer(1,'hpsi')
 DO n1=1,nmaxa
   ist=n1+isonpl
   m1=mpsi(ist)
@@ -151,8 +154,10 @@ DO n1=1,nmaxa
   spenat(n1) = hmatrix(n1,n1)  !+efermiso
   gapnat(n1) = gapmatrix(n1,n1)
 END DO
+CALL stimer(2,'hpsi')
 DEALLOCATE(psip,psin)
 
+CALL stimer(1,'pair+symcond')
 !IF(.NOT.tFayans) &
   CALL update_energy_order(nmaxa,spenat(1:nmaxa),iorder(1+isonpl:nmaxa+isonpl))     ! sorting to energy
 IF(tprint1) WRITE(6,'(a,5000(2i4,2x))') 'IORDER:',  &
@@ -267,6 +272,7 @@ IF(tprint0) THEN
     END DO
   END IF
 END IF
+CALL stimer(2,'pair+symcond')
 
 IF(iternat <= 0) RETURN
 
@@ -276,6 +282,7 @@ iab=-2
 IF(tprint1) iab=-1
 DO iter=1,iternat
   
+CALL stimer(1,'hpsi config')
   
 !     h->psi in configuration space
   IF(tbuffer) THEN
@@ -312,9 +319,11 @@ DO iter=1,iternat
       END DO
     END DO
   END IF
+CALL stimer(2,'hpsi config')
 !     matrix of Lagrangian parameters and symmetry condition
 !        lambda=0D0
 !        uva(:)=uva(:)*paircut(:)
+CALL stimer(1,'symcond')
   symcond=0D0
   lambda=0D0
   IF(tbuffer) THEN
@@ -344,11 +353,14 @@ DO iter=1,iternat
       symcond(nb,na)= -symcond(na,nb)
     END DO; END DO
   END IF
+CALL stimer(2,'symcond')
   IF(tprint0) WRITE(6,'(a,1pg13.5)') 'before step average symm.cond.:',  &
       SQRT(sum(symcond(:,:)**2)/partnum)
 !        nitsub=1
 !        DO itsub=1,nitsub
+
 !     gradient step
+CALL stimer(1,'gradstep')
   spemin=minval(spenat,nmaxa)
   spemax=maxval(spenat,nmaxa)
   delstep=delstepbas/(spemax-spemin)
@@ -406,8 +418,10 @@ DO iter=1,iternat
       END DO
     END DO
   END IF
+CALL stimer(2,'gradstep')
   
 !     ortho-normalize
+CALL stimer(1,'orthnorm')
   cm=cmnew
   IF(tbuffer .AND. 1==2) THEN   ! there is bug in the 'tbuffer' branch ==> skip
     DO nae=1,nmaxa               ! loop runs energy sorted
@@ -444,34 +458,57 @@ DO iter=1,iternat
       cm(:,na)=cm(:,na)*ovlaa
     END DO
   END IF
+CALL stimer(2,'orthnorm')
   
 !        END DO          ! end of sub-iterations
 !     new energies and occupations
-  DO na=1,nmaxa
-    spenat(na) = 0D0
-    gapnat(na) = 0D0
-    DO n1=1,nmaxa
-      spenat(na) =spenat(na)+cm(n1,na)*sum(hmatrix(n1,:)*cm(:,na))
-      gapnat(na) = gapnat(na)+ cm(n1,na)*sum(gapmatrix(n1,:)*cm(:,na))
+CALL stimer(1,'spenat')
+  IF(tbuffer) THEN
+    DO na=1,nmaxa
+      spenat(na) = 0D0
+      gapnat(na) = 0D0
+      ist=na+isonpl
+      istbuf=nbuf(ist)
+      np1=nparz(1,ist)
+      nblo=mlo(istbuf)-isonpl
+      nbhi=mhi(istbuf)-isonpl
+      DO n1=nblo,nbhi !1,nmaxa
+        spenat(na) =spenat(na)+cm(n1,na)*sum(hmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na))
+        gapnat(na) = gapnat(na)+ cm(n1,na)*sum(gapmatrix(n1,nblo:nbhi)*cm(nblo:nbhi,na))
+      END DO
     END DO
-  END DO
+  ELSE
+    DO na=1,nmaxa
+      spenat(na) = 0D0
+      gapnat(na) = 0D0
+      DO n1=1,nmaxa
+        spenat(na) =spenat(na)+cm(n1,na)*sum(hmatrix(n1,:)*cm(:,na))
+        gapnat(na) = gapnat(na)+ cm(n1,na)*sum(gapmatrix(n1,:)*cm(:,na))
+      END DO
+    END DO
+  END IF
+CALL stimer(2,'spenat')
+CALL stimer(1,'pairdn')
   IF(pairstab /= 0)  &
       CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair(iso),  &
       pairstab,nmaxa,nmaxa,iab,tcutoff_uvspace)
   CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
       nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)
+CALL stimer(2,'pairdn')
   IF(tcutoff_uvspace) THEN                               ! check
     uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)
   ELSE
     uva(:)=SQRT((1D0-v2a(:))*v2a(:))
   END IF
+CALL stimer(1,'symcond2')
   avsymcond=0D0
   symcondmax=0D0
   DO na=1,nmaxa
     avsymcond=avsymcond+sum(symcond(:,na)**2)
     symcondmax=MAX(symcondmax,maxval(ABS(symcond(:,na))))
   END DO
+CALL stimer(2,'symcond2')
   IF(tprint0) THEN
     WRITE(6,'(a,i5)') 'HFB natural: iter=',iter
     WRITE(6,'(a,6(1pg13.5))') 'partnum,eferm,epair,delst,symm=',  &
@@ -493,6 +530,7 @@ DO iter=1,iternat
 !          WRITE(7,'(a,2i5,1pg13.5)') 'HFB natural: iso,iter,symm=',
 !     &         iso,iter,SQRT(avsymcond/partnum)
   END IF
+!CALL stimer(2,'newenerg')
   
 END DO
 
@@ -508,6 +546,7 @@ WRITE(6,'(a,i2,4(1pg13.5))')  &
     'HFB final symmetry condition: iso,max,average=', iso,symcondmax,symcondf(iso)
 !      CALL  hfb_nat_densit(iso,nmaxa,cm,v2a,uva,jssav,phasfac)
 !CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv(isonpl+1),paircut_v2(isonpl+1),phasfac)
+CALL stimer(1,'mapwf')
 CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv,paircut_v2,phasfac)
 !IF(iso==2)  WRITE(6,'(a,1pg13.5)') 'SUMUVnat:',SUM(SQRT(v2a(1:nmaxa)-v2a(1:nmaxa)**2))
   IF(tprint1) THEN
@@ -521,6 +560,7 @@ CALL  hfb_nat_mapwf(iso,nmaxa,cm,v2a,paircut_uv,paircut_v2,phasfac)
 !          deltaf(nb),wtpair_uv(nb),wate(nb)
     END DO
   END IF
+CALL stimer(2,'mapwf')
 
 DEALLOCATE(lambda,cmnew,gapnat,hmatrix,gapmatrix)
 DEALLOCATE(paircut_uv,paircut_v2,phasfac,spenat,v2a,uva,cm)

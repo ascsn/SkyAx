@@ -34,10 +34,6 @@ INTEGER, INTENT(IN)     :: istmin,istmax,iter
 LOGICAL, INTENT(IN)     :: tqq
 
 
-
-
-
-
 REAL(8), ALLOCATABLE :: hlagr(:,:)
 REAL(8), ALLOCATABLE :: symatrix(:,:)
 
@@ -45,7 +41,6 @@ REAL(8), ALLOCATABLE :: symatrix(:,:)
 
 LOGICAL, PARAMETER :: tbcs=.FALSE.    ! testswitch
 LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
-
 REAL(8) :: v2a,uva
 INTEGER :: mist,npzist,jst,ist,is,iq,mythread
 
@@ -246,7 +241,7 @@ IF(ttest) WRITE(7,'(a,i3,1pg13.5)') 'iq,pptmax=',iq,pptmax
 
 
 !  step   = x0inv/e0inv
-!IF(num_threads==1) THEN
+!IF(num_threads==1) THENx
 IF(num_threads==-1) THEN
   e0inv = e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix
   x0inv = x0inv/MAX(v2act,v2limh)
