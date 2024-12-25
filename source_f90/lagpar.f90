@@ -241,7 +241,7 @@ IF(ttest) WRITE(7,'(a,i3,1pg13.5)') 'iq,pptmax=',iq,pptmax
 
 
 !  step   = x0inv/e0inv
-!IF(num_threads==1) THENx
+!IF(num_threads==1) THEN
 IF(num_threads==-1) THEN
   e0inv = e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix
   x0inv = x0inv/MAX(v2act,v2limh)

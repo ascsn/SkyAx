@@ -239,6 +239,7 @@ END IF
   ELSE
     CALL Skyrme_potentials()  
   END IF
+!  WRITE(6,*) 'after Fayans:',SUM(pot(0:nz,0:nr,1))
 
 !***************************************************************   
 !     add Coulomb potential
@@ -254,6 +255,7 @@ END IF
     END DO
     ecoul  = f1int(wrk1(0:nz,0:nr))
     ecolex = f1int(wrk2(0:nz,0:nr))*excfac*0.75D0
+!    WRITE(6,*) 'ECOUL,ECOLEX=',ecoul,ecolex,SUM(pot(0:nz,0:nr,1))
     IF(MOD(iter,iprint) == 0 .AND. itest >= 1) THEN
       CALL test_print(coulpt(0,0),0,nz_testp,0,nr_testp,'coulpt')
     END IF
@@ -387,6 +389,7 @@ END IF
     END IF
   END IF  
 
+!WRITE(6,*) 'POT:',SUM(pot(0:nz,0:nr,1)),SUM(pot(0:nz,0:nr,2))
 IF(MOD(iter,iprint) == 10000) THEN
   CALL test_print(pot(0:nz,0:nr,1),0,nz,0,nr,'potp')
   CALL test_print(bmass(0:nz,0:nr,1),0,nz,0,nr,'bmassp')
@@ -547,9 +550,10 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
   CALL nablar_scalar(rho(0:nz,0:nr,2),psip(0:nz,0:nr,2), 0,1,one)
   
   IF(tpair) parfac = 1D0/rho0pr         ! factor on pairing potential
-  
+
+!  WRITE(6,*) 'before composing potentials:',SUM(d2rho(0:nz,0:nr,1)),SUM(d2rho(0:nz,0:nr,2))
 !***************************************************************   
-!     compose mean-field potentials
+  !     compose mean-field potentials
 !***************************************************************   
 !  pot(0,0,:) =0D0
   iq=1
@@ -567,6 +571,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
       ssp     = drhols(iz,ir,iq)
       sss     = drhols(iz,ir,ic)+ssp
       
+!WRITE(6,*) 'Fy-loop_',iz,ir,crho(iz,ir)
       CALL fyfunc_local(rho(iz,ir,1),rho(iz,ir,2),crho(iz,ir),  &
                 psip(iz,ir,1),psin(iz,ir,1),psip(iz,ir,2),psin(iz,ir,2),  &
                 d2rho(iz,ir,1),d2rho(iz,ir,2),  &
@@ -586,6 +591,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
 
   DEALLOCATE(psip,psin,workenerg)
 
+!  WRITE(6,*) 'end of FAYANS:',SUM(pot(:,:,1)),SUM(pot(:,:,2))
 END SUBROUTINE Fayans_potentials
 
 END SUBROUTINE mfhmlt

@@ -191,8 +191,8 @@ IMPLICIT NONE
 REAL(8), INTENT(IN)                         :: rhoin(0:nz,0:nr)
 REAL(8), INTENT(OUT)                        :: rhofold(0:nz,0:nr)
 
-REAL(8), PARAMETER :: rcut1=0.55D0
-REAL(8), PARAMETER :: rcut2=rcut1*rcut1
+REAL(8), PARAMETER :: rcut1=0.8D0  !0.55D0
+REAL(8), PARAMETER :: rcut2=rcut1*rcut1/6D0
 
 REAL(8),ALLOCATABLE :: wrk1(:,:)
 
@@ -200,10 +200,10 @@ ALLOCATE(wrk1(0:nz,0:nr))
 wrk1=0D0
 
 !     first folding term, stored temporarily on 'rhofold'
-CALL laplacer_scalar(rhoin(0:nz,0:nr),rhofold(0:nz,0:nr), 0, 1, rcut2)
+CALL laplace_scalar(rhoin(0:nz,0:nr),rhofold(0:nz,0:nr), 1, 0, 1, rcut2)
 
 !     second folding term, stored on 'wrk1'
-CALL laplacer_scalar(rhofold(0:nz,0:nr), wrk1(0:nz,0:nr), 0, 1, rcut2/2D0)
+CALL laplace_scalar(rhofold(0:nz,0:nr), wrk1(0:nz,0:nr), 1, 0, 1, rcut2/2D0)
 
 !     compose
 rhofold(0:nz,0:nr) = rhoin(0:nz,0:nr)+rhofold(0:nz,0:nr)+wrk1(0:nz,0:nr)
