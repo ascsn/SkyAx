@@ -118,7 +118,6 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
     pairfcsav = pairfc
   END IF
 
-
   
 !**********************************************************************
 !                                                                     *
@@ -136,6 +135,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   END IF
   
   IF(itest>0) WRITE(6,*)  'Grids: ',tsym,sym,nr,nz,dr,dz,idrtyp
+FLUSH(6)
 
 !**********************************************************************
 !                                                                     *
@@ -232,6 +232,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
     IF(ipair>0) CALL inipai(nmass)
   END IF
   IF(thfbfold) CALL init_Gaussfolding()
+  IF(tcoulfold) CALL init_protonfolding()
 
 !**********************************************************************
 !                                                                     *
@@ -353,12 +354,12 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
             fxi = fxisav*pairfacact
             h1xi = h1xisav*pairfacact
             hgradxi = hgradxisav*pairfacact
-            pairfc = pairfcsav*pairfacact
+            IF(.NOT.tFayans) pairfc = pairfcsav*pairfacact
           ELSE
             fxi = fxisav
             h1xi = h1xisav
             hgradxi = hgradxisav
-            pairfc = pairfcsav
+            IF(.NOT.tFayans) pairfc = pairfcsav
           END IF
         ELSE
         END IF

@@ -274,6 +274,8 @@ CONTAINS
          fxi,h1xi,hgradxi,delfxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
          isovectormodel,tcutoff_uvspace,tregpair
 
+WRITE(6,*) ' before reading force'
+
     READ(5,force)
     predefined=.FALSE.
     DO i=1,nforce
