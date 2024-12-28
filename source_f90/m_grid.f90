@@ -2027,7 +2027,7 @@ END SUBROUTINE init_protonfolding
 !! Initialization of matrices 'protfolz' and 'protfolr' for proton folding.
 !> @details
 !! This version mixes analytical folding matrics in z-direction  with
-!! eigenstates from diagopanlizing the derivative matrix in r-direction.
+!! eigenstates from diagonalizing the derivative matrix in r-direction.
 !--------------------------------------------------------------------------- 
 SUBROUTINE init_protonfolding_mixed()
 
@@ -2045,9 +2045,11 @@ INTEGER,ALLOCATABLE:: iwork(:)
 
 REAL(8), PARAMETER :: protonwidth=0.8D0
 REAL(8), PARAMETER :: protonfactor=protonwidth**2/6D0
+REAL(8), PARAMETER :: epsil_Gauss=1D-5     ! cutoff for Gaussian
 
 INTEGER            :: iparmax, ibuf,in, ndimact, ndimksum
 INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
+INTEGER            :: nGauss                    ! number of popints for Gaussian
 INTEGER            :: lwork,liwork,info
 REAL(8)            :: buf,buf1,buf2,zeroold,zero
 
@@ -2062,75 +2064,32 @@ WRITE(6,*) 'initialize proton folding with Bessel basis'
 !     ===============================================================
 !     initialize folding matrix in z direction
 !     ===============================================================
-ndimact=nz
-lwork=1+6*ndimact+2*ndimact**2
-liwork=3+5*ndimact
-ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
 
-eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-!DO in=1,4
-  in=1     ! only symmetric, b.c. zero
-  IF(ttestgauss) WRITE(6,'(a,200f7.2)') 'z(*):',z(0:nz)
-  IF(tsym) THEN
-    DO i=1,ndimact
-      eigval(i) = pi*(0.5D0+i-1)/z(nz)
-      DO j=1,ndimact
-        eigvec(j,i) = COS(eigval(i)*z(j))
-      END DO
-      buf=SUM(eigvec(:,i)**2)-0.5D0*eigvec(1,i)**2
-      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(buf)
-    END DO
-  ELSE
-    DO i=1,ndimact
-      eigval(i) = pi*0.5D0*i/z(nz)
-      IF(MOD(i,2)>0) THEN
-        DO j=1,ndimact
-          eigvec(j,i) = COS(eigval(i)*z(j))
-        END DO
-      ELSE
-        DO j=1,ndimact
-          eigvec(j,i) = SIN(eigval(i)*z(j))
-        END DO
-      END IF
-      buf=SUM(eigvec(:,i)**2)-0.5D0*eigvec(1,i)**2
-      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(buf)
-    END DO
-  END IF
+nGauss = NINT(SQRT(-2D0*LOG(epsil_Gauss))*protonwidth/dz)
+ALLOCATE(work(-nGauss:nGauss))
 
-  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z**2:',-eigval**2
-  IF(ttestgauss) THEN
-    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
-    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(2):',eigvec(:,2)
-    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(3):',eigvec(:,3)
-    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(4):',eigvec(:,4)
-    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(5):',eigvec(:,5)
-    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
-    WRITE(6,*) 'ortho-normality of z-basis:'
-    DO i=1,ndimact
-      WRITE(6,'(50(1pg13.5))') (SUM(eigvec(:,j)*eigvec(:,i))-0.5D0*eigvec(1,j)*eigvec(1,i),j=1,ndimact)
-    END DO
-  END IF
-  eigval = EXP(-eigval**2*protonfactor)
-  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL fold:',eigval
-  DO i=1,ndimact; DO j=1,ndimact
-!   sum over "Bessel" eigenstates                                                                                                             
-    protfolz(i,j,in)=0D0
-    DO k = 1, ndimact
-      protfolz(i,j,in) = protfolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
-    END DO
+DO i=-nGauss,nGauss
+  work(i) = EXP(-(i*dz/protonwidth)**2*1.5D0)
+END DO
+buf=SUM(work)
+work(:) = work(:)/buf
+  in=1
+  protfolz(:,:,in)=0D0
+  DO i=0,nz; DO j=-nGauss,nGauss
+    IF(i-j.GE.0 .AND. i-j.LE.nz) protfolz(i,i-j,in) = work(j)
+    IF(tsym .AND. i-j.LT.0 .AND. i-j.GE.-nz) &
+        protfolz(i,ABS(i-j),in) = protfolz(i,ABS(i-j),in) + work(j)
   END DO; END DO
-  IF(tsym) THEN
-    protfolz(:,1,in)=protfolz(:,1,in)*0.5D0
-  END IF
   IF(ttestgauss) THEN
     WRITE(6,'(a)') 'Folding z:'
-    DO i=1,ndimact
-      WRITE(6,'(100(1pg13.5))') protfolz(i,1:nz,in)
+    DO i=0,nz
+      WRITE(6,'(a,i4,1pg13.5)') 'i=',i,SUM(protfolz(i,1:nz,in))
+      WRITE(6,'(100(1pg13.5))') protfolz(i,0:nz,in)
     END DO
   END IF
 !END DO
 
-DEALLOCATE(eigvec,eigval,work,iwork)
+DEALLOCATE(work)
 WRITE(6,*) ' Setup of protonian folding in z direction completed'
 
 !     ===============================================================
@@ -2258,44 +2217,63 @@ ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
 eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
 !DO in=1,4
   in=1     ! only symmetric, b.c. zero
+  IF(ttestgauss) WRITE(6,'(a,200f7.2)') 'z(*):',z(0:nz)
   IF(tsym) THEN
     DO i=1,ndimact
-      eigval(i) = pi*(0.5D0+i)/z(nz)
+      eigval(i) = pi*(0.5D0+i-1)/z(nz)
       DO j=1,ndimact
         eigvec(j,i) = COS(eigval(i)*z(j))
       END DO
-      work(1:ndimact) = eigvec(1:ndimact,i)**2
-      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(f1int(work(1:ndimact)))
+      buf=SUM(eigvec(:,i)**2)-0.5D0*eigvec(1,i)**2
+      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(buf)
     END DO
   ELSE
     DO i=1,ndimact
       eigval(i) = pi*0.5D0*i/z(nz)
-      DO j=1,ndimact
-        eigvec(j,i) = COS(eigval(i)*z(j))
-      END DO
-      work(1:ndimact) = eigvec(1:ndimact,i)**2
-      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(f1int(work(1:ndimact)))
+      IF(MOD(i,2)>0) THEN
+        DO j=1,ndimact
+          eigvec(j,i) = COS(eigval(i)*z(j))
+        END DO
+      ELSE
+        DO j=1,ndimact
+          eigvec(j,i) = SIN(eigval(i)*z(j))
+        END DO
+      END IF
+      buf=SUM(eigvec(:,i)**2)-0.5D0*eigvec(1,i)**2
+      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(buf)
     END DO
   END IF
 
   WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z**2:',-eigval**2
   IF(ttestgauss) THEN
     WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(2):',eigvec(:,2)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(3):',eigvec(:,3)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(4):',eigvec(:,4)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(5):',eigvec(:,5)
     WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+    WRITE(6,*) 'ortho-normality of z-basis:'
+    DO i=1,ndimact
+      WRITE(6,'(50(1pg13.5))') (SUM(eigvec(:,j)*eigvec(:,i))-0.5D0*eigvec(1,j)*eigvec(1,i),j=1,ndimact)
+    END DO
   END IF
   eigval = EXP(-eigval**2*protonfactor)
   WRITE(6,'(a/400(1pg13.5))') 'EIGVAL fold:',eigval
+  protfolz(:,:,in)=0D0
   DO i=1,ndimact; DO j=1,ndimact
 !   sum over "Bessel" eigenstates                                                                                                             
-    protfolz(i,j,in)=0D0
     DO k = 1, ndimact
-      protfolz(i,j,in) = protfolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
+      protfolz(i-1,j-1,in) = protfolz(i-1,j-1,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
     END DO
   END DO; END DO
+  IF(tsym) THEN
+    protfolz(:,0,in)=protfolz(:,0,in)*0.5D0
+  END IF
   IF(ttestgauss) THEN
     WRITE(6,'(a)') 'Folding z:'
     DO i=1,ndimact
-      WRITE(6,'(100(1pg13.5))') protfolz(i,1:nz,in)
+      WRITE(6,'(a,i4,1pg13.5)') 'i=',i,SUM(protfolz(i-1,1:nz,in))
+      WRITE(6,'(100(1pg13.5))') protfolz(i-1,0:nz,in)
     END DO
   END IF
 !END DO
