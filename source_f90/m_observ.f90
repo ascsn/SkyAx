@@ -453,7 +453,7 @@ IF(iter == 0 .AND. tpri_conver) THEN
   IF(.NOT.tswicon) THEN
     WRITE(71,'(a,7x,a)')  &
         ' iter   energy    variance  difference    qtotal',  &
-        '   devoc2    devmf2     devgap    x0inv'
+        '   devoc2    devmf2     devgap    x0inv   epair(1:2)'
   ELSE
     ! prepare pointers for printing
     lconp = 0
@@ -483,8 +483,9 @@ IF(iter == 0 .AND. tpri_conver) THEN
   END IF
 ELSE IF(tpri_conver) THEN
   IF(.NOT.tswicon) THEN
-    WRITE(71,'(i5,f11.4,7(1pg12.5))')  &
-        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv
+    WRITE(71,'(i5,f11.4,9(1pg12.5))')  &
+        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv,&
+        epair
   ELSE
     IF(maxcon==1) format_conver='(i5,f11.4,3(1pg10.3),4(X,4(1pg12.3)))'
     IF(maxcon==2) format_conver='(i5,f11.4,3(1pg10.3),8(X,8(1pg12.3)))'

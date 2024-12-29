@@ -124,6 +124,7 @@ INTEGER :: ifls                             !<Switch for contribution from t1,t2
 INTEGER :: ifzpe                            !<If 0, m-m/A recipe for c.m. correction, if -1 no c.m. correction.
 INTEGER :: ifex                             !<Some forces are fitted excluding the Coulombexchange term. 
 !!For <tt> ex=1 </tt> it is included (this is the normal case), for <tt> ex=0 </tt> not.
+LOGICAL :: tcoulfold=.FALSE.                !< switch to proton folding in Coulomb
 
 
 LOGICAL :: tpair                            !<Switch for density-dependent pairing.
@@ -268,10 +269,12 @@ CONTAINS
     NAMELIST /force/ name, &
          chg,ex,zpe,h2m,t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power, &
          ipair,v0prot,v0neut,rho0pr,pairstab,pair_cutoff,riftm,hfbwidth, &
-         tFayans, &
+         tFayans,tcoulfold, &
          avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
          fxi,h1xi,hgradxi,delfxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
          isovectormodel,tcutoff_uvspace,tregpair
+
+WRITE(6,*) ' before reading force'
 
     READ(5,force)
     predefined=.FALSE.
