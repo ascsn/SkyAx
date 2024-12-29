@@ -34,10 +34,6 @@ INTEGER, INTENT(IN)     :: istmin,istmax,iter
 LOGICAL, INTENT(IN)     :: tqq
 
 
-
-
-
-
 REAL(8), ALLOCATABLE :: hlagr(:,:)
 REAL(8), ALLOCATABLE :: symatrix(:,:)
 
@@ -45,7 +41,6 @@ REAL(8), ALLOCATABLE :: symatrix(:,:)
 
 LOGICAL, PARAMETER :: tbcs=.FALSE.    ! testswitch
 LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
-
 REAL(8) :: v2a,uva
 INTEGER :: mist,npzist,jst,ist,is,iq,mythread
 

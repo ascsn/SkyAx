@@ -49,7 +49,6 @@ LOGICAL,PARAMETER :: tcstp=.FALSE. !< protocol of constraint step
 REAL(8),PARAMETER :: v2lim=1D-7   !< lower limit for inclusion in 'rho' sum
 
 
-LOGICAL, PARAMETER :: tcoulfold=.false. !< switch for proton folding in Coulomb
 LOGICAL,SAVE       :: tvarfile=.false.  !< switch to write out a file containing variances.
 
 REAL(8),ALLOCATABLE :: hmatr(:,:)    !< Hamiltonian matrix
@@ -498,7 +497,10 @@ CALL update_occupations(iter)
 
 !     save coulomb density
 IF(tcoulfold) THEN
-  CALL protfold(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
+  WRITE(6,*) 'before PROTFOLD:',f1int(rho)
+  CALL protonfolding(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
+!  CALL protfold(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
+  WRITE(6,*) 'after PROTFOLD:',f1int(rho),f1int(crho)
 ELSE
   crho(0:nz,0:nr) = rho(0:nz,0:nr,1)
 END IF
@@ -1012,7 +1014,8 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
 !    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
 !         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
     vsqobs(1:nsttot) = vsqf(1:nsttot)
-    IF(thfb .AND. iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+!    IF(thfb .AND. iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+    IF(thfb .AND. iter>iterbcs .AND. MOD(iter,modnat)==0) THEN
       IF(tFayans) THEN
         CALL fy_hfbpot()
       END IF
