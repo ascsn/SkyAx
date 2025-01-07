@@ -38,7 +38,7 @@ ifort_domp : export EXEC_SKYAX = skyax.ifort.domp
 # Uncomment below for ICER, MSU.
 # gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
 gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -lmkl
-ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -qmkl
+# ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -qmkl
 #gf gf_d gf_omp: export LIBS_SKYAX = -mkl
 # gf gf_d ifort : export LIBS_SKYAX = -lblas -llapack 
 #gf gf_d ifort : export LIBS_SKYAX = -L$(y/usr/lib) -lblas -L$(/usr/lib) -llapack 
