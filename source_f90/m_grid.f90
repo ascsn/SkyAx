@@ -2711,7 +2711,7 @@ REAL(8) :: xnormin,xnormout
 
 INTEGER :: imact,izpact,ibpidx,is,izpidx,iz,ibpfld
 
-LOGICAL, PARAMETER :: ttestnorms=.TRUE.
+LOGICAL, PARAMETER :: ttestnorms=.FALSE.
 
 ALLOCATE(work(0:nz,0:nr))
 
