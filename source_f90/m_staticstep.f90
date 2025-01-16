@@ -497,10 +497,10 @@ CALL update_occupations(iter)
 
 !     save coulomb density
 IF(tcoulfold) THEN
-  WRITE(6,*) 'before PROTFOLD:',f1int(rho)
+!  WRITE(6,*) 'before PROTFOLD:',f1int(rho)
   CALL protonfolding(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
 !  CALL protfold(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
-  WRITE(6,*) 'after PROTFOLD:',f1int(rho),f1int(crho)
+!  WRITE(6,*) 'after PROTFOLD:',f1int(rho),f1int(crho)
 ELSE
   crho(0:nz,0:nr) = rho(0:nz,0:nr,1)
 END IF
