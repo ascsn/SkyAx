@@ -998,6 +998,9 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
 !        .OR. ipair == 11) THEN     ! HFB/BCS with zero-range pairing functional
   ELSE IF(ipair>4 .AND. ipair.NE.10) THEN  ! HFB/BCS with zero-range pairing functional
     CALL hfbpot(iter)
+    epairp=epair(1)
+    epairn=epair(2)
+    WRITE(7,'(a,2(1pg13.5))') 'after HFBPOT:',epair
     IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
       CALL respax(iter)
       IF(itest > 0) WRITE(7,'(a,4g12.4)')  &
@@ -1018,10 +1021,16 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     IF(thfb .AND. iter>iterbcs .AND. MOD(iter,modnat)==0) THEN
       IF(tFayans) THEN
         CALL fy_hfbpot()
+        epairp=epair(1)
+        epairn=epair(2)
       END IF
       CALL hfb_natural(1,fer(1),1D0*npart(1))
       CALL hfb_natural(2,fer(2),1D0*npart(2))
 !      vsqobs(1:nsttot) = vsqf(1:nsttot)
+    END IF
+    IF(tFayans) THEN
+      epair(1)=epairp
+      epair(2)=epairn
     END IF
   ELSE
     STOP ' ipair outside -1..4 or 5, 7, 9 or 11 not active'
@@ -1051,7 +1060,8 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
 !      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVmix:',iter,SUM(SQRT(vsqf(ist2:nst(1)+nst(2))-vsqf(ist2:nst(1)+nst(2))**2))
     ! compute pairing energies from gaps and occupations
     ! (not best choice  --> replace by direct integration)
-    IF(ipair >= 5) THEN
+!    IF(ipair >= 5) THEN      ! disable: deltaf contains stabilization
+    IF(ipair >= 12) THEN
       epairp = 0.0
       epairn = 0.0
       DO na=1,nst(1)+nst(2)
