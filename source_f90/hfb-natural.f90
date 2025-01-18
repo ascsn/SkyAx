@@ -51,7 +51,7 @@ LOGICAL :: toccmix=.FALSE.
 !      REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=0D0
 !REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=20D0
 REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=40D0
-REAL(8) :: conocc  
+REAL(8) :: conocc,epairstab
   
 !--------------------------------------------------------------------
 
@@ -169,12 +169,13 @@ IF(tnewv2) THEN
     WRITE(6,'(a,200(1pg13.5))') 'gapnat:',gapnat(1:nmaxa)
   END IF
   IF(pairstab /= 0)  &
-      CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair(iso),  &
+      CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epairstab,  &
       pairstab,nmaxa,nmaxa,iab,tcutoff_uvspace)
   IF(toccmix) gwa=v2a
   CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
       nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)  
+  IF(pairstab /= 0) epair(iso) = epairstab
   IF(toccmix) v2a=addocc*v2a+conocc*gwa
   IF(tprint0) WRITE(6,'(a,6(1pg13.5))') 'after PAIRDN:',  &
       efermiso,epair(iso),gap(iso),efadd
@@ -733,7 +734,7 @@ DO  na=1,nmax
   sumduv = ph(na)*uv*deltaa + sumduv
 END DO
 
-epair  = -sumduv
+epair  = -sumduv/2D0
 IF(iab > 1) WRITE(6,'(a,3g12.4)') 'PAIR_STAB epair:',epair
 
 IF(pairstab==0D0) RETURN
@@ -742,7 +743,7 @@ IF(pairstab==0D0) RETURN
 
 DO na=1,nmax
   delta(na) = delta(na)*(1D0+(pairstab/epair)**2)
-  delta(na) = MIN(delta(na),5D0)
+  delta(na) = SIGN(MIN(ABS(delta(na)),5D0),delta(na))
 END DO
 
 
