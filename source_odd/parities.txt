@@ -1,0 +1,52 @@
+# time odd response currents
+             mu=0                      mu=1                     mu    
+       pi_z    pi_r  pi_phi    pi_z    pi_r   pi_phi   pi_z    pi_r   pi_phi
+-------------------------------------------------------------------------------
+curz	-1	+1		+1	-1
+curr	+1      -1     	 	-1	+1	
+curp     0	 0		-1	+1	
+
+spnz	 0	 0		-1	-1
+spnr	 0	 0		+1	+1
+spnp	-1	-1		+1	+1
+
+tauz	 0	 0		-1	-1
+taur	 0	 0		+1	+1
+taup	-1      -1		+1	+1
+
+pairo				
+
+Az	-1	+1		+1	-1
+Ar	+1      -1     	 	-1	+1	
+Ap       0	 0		-1	+1	
+
+Sz
+Sr
+Sp
+
+Cz
+Cr
+Cp
+
+
+
+
+
+
+
+# time even response currents
+             mu=0                      mu=1                     mu    
+       pi_z    pi_r  pi_phi    pi_z    pi_r   pi_phi   pi_z    pi_r   pi_phi
+-------------------------------------------------------------------------------
+curz				+1	-1
+curr	  	  	  	-1	+1	
+curp              		-1	+1	
+
+spnz				-1	-1
+spnr				+1	+1
+spnp				+1	+1
+
+tauz				-1	-1
+taur				+1	+1
+taup				+1	+1
+

@@ -1,0 +1,166 @@
+fyfunc_2D.f:!       epair = epair + 0.5D0*rhfac*paircrtot2*(ract*ract)
+fyfunc_2D.f:      epair(2) = f1int(wrk2)
+fyfunc_2D.f:      epair(1) = f1int(wrk1)-epair(2)
+fyfunc_2D.f:!     &      pfacfy*fxip,pfacfy*h1xip,pfacfy*hgradxip,epair
+fyfunc_2D.f:       WRITE(6,'(a,5(1pg13.5))') 'FYpair:',epair,
+hfb-natural.f:     &              epair(iso),pairstab,nmaxa,nmaxa,iab,.NOT.tpairspace)
+hfb-natural.f:     &              efermiso,epair(iso),gap(iso),ggg(iso),efadd,
+hfb-natural.f:     &              efermiso,epair(iso),gap(iso),ggg(iso),efadd,cutfac
+hfb-natural.f:          WRITE(6,'(a,7(1pg13.5))') ' partnum,efermi,epair,cutfac=',
+hfb-natural.f:     &          partnum,SUM(v2a*phasfac)*2D0,efermiso,epair,cutfac
+hfb-natural.f:     &              epair(iso),pairstab,nmaxa,nmaxa,iab,.NOT.tpairspace)
+hfb-natural.f:     &              efermiso,epair(iso),gap(iso),ggg(iso),efadd,
+hfb-natural.f:          WRITE(6,'(a,6(1pg13.5))') 'partnum,eferm,epair,delst,symm=',
+hfb-natural.f:     &          partnum,efermi,epairact,delstep,
+hfb-natural.f:      subroutine pair_stab(e,delta,v2occ,ph,pairgw,epair,
+hfb-natural.f:c      epair   = pairing energy
+hfb-natural.f:      epair  = -sumduv
+hfb-natural.f:      if(iab.gt.1) write(6,'(a,3g12.4)') 'PAIR_STAB epair:',epair
+hfb-natural.f:        delta(na) = delta(na)*(1D0+(pairstab/epair)**2)
+info.f:         epair(1)=-gap(1)*gap(1)/max(ggg(1),smal)
+info.f:         epair(2)=-gap(2)*gap(2)/max(ggg(2),smal)
+info.f:	 epair(1) = zero
+info.f:	 epair(2) = zero
+info.f:           epair(iq) = wate(ist)*(occ*log(occ)+occd*log(occd))
+info.f:     &                +epair(iq)
+info.f:         epair(1) = gap(1)*epair(1)                 ! -T*S
+info.f:         epair(2) = gap(2)*epair(2)
+info.f:c      etpair=epair(1)+epair(2)
+info.f:c      epairtestp=f1int(work)  !siehe oben
+info.f:c      epairtestn=f1int(work)  !siehe oben
+info.f:      epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
+info.f:      epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
+info.f:      epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
+info.f:      epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
+info.f:      etpair= epairtestp+ epairtestn
+info.f:      epair(1) = epairtestp
+info.f:      epair(2) = epairtestn
+info.f:        epairtestp = 0D0
+info.f:        epairtestn = 0D0
+info.f:             epairtestn = epairtestn + vol*deltaa 
+info.f:             epairtestp = epairtestp + vol*deltaa 
+info.f:        WRITE(7,'(a,4(1pg13.5))') 'EPAIR:',epairtestp,epairtestn,epair
+info.f:        etpair= epairtestp+ epairtestn
+info.f:c      etpair=epair(1)+epair(2)
+info.f:        energy = ekin+energyFy+ecoul/2D0-ezp+SUM(epair)
+info.f:        IF(itest>0) WRITE(7,*) '2. energyFy=',etot1,epair,ezp
+info.f:     x             '   epair  = ',f10.3,
+info.f:     &     '  proton:',epair(1),fer(1),ggg(1),gap(1),sum_uv(1)!,ewin(1)
+info.f:     &     ' neutron:',epair(2),fer(2),ggg(2),gap(2),sum_uv(2)!,ewin(2)
+iteration_loop.f:     &         ggg !epair
+iteration_loop.f:         endif                      ! -> contribution to epair is 0
+iteration_loop.f:     &       '  bet4 bet4p bet4n   energy     epairp  epairn    iter',
+iteration_loop.f:     &       '  bet4   bet4p  bet4n   energy       epairp        ',
+iteration_loop.f:     &       'epairn    iter  rms    rmsp   rmsn  jz_p jz_n   j'
+iteration_loop.f:     &      energy,epair,fer,iter,rms,rmsp,rmsn,rmsc,
+iteration_loop.f:     &      energy,epair,gap,iter,rms,rmsp,rmsn,!fer,iter,rms,rmsp,rmsn,
+iteration_loop.f:     &      energy,epair,gap,iter,rms,rmsp,rmsn,!fer,iter,rms,rmsp,rmsn,
+pairing.f:      REAL(8) ::  epairtestp,epairtestn,epairtest
+pairing.f:c      epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
+pairing.f:c      epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?c
+pairing.f:c      epairtest= epairtestp+ epairtestn
+pairing.f:      epairtestp=f1int(work)  
+pairing.f:      epairtestn = f1int(work)  
+pairing.f:      epairtestp=f1int(work)  
+pairing.f:      epairtestn = f1int(work)  
+pairing.f:      epairtest= epairtestp+ epairtestn
+pairing.f:        buff(1)=abs(pairstab/epair(1))
+pairing.f:        buff(2)=abs(pairstab/epair(2))
+pairing.f:        WRITE(*,*) 'pairstab,epair:',pairstab,epair
+pairing.f:      buff(1)=abs(Ecrit/epairtestp)
+pairing.f:      buff(2)=abs(Ecrit/epairtestn)
+pairing.f:      subroutine pairdn(e,delta,gw,ph,pairgw,partnm,eferm,epair,avdelt,
+pairing.f:c      epair   = pairing energy
+pairing.f:      epair  = sumduv           ! or - ?
+pairing.f:      avg    = epair/sumuv**2
+pairing.f:     &     ' eferm,epair,avdelta=',eferm,epair,avdelt,avdeltv2
+pairing.f:     &     ' av.Delta,av.G,pair.E=',avdelt,avg,epair
+pairing.f:     &                  vv2,vln,epair,ecorr,entot,erspln,suv2rs,
+pairing.f:c       epair  = naive pairing energy , -delta^2/gpair
+pairing.f:      epair1 = -gpair*sv2
+pairing.f:      epair  = -gpair*suv
+pairing.f:cold      etot   = 2.0*sspe+epair1+efluc+epair
+pairing.f:cold      epairr = epair
+pairing.f:      epair1 = epair1+efluc+epair
+pairing.f:      epairtestp=f1int(work)  !siehe oben
+pairing.f:      epairtestn=f1int(work)  !siehe oben
+pairing.f:      epairtest= epairtestp+ epairtestn
+pairing.f:      epair2p =sumduv
+pairing.f:     &         beta2,avdeltp,avdeltn,epairtestp,epairtestn,epair2p,
+pairing.f:      etpair=epairtest
+read_com.f:     & file='repairpr.'//outnam)
+read_com.f:     &   epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,
+sstep.f:     &              epsimp,epair(1),entotp,rspln(1),suv2rs(1),
+sstep.f:     &                epsimp,epair(2),entotp,rspln(2),suv2rs(2),
+sstep.f:     &           fer(1),epair(1),gap(1),ggg(1),feradd(1),
+sstep.f:     &           fer(2),epair(2),gap(2),ggg(2),feradd(2),
+sstep.f:            epairp = 0.0
+sstep.f:            epairn = 0.0
+sstep.f:                epairp = vol*deltaa + epairp
+sstep.f:                epairn = vol*deltaa + epairn
+sstep.f:c     &       ' pairing energies new/old=',epairp,epairn,epair
+sstep.f:            epair(1) = epairp
+sstep.f:            epair(2) = epairn
+sstep_new.f:     &              epsimp,epair(1),entotp,rspln(1),suv2rs(1),
+sstep_new.f:     &                epsimp,epair(2),entotp,rspln(2),suv2rs(2),
+sstep_new.f:     &           fer(1),epair(1),gap(1),ggg(1),feradd(1),
+sstep_new.f:     &           fer(2),epair(2),gap(2),ggg(2),feradd(2),
+sstep_new.f:            epairp = 0.0
+sstep_new.f:            epairn = 0.0
+sstep_new.f:                epairp = vol*deltaa + epairp
+sstep_new.f:                epairn = vol*deltaa + epairn
+sstep_new.f:c     &       ' pairing energies new/old=',epairp,epairn,epair
+sstep_new.f:            epair(1) = epairp
+sstep_new.f:            epair(2) = epairn
+sstep_old.f:     &              epsimp,epair(1),entotp,rspln(1),suv2rs(1),
+sstep_old.f:     &                epsimp,epair(2),entotp,rspln(2),suv2rs(2),
+sstep_old.f:              epairp=epair(1)
+sstep_old.f:              epairn=epair(2)
+sstep_old.f:     &           fer(1),epair(1),gap(1),ggg(1),feradd(1),cutfac,
+sstep_old.f:     &           fer(2),epair(2),gap(2),ggg(2),feradd(2),cutfac,
+sstep_old.f:              epair(1) = epp
+sstep_old.f:              epair(2) = epn
+sstep_old.f:!     &           fer(2),epair(2),gap(2),ggg(2),feradd(2),cutfac
+sstep_old.f:              epair(1)=epairp
+sstep_old.f:              epair(2)=epairn
+sstep_old.f:            epairp = 0.0
+sstep_old.f:            epairn = 0.0
+sstep_old.f:                IF(na.NE.istblo(1)) epairp = vol*deltaa + epairp
+sstep_old.f:                IF(na.NE.istblo(2)) epairn = vol*deltaa + epairn
+sstep_old.f:c     &       ' pairing energies new/old=',epairp,epairn,epair
+sstep_old.f:            epair(1) = epairp
+sstep_old.f:            epair(2) = epairn
+steputil.f:        IF(itest>0) WRITE(7,*) '1. energyFy=',energyFy,epair
+util_crnk.f:            repair(iz,ir,1) = zero
+util_crnk.f:            repair(iz,ir,2) = zero
+util_crnk.f:                  repair(iz,ir,iq)  = wgtfac2*(
+util_crnk.f:     &                                      ) + repair(iz,ir,iq)
+util_crnk.f:                  repair(iz,ir,iq)  = wgtfac2*(
+util_crnk.f:     &                                      ) + repair(iz,ir,iq)
+util_crnk.f:c         call wrt_2D_spin(repairo(0,0,1),'repairo___',0,'tst')
+util_crnk.f:c               buff1 = repair(iz,ir,1)
+util_crnk.f:c               buff2 = repair(iz,ir,2)
+util_crnk.f:c               repairpot(iz,ir,1) = wgt_pair1 * buff1
+util_crnk.f:c               repairpot(iz,ir,2) = wgt_pair2 * buff2
+util_crnk_gh.f:c            repair(iz,ir,1) = zero
+util_crnk_gh.f:c            repair(iz,ir,2) = zero
+util_crnk_gh.f:c                  repair(iz,ir,iq)  = wgtfac2*(
+util_crnk_gh.f:c     &                                      ) + repair(iz,ir,iq)
+util_crnk_gh.f:c                  repair(iz,ir,iq)  = wgtfac2*(
+util_crnk_gh.f:c     &                                      ) + repair(iz,ir,iq)
+util_crnk_gh.f:c               buff1 = repair(iz,ir,1)
+util_crnk_gh.f:c               buff2 = repair(iz,ir,2)
+util_crnk_gh.f:c               repairpot(iz,ir,1) = wgt_pair1 * buff1
+util_crnk_gh.f:c               repairpot(iz,ir,2) = wgt_pair2 * buff2
+util_crnk_orig.f:c            repair(iz,ir,1) = zero
+util_crnk_orig.f:c            repair(iz,ir,2) = zero
+util_crnk_orig.f:c                  repair(iz,ir,iq)  = wgtfac2*(
+util_crnk_orig.f:c     &                                      ) + repair(iz,ir,iq)
+util_crnk_orig.f:c                  repair(iz,ir,iq)  = wgtfac2*(
+util_crnk_orig.f:c     &                                      ) + repair(iz,ir,iq)
+util_crnk_orig.f:c               buff1 = repair(iz,ir,1)
+util_crnk_orig.f:c               buff2 = repair(iz,ir,2)
+util_crnk_orig.f:c               repairpot(iz,ir,1) = wgt_pair1 * buff1
+util_crnk_orig.f:c               repairpot(iz,ir,2) = wgt_pair2 * buff2
+write_com.f:     & file='repairpr.'//outnam)
+write_com.f:     &   epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,

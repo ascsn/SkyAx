@@ -1,0 +1,13 @@
+&main outnam='SVb',title='test 120Sn',iprint=2000,itmax=2000,modnat=100000,iternat=0,
+/
+&force 
+ name='SV-bas',pairstab=-0D0,pair_cutoff=1.65D0,ipair=7,HFBwidth=0D0,
+/
+&grids tsym=T,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+/
+&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3D0,addrho=0.1D0,addocc=1.0D0,
+deocc(1)=2D0,deocc(2)=2D0,errenr=1D-14,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999/
+&constraint 
+/
+&thermal /

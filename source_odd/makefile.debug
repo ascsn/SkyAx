@@ -1,0 +1,163 @@
+# for Intel
+COMPILER1       = ifort 
+#COMPILER1       = mpif90 
+#COMPILER1FLAGS  = -O3   -r8 -i8 -w -static 
+#COMPILER1FLAGS  = -O3 -xW -tpp7 -w  
+COMPILER1FLAGS  =  -g -O0 -w  
+#COMPILER1FLAGS  =  -g -O0 -w -C -traceback
+
+SCOMPILER1FLAGS =  -g -O2 -w -save 
+
+LINKER1         = $(COMPILER1)
+LINKER1FLAGS    = $(COMPILER1FLAGS)
+
+COMPILER2       = gfortran
+COMPILER2FLAGS  = -O3 -fno-automatic -w -pg -std=gnu
+LINKER2         = $(COMPILER2)
+LINKER2FLAGS    = $(COMPILER2FLAGS)
+
+OPATH           = ./objs
+SPATH           = .
+
+
+
+MODULES        =  skyax init coulomb sstep_old steputil info \
+		  pairing crankin seprpa qtest wspot util_new \
+	 	  psiout comp_block write_2D write_3D  \
+		  zpecor zcmcor iniq hcommQ_old  localize2 \
+	 	  grid matrix grid.test linresp util_crnk  
+SMODULES       =  radius
+
+OBJS1          =  $(patsubst %,$(OPATH)/%.ifc.o,$(MODULES))
+SOBJS1         =  $(patsubst %,$(OPATH)/%.ifc.o,$(SMODULES))
+OBJS2          =  $(patsubst %,$(OPATH)/%.f77.o,$(MODULES)) \
+                  $(patsubst %,$(OPATH)/%.f77.o,$(SMODULES)) 
+SRC            =  $(patsubst %,$(OPATH)/%.f,$(MODULES))
+
+EXEC1          =  skyax_ifc.exe
+EXEC2          =  skyax_f77.exe
+
+INCS           =  constr.inc crankin.inc derivs.inc dynpar.inc fields.inc \
+                  inipar.inc levels.inc observ.inc paramr.inc regime.inc \
+                  resden.inc wavefr.inc
+
+SHELL 	       = /bin/sh
+
+#---------------------------------------------------------	
+.SILENT:
+
+# make all targets
+all: 	info params
+
+# clean all objects and temporary files
+clean:  
+	rm -f objs/*.o
+	rm -f ifc*
+	rm -f *~
+	rm -f \#*
+#
+info: 
+	echo "------------------------------------------------------"
+	echo "    SkyAx  - the axial Skyrme-Hartree-Fock Code       "
+	echo "             >>> version 2.0.2 <<<                    "         
+	echo "------------------------------------------------------"
+	rm -f compile.ifc.log
+	rm -f compile.f77.log
+#
+copyold:
+	echo "using only old linear response module"
+	cp linresp_dummy.f linresp.f
+copynew:
+	echo "using old and new linear response module"
+	cp linresp_orig.f  linresp.f
+#
+params:
+	echo "  syntax: "
+	echo "     make skyax    compile and link SkyAx for both comp."
+	echo "     make skyifc   compile and link SkyAx using ifc"
+	echo "     make skyf77   compile and link SkyAx using f77"
+	echo
+	echo "     make skyold   compile and link without linresp"
+	echo
+	echo "     make clean    remove objects and temporary files"
+	echo 
+
+skyax:  info copynew $(EXEC1) $(EXEC2)
+skyifc: info copynew $(EXEC1) 
+skyf77: info copynew $(EXEC2) 
+skyold: info copyold $(EXEC1)
+
+
+backup: info clean
+	echo -n "generating backup archive... "
+	cd ..;./backup.sh source; cd source
+	echo "OK"
+
+toolsifc:
+toolsf77:
+
+# executables compiled with compiler 1 (ifc)
+$(EXEC1): $(OBJS1) $(SOBJS1)	
+	 echo -n "linking "$(patsubst %.exe,%,$@) "... "
+	 $(LINKER1) $(LINKER1FLAGS) -o $@  $(OBJS1) $(SOBJS1) $(STDLIB)
+	 mv $(EXEC1) ..
+	 echo "OK"
+
+# executables compiled with compiler 2 (f77)
+$(EXEC2): $(OBJS2) 
+	 echo -n "linking "$(patsubst %.exe,%,$@) "... "
+	 $(LINKER2) $(LINKER2FLAGS) -o $@  $(OBJS2) $(STDLIB)
+	 mv $(EXEC2) ..
+	 echo "OK"
+
+# objs for skyax project (ifc)
+$(SOBJS1): objs/%.ifc.o: %.f $(INCS)
+	echo -n "compiling "$(patsubst %.f,%,$<) " (with ifc) ... "
+	$(COMPILER1) $(SCOMPILER1FLAGS)  -c $<  \
+	             -o $(patsubst %.f,objs/%.ifc.o,$<) \
+		     2>> compile.ifc.log
+	echo "OK"
+
+$(OBJS1): objs/%.ifc.o: %.f $(INCS)
+	echo -n "compiling "$(patsubst %.f,%,$<) " (with ifc) ... "
+	$(COMPILER1) $(COMPILER1FLAGS)  -c $<  \
+	          -o $(patsubst %.f,objs/%.ifc.o,$<) \
+	           2>> compile.ifc.log
+	echo "OK"
+
+
+# objs for skyax project  (f77)
+$(OBJS2): objs/%.f77.o: %.f $(INCS)
+	echo -n "compiling "$(patsubst %.f,%,$<) " (with f77) ... "
+	$(COMPILER2) $(COMPILER2FLAGS)  -c $< \
+	             -o $(patsubst %.f,objs/%.f77.o,$<) \
+                     2>> compile.f77.log
+	echo "OK"
+
+#init.o: init.f $(INCS)
+#coulomb.o: coulomb.f $(INCS)
+#sstep_old.o: sstep_old.f $(INCS)
+#steputil.o: steputil.f $(INCS)
+#info.o: info.f $(INCS)
+#util.o: util.f $(INCS)
+#pairing.o: pairing.f  $(INCS)
+#crankin.o: crankin.f $(INCS)
+#seprpa.o: seprpa.f crankin.o  $(INCS)
+#qtest.o: qtest.f crankin.o  $(INCS)
+#wspot.o: wspot.f  $(INCS)
+#psiout.o: psiout.f  $(INCS)
+#comp_block.o: comp_block.f  $(INCS)
+#write_triax.o:  write_triax.f $(INCS)
+#mulnew.o: mulnew.f $(INCS)
+#hcommQ_old.o: hcommQ_old.f $(INCS)
+#iniq.o: iniq.f $(INCS)
+#zcmcor.o:  zcmcor.f $(INCS)
+#write_2D.o: write_2D.f $(INCS)
+#localize2.o: localize2.f $(INCS)
+#grid.o: grid.f $(INCS)
+
+
+#.SUFFIXES:  .f .o 
+
+#.f.o:
+#	$(COMPILER) $(COMPILERFLAGS)  -c $< -o $<.
