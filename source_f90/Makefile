@@ -7,7 +7,7 @@ q/SHELL 	       = /bin/bash
 # ----- define the compiler being used---------------------------------------
 #
 gf gf_omp gf_d  : export COMPILER_SKYAX = gfortran
-ifort ifort_omp ifort_dbg ifort_domp: export COMPILER_SKYAX = ifort
+ifort ifort_omp ifort_dbg ifort_domp: export COMPILER_SKYAX = ifx
 #
 # ----- define compiler flags and linker flags-------------------------------
 #
@@ -36,8 +36,8 @@ ifort_domp : export EXEC_SKYAX = skyax.ifort.domp
 # Uncomment below for general lapack and blas libraries
 # gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
 # Uncomment below for ICER, MSU.
-# gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
-gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -lmkl
+gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
+# gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -lmkl
 # ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -qmkl
 #gf gf_d gf_omp: export LIBS_SKYAX = -mkl
 # gf gf_d ifort : export LIBS_SKYAX = -lblas -llapack 
