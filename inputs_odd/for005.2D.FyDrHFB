@@ -1,0 +1,26 @@
+&main outnam='fdr',title='Fy(Dr,HFB)',iprint=1000,itmax=6000,iterbcs=1000,iterhfb=2000,
+      pairenhance=2D0,iternat=10,modnat=1,itest=0,
+/
+&force
+ tFayans=.TRUE.,
+ name='none',pairstab=-0.3D0,HFBwidth=0.0d0,
+  avp=-9.809519866,h1vp=0.6174527519,h2vp=0.2142736685,
+  avm=23.41886322,h1vm=-0.2861245253,h2vm=22.80909400,
+  asp=0.5654841300,hsp=0.0,hgradp=0.4579587200,
+  asm=0.0,hsm=22.80909400,hgradm=0.0,hcoul=0.0,
+  fxi=-4.455644500,h1xi=4.243982800,hgradxi=3.112633900,delfxi=0.0,
+  c0nabj=0.1983338500,c1nabj=4.4008347000E-02,c0tau=0.0,c1tau=0.0,
+ h2m=20.749811,20.721249,
+  tcutoff_uvspace=.TRUE.,isovectormodel=2,
+ chg=1D0,ex=1,zpe=1,tcoulfold=.TRUE.,
+ ipair=8,pair_cutoff=-15D0,tregpair=F
+/
+&grids tsym=T,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+/
+&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.1D0,addrho=0.15D0,addocc=0.15D0,
+deocc(1)=3.2,deocc(2)=3.2,betain=0D0,errenr=1D-10,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999/
+&constraint
+/
+&thermal /
+

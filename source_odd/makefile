@@ -1,0 +1,178 @@
+# for Intel
+COMPILER1       = ifort
+#COMPILER1       = mpif90 
+
+#COMPILER1FLAGS  = -O3 -fpp -w -static -ipo	# AMD
+#COMPILER1FLAGS  =  -O3 -xK -w -static -fpp -ipo     # notebook
+#COMPILER1FLAGS  =  -O3 -xK -w -static -fpp     # notebook 
+
+#COMPILER1FLAGS  = -O3   -r8 -i8 -w -static 
+#COMPILER1FLAGS  = -O3 -xW -tpp7 -w  
+#COMPILER1FLAGS  =  -O3 -x -w -static -fpp    # Pentium 4
+#COMPILER1FLAGS  = -w -msse4.2 -axAVX -O3 -ip -no-prec-div -align all -autodouble -static -traceback
+COMPILER1FLAGS  = -w -msse4.2 -axSSE4.2 -O3 -ip -no-prec-div -align all -autodouble -static -traceback
+#COMPILER1FLAGS  = -w  -O3 -xhost -mcmodel=large -autodouble 
+#COMPILER1FLAGS  = -w -msse4.2 -axSSE4.2 -O1 -no-prec-div -align all -autodouble -static -traceback
+#COMPILER1FLAGS  = -w -O3 -align all -autodouble -static -traceback
+#COMPILER1FLAGS  = -w -msse4.2 -axAVX -O3 -ip -no-prec-div -align all -autodouble -mcmodel=medium -shared-intel
+
+#COMPILER1FLAGS  =  -g -O0 -w -CB -traceback -static
+#COMPILER1FLAGS  =  -g -O3 -xK -w -fpp -qp -static
+#SCOMPILER1FLAGS =  -O3 -w -save -tpp7 -static -ipo
+
+SCOMPILER1FLAGS =  -g -O2 -w -save  -autodouble
+#SCOMPILER1FLAGS =  -g -w -save -qp
+LINKER1         = $(COMPILER1)
+LINKER1FLAGS    = $(COMPILER1FLAGS)
+
+COMPILER2       = gfortran
+#COMPILER2FLAGS  = -O3 -fno-automatic -w  -msse4.2 -mfpmath=sse -fdefault-real-8 -fdefault-double-8 -ffast-math -finline-functions -funroll-loops -std=gnu
+COMPILER2FLAGS  = -O3 -fno-automatic -w  -msse4.2 -mfpmath=sse -fdefault-real-8 -fdefault-double-8 -ffast-math -finline-functions -funroll-loops 
+#COMPILER2FLAGS  = -g -fno-automatic -w  -fbacktrace -fbounds-check -fdefault-real-8 -fdefault-double-8 -std=gnu
+#-std=gnu
+LINKER2         = $(COMPILER2)
+LINKER2FLAGS    = $(COMPILER2FLAGS)
+
+OPATH           = ./objs
+SPATH           = .
+
+
+
+MODULES        =  skyax init coulomb sstep_old steputil info \
+		  pairing crankin seprpa qtest wspot util_new \
+	 	  psiout comp_block write_2D write_3D  \
+		  zpecor zcmcor iniq hcommQ_old  localize2 \
+	 	  grid matrix grid.test linresp hdiag \
+		  write_com read_com iteration_loop fyfunc_2D lagpar hfb-natural matmul
+		  	
+
+SMODULES       =  radius
+
+OBJS1          =  $(patsubst %,$(OPATH)/%.ifc.o,$(MODULES))
+SOBJS1         =  $(patsubst %,$(OPATH)/%.ifc.o,$(SMODULES))
+OBJS2          =  $(patsubst %,$(OPATH)/%.f77.o,$(MODULES)) \
+                  $(patsubst %,$(OPATH)/%.f77.o,$(SMODULES)) 
+SRC            =  $(patsubst %,$(OPATH)/%.f,$(MODULES))
+
+#EXEC1          =  skyax_odd.exe #skyax_ifc.old_iso2 #old_iso2_glan #old_iso2 #_freeK #_testold # skyax_ifc.old_iso2_novar_all #-mpsi1  #mpsi4 #new-mpsi5 #nobcs #mpsi5 #mpsi4 #mpsip3  #mpsi5  #skyax_ifc.exe
+EXEC1          =  skyax_odd.exe 
+#EXEC1          =  skyax_ifc.old_iso2_select #-mpsi1  #mpsi4 #new-mpsi5 #nobcs #mpsi5 #mpsi4 #mpsip3  #mpsi5  #skyax_ifc.exe
+EXEC2          =  skyax_f77.exe
+
+INCS           =  constr.inc crankin.inc derivs.inc dynpar.inc fields.inc \
+                  inipar.inc levels.inc observ.inc paramr.inc regime.inc \
+                  resden.inc wavefr.inc define.h blocking.inc  \
+		  overlap.inc
+
+SHELL 	       = /bin/sh
+
+#---------------------------------------------------------	
+.SILENT:
+
+# make all targets
+all: 	info params
+
+# clean all objects and temporary files
+clean:  
+	rm -f objs/*.o
+	rm -f ifc*
+	rm -f *~
+	rm -f \#*
+#
+info: 
+	echo "------------------------------------------------------"
+	echo "    SkyAx  - the axial Skyrme-Hartree-Fock Code       "
+	echo "             >>> version 2.1.0-odd <<<                    "         
+	echo "------------------------------------------------------"
+	rm -f compile.ifc.log
+	rm -f compile.f77.log
+#
+params:
+	echo "  syntax: "
+	echo "     make skyax    compile and link SkyAx for both comp."
+	echo "     make skyifc   compile and link SkyAx using ifc"
+	echo "     make skyf77   compile and link SkyAx using f77"
+	echo
+	echo "     make clean    remove objects and temporary files"
+	echo "     make backup   create a backup copy of SkyAx"
+	echo 
+
+skyax:  info $(EXEC1) $(EXEC2)
+skyifc: info $(EXEC1) 
+skyf77: info $(EXEC2) 
+
+
+
+backup: info clean
+	echo -n "generating backup archive... "
+	cd ..;./backup.sh source; cd source
+	echo "OK"
+
+toolsifc:
+toolsf77:
+
+# executables compiled with compiler 1 (ifc)
+$(EXEC1): $(OBJS1) $(SOBJS1)	
+	 echo -n "linking "$(patsubst %.exe,%,$@) "... "
+	 $(LINKER1) $(LINKER1FLAGS) -o $@  $(OBJS1) $(SOBJS1) $(STDLIB)
+	 mv $(EXEC1) ..
+	 echo "OK"
+
+# executables compiled with compiler 2 (f77)
+$(EXEC2): $(OBJS2) 
+	 echo -n "linking "$(patsubst %.exe,%,$@) "... "
+	 $(LINKER2) $(LINKER2FLAGS) -o $@  $(OBJS2) $(STDLIB)
+	 mv $(EXEC2) ..
+	 echo "OK"
+
+# objs for skyax project (ifc)
+$(SOBJS1): objs/%.ifc.o: %.f $(INCS)
+	echo -n "compiling "$(patsubst %.f,%,$<) " (with ifc) ... "
+	$(COMPILER1) $(SCOMPILER1FLAGS)  -c $<  \
+	             -o $(patsubst %.f,objs/%.ifc.o,$<) \
+		     2>> compile.ifc.log
+	echo "OK"
+
+$(OBJS1): objs/%.ifc.o: %.f $(INCS)
+	echo -n "compiling "$(patsubst %.f,%,$<) " (with ifc) ... "
+	$(COMPILER1) $(COMPILER1FLAGS)  -c $<  \
+	          -o $(patsubst %.f,objs/%.ifc.o,$<) \
+	           2>> compile.ifc.log
+	echo "OK"
+
+
+# objs for skyax project  (f77)
+$(OBJS2): objs/%.f77.o: %.f $(INCS)
+	echo -n "compiling "$(patsubst %.f,%,$<) " (with f77) ... "
+	$(COMPILER2) $(COMPILER2FLAGS)  -c $< \
+	             -o $(patsubst %.f,objs/%.f77.o,$<) \
+                     2>> compile.f77.log
+	echo "OK"
+
+#init.o: init.f $(INCS)
+#coulomb.o: coulomb.f $(INCS)
+#sstep_old.o: sstep_old.f $(INCS)
+#steputil.o: steputil.f $(INCS)
+#info.o: info.f $(INCS)
+#util.o: util.f $(INCS)
+#pairing.o: pairing.f  $(INCS)
+#crankin.o: crankin.f $(INCS)
+#seprpa.o: seprpa.f crankin.o  $(INCS)
+#qtest.o: qtest.f crankin.o  $(INCS)
+#wspot.o: wspot.f  $(INCS)
+#psiout.o: psiout.f  $(INCS)
+#comp_block.o: comp_block.f  $(INCS)
+#write_triax.o:  write_triax.f $(INCS)
+#mulnew.o: mulnew.f $(INCS)
+#hcommQ_old.o: hcommQ_old.f $(INCS)
+#iniq.o: iniq.f $(INCS)
+#zcmcor.o:  zcmcor.f $(INCS)
+#write_2D.o: write_2D.f $(INCS)
+#localize2.o: localize2.f $(INCS)
+#grid.o: grid.f $(INCS)
+#matmul.o: matmul.f $(INCS)
+
+#.SUFFIXES:  .f .o 
+
+#.f.o:
+#	$(COMPILER) $(COMPILERFLAGS)  -c $< -o $<.
