@@ -71,7 +71,7 @@ DO jst=istmin,istmax
 !  WRITE(6,*) 'HFBSTEP 2: mythread,jst=',mythread,jst
   CALL hpsi(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst),jst)
   v2a = vsqf(jst)
-  uva = SQRT(MAX(v2a-v2a*v2a,xsmall))
+  uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
 !  WRITE(6,*) 'HFBSTEP 3: mythread,jst=',mythread,jst,v2a,uva
   IF(tbcs) THEN
     v2a=1D0

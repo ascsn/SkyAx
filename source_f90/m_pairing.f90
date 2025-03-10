@@ -161,7 +161,9 @@ epairtestp=f1int(work)
 work(:,:)=paircr(:,:,2)*pairpt(:,:,2)
 epairtestn = f1int(work)  
 epairtest= epairtestp+ epairtestn
-
+!   communicate to calling routine
+epair(1)=epairtestp
+epair(2)=epairtestn
 
 IF(testfolding) THEN
   densint0 = f1int(paircrtest(:,:,2))
@@ -218,17 +220,25 @@ IF(itest > 0) THEN
 END IF
 
 !     stabilized pairing gap
-ecrit=1.0D0
-npower=2.0D0
-
-buff(1)=ABS(ecrit/epairtestp)
-buff(2)=ABS(ecrit/epairtestn)
-
-
-DO jst=1,nst(1)+nst(2)
-  iq     = icharg(jst)
-  deltaf(jst)=deltaf(jst)*(1.0D0 - (npower-1.0D0)*pairstab*buff(iq)**npower)
-END DO
+IF(pairstab.NE.0D0) THEN
+  IF(tFayans) THEN
+    buff(1)=ABS(pairstab/epairtestp)
+    buff(2)=ABS(pairstab/epairtestn)
+    DO jst=1,nst(1)+nst(2)
+      iq     = icharg(jst)
+      deltaf(jst)=deltaf(jst)*(1.0D0 + buff(iq)**2)
+    END DO
+  ELSE
+    ecrit=1.0D0
+    npower=2.0D0
+    buff(1)=ABS(ecrit/epairtestp)
+    buff(2)=ABS(ecrit/epairtestn)
+    DO jst=1,nst(1)+nst(2)
+      iq     = icharg(jst)
+      deltaf(jst)=deltaf(jst)*(1.0D0 - (npower-1.0D0)*pairstab*buff(iq)**npower)
+    END DO
+  END IF
+END IF
 
 DEALLOCATE(work)
 
