@@ -10,7 +10,6 @@ source_odd/*.o
 source_odd/*.mod
 .history
 .vscode/*
-skyax.*
 *.log
 for005_*
 *.err
