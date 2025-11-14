@@ -3,3 +3,7 @@ test_cases_Fayans/*
 !for005*
 !README
 !*.bat
+
+# fortran compile files
+*.o
+*.mod

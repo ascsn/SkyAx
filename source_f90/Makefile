@@ -5,9 +5,24 @@ q/SHELL 	       = /bin/bash
 .PHONY : all info params gf gf_d ifort params info gf_omp
 #
 # ----- define the compiler being used---------------------------------------
-#
+# TODO: may need to change ifort to ifx
 gf gf_omp gf_d  : export COMPILER_SKYAX = gfortran
 ifort ifort_omp : export COMPILER_SKYAX = ifort
+
+# ----- define HDF5 flagser being used---------------------------------------
+# I have $(HDF5_DIR) set in as an environment variable. On my Ubuntu machine 
+# it points to /usr/lib/x86_64-linux-gnu/hdf5/serial/
+HDF5_INCLUDE = $(HDF5_DIR)/include 
+HDF5_LIB = $(HDF5_DIR)/lib
+
+# Linker flags to link with the HDF5 library
+H5_LDFLAGS = -L$(HDF5_LIB) -lhdf5_fortran -lhdf5
+
+# Compiler flags
+H5_FFLAGS = -I$(HDF5_INCLUDE)
+
+export H5_LDFLAGS
+export H5_FFLAGS
 #
 # ----- define compiler flags and linker flags-------------------------------
 #
@@ -28,7 +43,7 @@ ifort     : export EXEC_SKYAX = skyax.ifort.seq
 ifort_omp : export EXEC_SKYAX = skyax.ifort.omp
 #
 # ----- libraries--------------------------------------------------------------
-#
+# TODO: change here for lapack library
 gf gf_d gf_omp ifort ifort_omp: export LIBS_SKYAX = -llapack -lblas
 #gf gf_d ifort : export LIBS_SKYAX = -L$(/usr/lib) -lblas -L$(/usr/lib) -llapack 
 #
@@ -89,6 +104,8 @@ MODULES        =  m_paramr.o m_dynpar.o m_levels.o m_grid.o m_wavefr.o \
 #-----------------------------------------------------------------------------
 makeit : ../$(EXEC_SKYAX)
 
+m_skyax_hdf5.o: Makefile
+
 m_paramr.o : Makefile
 
 m_grid.o : m_paramr.o Makefile
@@ -105,8 +122,10 @@ m_constr.o : m_paramr.o m_dynpar.o m_levels.o m_grid.o m_fields.o Makefile
 
 m_hdiag.o : m_grid.o m_levels.o m_paramr.o m_wavefr.o Makefile
 
-m_observ.o : m_paramr.o m_grid.o m_constr.o m_dynpar.o m_wavefr.o \
-             m_levels.o m_fields.o Makefile
+# m_observ.o : m_paramr.o m_grid.o m_constr.o m_dynpar.o m_wavefr.o \
+#              m_levels.o m_fields.o Makefile
+m_observ.o : m_skyax_hdf5.o m_paramr.o m_grid.o m_constr.o m_dynpar.o \
+             m_wavefr.o m_levels.o m_fields.o Makefile
 
 m_coulomb.o : m_paramr.o m_fields.o m_wavefr.o m_levels.o m_grid.o \
               m_constr.o m_dynpar.o m_observ.o Makefile
@@ -140,7 +159,7 @@ skyax.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o \
 # executables
 ../$(EXEC_SKYAX): $(MODULES)
 	 @echo -n "linking " $@ "... "
-	 $(LINKER_SKYAX) $(LINKERFLAGS_SKYAX) -o $@  $(MODULES) $(LIBS_SKYAX)
+	 $(LINKER_SKYAX) $(LINKERFLAGS_SKYAX) $(H5_LDFLAGS) -o $@ $(MODULES) $(LIBS_SKYAX)
 	 @echo "OK"
 
 .SUFFIXES:  .f90 .o
@@ -149,6 +168,6 @@ skyax.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o \
 
 %.o: %.f90
 	@echo -n "compiling "$<" ... "
-	$(COMPILER_SKYAX) $(COMPILERFLAGS_SKYAX)  -c $<
+	$(COMPILER_SKYAX) $(COMPILERFLAGS_SKYAX) $(H5_FFLAGS) -c $<
 	@echo "OK"
 
