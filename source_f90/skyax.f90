@@ -437,7 +437,6 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   
   CALL user_interface_2()  ! user defined post processing
 
-
 STOP 'normal termination '
 
 

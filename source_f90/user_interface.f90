@@ -341,7 +341,45 @@ END FUNCTION charge_formfactor
 END SUBROUTINE user_interface_1
 
 SUBROUTINE user_interface_2()
-! user defined post processing (called in 'skyax.f90')
+  ! use hdf5
+  use fields
+  use hdf5_generic
+  
+  
+  implicit none
+
+  real(8), dimension(4,2) :: testArr
+
+  call write_array(testArr)
+  ! real(8), dimension(4,2) :: testArr
+
+  ! call write_array_2d(testArr)
+  
+  ! call write_array(pot)
+
+!   REAL(8),ALLOCATABLE :: pot(:,:,:)      !<Local HF potential.
+! REAL(8),ALLOCATABLE :: coulpt(:,:)     !<Coulomb potential.
+! REAL(8),ALLOCATABLE :: bmass(:,:,:)    !<Inverse mass.
+! REAL(8),ALLOCATABLE :: potls(:,:,:,:)  !<Spin-orbit potential.
+! REAL(8),ALLOCATABLE :: drbmas(:,:,:)   !<d/dr \c bmass.
+! REAL(8),ALLOCATABLE :: dzbmas(:,:,:)   !<d/dz \c bmass.
+! REAL(8),ALLOCATABLE :: potadd(:,:,:)   !<Additional potential to stabilize positive energy states.
+! REAL(8),ALLOCATABLE :: rhosur(:,:,:)   !<Auxiliary field for potential wall.
+! REAL(8),ALLOCATABLE :: pairpt(:,:,:)   !<Gap potential for dynamic BCS.
+! REAL(8),ALLOCATABLE :: potdamp(:,:)    !<Damping potential for potential wall.
+
+! REAL(8),ALLOCATABLE :: rho(:,:,:)      !<Density.
+! REAL(8),ALLOCATABLE :: crho(:,:)       !<Coulomb density.
+! REAL(8),ALLOCATABLE :: tau(:,:,:)      !<Kinetic energy density.
+! REAL(8),ALLOCATABLE :: drhols(:,:,:)   !<Gradient of spin-orbit current.
+! REAL(8),ALLOCATABLE :: rholsr(:,:,:)   !<Spin-orbit current in r-direction.
+! REAL(8),ALLOCATABLE :: rholsz(:,:,:)   !<Spin-orbit current in z-direction.
+! REAL(8),ALLOCATABLE :: d2rho(:,:,:)    !<Laplaceian on \c rho.
+! REAL(8),ALLOCATABLE :: rhoti(:,:,:)    !<Density for constraint calculation.
+! REAL(8),ALLOCATABLE :: paircr(:,:,:)   !<Pairing density.
+  write(6,*) "Have I found the right file?"
+  write(6,*) shape(rho)
+
   RETURN
 END SUBROUTINE user_interface_2
 
