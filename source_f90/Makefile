@@ -114,8 +114,6 @@ MODULES        =  m_paramr.o m_dynpar.o m_levels.o m_grid.o m_wavefr.o \
 #-----------------------------------------------------------------------------
 makeit : ../$(EXEC_SKYAX)
 
-m_skyax_hdf5.o: Makefile
-
 m_paramr.o : Makefile
 
 m_grid.o : m_paramr.o Makefile
@@ -125,6 +123,8 @@ m_dynpar.o : m_paramr.o forces.data Makefile
 m_levels.o : m_paramr.o Makefile
 
 m_fields.o : m_paramr.o m_grid.o Makefile
+
+m_skyax_hdf5.o: m_fields.o Makefile
 
 m_wavefr.o : m_paramr.o m_grid.o Makefile
 
@@ -173,7 +173,7 @@ skyax.o : m_skyax_hdf5.o m_constr.o m_coulomb.o m_dynpar.o m_fields.o \
 # executables
 ../$(EXEC_SKYAX): $(MODULES)
 	 @echo -n "linking " $@ "... "
-	 $(LINKER_SKYAX) $(LINKERFLAGS_SKYAX) $(H5_LDFLAGS) -o $@ $(MODULES) $(LIBS_SKYAX)
+	$(LINKER_SKYAX) $(LINKERFLAGS_SKYAX) -o $@ $(MODULES) $(LIBS_SKYAX) $(H5_LDFLAGS)
 	 @echo "OK"
 
 .SUFFIXES:  .f90 .o
