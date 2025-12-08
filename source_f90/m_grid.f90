@@ -1843,6 +1843,7 @@ REAL(8)            :: buf,buf1,buf2
 
 LOGICAL,PARAMETER :: ttestgauss=.FALSE.
 REAL(8),PARAMETER :: epsil_Gauss=1D-5     ! cutoff for Gaussian
+!REAL(8),PARAMETER :: epsil_Gauss=1D-8     ! cutoff for Gaussian
 
 !ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
 
@@ -2010,7 +2011,8 @@ DO is=1,nsd
 END DO
 DEALLOCATE(work)
 
-IF(imfld==0) WRITE(6,'(a,4(1pg13.5))') ' Gausfolding-spin:',&
+!IF(imfld==0) WRITE(6,'(a,4(1pg13.5))') ' Gausfolding-spin:',&
+IF(imfld==-1000) WRITE(6,'(a,4(1pg13.5))') ' Gausfolding-spin:',&
     f1int(fldin(:,:,1)),f1int(fldout(:,:,1)), &
     f2int(fldin(:,:,1),fldin(:,:,1)),f2int(fldout(:,:,1),fldout(:,:,1))
 
