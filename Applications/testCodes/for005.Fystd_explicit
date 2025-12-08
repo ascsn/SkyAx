@@ -1,0 +1,26 @@
+&main outnam='exp', itmax=8000, iprint=1000, itest=0, 
+pairenhance=1.0D0, iternat=0, modnat=99999, iterbcs=300, iterhfb=600,
+/
+&force name='', tFayans=.TRUE., ipair=8, pairstab=-0.3D0, ex=1, zpe=1,
+h2m=20.749811,20.721249,
+avp=-9.809519866,h1vp=0.6174527519,h2vp=0.2142736685,
+avm=23.41886322,h1vm=-0.2861245253,h2vm=22.80909400,
+asp=0.5654841300,hsp=0.0,hgradp=0.4579587200,
+asm=0.0,hsm=22.80909400,hgradm=0.0,hcoul=0.0,
+c0nabj=0.1983338500,c1nabj=4.4008347000E-02,c0tau=0.0,c1tau=0.0,
+fxi=-4.455644500,h1xi=4.243982800,hgradxi=3.112633900,delfxi=0.0,
+chg=1D0,ex=1,zpe=1,tcoulfold=.TRUE.,
+pair_cutoff=-15D0,tcutoff_uvspace=.TRUE.,tregpair=F,
+isovectormodel=2
+/
+&grids tsym=.T.,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+/
+&static nprot=20,nneut=20,x0inv=0.3D0,e0inv=110.0,addrho=0.15D0,addocc=0.15D0,
+deocc(1)=3.2D0,deocc(2)=3.2D0,errenr=1D-12,errvar=0.01,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999, betain=0.0
+/
+&constraint/
+&thermal
+/
+
+

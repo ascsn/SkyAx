@@ -4,10 +4,10 @@ To install the interface between the F90 SkyAx abd the F77 SkyAx_odd:
 The wrapper routine resides in the 'source_f90' of the 'SkyAx'
 directory, presently in the branch 'PGdevelop'.
 To install it go to the subdirectory 'source_f90' and issue
-'./complink'. As a result you obtain the executable 'wrapper.exe'
+'./complink_wrapper'. As a result you obtain the executable 'wrapper.exe'
 at the directory one level before 'source_f90'.
 
-Go to the subdirectory 'source' and issue 'make skyifc' if you have 
+Go to the subdirectory 'source_odd' and issue 'make skyifc' if you have
 an Intel compiler or 'make skyf77' if you prefer the GNU compiler. 
 The result is an executable 'skyax_odd.exe' one level before 'source'.
 

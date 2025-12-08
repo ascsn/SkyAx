@@ -1,5 +1,5 @@
 # for Intel
-COMPILER1       = ifort
+COMPILER1       = ifx
 #COMPILER1       = mpif90 
 
 #COMPILER1FLAGS  = -O3 -fpp -w -static -ipo	# AMD

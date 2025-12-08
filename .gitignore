@@ -7,7 +7,10 @@ test_cases_Fayans/*
 source_f90/*.o
 source_f90/*.mod
 source_odd/*.o
+source_odd/objs/*.o
 source_odd/*.mod
+*.exe
+*.omp
 .history
 .vscode/*
 *.log

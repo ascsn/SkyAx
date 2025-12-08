@@ -1,0 +1,70 @@
+#: odd code                                                              
+#X:&P25b
+Y:&P16PES
+#S: DIST(4) SCAL(0.8)
+# Plot potential energy surface for:
+ odd: odd code                                                                   
+# Nmass=   40, Ncharge=   20,  force from IPARAM=    0
+#  dz,dr:  0.700 0.700 nz,nr:  31  31
+# addrho,addpot,addocc:  0.150 1.000 0.300  c0,qeps: 0.800 0.300
+# x0inv(fm),e0inv(mev):    0.40 110.00 itsub,x0fac:  1 1.500
+# pairing: v**2 space, cutoff=  F  -15.00
+# sum_uv constraint:   0.00   0.00   1.00   0.00   0.00
+#  bet2  bet2p  bet2n  bet4   bet4p  bet4n   energy       epairp        epairn    iter  rms    rmsp   rmsn  jz_p jz_n   j
+  0.000187303577  0.000398369094 -0.000023761939 -1.118568755800E-02 -2.236192940937E-02 -9.445710596672E-06  -338.91002961   -0.79   -1.16 -0.658788694554     -0.760955505960     4001  3.38709963918  3.41113700497  3.36289046280   0.00   0.00   0.00   0.00   3.48264165816       3.82201840703      0.101679050784        3.2444    0.0000
+#: odd code                                                              
+#X:&P25b
+Y:&P16PES
+#S: DIST(4) SCAL(0.8)
+# Plot potential energy surface for:
+ odd: odd code                                                                   
+# Nmass=   40, Ncharge=   20,  force from IPARAM=    0
+#  dz,dr:  0.700 0.700 nz,nr:  31  31
+# addrho,addpot,addocc:  0.150 1.000 0.150  c0,qeps: 0.800 0.300
+# x0inv(fm),e0inv(mev):    0.30 110.00 itsub,x0fac:  1 1.500
+# pairing: v**2 space, cutoff=  F  -15.00
+# sum_uv constraint:   0.00   0.00   1.00   0.00   0.00
+#  bet2  bet2p  bet2n  bet4   bet4p  bet4n   energy       epairp        epairn    iter  rms    rmsp   rmsn  jz_p jz_n   j
+ -0.001430337425 -0.001178523949 -0.001682150902 -7.766597770988E-03 -1.521927454339E-02 -3.139209966272E-04  -340.36844820   -1.00   -1.67 -0.715366352845     -0.883599310525     8001  3.36866988357  3.39074997157  3.34644411267   0.00   0.00   0.00   0.00   3.46309950350       3.80864405447     -0.300804450984        3.8980    0.0000
+#: odd code                                                              
+#X:&P25b
+Y:&P16PES
+#S: DIST(4) SCAL(0.8)
+# Plot potential energy surface for:
+ odd: odd code                                                                   
+# Nmass=   40, Ncharge=   20,  force from IPARAM=    0
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.150  c0,qeps: 0.800 0.300
+# x0inv(fm),e0inv(mev):    0.30 110.00 itsub,x0fac:  1 1.500
+# pairing: v**2 space, cutoff=  F  -15.00
+# sum_uv constraint:   0.00   0.00   1.00   0.00   0.00
+#  bet2  bet2p  bet2n  bet4   bet4p  bet4n   energy       epairp        epairn    iter  rms    rmsp   rmsn  jz_p jz_n   j
+ -0.001579981439 -0.001452852568 -0.001707110310 -4.688220554737E-03 -8.822598038327E-03 -5.538430706148E-04  -340.36489306   -0.95   -1.67 -0.684382704955     -0.879996862094     8001  3.36818926117  3.39007191232  3.34616350876   0.00   0.00   0.00   0.00   3.46262930677       3.80135871901     -0.370823621769        3.9134    0.0000
+#: odd code                                                              
+#X:&P25b
+Y:&P16PES
+#S: DIST(4) SCAL(0.8)
+# Plot potential energy surface for:
+ odd: odd code                                                                   
+# Nmass=   40, Ncharge=   20,  force from IPARAM=    0
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.150  c0,qeps: 0.800 0.300
+# x0inv(fm),e0inv(mev):    0.30 110.00 itsub,x0fac:  1 1.500
+# pairing: v**2 space, cutoff=  F  -15.00
+# sum_uv constraint:   0.00   0.00   1.00   0.00   0.00
+#  bet2  bet2p  bet2n  bet4   bet4p  bet4n   energy       epairp        epairn    iter  rms    rmsp   rmsn  jz_p jz_n   j
+ -0.000941250319 -0.000690590429 -0.001191910210 -2.285520288639E-03 -2.751688140707E-03 -1.819352436510E-03  -340.65110727   -5.15   -4.25  -1.63287117991      -1.48245156185     8001  3.39549470852  3.41739921160  3.37344797791   0.00   0.00   0.00   0.00   3.48969917265       3.82629994073     -0.176265128200        5.7597    0.0000
+#: odd code                                                              
+#X:&P25b
+Y:&P16PES
+#S: DIST(4) SCAL(0.8)
+# Plot potential energy surface for:
+ odd: odd code                                                                   
+# Nmass=   40, Ncharge=   20,  force from IPARAM=    0
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.150  c0,qeps: 0.800 0.300
+# x0inv(fm),e0inv(mev):    0.30 110.00 itsub,x0fac:  1 1.500
+# pairing: v**2 space, cutoff=  F  -15.00
+# sum_uv constraint:   0.00   0.00   1.00   0.00   0.00
+#  bet2  bet2p  bet2n  bet4   bet4p  bet4n   energy       epairp        epairn    iter  rms    rmsp   rmsn  jz_p jz_n   j
+ -0.002998839159 -0.003071996261 -0.002925682058 -2.480057937953E-03 -2.793443184787E-03 -2.166672691074E-03  -340.65088020   -5.16   -4.29  -1.65136992560      -1.49392235385     8001  3.39504516312  3.41646604888  3.37348826233   0.00   0.00   0.00   0.00   3.48919179410       3.82211297806     -0.784091107877        5.7657    0.0000
