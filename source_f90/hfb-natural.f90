@@ -735,7 +735,8 @@ DO  na=1,nmax
 END DO
 
 epair  = -sumduv/2D0
-IF(iab > 1) WRITE(6,'(a,3g12.4)') 'PAIR_STAB epair:',epair
+!IF(iab > 1) WRITE(6,'(a,3g12.4)') 'PAIR_STAB epair:',epair
+WRITE(6,'(a,3g12.4)') 'PAIR_STAB epair:',epair
 
 IF(pairstab==0D0) RETURN
 

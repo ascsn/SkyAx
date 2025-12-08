@@ -118,7 +118,7 @@ END IF
 WRITE(31,'(i4,5(1pg17.9),a)')  ipair,pairfc,ABS(pairstab),rho0pr,pair_cutoff,"  ipair,pairfp,pairfn"
 WRITE(31,'(f4.1,2i4,2f6.2,a)') sym,nr,nz,dr,dz,"  0    0  0 0 0 0  "
 WRITE(31,'(4f7.3,3i4,a)')  betain,octini,deocc,mmax,ispins,",,, init: BETAIN, OCTINI,  DEOCC(2),MMAX(2),ispins"
-WRITE(31,'(a)') "  0.0 0.0 0.0  0.025   2  0 1,,, CHF: swicon,betmin,betmax,betaw,lqcon,ifresh"
+WRITE(31,'(a)') "  0.0 0.0 0.0  0.025   2  0 0,,, CHF: swicon,betmin,betmax,betaw,lqcon,ifresh"
 WRITE(31,'(a)')   "  0.0  0.0  1.0,,,,,   thermal: tempmn,tempmx,tempw"
 WRITE(31,'(4i6,a)') iprint,iplot,itmax,itest,",,  print opt.: IPRINT,IPLOT,ITMAX,ITEST"
 WRITE(31,'(5f8.3,a)') E0INV,X0INV,ADDrho,addpot,ADDOCC,"  step iter:E0INV,X0INV,ADDrho,adpot,ADDOCC "

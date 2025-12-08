@@ -228,7 +228,7 @@ qh0=0D0;qh1=0D0;qh2=0D0;qh3=0D0;qh4=0D0;
 qh = 0D0; qdh = 0D0; qhdig = 0D0
 symcondiso = 0D0
 
-IF(thfb) THEN
+IF(thfb .AND. 1==2) THEN
   nlo=nst(1)+1
   nhi=nst(1)+nst(2)
   WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
@@ -1000,7 +1000,7 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     CALL hfbpot(iter)
     epairp=epair(1)
     epairn=epair(2)
-    WRITE(7,'(a,2(1pg13.5))') 'after HFBPOT:',epair
+!    WRITE(7,'(a,2(1pg13.5))') 'after HFBPOT:',epair
     IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
       CALL respax(iter)
       IF(itest > 0) WRITE(7,'(a,4g12.4)')  &
