@@ -146,7 +146,7 @@ IF(ipair==6 .OR. ipair==8) THEN
 END IF
 
 
-CALL system('./skyax_odd.exe < skyinput_old.'//outnam//' >/dev/null ')
+CALL system('../skyax_mkl.exe < skyinput_old.'//outnam//' >/dev/null ')
 CALL system('mv for007.'//outnam//' out_details.'//outnam)
 CALL system('rm colp*')
 CALL system('rm quad*')
