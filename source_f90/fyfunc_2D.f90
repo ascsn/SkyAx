@@ -438,7 +438,7 @@ IF(ttest) THEN
   paircr(:,:,1)  = rho(:,:,1)
   paircr(:,:,2)  = rho(:,:,1)
   pairpt = 0D0
-  WRITE(6,*) 'FY_HFBPOT'
+!  WRITE(6,*) 'FY_HFBPOT'
 END IF
 !        r0fy = (0.375D0/(pi*rho0fy))**(1D0/3D0)
 !        r0fy2 = r0fy*r0fy
