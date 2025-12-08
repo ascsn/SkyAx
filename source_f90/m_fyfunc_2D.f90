@@ -66,6 +66,13 @@ IF(isovectormodel==0) THEN
   hgradxin=hgradxi
 ELSE IF(isovectormodel==2) THEN
   fxip=fxi+delfxi
+  h1xip=h1xi
+  hgradxip=hgradxi
+  fxin=fxi-delfxi
+  h1xin=h1xi
+  hgradxin=hgradxi
+ELSE IF(isovectormodel==3) THEN
+  fxip=fxi+delfxi
   h1xip=h1xi+delh1xi
   hgradxip=hgradxi+delhgradxi
   fxin=fxi-delfxi
