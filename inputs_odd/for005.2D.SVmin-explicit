@@ -1,0 +1,20 @@
+&main outnam='SVm',title='SV-min',iprint=42000,itmax=2000
+/
+&force 
+ name='none',pairstab=-0D0,
+ t0=-2112.248247,t1=295.7808479,t2=142.2680381,t3=13988.56713,t4=111.2908590,
+ x0=0.2438863056,x1=-1.434926279,x2=-2.625899123,x3=0.2580701665,b4p=45.936151,
+ power=0.2553678900,
+ h2m=20.749811,20.721249,
+ chg=1D0,ex=1,riftm=0D0,zpe=1,
+ ipair=7,v0prot=601.16013,v0neut=567,rho0pr=0.211591,
+ pair_cutoff=1.65D0,
+/
+&grids tsym=T,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+/
+&static nprot=70,nneut=100,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
+deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-10,errvar=0.01,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999,betain=0.0/
+&constraint
+/
+&thermal /

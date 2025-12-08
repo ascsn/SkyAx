@@ -1,0 +1,146 @@
+c=======================================================================
+c
+c     ini_matrix_Beta(trmat,l,m)
+c
+c       initialize the static Q-operators
+c
+c                   4 pi    Q_lm + (-1)^m Q_{l,-m}
+c             Q = --------  ---------------------- 
+c                  5 A r^2           2
+c
+c       r^2  = RMS radius       =  3/5 * R^2
+c       A    = nucleon number
+c       Q_lm = R^l Y_lm
+c
+c       and calculate 2-quasiparticle transition matrixelements
+c
+c         Q^{2q}_ji = eta^(+)_ji <j|Q|i>
+c
+c=======================================================================
+      subroutine ini_matrix_Beta(trmat,resact,beta0q,l,m)
+c
+c     ------------------------------------------------------------------
+c      
+      include 'paramr.inc'
+      include 'dynpar.inc'
+      include 'linresp.inc'
+      include 'levels.inc'   !nst
+c
+c     ------------------------------------------------------------------
+c
+      double precision trmat(0:MTD)
+      double precision resact(0:MZD,0:MRD,MSD,MPSID,2)
+      double precision beta0q
+      double precision QlmOper(0:MZD,0:MRD)
+      integer          itr,ist,jst,jtp
+      integer          l,m
+      double precision qlmfac,qlmphase
+      double precision r,z
+      double precision ovlp
+      integer          musgn
+c
+c     ------------------------------------------------------------------
+c
+c     initialize multipole operator
+c     ------------------------------------------------------------------
+c     qlmfac   = 0.4D0*pi/(CPradRMS(0)*CPradRMS(0)*CPatnum(0))
+      qlmfac   = 0.4D0*pi/(0.6D0*1.2D0**2*CPatnum(0)**(5.0D0/3.0D0))
+      qlmphase = (-1)**m
+c
+      do ir=0,nr
+         r    = dr*(ir+sr)
+         do iz=0,nz
+            z    = ((iz)+sz-icm)*dz 
+            QlmOper(iz,ir) = qlmfac*ylm(z,r,l,m)
+         enddo
+      enddo
+c
+c     calculate action of beta in coordiante space
+c     ------------------------------------------------------------------
+      do ist=1,nst(1)+nst(2)
+c
+         do is=1,nsd
+            do ir=0,nr
+               do iz=0,nz
+                  resact(iz,ir,is,ist,1) = 
+     &                    QlmOper(iz,ir)*CPpsi(iz,ir,is,ist,0)
+                  resact(iz,ir,is,ist,2) = qlmphase*
+     &                    QlmOper(iz,ir)*CPpsi(iz,ir,is,ist,0)
+               enddo
+            enddo
+         enddo
+c
+      enddo
+c
+c     evaluate 0q-value (MF-expectation)
+c     ------------------------------------------------------------------
+      beta0q=0.0D0
+      do itr=1,TRlen
+c
+         ist       = TRidx(itr,1)
+         jst       = TRidx(itr,2)
+         jtp       = TRidx(itr,3)
+
+         if ((ist.eq.jst).and.(jtp.eq.+1)) then
+            beta0q = beta0q + 
+     &               2.0D0*CPvsqf(ist,0)*(
+     &               wfovlp(CPpsi(0,0,1,ist,0),resact(iz,ir,is,ist,1))+
+     &               wfovlp(CPpsi(0,0,1,ist,0),resact(iz,ir,is,ist,2)))
+         endif
+c
+      enddo
+c
+c     loop all non vanishing matrixelements
+c     ------------------------------------------------------------------
+      do itr=1,TRlen
+c
+         ist       = TRidx(itr,1)
+         jst       = TRidx(itr,2)
+         jtp       = TRidx(itr,3)
+         musgn     = TRidx(itr,5)
+c
+         if (jtp.eq.+1) then
+c
+         if (musgn.eq.+1) then 
+            ! calculate <jst|Beta^+|ist>
+            ovlp=wfovlp(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,1))
+            call wfproj(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,1),ovlp)
+            call wfproj(CPpsi(0,0,1,ist,0),resact(0,0,1,jst,2),ovlp)
+         else                  
+            ! calculate <jst|Beta^-|ist>,
+            ovlp=wfproj(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,2)) 
+            call wfproj(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,2),ovlp) 
+            call wfproj(CPpsi(0,0,1,ist,0),resact(0,0,1,jst,1),ovlp) 
+         endif
+c
+         else
+c
+         if (musgn.eq.+1) then 
+            ! calculate <Tjst|Beta^+|ist>
+            ovlp=wfovlptr(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,1))
+            call wfprojtr(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,1),ovlp)    
+            call wfprojtr(CPpsi(0,0,1,ist,0),resact(0,0,1,jst,2),-ovlp)    
+         else                  
+            ! calculate <Tjst|Beta^-|ist>
+            ovlp=wfovlptr(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,2))
+            call wfprojtr(CPpsi(0,0,1,jst,0),resact(0,0,1,ist,2),ovlp)  
+            call wfprojtr(CPpsi(0,0,1,ist,0),resact(0,0,1,jst,1),-ovlp)  
+         endif
+c
+         endif
+c
+c        transform matrixelement into qp-space
+         trmat(itr)= TReta(itr,1)*ovlp
+c
+      enddo
+c
+c     ------------------------------------------------------------------
+c
+      write(21,'(a,i3,a,i3,a,1(1pg12.4))') 
+     &  'INI_MATRIX_BETA(): beta-operator initialized'//
+     &  ' (l=',l,', m=',m,')    beta0q=',beta0q
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end

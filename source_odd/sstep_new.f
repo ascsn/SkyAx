@@ -1,0 +1,1047 @@
+c-----sstep -----------------------------------------------------------
+c
+      subroutine sstep(iter)
+*
+***********************************************************************
+*                                                                     *
+*        sstep  - subroutine to propagate one gradient iteration      *
+*                 step                                                *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+      data ifcstp/0/     ! protocol of constraint step
+      data v2lim/1.0E-7/ ! lower limit for inclusion in 'rho' sum
+*
+***********************************************************************
+*                                                                     *
+*     reset densities to (1.0-addrho)*olddensity because              *
+*     addrho*newdensity is then accumulated in subroutine sdenst.     *
+*     note: at iter=0 the densities are to be initialised from        *
+*           scratch. here an effective addrho=1.0 is employed.        *
+*                                                                     *
+*     constraint calculation:                                         *
+*     vrhoti and srhoti are accumulated with the old densities        *
+*     vrhoti and srhoti of the last step in sdenti to get a           *
+*     variable addrho.                                                *
+*     (v.blum,15.4.87)                                                *
+*                                                                     *
+***********************************************************************
+*
+c     update center-of-mass and optionally the constraint operator
+c
+      if(isym.ne.1 .and. iter.gt.2) then
+        zcm = zcmobs(rho)
+        call inicon
+ctest        if(abs(zcm).gt.1E-4) call corzcm(zcm)
+      endif
+*
+*     compute the damped constraint operator  from rho:
+*
+      if( iter.ne.0 .and. idampc.eq.1) call rhodmp(iter)
+c
+c     initialize the Coulomb solver for RESPAX
+c
+      if((ipair.eq.9 .or. ipair.eq.11) 
+     &   .and. ilnrsp.eq.1 .and. iter.eq.0) then
+        do ir=0,nr
+        do iz=0,nz
+          wcoltt(iz,ir) = wcolt(iz,ir)
+        enddo
+        enddo
+      endif
+
+c
+c     the next state 
+c
+      if(iter.gt.0) then
+        if (swicon.gt.oh.and.iter.le.itcons) then
+          if(mod(iter,50).eq.6) call Qadjus(iter)
+          if(mod(iter,50).eq.6) call QstepL(iter)
+          call Qwfstep(iter)
+          call nextwf(iter)
+        else
+          call wfstep(iter)
+        endif
+      endif
+      call newmf(iter)
+c
+      return
+      end
+c-----wfstep-----------------------------------------------------------
+c
+      subroutine wfstep(iter)
+*
+***********************************************************************
+*                                                                     *
+*     One wavefunction step according to damped gradient.             *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+c---------------------------------------------------------------------
+c
+c     loop aver states in blocks with same 'm' and isospin 'iq'.
+c     outer loop on blocks, inner loop within 'm', 'iq'.
+c
+      devmf2 = 0.0D0
+      do im=1,nom
+c
+        nhi   = mhi(im)
+        nlo   = mlo(im)
+        nadd  = nhi-nlo+1
+        kpsic = mim(im)
+        iq    = miq(im)
+        if (itest.ge.2)
+     &    write(7,'(5(a,i4)/)') 
+     &    'mblock=',im,'nlo=',nlo,'nhi=',nhi,'lz=',kpsic,'chg=',iq
+        do jst=nlo,nhi
+c                                         
+c         action of constrained mean-field Hamiltonian
+c                                           
+          call hpsi(psi(0,0,1,jst),psin,jst)
+          call damnuc(psin,psip,jst)
+          do is=1,nsd
+          do ir=0,nr
+          do iz=0,nz
+            psi(iz,ir,is,jst) = psi(iz,ir,is,jst)-psip(iz,ir,is)
+          enddo
+          enddo
+          enddo
+          va      = vsqf(jst)
+          devmf2  = va*wate(jst)*spevar(jst)**2 + devmf2
+c
+c      end of inner loop
+c
+c                                         
+c       ortho-normalize all states within 'm' block
+c
+        call schmit(psi(0,0,1,nlo),nlo-1,nadd)
+
+        enddo
+c
+c      end of outer loop
+c
+      enddo
+      devmf2 = sqrt(abs(devmf2))
+      devh2 = devmf2
+c
+c     pairing step
+c
+      call ocstep(iter)
+c
+c     all done
+c
+      return
+      end
+
+
+
+c-----Qwfstep-----------------------------------------------------------
+c
+      subroutine Qwfstep(iter)
+*
+***********************************************************************
+*                                                                     *
+*     One wavefunction step according to damped gradient.             *
+*     The result is stored on 'dpsiz'.                                *
+*     The variances are accumulated simultaneously.                   *
+*     The step in occupation numbers is also computed.                *
+*     From both together, the change in constraint is estimated.      *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+      logical tqqpr
+      data tqqpr/.false./     ! switch for protocol of <QQ> etc
+c
+c---------------------------------------------------------------------
+c
+c     initialize accumulators
+c
+      qq     = 0.0D0                     !  variance <Q*Q>
+      qh     = 0.0D0                     !  variance <Q*h>
+      qdh    = 0.0D0                     !  variance <Q*step>
+      qav    = 0.0D0                     !  average <Q>
+      qdhdig = 0.0D0                     !  diagonal part <Q*step>
+      qhdig  = 0.0D0                     !  diagonal part <Q*h>
+      devmf2 = 0.0D0                     !  variance <h*h>
+c
+c     loop aver states in blocks with same 'm' and isospin 'iq'.
+c     outer loop on blocks, inner loop within 'm', 'iq'.
+c
+      do im=1,nom
+c
+        nhi   = mhi(im)
+        nlo   = mlo(im)
+        nadd  = nhi-nlo+1
+        kpsic = mim(im)
+        iq    = miq(im)
+        if (itest.ge.2)
+     &    write(7,'(5(a,i4)/)') 
+     &    'mblock=',im,'nlo=',nlo,'nhi=',nhi,'lz=',kpsic,'chg=',iq
+        do jst=nlo,nhi
+c                                         
+c         action of constrained mean-field Hamiltonian
+c                                           
+          call hpsi(psi(0,0,1,jst),psin,jst)
+          call damnuc(psin,dpsiz(0,0,1,jst),jst)
+          do is=1,nsd
+          do ir=0,nr
+          do iz=0,nz
+            dpsiz(iz,ir,is,jst) = -dpsiz(iz,ir,is,jst)
+          enddo
+          enddo
+          enddo
+          do is=1,nsd
+          do ir=0,nr
+          do iz=0,nz
+            psip(iz,ir,is) = qfac(iz,ir)*psi(iz,ir,is,jst)
+          enddo
+          enddo
+          enddo
+c
+c         accumulate variance of s.p. energies, 'spevar' from 'hpsi' 
+c
+          qspav(jst) = wfovlp(psip,psi(0,0,1,jst))    ! save diagional element
+          va      = vsqf(jst)
+          vaw     = va*wate(jst)
+          qav     = vaw*qspav(jst)  + qav
+          devmf2  = vaw*spevar(jst)**2 + devmf2
+          qq      = vaw*wfovlp(psip,psip) + qq
+          qh      = vaw*wfovlp(psip,psin)  + qh
+          qdh     = vaw*wfovlp(psip,dpsiz(0,0,1,jst)) + qdh
+          ua      = sqrt(one-va)
+          va      = sqrt(va)
+c                                             off diagonal contributions
+          do jstp=nlo,nhi
+            if(nparz(1,jst).eq.nparz(1,jstp)) then
+              sab    = wfovlp(psi(0,0,1,jstp),dpsiz(0,0,1,jst))
+              hab    = wfovlp(psi(0,0,1,jstp),psin)
+              qab    = wfovlp(psi(0,0,1,jstp),psip)
+              vb     = vsqf(jstp)
+              ub     = sqrt(one-vb)
+              vb     = sqrt(vb)
+              offwgt = va*vb*(ua*ub-va*vb)*wate(jst)
+              qdh    = offwgt*sab*sab + qdh
+              qh     = offwgt*hab*hab + qh
+              qq     = offwgt*qab*qab + qq
+            endif
+          enddo
+c
+c      end of inner loop and outer loop
+c
+        enddo
+      enddo
+      devh2 = devmf2
+c
+c     pairing steps:
+c
+c     1. compute gradient and variances therefrom
+c
+      call occham(dvsqf)
+      do jst=1,nst(1)+nst(2)
+        qhdig = dvsqf(jst)*wate(jst)*qspav(jst) + qhdig
+      enddo
+      qh  = qh+qhdig
+c
+c     2. compute actual step
+c
+c     save start value
+c
+      do jst=1,nst(1)+nst(2)
+        dvsqf(jst) = vsqf(jst)
+      enddo
+c
+c     compute the actual pairing
+c
+      call ocstep(iter)
+c
+c     deduce step by difference with start value
+c     and compose diagonal contribution to variance
+c
+      do jst=1,nst(1)+nst(2)
+        vsqold  = dvsqf(jst)
+        dvsqf(jst) = vsqf(jst)-dvsqf(jst)
+        vsqf(jst) = vsqold
+        qdhdig = dvsqf(jst)*wate(jst)*qspav(jst) + qdhdig
+      enddo
+      qdh = qdh+qdhdig
+c
+c     copy to common block for I/O transfer
+c     (use standard variables for damped constraint)
+c
+      qsqd  = qq
+      qtilc = qav
+      qtil  = qh
+      qtild = qdh
+c
+c     optionally test print
+c
+      if(tqqpr) then
+        write(6,'(a,i5,4(1pg13.5))')
+     &   ' QPROPR: iter,qav,qh,qdh,qq=',iter,qav,qh,qdh,qq
+      endif
+c
+c     all done
+c
+      return
+      end
+
+
+
+
+
+c-----nextwf-----------------------------------------------------------
+c
+      subroutine nextwf(iter)
+*
+***********************************************************************
+*                                                                     *
+*     Finally compose to new occupations and wavefunctions and        *
+*     ortho-normalize.                                                *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+      data etalam,etaq1,etaq2/1.0,1.0,0.5/          ! damping parameters 
+c
+c---------------------------------------------------------------------
+c
+c
+c     contribution from constraint and update Lagrange parameter
+c
+      dellam = etalam*qtil/qsqd
+      qlamb  = qlamb+dellam
+      qcorr = -(etaq1*(qtilc-qsoll)+etaq2*2.0D0*qtild)*0.5D0/qsqd 
+c      write(6,'(a,i5,4(1pg13.5))')
+c     &   ' NEXTWF: iter,qav,qdh,qq=',iter,qtilc,qtild,qsqd
+c      write(6,'(a,4(1pg13.5))')
+c     &  ' NEXTWF: qsoll,qlamb,dellam,qcorr=',qsoll,qlamb,dellam,qcorr
+      if(iter.eq.1) write(88,'(2a)')
+     &  'iter  qsoll      Q     <Qh>      <QS>     <QQ>    lambda  ',
+     &  ' del_lamb  del_Q  '
+      write(88,'(i4,5f9.3,f9.5,2(1pg13.5))')
+     &  iter,qsoll,qtilc,qtil,qtild,qsqd,qlamb,dellam,qcorr
+c
+c     loop aver states in blocks with same 'm' and isospin 'iq'.
+c     outer loop on blocks, inner loop within 'm', 'iq'.
+c
+      do im=1,nom
+c
+        nhi   = mhi(im)
+        nlo   = mlo(im)
+        nadd  = nhi-nlo+1
+        kpsic = mim(im)
+        iq    = miq(im)
+        if (itest.ge.2)
+     &    write(7,'(5(a,i4)/)') 
+     &    'mblock=',im,'nlo=',nlo,'nhi=',nhi,'lz=',kpsic,'chg=',iq
+        do jst=nlo,nhi
+          do is=1,nsd
+          do ir=0,nr
+          do iz=0,nz
+            psip(iz,ir,is) = qfac(iz,ir)*psi(iz,ir,is,jst)
+            psi(iz,ir,is,jst) = 
+     &          (1.0D0-qcorr*qspav(jst))*psi(iz,ir,is,jst)
+     &          + dpsiz(iz,ir,is,jst) 
+     &          + qcorr*psip(iz,ir,is)
+          enddo
+          enddo
+          enddo
+c
+c      update s.p. energies
+c
+          addspe = -wfovlp(psip,psi(0,0,1,jst))*dellam
+          spenrg(jst) = spenrg(jst)+adddspe
+c
+c      end of inner loop
+c
+        enddo
+c                                         
+c       ortho-normalize all states within 'm' block
+c
+        call schmit(psi(0,0,1,nlo),nlo-1,nadd)
+c
+c      end outer loop
+c
+      enddo
+
+c
+c     Correct step in occupation number.
+c
+      call ocstep(iter)
+c
+      return
+      end
+c-----ocstep-----------------------------------------------------------
+c
+      subroutine ocstep(iter)
+c
+c
+c     Step in occupation number from full BCS(-LN) and mix with old.
+c     The results is returned on 'vsqf' in 'levels.inc'.
+c     This part uses still some old and fuzzy coding.
+c
+*
+***********************************************************************
+*                                                                     *
+*        calculate the occupation numbers and the ordering of the     *
+*        levels. note:                                                *
+*                     iofk is the pointer to the 1 st index           *
+*                     of state q                                      *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+      data ioccmx/1/     ! switch for propagation of occ.number
+c
+c     old fashioned and rough way (constant gap) for initial phase
+c
+      if( (ipair.eq.-1.and.iter.le.ivs) .or.
+     &    (ipair.ge.0.and.itert.le.itpini) )    then
+c     if(ipair.eq.0.and.abs(econ).gt.1.0d30) then
+c     if(ipair.eq.0) then
+        do iq=1,2
+          iofk=iokk(iq)
+          call vsqtr(vsqf(iofk),wate(iofk),nst(iq),
+     x               spenrg(iofk),npart(iq),iorder(iofk))
+        enddo
+      endif
+*
+      if(ipair.eq.4 .and. ifocsv.eq.1) then
+        do jst=1,nst(1)+nst(2)
+          vsqf(jst) = oc(jst)
+        enddo
+        write(6,'(a)') ' use fixed VSQF'
+      elseif(iter.eq.itpfix) then
+        do jst=1,nst(1)+nst(2)
+          oc(jst) = vsqf(jst)                   ! save status
+        enddo
+      elseif(iter.gt.itpfix) then
+        do jst=1,nst(1)+nst(2)
+          vsqf(jst) = oc(jst)                  ! restore
+        enddo
+      elseif(ipair.ge.0.and.itert.ge.itpini) then
+        do jst=1,nst(1)+nst(2)
+          vsqfol(jst) = vsqf(jst)
+        enddo
+        if(ipair.eq.0 .or. ipair.eq.1 .or. ipair.eq.4) then
+          call pairol(spenrg,vsqf,wate,npart(1),nst(1),ggg(1),fer(1),
+     &                gap(1),partnm,npiter,ipair,erra,itest-2)
+
+          ist2 = nst(1)+1
+          call pairol(spenrg(ist2),vsqf(ist2),wate(ist2),npart(2),
+     &                nst(2),ggg(2),fer(2),
+     &                gap(2),partnm,npiter,ipair,erra,itest-2)
+          do ist=1,nst(1)+nst(2)
+            vsqobs(ist) = vsqf(ist)
+          enddo
+        elseif(ipair.eq.2 .or. ipair.eq.3) then
+          if(iter.gt.40) then
+            rhoscp = semrho(fer(1),pot(0,0,1),bmass(0,0,1))
+            ggp  = gavrg(3-ipair,npart(1),npart(2),1,rhoscp,1,numsta(1),
+     &                   effmas,0.58*0.960d0)              ! estimate surfp=0.96
+            ggg(1) = ggp
+            rhoscn = semrho(fer(2),pot(0,0,2),bmass(0,0,2))
+            ggn  = gavrg(3-ipair,npart(1),npart(2),0,rhoscn,1,numsta(2),
+     &                   effmas,0.58*0.960d0)              ! estimate surfp=0.96
+            ggg(2) = ggn
+            write(7,'(a,i4,a,4g12.4)')
+     &       ' iter=',iter,
+     &       ' rhoscp,rhoscn,ggp,ggn=',rhoscp,rhoscn,ggp,ggn
+          endif
+          if(ilnrsp.eq.1) then
+            call respax(iter)
+            if(itest.gt.0) write(7,'(a,4g12.4)')
+     &       ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
+          endif
+          call bcslip(spenrg,watep,1,nst(1),npart(1),ggg(1),gap(1),
+     &              fer(1),fer2(1),vsqf,vsqobs,
+     &              epsimp,epair(1),entotp,rspln(1),suv2rs(1),
+     &              ipair-2,itest-1)
+          ist2 = nst(1)+1
+          call bcslip(spenrg(ist2),watep(ist2),1,nst(2),npart(2),ggg(2),
+     &                gap(2),fer(2),fer2(2),vsqf(ist2),vsqobs(ist2),
+     &                epsimp,epair(2),entotp,rspln(2),suv2rs(2),
+     &                ipair-2,itest-1)
+CR-11-21-98
+        elseif(ipair.eq.5 .or. ipair.eq.7 .or. ipair.eq.9
+     &         .or. ipair.eq.11) then
+ctest          if(iter.lt.2*itpini) then
+          if(itert.lt.itpini) then
+            gap(1) = 11.2 / sqrt(one*(npart(1)+npart(2)))
+            call pairol(spenrg,vsqf,wate,npart(1),nst(1),ggg(1),fer(1),
+     &                  gap(1),partnm,npiter,0,erra,itest-2)
+
+            ist2 = nst(1)+1
+            gap(2) = gap(1)
+            call pairol(spenrg(ist2),vsqf(ist2),wate(ist2),npart(2),
+     &                  nst(2),ggg(2),fer(2),
+     &                  gap(2),partnm,npiter,0,erra,itest-2)
+          else
+            call hfbpot(wrk1)
+            if((ipair.eq.9 .or. ipair.eq.11).and. ilnrsp.eq.1) then
+              call respax(iter)
+              if(itest.gt.0) write(7,'(a,4g12.4)')
+     &         ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
+            endif
+            itest = -1
+            call pairdn(spenrg,deltaf,vsqf,
+     &           wate,wtpair,one*npart(1),
+     &           fer(1),epair(1),gap(1),ggg(1),feradd(1),
+     &           nst(1),nst(1),npiter,ipair,0,istblo,erra,itest-1)
+            ist2 = nst(1)+1
+            call pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),
+     &           wtpair(ist2),one*npart(2),
+     &           fer(2),epair(2),gap(2),ggg(2),feradd(2),
+     &           nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1),
+     &           erra,itest-1)
+          endif
+          do ist=1,nst(1)+nst(2)
+            vsqobs(ist) = vsqf(ist)
+          enddo
+CR-11-21-98
+        else
+          stop ' ipair outside -1..4 or 5, 7, 9 or 11 not active'
+        endif
+        if(itert.gt.itpini) then
+c                                      maximum distance in 'vsqf'
+          if(ioccmx.eq.1) then
+            distmx = zero
+            do jst=1,nst(1)+nst(2)
+              distmx = max(abs(vsqf(jst)-vsqfol(jst)),distmx)
+            enddo
+            distmx = max(addocc,distmx)
+            addact = addocc/distmx
+          else
+            addact = addocc
+          endif
+          conocc = one-addact
+          do jst=1,nst(1)+nst(2)
+            vsqf(jst)   = addact*vsqf(jst)+conocc*vsqfol(jst)
+          enddo
+          if(ipair.ge.5) then
+            epairp = 0.0
+            epairn = 0.0
+            do na=1,nst(1)+nst(2)
+              v2     = vsqf(na)
+              deltaa = deltaf(na)*wtpair(na)
+              vol    = 0.5*wate(na)*sqrt(max(v2-v2*v2,smal))
+              if(na.le.nst(1)) then
+                epairp = vol*deltaa + epairp
+              else
+                epairn = vol*deltaa + epairn
+              endif
+            enddo
+c          write(7,'(a,4g13.4)')
+c     &       ' pairing energies new/old=',epairp,epairn,epair
+            epair(1) = epairp
+            epair(2) = epairn
+          endif
+        endif
+      endif
+c
+      return
+      end
+
+
+
+
+
+
+c-----newmf -----------------------------------------------------------
+c
+      subroutine newmf(iter)
+*
+***********************************************************************
+*                                                                     *
+*     newmf  - subroutine to accumulate new densities and to          *
+*              compute new mean field Hamiltonian                     *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+      
+ 
+c
+c-----------------------------------------------------------------------
+c
+c     initialize accumulators for density, currents, etc
+c
+      redfac = one-adyrho
+      do iq=1,2
+      do ir=0,nr
+      do iz=0,nz
+        rho(iz,ir,iq)  = redfac*rho(iz,ir,iq)
+        tau(iz,ir,iq)  = redfac*tau(iz,ir,iq)
+        drhols(iz,ir,iq)  = redfac*drhols(iz,ir,iq)
+        rholsr(iz,ir,iq)  = redfac*rholsr(iz,ir,iq)
+        rholsz(iz,ir,iq)  = redfac*rholsz(iz,ir,iq)
+      enddo
+      enddo
+      enddo
+c
+c     initialize accumulator for surface density to be used in stabilizing well
+c
+      if(ifstab.eq.1) then
+        do iq=1,2
+        do ir=0,nr
+        do iz=0,nz
+           rhosur(iz,ir,iq) = zero
+        enddo
+        enddo
+        enddo
+      endif
+c
+c     accumulate densities etc
+c
+      do im=1,nom
+c
+        nhi   = mhi(im)
+        nlo   = mlo(im)
+        nadd  = nhi-nlo+1
+        kpsic = mim(im)
+        iq    = miq(im)
+        do jst=nlo,nhi
+          iq = icharg(jst)
+          if(adyrho*vsqf(jst).gt.v2lim)
+     &     call densit(psi(0,0,1,jst),adyrho*vsqf(jst),jst,
+     &                 rho(0,0,iq),tau(0,0,iq),drhols(0,0,iq),
+     &                 rholsr(0,0,iq),rholsz(0,0,iq) )
+          if(ifstab.eq.1) then
+            width = stwid/sqrt(anumb)
+            fac   = exp(-((spenrg(jst)-fer(iq))/width)**2)
+            if(fac.gt.v2lim) 
+     &       call sdenti(psi(0,0,1,jst),rhosur(0,0,iq),fac,jst)
+          endif
+        enddo
+      enddo
+*
+***********************************************************************
+*                                                                     *
+*     new mean-field hamiltonian                                      *
+*                                                                     *
+***********************************************************************
+*
+      if(ifstab.eq.1 .and. iter.gt.1) then
+        call stapot(wrk1)
+        if(iter.eq.itmax) then
+          call testpr(wrk1,0,nz,0,nr,'from STAPOT')
+        endif
+      endif
+*
+*     save coulomb density
+*
+      do ir=0,nr
+      do iz=0,nz
+        crho(iz,ir) = rho(iz,ir,1)
+      enddo
+      enddo
+      call mfhmlt(iter)
+*
+*
+      return
+      end
+
+
+
+
+
+c-----Qadjus-----------------------------------------------------------
+c
+      subroutine Qadjus(iter)
+*
+***********************************************************************
+*                                                                     *
+*     Adjust 'qsoll' iteratievly.                                     *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+      data etaq/1.0/         ! damping parameters 
+      data itmaq/4/
+c
+c----------------------------------------------------------------------
+c
+      do itad=1,itmaq
+c
+c     initialize accumulators
+c
+      qq     = 0.0D0
+      qav    = 0.0D0
+c
+c     1. wavefunction loop: compute step
+c
+c     contribution from wavefunctions
+c
+c     outer loop over block with same 'm' and isospin 'iq'
+c
+      do im=1,nom
+c
+        nhi   = mhi(im)
+        nlo   = mlo(im)
+        nadd  = nhi-nlo+1
+        kpsic = mim(im)
+        iq    = miq(im)
+c
+c       inner loop over states within 'm' block
+c
+        do jst=nlo,nhi
+c
+c         accumulate qav=<hQ> and qq=<QQ> 
+c
+          do is=1,nsd
+          do ir=0,nr
+          do iz=0,nz
+            psip(iz,ir,is) = qfac(iz,ir)*psi(iz,ir,is,jst)
+          enddo
+          enddo
+          enddo
+          qspav(jst) = wfovlp(psip,psi(0,0,1,jst))    ! save diagional element
+          va    = vsqf(jst)
+          qav   = va*wate(jst)*qspav(jst)  + qav
+          qq    = va*wate(jst)*wfovlp(psip,psip) + qq
+          ua    = sqrt(one-va)
+          va    = sqrt(va)
+          do jstp=nlo,nhi
+            if(nparz(1,jst).eq.nparz(1,jstp)) then
+              qab    = wfovlp(psi(0,0,1,jstp),psip)
+              vb     = vsqf(jstp)
+              ub     = sqrt(one-vb)
+              vb     = sqrt(vb)
+              offwgt = va*vb*(ua*ub-va*vb)*wate(jst)
+              qq     = offwgt*qab*qab + qq
+            endif
+          enddo
+c
+c      end of inner loop and outer loop
+c
+        enddo
+      enddo
+c
+      qtilc = qav
+      qsqd  = qq
+      qcorr  = -etaq*(qtilc-qsoll)*0.5D0/qsqd
+c      write(6,'(a,i5,4(1pg13.5))')
+c     &  'QADJUST: iter,qav,qsoll,qq,qcorr=',
+c     &            itad,qav,qsoll,qq,qcorr
+c
+c     2. wavefunction loop: correct wavefunction
+c
+c     outer loop over block with same 'm' and isospin 'iq'
+c
+      do im=1,nom
+c
+        nhi   = mhi(im)
+        nlo   = mlo(im)
+        nadd  = nhi-nlo+1
+        kpsic = mim(im)
+        iq    = miq(im)
+c
+c       inner loop over states within 'm' block
+c
+        do jst=nlo,nhi
+c
+c         accumulate qav=<hQ> and qq=<QQ> 
+c
+          do is=1,nsd
+          do ir=0,nr
+          do iz=0,nz
+            psi(iz,ir,is,jst)=
+     &        (1.0D0+qcorr*qfac(iz,ir))*psi(iz,ir,is,jst)
+          enddo
+          enddo
+          enddo
+c
+c        end of inner loop
+c
+        enddo
+c                                         
+c       ortho-normalize all states within 'm' block
+c
+        call schmit(psi(0,0,1,nlo),nlo-1,nadd)
+c
+c      end of outer loop
+c
+      enddo
+c
+      enddo
+c
+      return
+      end
+
+
+
+c-----QstepL-----------------------------------------------------------
+c
+      subroutine QstepL(iter)
+*
+***********************************************************************
+*                                                                     *
+*     Adjust Lagrangian parameter 'qlamb'                             *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+      data etalam/1.0/         ! damping parameters 
+      data itmaq/4/
+c
+c----------------------------------------------------------------------
+c
+      do itad=1,itmaq
+c
+c     initialize accumulators
+c
+      qq     = 0.0D0
+      qdh    = 0.0D0
+      qav    = 0.0D0
+      qdhdig = 0.0D0
+c     contribution from wavefunctions
+c
+c     outer loop over block with same 'm' and isospin 'iq'
+c
+      do im=1,nom
+c
+        nhi   = mhi(im)
+        nlo   = mlo(im)
+        nadd  = nhi-nlo+1
+        kpsic = mim(im)
+        iq    = miq(im)
+c
+c       inner loop over states within 'm' block
+c
+        do jst=nlo,nhi
+c
+c         accumulate qq=<QQ> and qdh=<QS> where S=Dh
+c
+          call hpsi(psi(0,0,1,jst),dpsiz(0,0,1,jst),jst)
+          do is=1,nsd
+          do ir=0,nr
+          do iz=0,nz
+            psip(iz,ir,is) = qfac(iz,ir)*psi(iz,ir,is,jst)
+          enddo
+          enddo
+          enddo
+          va    = vsqf(jst)
+          qq    = va*wate(jst)*wfovlp(psip,psip) + qq
+          qdh   = va*wate(jst)*wfovlp(psip,dpsiz(0,0,1,jst))
+     &           + qdh
+          ua    = sqrt(one-va)
+          va    = sqrt(va)
+          do jstp=nlo,nhi
+            if(nparz(1,jst).eq.nparz(1,jstp)) then
+              hab    = wfovlp(psi(0,0,1,jstp),dpsiz(0,0,1,jst))
+              qab    = wfovlp(psi(0,0,1,jstp),psip)
+              vb     = vsqf(jstp)
+              ub     = sqrt(one-vb)
+              vb     = sqrt(vb)
+              offwgt = va*vb*(ua*ub-va*vb)*wate(jst)
+              qdh    = offwgt*hab*qab + qdh
+              qq     = offwgt*qab*qab + qq
+            endif
+          enddo
+c
+c      end of inner loop and outer loop
+c
+        enddo
+      enddo
+c
+c     diagonal contributions
+c
+      do jst=1,nst(1)+nst(2)
+        qdhdig = dvsqf(jst)*wate(jst)*qspav(jst) + qdhdig
+      enddo
+      qdh = qdh+qdhdig
+c
+c     copy to common block for I/O transfer
+c     (use variables for damped constraint)
+c
+      qsqd  = qq
+      qtild = qdh
+      dellam = etalam*qtild/qsqd
+      qlamb  = qlamb+dellam
+c      write(6,'(a,i5,3(1pg13.5))')
+c     &  ' QSTEPL: iter,qdh,qq,dellam,qlamb=',
+c     &            itad,qdh,qq,dellam,qlamb
+c
+*
+*     save coulomb density
+*
+      do ir=0,nr
+      do iz=0,nz
+        crho(iz,ir) = rho(iz,ir,1)
+      enddo
+      enddo
+      call mfhmlt(iter)
+c
+      enddo
+c
+      return
+      end
+c-----occham -----------------------------------------------------------
+c
+      subroutine occham(dv2)
+c
+c
+c     Gradient step in occupation number from 2-quasi-particle
+c     Hamiltionian.
+c     The results is returned on 'dv2'
+c     Level information is eneterd through 'levels.inc'.
+c
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+      dimension dv2(npsid)
+c
+c-----------------------------------------------------------------------
+c
+c     preliminary step, 
+c     accumulate for correction of Fermi energy
+c
+      sumstp = 0.0D0
+      sumuv  = 0.0D0
+      do jst=1,nst(1)+nst(2)
+        v2     = vsqf(jst)
+        ua     = sqrt(one-v2)
+        va     = sqrt(v2)
+        if(deltaf(jst).gt.smal) then
+          dv2(jst) = spenrg(jst)+deltaf(jst)*(0.5D0-v2)/(ua*va)
+        else
+          dv2(jst) = spenrg(jst)
+        endif
+        uv2    = 2.0D0*ua*va
+        uv2    = uv2*uv2
+        sumuv  = sumuv  + uv2
+        sumstp = sumstp + uv2*dv2(jst)
+      enddo
+      if(sumuv.gt.smal) then
+        deferm = sumstp/sumuv
+      else
+        deferm = 0.0D0
+      endif
+c
+c     compose step
+c
+      do jst=1,nst(1)+nst(2)
+        v2     = vsqf(jst)
+        wfac   = (2.0D0-v2-v2)*sqrt(v2)
+        dv2(jst) = wfac*(dv2(jst)-deferm)
+      enddo
+c
+      return
+      end
+c-----rhodmp-----------------------------------------------------------
+c
+      subroutine rhodmp(iter)
+*
+***********************************************************************
+*                                                                     *
+*     rhodmp  =  damping of constraint deduced from density           *
+*                                                                     *
+***********************************************************************
+*
+      include 'paramr.inc'
+      include 'constr.inc'
+      include 'observ.inc'
+      include 'fields.inc'
+      include 'levels.inc'
+      include 'wavefr.inc'
+      include 'dynpar.inc'
+      include 'resden.inc'
+c
+c---------------------------------------------------------------------
+      call damcst(iter,rhoswc)
+c                                           ! test DELRMN
+      if(iter.gt.0) then
+        do ir=0,nr
+        do iz=0,nz
+          wrk2(iz,ir) = rho(iz,ir,1)+rho(iz,ir,2)
+        enddo
+        enddo
+        do idum=1,10
+        call delrmn(wrk2,rhoswc,wrk1)       ! distance field now on WRK1
+        enddo
+        if(iter.eq.itmax) then
+         call testpr(distsf,0,nz,0,nr,'distfc')
+         call testpr(wrk1,0,nz,0,nr,'from DELRMN')
+         call testpr(wrk2,0,nz,0,nr,'rhoin')
+        endif
+        do idum=1,10
+          call damint(wrk2, rhoswc, wrk1)
+        enddo
+        if(iter.eq.itmax) call testpr(wrk1,0,nz,0,nr,'from DAMINT')
+      endif
+c
+      return
+      end
+  

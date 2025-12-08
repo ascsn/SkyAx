@@ -1,0 +1,21 @@
+&main outnam='ud2',title='UNEDF2 ',iprint=2000,itmax=2000,itest=-1
+/
+&force 
+ name='none',pairstab=-0D0,
+ t0=-1735.45685191,t1=262.814456235,t2=1183.31263243,t3=12293.2432941,t4=51.3173354613,
+ x0=0.172247227624,x1=-3.76692685047,x2=-1.38349812678,x3=5.286427274361E-02,b4p=77.3003893703,
+ power=0.35145513255,
+ h2m=20.749811,20.721249,
+ chg=1D0,ex=1,riftm=1D0,zpe=-1,
+ ipair=5,v0prot=267.829,v0neut=261.629,rho0pr=0.16,
+ pair_cutoff=1.65D0,HFBwidth=0.00000D0,tregpair=F
+/
+&grids tsym=T,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+/
+&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3D0,addrho=0.15D0,addocc=0.3D0,
+deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-10,errvar=0.01,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999/
+&constraint 
+/
+&thermal /
+

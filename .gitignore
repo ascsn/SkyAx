@@ -6,9 +6,10 @@ test_cases_Fayans/*
 *.seq
 source_f90/*.o
 source_f90/*.mod
+source_odd/*.o
+source_odd/*.mod
 .history
 .vscode/*
-skyax.*
 *.log
 for005_*
 *.err
