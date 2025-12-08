@@ -66,11 +66,11 @@ IF(isovectormodel==0) THEN
   hgradxin=hgradxi
 ELSE IF(isovectormodel==2) THEN
   fxip=fxi+delfxi
-  h1xip=h1xi
-  hgradxip=hgradxi
+  h1xip=h1xi+delh1xi
+  hgradxip=hgradxi+delhgradxi
   fxin=fxi-delfxi
-  h1xin=h1xi
-  hgradxin=hgradxi
+  h1xin=h1xi-delh1xi
+  hgradxin=hgradxi-delhgradxi
 ELSE IF(isovectormodel==1) THEN
   xipfac=(fxi+delfxi)/fxi
   fxip=fxi*xipfac
