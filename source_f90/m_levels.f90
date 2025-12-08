@@ -78,6 +78,7 @@ REAL(8) :: octini=0D0                 !< Initial octupole deformation (by oczupo
 REAL(8) :: deocc(2)=(/1.9D0,1.9D0/)   !< Number of additional oscillator shells (above Fermi state) for initialization.
 INTEGER :: mmax(2)=(/19,19/)          !< Maximum m quantum number of protons and neutrons.
 
+
 REAL(8) :: eocc(2)                   !< Number of oscillator shells for in initialization, derived from basic number (according to N or Z) plus 'deocc'.
 
 CONTAINS

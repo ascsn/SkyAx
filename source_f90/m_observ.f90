@@ -374,6 +374,7 @@ qval(2) = q
 qval(3) = o
 qval(4) = h
 !WRITE(*,*) 'd,q,o,h=',d,q,o,h
+!WRITE(7,'(a,3f6.1,3f7.4)') 'rms:',apnum,annum,atnum,rmsp,rmsn,rms
 IF(itest > 0) THEN
    WRITE(6,'(a,7(1pg12.4))')  &
     'pr: Z,rms,d,q,o,h=',apnum,rmsp,dp,qp,op,hp
@@ -507,14 +508,14 @@ eold   = energy
 !**********************************************************************
 IF(iter == 0 .OR. iprint == 0 .OR. MOD(iter,iprint) /= 0) RETURN
 WRITE(7,25010) iter,energy,energy/MAX(atnum,smal),eshell,ecoul/2D0,ecolex,erearr,  &
-    ezp,epot,ekin,etpair,equad,econ
+    ezp,epot,ekin,etpair,equad,econ,symcondiso
 25010 FORMAT('1'/,' iteration no. = ',i10, /,' binding energy (mev) = ',  &
     f10.3,' binding energy per nucleon (mev) = ',f10.3,/, '   eshell = ',f10.3,  &
     '   ecoul  = ',f10.3, '   ecolex = ',f10.3,/,  &
     '   erearr = ',f10.3, '   ezp    = ',f10.3,  &
     '   epot   = ',f10.3,/, '   ekin   = ',f10.3,  &
     '   epair  = ',f10.3, '   equad  = ',f10.3,/,  &
-    '   de/e   = ',1PG12.4)
+    '   de/e   = ',1PG12.4,' symcond =',2(1pg12.4))
 IF(ipair >= 0) WRITE(7,'(3(a,2(1pg10.3)))')  &
     '   gap(1/2)=',gap,'   fer(1/2)=',fer
 IF (tswicon0)  WRITE(7,'(a,1pg14.6)')' L=0 Lagrange parameter:',qlamb0
@@ -604,13 +605,15 @@ DO  iq=1,2
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_uv(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
-          deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind),spevhh(ind)
+          deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind), &
+          spradius(psi(:,:,:,ind)) !spevhh(ind)
       ELSE
         WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_v2(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
-          deltaf(ind),spenrg(ind),spevar(ind),spevhh(ind)
+          deltaf(ind),spenrg(ind),spevar(ind),  &
+          spradius(psi(:,:,:,ind)) !spevhh(ind)
       END IF
       IF(spenrg(ind)<0D0) boundnum(iq)=boundnum(iq)+vsqf(ind)*wate(ind)
     END DO
@@ -1414,7 +1417,7 @@ REAL(8) :: rhoback(kfrm),fob(kfrm)   ! auxiliary arrays for back transformation
 REAL(8) :: cmwid,delk,delrac,q1,qr,rleng,rmax,zmax,zpeact
 !REAL(8) :: r2lsp,r2lsn,r2mcor,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
 REAL(8) :: r2lsp,r2lsn,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
-REAL(8) :: rmspback,rmsnback
+REAL(8) :: rmspback,rmsnback,rmsback
 INTEGER :: iq,ikmax
 
 !     determine grid in spherical coordinate space from backward F.B. trafo
@@ -1478,13 +1481,13 @@ IF(tpri_formf) THEN
     WRITE(176,'(5(1pg13.5))')  delrac*(iq-1),rhoback(iq)
   END DO
 END IF
-CALL rms_back(fo,rms,r4)
+CALL rms_back(fo,rmsback,r4)
 CALL rms_back(fop,rmspback,r4p)
 CALL rms_back(fon,rmsnback,r4n)
 CALL rms_back(foc0,rmsc0,r4c0)
 
 WRITE(7,'(a,4(1pg13.5))') ' from formfactors(incl.c.m.):r_c,r_tot,r_prot,r_neutr=',&
-    rmsc,rms,rmspback,rmsnback
+    rmsc,rmsback,rmspback,rmsnback
 WRITE(7,'(a,4(1pg13.5))') '                         r4_c,r4_tot,r4_prot,r4_neutr=',&
     r4c,r4,r4p,r4n
 WRITE(7,'(a,4(1pg13.5))') ' from charge formfactor:           r,R,sigma,r_unsafe=',  &
@@ -2543,7 +2546,8 @@ END FUNCTION check_border_density
 !> REAL(8), array, takes the input spinor wavefunction.
 !!computed.
 !--------------------------------------------------------------------------- 
-SUBROUTINE spradius(psiin)
+!SUBROUTINE spradius(psiin)
+REAL(8) FUNCTION spradius(psiin)
 
 USE paramr
 USE grid
@@ -2561,9 +2565,9 @@ REAL(8) :: spnum,zcm,rms2
 ALLOCATE(auxrho(0:nz,0:nr),auxz(0:nz,0:nr),auxr2(0:nz,0:nr))
  
 
-DO is=1,2
-!  auxrho(:,:) = psiin(:,:,1)**2+psiin(:,:,2)**2
-  auxrho(:,:) = psiin(:,:,is)
+!DO is=1,2
+  auxrho(:,:) = psiin(:,:,1)**2+psiin(:,:,2)**2
+!  auxrho(:,:) = psiin(:,:,is)
   DO ir=0,nr; DO iz=0,nz
     auxr2(iz,ir)=auxrho(iz,ir)*(r(ir)**2+z(iz)**2)
     auxz(iz,ir)=auxrho(iz,ir)*z(iz)
@@ -2580,11 +2584,13 @@ DO is=1,2
   rms2 = f1int(auxr2(0:nz,0:nr))/spnum
   rms2 = rms2-zcm**2
 
-  WRITE(6,'(a,i3,4(1pg13.5))') 'SPRADIUS: is,norm,zcm,rms=',is,spnum,zcm,SQRT(rms2),rms2
-END DO
+!  WRITE(6,'(a,i3,4(1pg13.5))') 'SPRADIUS: is,norm,zcm,rms=',is,spnum,zcm,SQRT(rms2),rms2
+!END DO
+spradius = SQRT(rms2)
 
 DEALLOCATE(auxrho,auxz,auxr2)
 RETURN
-END SUBROUTINE spradius
+END FUNCTION spradius
+!END SUBROUTINE spradius
 
 END MODULE observ

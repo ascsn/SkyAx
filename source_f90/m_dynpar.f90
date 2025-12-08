@@ -86,6 +86,8 @@ REAL(8) :: fxi=xxxl   !< Fayans parameter
 REAL(8) :: h1xi=xxxl   !< Fayans parameter
 REAL(8) :: hgradxi=xxxl   !< Fayans parameter
 REAL(8) :: delfxi=xxxl    !< Fayans parameter
+REAL(8) :: delh1xi=xxxl    !< Fayans parameter
+REAL(8) :: delhgradxi=xxxl    !< Fayans parameter
 REAL(8) :: c0tau=0D0   !< Fayans parameter
 REAL(8) :: c1tau=0D0   !< Fayans parameter
 REAL(8) :: c0nabj=xxxl   !< Fayans parameter
@@ -196,7 +198,7 @@ LOGICAL :: tregpair=.FALSE.                 !<Switches regularized pairing
      REAL(8) :: h2m(2)            !<Value of \f$ \frac{\hbar^2}{2m} \f$, separately for neutrons and protons.
      !>@name frequently used Fayans parameters 
      !>@{
-     REAL(8) :: avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hgradp,c0nabj,c1nabj,fxi,h1xi,hgradxi,delfxi,pair_cutoff,pairstab
+     REAL(8) :: avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hgradp,c0nabj,c1nabj,fxi,h1xi,hgradxi,delfxi,delh1xi,delhgradxi,pair_cutoff,pairstab
      !>@}
      !>@name rarely used Fayans parameters 
      !>@{
@@ -271,7 +273,7 @@ CONTAINS
          ipair,v0prot,v0neut,rho0pr,pairstab,pair_cutoff,riftm,hfbwidth, &
          tFayans,tcoulfold, &
          avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
-         fxi,h1xi,hgradxi,delfxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
+         fxi,h1xi,hgradxi,delfxi,delh1xi,delhgradxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
          isovectormodel,tcutoff_uvspace,tregpair
 
 WRITE(6,*) ' before reading force'
