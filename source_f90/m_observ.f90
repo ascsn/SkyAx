@@ -454,7 +454,8 @@ IF(iter == 0 .AND. tpri_conver) THEN
   IF(.NOT.tswicon) THEN
     WRITE(71,'(a,7x,a)')  &
         ' iter   energy    variance  difference    qtotal',  &
-        '   devoc2    devmf2     devgap    x0inv   epair(1:2)'
+        '   devoc2    devmf2      rmsp     x0inv   epair(1:2)'
+!        '   devoc2    devmf2     devgap    x0inv   epair(1:2)'
   ELSE
     ! prepare pointers for printing
     lconp = 0
@@ -485,8 +486,8 @@ IF(iter == 0 .AND. tpri_conver) THEN
 ELSE IF(tpri_conver) THEN
   IF(.NOT.tswicon) THEN
     WRITE(71,'(i5,f11.4,9(1pg12.5))')  &
-        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv,&
-        epair
+        iter,energy,devh2,econ,q,devoc2,devmf2,rmsp,x0inv,epair
+!        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv,epair
   ELSE
     IF(maxcon==1) format_conver='(i5,f11.4,3(1pg10.3),4(X,4(1pg12.3)))'
     IF(maxcon==2) format_conver='(i5,f11.4,3(1pg10.3),8(X,8(1pg12.3)))'
@@ -664,12 +665,12 @@ REAL(8) :: efree
           POSITION='APPEND')
   IF(ipair /= 4) THEN
     IF(.NOT.tsym) THEN
-      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i5,4f8.4,3f11.6)')  &
+      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f9.5,3f8.4,3f11.6)')  &
           beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
           beta3,beta3p,beta3n,beta4,beta4p,beta4n,  &
           energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
     ELSE
-      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i5,4f8.4,3f11.6)') &
+      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f9.5,3f8.4,3f11.6)') &
           beta2,beta2p,beta2n,beta4,beta4p,beta4n,  &
           energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
     END IF
