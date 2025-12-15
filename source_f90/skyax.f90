@@ -35,6 +35,8 @@ INTEGER :: iplold,ipold,iter,itesto,&
 INTEGER :: iqact0,iqact2,iqact3,iqact4,itemp,ntempmax
 INTEGER :: iqact0o,iqact2o,iqact3o,iqact4o    ! save previous values
 INTEGER :: ipairsav            ! saves initial setting of pairing model
+INTEGER,SAVE :: itermcount=0      ! counts subsequent occurence of termination condition
+INTEGER,PARAMETER :: ntermcount=3 ! nr. of termination counts required   
 
 NAMELIST /main/ iprint,itmax,itest,&
                 iterbcs,iterhfb,pairenhance,modnat,iternat,tnobcs,&
@@ -335,6 +337,7 @@ FLUSH(6)
       itmaxact=itmax
       tfirst = iqact0==0.AND.iqact2==0.AND.iqact3==0.AND.iqact4==0
 !      IF(iflmb0==1) itmaxact=itcons2     ! prepare for later direct iteration
+      itermcount=0                        ! set termination counter
       iterations: DO iter=0,itmaxact
         oldoct=beta3
 
@@ -405,12 +408,23 @@ FLUSH(6)
         IF(econ < 10.0*errenr .AND. kblock > 0 .AND. istblo <= 0)  &
             CALL comp_block
         itert  = itert+1
-        IF(iter > itpini+3 .AND. tswicon) THEN
-          IF (econ < errenr .AND. devh2 < errvar .AND. &
-              ABS(qcon) < qerr .AND. ABS(zcm) < 1E-3  .AND. &
-              ABS(oldoct-dnewoct) < 1E-3) EXIT iterations
-        ELSE IF (.NOT.tswicon) THEN
-          IF(econ < errenr .AND. devh2 < errvar) EXIT iterations
+        IF(iter>iterhfb) THEN
+          IF(iter > itpini+3 .AND. tswicon) THEN
+            IF (econ < errenr .AND. devh2 < errvar .AND. &
+                ABS(qcon) < qerr .AND. ABS(zcm) < 1E-3  .AND. &
+                ABS(oldoct-dnewoct) < 1E-3) itermcount=1+itermcount
+          ELSE IF (.NOT.tswicon) THEN
+            IF(econ < errenr .AND. devh2 < errvar) THEN
+              itermcount=1+itermcount
+              WRITE(71,'(a,i4)') 'itermcount enhanced:',itermcount
+            ELSE
+              IF(itermcount>0) WRITE(71,'(a,i4)') 'itermcount reset'
+              itermcount = 0
+            END IF
+          END IF
+!          IF(itermcount>0) WRITE(71,'(a,i3)') 'itermcount=',itermcount
+!          WRITE(7,'(a,i3)') 'itermcount=',itermcount
+          IF( itermcount==ntermcount) EXIT iterations
         END IF
         
         IF(tvaryx0) THEN
