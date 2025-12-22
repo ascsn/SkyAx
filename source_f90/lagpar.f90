@@ -72,6 +72,8 @@ DO jst=istmin,istmax
   CALL hpsi(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst),jst)
   v2a = vsqf(jst)
   uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+! augment for BCS cooling in case of 'iterhfb=0'
+  IF(iterbcs==0) uva = uva * MIN(1D0*iter/iterhfb,1D0)
 !  WRITE(6,*) 'HFBSTEP 3: mythread,jst=',mythread,jst,v2a,uva
   IF(tbcs) THEN
     v2a=1D0
