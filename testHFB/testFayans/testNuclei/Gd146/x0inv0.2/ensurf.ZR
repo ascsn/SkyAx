@@ -1,0 +1,9 @@
+#t 146Gd                                                                      
+# Plot potential energy surface for:
+ #test 146Gd                                                            
+# Nmass=  146, Ncharge=   64
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.200  c0,qeps: 0.800******
+# x0inv(fm),e0inv(mev):    0.20 100.00
+# bet2   bet2p  bet2n  bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn 
+  0.000  0.000  0.000 -0.000 -0.001 -0.000 -1198.14616174077  -20.0   -0.1  -3.59  -9.50   -1.872   -0.131 20001  4.98528  4.9427  4.9324  4.9507  63.530321  81.999270   6.283007

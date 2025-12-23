@@ -1,3 +1,0 @@
-# Print charge form  parameters:
-#  beta_2    energy   r_rms    r_diffr  sigma   r_4
-  0.2019   -1266.117  5.1457  6.2278  0.9850  5.5024
