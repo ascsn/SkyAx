@@ -670,7 +670,7 @@ SUBROUTINE write_headers()
   5014  FORMAT(  &
       10X,'addocc  =',f12.3,'  mixing of new and old occ. numbers')
   IF(ipair==6 .OR. ipair==8) &
-  WRITE(7,'(/10x,a,4(/10x,a,i12),/10x,a,f10.2/2(a,1pg13.5/),10x,a,l)') 'HFB parameters',&
+  WRITE(7,'(/10x,a,4(/10x,a,i12),/10x,a,f10.2/2(10x,a,1pg13.5/),10x,a,l)') 'HFB parameters',&
      'iterbcs  =',iterbcs, &
      'iterhfb  =',iterhfb, &
      'iternat  =',iternat, &
