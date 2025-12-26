@@ -50,12 +50,17 @@ LOGICAL :: toccmix=.FALSE.
 !      INTEGER,PARAMETER :: iternat=0!100
 !      REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=0D0
 !REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=20D0
-REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=40D0
+!REAL(8),PARAMETER :: delstepbas=1.0D0,e0bas=40D0
+REAL(8) :: delstepbas=0.2D0,e0bas=200D0
 REAL(8) :: conocc,epairstab
   
 !--------------------------------------------------------------------
 
 IF(iternat<0) RETURN
+
+! override internal setting
+delstepbas = x0inv
+e0bas = e0inv
 
 partnum=partnumin
 IF(addocc<1D0) THEN

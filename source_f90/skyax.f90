@@ -35,6 +35,7 @@ INTEGER :: iplold,ipold,iter,itesto,&
 INTEGER :: iqact0,iqact2,iqact3,iqact4,itemp,ntempmax
 INTEGER :: iqact0o,iqact2o,iqact3o,iqact4o    ! save previous values
 INTEGER :: ipairsav            ! saves initial setting of pairing model
+INTEGER :: iteract             ! saves actual iteration number
 INTEGER,SAVE :: itermcount=0      ! counts subsequent occurence of termination condition
 INTEGER,PARAMETER :: ntermcount=3 ! nr. of termination counts required   
 
@@ -404,6 +405,7 @@ FLUSH(6)
 !IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV12:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
         
         dnewoct=beta3
+        iteract = iter
         
         IF(econ < 10.0*errenr .AND. kblock > 0 .AND. istblo <= 0)  &
             CALL comp_block
@@ -467,6 +469,7 @@ FLUSH(6)
       
 !      IF(tafter .AND. iflmb0 /= 1) THEN
       IF(tafter) THEN
+        iter = iteract
         ipold  = iprint
         iprint = 1
         iplold = ipri_fields
@@ -478,8 +481,8 @@ FLUSH(6)
         devh2s = devh2
         adyrho = 1.0
         adypot = 1.0
-        CALL sstep(iter)                       ! "afterburn"
-        CALL sinfo(itmax)
+        CALL sstep(iteract)                       ! "afterburn"
+        CALL sinfo(iteract)
         iprint = ipold
         ipri_fields  = iplold
         itest  = itesto
@@ -667,7 +670,7 @@ SUBROUTINE write_headers()
   5014  FORMAT(  &
       10X,'addocc  =',f12.3,'  mixing of new and old occ. numbers')
   IF(ipair==6 .OR. ipair==8) &
-  WRITE(7,'(/10x,a,4(/10x,a,i12),/10x,a,f10.2/2(a,1pg13.5/),10x,a,l)') 'HFB parameters',&
+  WRITE(7,'(/10x,a,4(/10x,a,i12),/10x,a,f10.2/2(10x,a,1pg13.5/),10x,a,l)') 'HFB parameters',&
      'iterbcs  =',iterbcs, &
      'iterhfb  =',iterhfb, &
      'iternat  =',iternat, &
