@@ -1,23 +1,27 @@
-&main outnam='job_Fay',title='test 170Yb',ipri_fields=4000,iprint=1000,itmax=1000,tpri_2d=F, itest=0, 
- iterbcs=500, iterhfb=1000,pairenhance=1D0,iternat=10,modnat=1,  
+&main outnam='FR2',title='test 158Yb',ipri_fields=4000,iprint=1000,itmax=20000,tpri_2d=F, itest=0, 
+ iterbcs=1000, iterhfb=2000,pairenhance=2D0,iternat=4,modnat=1,tpri_conver=.TRUE.
 /  
 &force  
- name='none', tFayans=.TRUE., ipair=8, pairstab=-0D0, ex=1, zpe=1, HFBwidth=1.D0, 
- h2m(2)=20.72126, h2m(1)=20.74982,  
- avp=-10.05903239,h1vp=0.6079313192,h2vp=0.2776243076, 
- avm=47.20760687,h1vm=-0.3746093562,h2vm=54.42781346, 
- asp=0.5283255600,hsp=0.0,hgradp=0.3274157900,c0nabj=0.1788187900,c1nabj=6.8951346000E-02, 
- fxi=-4.519488100,h1xi=4.443955000,hgradxi=2.648612100,delfxi=-0.1881396400, 
- pair_cutoff=-10,tcutoff_uvspace=.TRUE.  
- isovectormodel=2  
+ name='none', tFayans=.TRUE., ipair=8, pairstab=0.0D0, ex=1, zpe=1, HFBwidth=0.9D0, 
+ h2m(2)=20.72126, h2m(1)=20.74982,
+ avp=-9.608175465,h1vp=0.6227052220,h2vp=0.1726617465, 
+ avm=2.2427483150D+14,h1vm=-2.316454053,h2vm=5.2906966945D+14, 
+ asp=0.5483225953,hsp=0.0,hgradp=0.3511339663,c0nabj=0.1906406585,c1nabj=-3.3380056233E-02, 
+ fxi=-9.779935194,h1xi=9.812808587,hgradxi=7.047825506,delfxi=1.509409254,
+ delh1xi = -2.507950154,delhgradxi=-1.380876691, 
+ pair_cutoff=-15,tcutoff_uvspace=.FALSE.,pairstab=-0.05,
+ isovectormodel=3  
 /  
-&grids tsym=.T.,nz=51,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0, 
+&grids tsym=.T.,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0, 
 /  
-&static nprot=70,nneut=100,e0inv=110D0,x0inv=0.1D0,addrho=0.15D0,addocc=0.3D0, 
-deocc(1)=14.D0,deocc(2)=14.D0,errenr=1D-10,errvar=0.05,colerr=1D-9,itpini=0, 
+&static nprot=70,nneut=88,e0inv=100D0,x0inv=0.1D0,addrho=0.15D0,addocc=0.2D0, 
+deocc(1)=3.1D0,deocc(2)=3.1D0,errenr=1D-11,errvar=0.05,colerr=1D-11,itpini=0, 
 tvaryx0=F,inodiag=99999,irepc=100  
 /  
 &constraint 
 /  
 &thermal  
 /  
+
+
+# Fy(IVP3) finite-range pairing, with sub-iterations in natural orbitals
