@@ -1,0 +1,24 @@
+Protocol of modifications:
+
+SSETUP in 'm_init.f90':
+
+* Extend 'k1' loop from '1,mmaxq' to 'mmin1,mmaxq' for 'mminq<0'.
+  (lines 580-592)
+
+* 'mm1' extended to <0 values (lines 618-623)
+
+* Actual 'm' and parity extended.(lines 730-738)
+
+* Time reflection of wavefunction for 'k1<0'. (lines 751-761)
+
+
+'m_fields.f90':
+
+* Define time-odd densities and potentials. (lines 42-53)
+  Allocate and initialize them. (lines 78-92)
+
+
+'m_dynpar.f90':
+
+* Switch parameter 'isTsym' defined. (lines 130-137)
+  And in NAMELIST 'force' included. (line 285)

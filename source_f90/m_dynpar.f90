@@ -127,7 +127,14 @@ INTEGER :: ifzpe                            !<If 0, m-m/A recipe for c.m. correc
 INTEGER :: ifex                             !<Some forces are fitted excluding the Coulombexchange term. 
 !!For <tt> ex=1 </tt> it is included (this is the normal case), for <tt> ex=0 </tt> not.
 LOGICAL :: tcoulfold=.FALSE.                !< switch to proton folding in Coulomb
-
+!NEW ODD
+INTEGER :: isTsym=0                         !< level of handling spin terms
+!!For <t> isTsym=0 </tt> use Cramer's degeneracy
+!!For <t> isTsym=1 </tt> angualar momentum up-down separately, but no tiem-odd terms
+!!For <t> isTsym=2 </tt> minimal Galilean invariant terms
+!!For <t> isTsym=3 </tt> volume spin terms in Skyrme functional
+!!For <t> isTsym=4 </tt> volume+surfacy spin terms in Skyrme functional
+!END NEW ODD
 
 LOGICAL :: tpair                            !<Switch for density-dependent pairing.
 
@@ -274,7 +281,8 @@ CONTAINS
          tFayans,tcoulfold, &
          avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
          fxi,h1xi,hgradxi,delfxi,delh1xi,delhgradxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
-         isovectormodel,tcutoff_uvspace,tregpair
+         isovectormodel,tcutoff_uvspace,tregpair,&
+         isTsym                                         !NEW ODD
 
 WRITE(6,*) ' before reading force'
 

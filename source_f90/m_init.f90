@@ -450,10 +450,12 @@ REAL(8) :: amas,brosc,bzosc,ecur,hboma,hbomr,hbomz,octadd,octstp,phinor,&
            psirad,spin,sumnon,sumprt,sumtot,v2,wgt,xpi
 INTEGER :: ielse,iofk,iq,iqold,ir,is,isigis,ispgen,ist,iz,izm,izp,j,&
            jst,k1,kold,mm,mm1,mmaxq,mmr,mst,muplo,n,na,nnr,nnz,&
-           npuplo,nzho,len,irun
+           npuplo,nzho,len,irun, &
+           mminq,isTtmp                    !NEW ODD
 
 REAL(8) ::  xkappa(2),xmue(2),spnc(2),eocct(2)
 REAL(8) ::  phi(nnzxd+1,0:nz)
+REAL(8) ::  copy
 LOGICAL :: init_run
 
 REAL(8),ALLOCATABLE :: wrk1(:,:),wrk2(:,:)
@@ -576,9 +578,19 @@ END IF
 !                                                                     *
 !**********************************************************************
 
+!NEW ODD
+if(isTSym.ge.1)then
+  isTtmp = 0
+else
+  isTtmp = 1
+endif
+!END NEW ODD
+
+
 DO  iq=1,2
   mmaxq=mmax(iq)
-  DO  mm=1,mmaxq
+  mminq= -mmax(iq)*(1-isTtmp)   !NEW ODD
+  DO  mm=mminq,mmaxq      !NEW ODD
     k1=mm-1
     
 !**********************************************************************
@@ -604,7 +616,12 @@ DO  iq=1,2
         
         DO  ispgen=1,2
           spin=1.5-(ispgen)
-          mm1=k1+ispgen-1
+!NEW ODD
+          mm1=abs(k1)+ispgen-1
+          if(k1.lt.zero) then 
+            mm1 = mm1-1
+          endif     
+!NEW ODD
           mmr=mm1+1
           
 !**********************************************************************
@@ -656,9 +673,9 @@ DO  iq=1,2
                 nparz(1,lst)= 1                       ! djd addition
                 nparz(2,lst)= 1                       ! djd addition
               END IF
-              nrpar(lst)  = (1-MOD(k1,2)*2)
+              nrpar(lst)  = (1-MOD(ABS(k1),2)*2)     !NEW ODD
               icharg(lst) = iq
-              wate(lst)   = two
+              wate(lst)   = 1D0*(1+isTtmp)           !NEW ODD
               wtpair_uv(lst)  = 1D0
               wtpair_v2(lst)  = 1D0
             
@@ -711,6 +728,15 @@ DO  iq=1,2
 
               muplo  =  mpsi(jst)+ispgen-1
               npuplo =  npar(jst)*isigis
+!NEW ODD
+              IF(mpsi(jst).GE.zero) THEN
+                muplo  =  mpsi(jst)+ispgen-1
+                npuplo =  npar(jst)*isigis
+              ELSE
+                muplo = abs(mpsi(jst)+1)+ispgen -1
+                npuplo =  (-1)*npar(jst)*isigis
+              END IF
+!END NEW ODD
               IF (npuplo > 0 .OR. MOD(muplo,2) == 0) THEN
                 IF (muplo > 0) THEN
                   psi(0:nz,0,ispgen,jst) = 0.0d0
@@ -721,6 +747,18 @@ DO  iq=1,2
                   psi(0:nz,nr,ispgen,jst) = 0.0d0
                 END IF
               END IF
+
+!NEW ODD
+! apply time reflection for 'k1<0'
+******************************
+              IF(k1<0) THEN
+                DO iz=0,nz; DO ir=0,nr 
+                  copy = psi(iz,ir,1,lst) 
+                  psi(iz,ir,1,lst)=(-1)*psi(iz,ir,2,lst)
+                  psi(iz,ir,2,lst)=copy
+                END DO; END DO
+              END IF
+!END NEW ODD
             
               spn(lst)=zero
               DO  is=1,2
