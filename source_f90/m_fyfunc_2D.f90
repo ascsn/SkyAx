@@ -270,6 +270,40 @@ END IF
 RETURN
 END SUBROUTINE fyfunc_local
 
+!NEW ODD
+SUBROUTINE fyfunc_odd(rotjrp,rotjrn,rotjzp,rotjzn,  &
+                      spdenrp,spdenrn,spdenzp,spdenzn,energd)
+
+!USE dynpar, ONLY:chgx,excfac
+IMPLICIT NONE
+
+!     Energy contribution from minimal Galilean invariant  odd-odd terms.
+!     ! presently only for l*s
+!
+!        rotjrp/n  =    r-component of rotation of current, protons and neutrons
+!        rotjzp/n  =    z-component of rotation of current, protons and neutrons
+!        spdenrp/n  =   r-component of spin density, protons and neutrons
+!        spdenzp/n  =   r-component of spin density, protons and neutrons
+!
+
+REAL(8) :: rotjrs,rotjzs, rotjrd,rotjzd, spdenrs,spdenzs, spdenrd,spdenzd
+
+rotjrs = rotjrp+rotjrn
+rotjzs = rotjzp+rotjzn
+rotjrd = rotjrp-rotjrn
+rotjzd = rotjzp-rotjzn
+spdenrs = spdenrp+spdenrn
+spdenzs = spdenzp+spdenzn
+spdenrd = spdenrp-spdenrn
+spdenzd = spdenzp-spdenzn
+energd = energd - clsp*(spdenrs*rotjrs+spdenzs*rotjzs)  &
+                - clsm*(spdenrd*rotjrd+spdenzd*rotjzd)
+
+RETURN
+
+END SUBROUTINE fyfunc_odd
+!END NEW ODD
+
 !-----fyfunc_grad------------ part of the hartree-fock package -----------------
 
 SUBROUTINE fyfunc_grad()

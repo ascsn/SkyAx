@@ -128,6 +128,19 @@ DO  is=1,2
   
 END DO
 
+!NEW ODD
+IF(toddterms) THEN   ! time-odd part of Hamiltonian only if required
+  CALL hpsiodd(psiin,psic,ist)
+  DO is=1,nsd
+    DO ir=0,nr
+      DO iz=0,nz
+        psiout(iz,ir,is) = psiout(iz,ir,is)+psic(iz,ir,is)
+      END DO
+    END DO
+  END DO
+END IF
+!END NEW ODD
+
 !     compute expectation value and variance
 
 esub        = wfovlp(psiin(0:nz,0:nr,1:2),psiout(0:nz,0:nr,1:2))
@@ -138,6 +151,144 @@ spenrg(ist) = esub+ebin
 DEALLOCATE(psi1,psi2,psi3)
 RETURN
 END SUBROUTINE hpsi
+
+!NEW ODD
+SUBROUTINE hpsiodd(psiin,psiout,ist)
+
+USE paramr
+USE constr
+USE dynpar
+USE fields
+USE wavefr
+USE levels
+USE grid, ONLY: nr,nz,sr,laplace_spin,nablar_spin,nablaz_spin
+IMPLICIT NONE
+
+!INCLUDE 'observ.inc'
+
+
+REAL(8), INTENT(IN OUT)  :: psiin(0:nzd,0:nrd,nsd)
+REAL(8), INTENT(OUT)     :: psiout(0:nzd,0:nrd,nsd)
+INTEGER, INTENT(IN OUT)  :: ist
+
+REAL(8) :: drpotcz(0:nzd,0:nrd)
+REAL(8) :: drpotcr(0:nzd,0:nrd)
+REAL(8) :: dzpotcz(0:nzd,0:nrd)
+REAL(8) :: dzpotcr(0:nzd,0:nrd)
+
+INTEGER,PARAMETER :: ifclean=1
+
+iq      = icharg(ist)
+ebin    = spenrg(ist)
+
+!     first, zero the output wavfunction because 'psiout' is
+!     accumulated during the next spin loop.
+!     ?? note: it may be more efficient to introduce workspaces
+!              which distinguish spin 'is'. This would allow
+!              to avoid costly zeroing and to avoid the spin loop.
+
+
+
+CALL laplace_spin(psiin,psi1,nparz(1,ist),mpsi(ist),1,one)
+CALL nablar_spin(psiin,psi2,   mpsi(ist),1,one)
+CALL nablaz_spin(psiin,psi3,nparz(1,ist),1,one)
+CALL nablaz_scalar(potc(0,0,iq,1), dzpotcz,1,1,one)
+CALL nablaz_scalar(potc(0,0,iq,2), dzpotcr,1,1,one)
+CALL nablar_scalar(potc(0,0,iq,1), drpotcz,0,1,one)
+CALL nablar_scalar(potc(0,0,iq,2), drpotcr,0,1,one)
+
+
+!***************************************************
+!  time-odd part of the hamiltonian
+
+!***************************************************
+
+DO is=1,2
+  DO ir=0,nr
+    DO iz=0,nz
+      psiout(iz,ir,is) = 0.0D0
+    END DO
+  END DO
+END DO
+
+
+
+
+DO is=1,2
+  mm        = mpsi(ist)+is-1
+  mmm      =  mm + 3 - 2*is
+  IF(is == 1) THEN
+    sigis = one
+  ELSE
+    sigis = -1.0
+  END IF
+  DO ir=0,nr
+    r   = (sr+ir)*dr
+    rinv = one/r
+    DO iz=0,nz
+      isi = 3-is
+      
+      
+!************************************
+!        S*sigma
+!************************************
+      
+      psiout(iz,ir,is)=psiout(iz,ir,is) +(pots(iz,ir,iq,2)*psiin(iz,ir,isi)  &
+          +sigis*pots(iz,ir,iq,1)*psiin(iz,ir,is))
+!test
+!  psiout(iz,ir,is)=psiout(iz,ir,is)
+!     &        +(sigis*potS(iz,ir,iq,2)*psiin(iz,ir,isi)
+!     & -potS(iz,ir,iq,1)*psiin(iz,ir,is))
+!test
+      
+      
+!************************************
+!        A_q
+!************************************
+      IF(ir == 0) THEN
+        
+! at r = 0 nothing has to be done
+! if mm = 0, then the product is zero, else
+! A and psi are at least linear in r
+        
+      ELSE
+        
+        fac = (one)*pota(iz,ir,iq)*mm*rinv
+        psiout(iz,ir,is)=psiout(iz,ir,is) + fac*psiin(iz,ir,is)
+        
+      END IF
+!************************************
+! C_q
+!************************************
+      psiout(iz,ir,is)=psiout(iz,ir,is)  &
+          + (3-2*is)*(potc(iz,ir,iq,1)*psi1(iz,ir,is)  &
+          + drpotcz(ir,ir)*psi2(iz,ir,is) + dzpotcz(iz,ir)*psi3(iz,ir,is))  &
+          + potc(iz,ir,iq,2)*psi1(iz,ir,isi) + drpotcr(iz,ir)*psi2(iz,ir,isi)  &
+          + dzpotcr(iz,ir)*psi3(iz,ir,isi)
+!     & + last term, two cases
+      
+      IF(ir > zero) THEN
+        psiout(iz,ir,is)=psiout(iz,ir,is)  &
+            + sigis*(rinv*potc(iz,ir,iq,1)*(psi2(iz,ir,is)  &
+            - rinv*mm*mm*psiin(iz,ir,is)))  &
+            + sigis*mmm*potc(iz,ir,iq,2)*psiin(iz,ir,isi)*rinv*rinv  &
+            + potc(iz,ir,iq,2)*rinv*psi2(iz,ir,isi)  &
+            - potc(iz,ir,iq,2)*rinv*rinv*mmm*mmm* psiin(iz,ir,isi)
+      ELSE
+        IF(ABS(mm) == 1)THEN
+          psiout(iz,ir,isi)=psiout(iz,ir,isi)  &
+              + sigis*drpotcr(iz,ir)*psi2(iz,is,is) * SIGN(1,mpsi(ist))
+        END IF
+      END IF
+      
+    END DO
+  END DO
+END DO
+
+RETURN
+END SUBROUTINE hpsiodd
+!END NEW ODD
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: mfhmlt
@@ -236,6 +387,58 @@ END IF
     CALL fyfunc_grad()
 !    pot(0,0,:)=(pot(0,1,:)+pot(1,0,:))/2D0
 !    IF(MOD(iter,iprint)==0 .AND. itest>0)  CALL test_print(pot(0,0,1),0,nz_testp,0,nr_testp,'potp0')
+
+
+!NEW ODD
+!****************************************************
+  
+!    time odd hamiltonian (minimal Galilean)
+!    S_q, C_q, A_q
+  
+!***************************************************
+  
+  IF(toddterms) THEN
+    DO ir=0,nr
+      DO iz=0,nz
+!           calculate S_r
+        sp = rotjr(iz,ir,1)
+        sn = rotjr(iz,ir,2)
+        ss = sp+sn
+        pots(iz,ir,1,1) = redpot*(-clsp*ss - clsm*(sp-sn))  &
+            +potold*pots(iz,ir,1,1)
+        pots(iz,ir,2,1) = redpot*(-clsp*ss + clsm*(sp-sn))  &
+            +potold*pots(iz,ir,2,1)
+!           calculate S_z
+        sp = rotjz(iz,ir,1)
+        sn = rotjz(iz,ir,2)
+        ss = sp+sn
+        pots(iz,ir,1,2) = redpot*(-clsp*ss - clsm*(sp-sn))  &
+            +potold*pots(iz,ir,1,2)
+        pots(iz,ir,2,2) = redpot*(-clsp*ss + clsm*(sp-sn))  &
+            +potold*pots(iz,ir,2,2)
+!           calculate A_phi
+        rp = rotspden(iz,ir,1)
+        rn = rotspden(iz,ir,2)
+        rs = rp+rn
+        pota(iz,ir,1) = redpot*(-clsp*rs - clsm*(rp-rn))  &
+            + potold*pota(iz,ir,1)
+        pota(iz,ir,2) = redpot*(-clsp*rs + clsm*(rp-rn))  &
+            + potold*pota(iz,ir,2)
+!           contribution to energy
+        CALL fyfunc_odd(rotjr(iz,ir,1),rotjr(iz,ir,2),  &
+            rotjz(iz,ir,1),rotjz(iz,ir,2), spdenr(iz,ir,1),spdenr(iz,ir,2),  &
+            spdenz(iz,ir,1),spdenz(iz,ir,2), workenerg(iz,ir))
+      END DO
+    END DO
+!          energspin = energyFy
+    energyfy = f1int(workenerg)
+!          energspin = energyFy-energspin
+!          IF(iter==itmax)
+!     &      WRITE(7,'(a,2(1pg13.5))') 'spin energy=',energspin,energyFy
+  END IF
+!END NEW ODD
+  
+
   ELSE
     CALL Skyrme_potentials()  
   END IF
@@ -450,6 +653,18 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
         d2s     = d2rho(iz,ir,ic)+d2p
         ssp     = drhols(iz,ir,iq)
         sss     = drhols(iz,ir,ic)+ssp
+
+!NEW ODD
+        IF(toddterms) THEN
+          rsigp    = spdenr(iz,ir,iq)
+          rsigs    = spdenr(iz,ir,ic)+rsigp
+          zsigp    = spdenz(iz,ir,iq)
+          zsigs    = spdenz(iz,ir,ic)+zsigp
+          sig2     = rsigs*rsigs+zsigs*zsigs
+          sigq2    = rsigp*rsigp+zsigp*zsigp
+          sigc2    = spdenz(iz,ir,ic)*spdenz(iz,ir,ic) + spdenr(iz,ir,ic)*spdenr(iz,ir,ic)
+        END IF
+!END NEW ODD
         
         pot(iz,ir,iq) = redpot* ( t0a*rs-t0b*rp  +t1p2*ts-t1m2*tp  &
             -t13m2*d2s+t13p2*d2p -b4*sss-b4p*ssp) + potold*pot(iz,ir,iq)
@@ -520,10 +735,74 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
               t1m20*rlszp-t1p2x*(rlszp+rholsz(iz,ir,ic)))  &
               + potold*potls(iz,ir,iq,2)
         END IF
+
+!NEW ODD        
+!****************************************************
         
+!    time odd hamiltonian
+!    S_q, C_q, A_q
+        
+!***************************************************
+        
+        IF(toddterms) THEN
+          b5 = t1p2x
+          b5p = t1m20
+!  calculate S_r
+          sp = rotjr(iz,ir,iq)
+          ss = rotjr(iz,ir,ic) + sp
+          taup = spdenkr(iz,ir,iq)
+          taus = spdenkr(iz,ir,ic)+taup
+          d2rsigp    = d2spdenr(iz,ir,iq)
+          d2rsigs    = d2spdenr(iz,ir,ic)+d2rsigp
+        
+          pots(iz,ir,iq,2) = redpot*((-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
+              +2.0*(b6+b7*rspow+dglan-dglanp)*rsigs    !  add extra g_0 "dglan" as "dglan*rsigs"
+          -2.0*(b6p+b7p*rspow-2D0*dglanp)*rsigp -b8*d2rsigs + b8p*d2rsigp)  &
+              +potold*pots(iz,ir,iq,2)
+        
+!  calculate S_z
+          sp = rotjz(iz,ir,iq)
+          ss = rotjz(iz,ir,ic) + sp
+          taup = spdenkz(iz,ir,iq)
+          taus = spdenkz(iz,ir,ic)+taup
+          d2zsigp    = d2spdenz(iz,ir,iq)
+          d2zsigs    = d2spdenz(iz,ir,ic)+d2zsigp
+          
+          pots(iz,ir,iq,1) = redpot*((-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
+              +2.0*(b6*zsigs+b7*rspow*zsigs)+dglan*zsigs
+          -2.0*(b6p+b7p*rspow)*zsigp -b8*d2zsigs + b8p*d2zsigp)  &
+              +potold*pots(iz,ir,iq,1)
+        
+!  calculate C_r
+        
+          sp = spdenr(iz,ir,iq)
+          ss = spdenr(iz,ir,ic)+sp
+        
+          potc(iz,ir,iq,2)=redpot*(b5*ss-b5p*sp) + potold*potc(iz,ir,iq,2)
+        
+!  calculate C_z
+          sp = spdenz(iz,ir,iq)
+          ss = spdenz(iz,ir,ic)+sp
+        
+          potc(iz,ir,iq,1)=redpot*(b5*ss-b5p*sp) + potold*potc(iz,ir,iq,1)
+        
+!   calculate A_phi
+          cp = curphi(iz,ir,iq)
+          cs = curphi(iz,iz,ic)+cp
+          rp = rotspden(iz,ir,iq)
+          rs = rotspden(iz,ir,ic) + rp
+        
+          pota(iz,ir,iq)=redpot*(-2*t1p2*cs + 2*t1m2*cp - b4*rs - b4p*rp)  &
+              + potold*pota(iz,ir,iq)
+        END IF        
+!END NEW ODD
+
       END DO
     END DO
   END DO
+
+
+
 
 DEALLOCATE(psip,psin)
 

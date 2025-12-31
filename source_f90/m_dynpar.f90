@@ -134,6 +134,7 @@ INTEGER :: isTsym=0                         !< level of handling spin terms
 !!For <t> isTsym=2 </tt> minimal Galilean invariant terms
 !!For <t> isTsym=3 </tt> volume spin terms in Skyrme functional
 !!For <t> isTsym=4 </tt> volume+surfacy spin terms in Skyrme functional
+LOGICAL :: toddterms                        !< switch to activate time-odd terms
 !END NEW ODD
 
 LOGICAL :: tpair                            !<Switch for density-dependent pairing.
@@ -317,6 +318,7 @@ WRITE(6,*) ' before reading force'
     END IF
 
     IF(hfbwidth>0D0) thfbfold=.TRUE.
+    toddterms = isTsym>1                 !NEW ODD
 
 CONTAINS
 

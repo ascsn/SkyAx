@@ -20,5 +20,35 @@ SSETUP in 'm_init.f90':
 
 'm_dynpar.f90':
 
-* Switch parameter 'isTsym' defined. (lines 130-137)
+* Switch parameter 'isTsym' defined. (lines 130-138)
   And in NAMELIST 'force' included. (line 285)
+
+
+'m_observ.f90':
+
+* Subroutuine 'densitodd' for time-odd densities. (lines 2413-2688)
+
+
+'m_steputil.f90':
+
+* Call and apply time-odd Hamiltonian. (lines 131-142)
+
+* Subroutine prepring action of time-odd Hamiltonian. (line 154-289)
+
+* Time off Fayans potentials. (line 391-438)
+
+* Add time-odd densities in loop. (lines 656-666)
+
+* Compose time-odd Skyrme potentials. (lines 738-797)
+
+
+'m_fyfunc_2D.f90':
+
+* Add subroutine 'fyfunc_odd'. (lines 273-305)
+
+
+
+'m_staticstep.f90':
+
+* Add call to odd densities. (lines 328-335,455-462)
+
