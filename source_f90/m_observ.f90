@@ -2428,6 +2428,266 @@ DEALLOCATE(psip,psin,wrk1,wrk2)
 RETURN
 END SUBROUTINE densit
 
+!NEW ODD
+SUBROUTINE densitodd(psiw,weight,ist,  &
+    rrotj,zrotj,rotsig,rsig,zsig,slarsig,slazsig, curr,spdenkinr,spdenkinz)
+
+! DESCRIPTION: densitodd
+!> @brief
+!!Accumulates the time-odd densities \c rotj, \c curr, \c sigma, calculated for the 
+!!state in wave function \c psiw with the occupation probability \c weight.
+
+
+!**********************************************************************
+!                                                                     *
+!        accumulates the time-odd densities
+!                                                                     *
+!**********************************************************************
+
+USE paramr
+USE dynpar
+USE levels
+USE grid
+IMPLICIT NONE
+
+REAL, INTENT(IN)     :: psiw(0:nzd,0:nrd,nsd)
+REAL, INTENT(IN)     :: weight
+INTEGER, INTENT(IN)  :: ist
+REAL, INTENT(OUT)    :: rrotj(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: zrotj(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: rotsig(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: rsig(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: zsig(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: slarsig(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: slazsig(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: curr(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: spdenkinr(0:nzd,0:nrd)
+REAL, INTENT(OUT)    :: spdenkinz(0:nzd,0:nrd)
+
+REAL(8) :: psinn(0:nzd,0:nrd,nsd)
+REAL(8) :: psipp(0:nzd,0:nrd,nsd)
+REAL(8) :: fpair
+
+!-----------------------------------------------------------
+
+!  in case of calculating one the half spectrum, set
+!  time-odd densitys to zero
+
+IF(istsym >= 1)THEN
+  fpair  = weight*wate(ist)
+ELSE
+  fpair = zero
+END IF
+
+
+!---- some combinations of <j_z>
+
+mm     = mpsi(ist)
+xm2    = mm*mm
+xm2l   = (mm+1)*(mm+1)
+nparr  = 1+MOD(mm,2)
+nparrc = 3-nparr
+
+!---- calculate derivatives of psiw
+
+CALL nablaz_spin(psiw,psin,nparz(1,ist),1,1D0)
+CALL nablar_spin(psiw,psip,   mpsi(ist),1,1D0)
+CALL nablaz_spin(psin,psinn,nparz(1,ist),1,1D0)
+CALL nablar_spin(psip,psipp,   mpsi(ist),1,1D0)
+
+!**********************************************************************
+!       rrotj r-comp of rot j
+!       zrotj z-comp of rot j
+!**********************************************************************
+
+!----- r = 0
+
+!      fpair = (-1.0)*fpair
+! only z-comp changes
+IF(mm == 0) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) + 2*fpair*psip(iz,0,2)*psip(iz,0,2)
+  END DO
+ELSE IF(mm == 1) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) + 2*fpair*psip(iz,0,1)*psip(iz,0,1)
+  END DO
+ELSE IF(mm == (-1)) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) - 2*fpair*psip(iz,0,1)*psip(iz,0,1)
+  END DO
+ELSE IF(mm == (-2)) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) - 2*fpair*psip(iz,0,2)*psip(iz,0,2)
+  END DO
+END IF
+
+!---- all other 'r'
+
+DO ir=1,nr
+  rinv  = 1D0/((sr+ir)*dr)
+  xmup  = 2*mm*rinv
+  xmlow = 2*( mm+1)*rinv
+  DO iz=0,nz
+    zrotj(iz,ir)=zrotj(iz,ir) + fpair*(xmup*psiw(iz,ir,1)*psip(iz,ir,1)+  &
+        xmlow*psiw(iz,ir,2)*psip(iz,ir,2))
+    rrotj(iz,ir)=rrotj(iz,ir) - fpair*(xmup*psiw(iz,ir,1)*psin(iz,ir,1)+  &
+        xmlow*psiw(iz,ir,2)*psin(iz,ir,2))
+  END DO
+END DO
+
+!      fpair = (-1.0)*fpair
+
+!**********************************************************************
+!                Current j
+!  curr = phi-comp. Current
+!**********************************************************************
+!---- r=0
+! nothing has to be done
+DO iz=0,nz
+  curr(iz,0)=zero
+END DO
+
+!---- all other r
+DO ir=1,nr
+  rinv  = 1D0/((sr+ir)*dr)
+  fup  = mm*rinv
+  flow = (mm+1D0)*rinv
+  DO iz=0,nz
+    add = fpair*(fup*psiw(iz,ir,1)*  &
+        psiw(iz,ir,1) + flow*psiw(iz,ir,2)*psiw(iz,ir,2))
+    curr(iz,ir)= curr(iz,ir)+add
+  END DO
+END DO
+
+!**********************************************************************
+
+!              sigma
+!             rsig = r-comp of sigma
+!             zsig = z-comp of sigma
+
+!**********************************************************************
+fpair2= (1D0)*fpair/1D0
+DO ir=0,nr
+  DO iz=0,nz
+    rsig(iz,ir)=rsig(iz,ir)+fpair2*2*psiw(iz,ir,1)*psiw(iz,ir,2)
+    zsig(iz,ir)=zsig(iz,ir)+fpair2*(  &
+        psiw(iz,ir,1)*psiw(iz,ir,1) - psiw(iz,ir,2)*psiw(iz,ir,2))
+  END DO
+END DO
+
+
+
+
+!**********************************************************************
+
+!             rot sigma
+!             rotsig = phi-comp of rot sigma
+
+!**********************************************************************
+
+DO ir=0,nr
+  DO iz=0,nz
+    rotsig(iz,ir)= rotsig(iz,ir) + 2*fpair*(psiw(iz,ir,1)*  &
+        psin(iz,ir,2) + psiw(iz,ir,2)*psin(iz,ir,1)  &
+        -psiw(iz,ir,1)*psip(iz,ir,1) + psiw(iz,ir,2)*psip(iz,ir,2))
+  END DO
+END DO
+
+!**********************************************************************
+
+!             Laplace sigma
+!             larsig = r-comp of Laplace sigma
+!             lazsig = z-comp of Laplace sigma
+
+!**********************************************************************
+
+!----- r = 0
+
+
+! only z-comp changes
+IF((mm == 0).OR.(mm == (-2))) THEN
+  DO iz=0,nz
+    slazsig(iz,ir)=slazsig(iz,ir) - 4*fpair*psip(iz,ir,2)*psip(iz,ir,2)
+  END DO
+END IF
+IF((mm == 1).OR.(mm == (-1))) THEN
+  DO iz=0,nz
+    slazsig(iz,ir)=slazsig(iz,ir) + 4*fpair*psip(iz,ir,1)*psip(iz,ir,1)
+  END DO
+END IF
+
+! now all other r
+DO ir=1,nr
+  rinv  = 1D0/((sr+ir)*dr)
+  DO iz=0,nz
+    slarsig(iz,ir)=slarsig(iz,ir)+fpair*(2*  &
+        (psiw(iz,ir,1)*psipp(iz,ir,2) +psiw(iz,ir,2)*psipp(iz,ir,1)  &
+        + 2*psip(iz,ir,1)*psip(iz,ir,2)) + rinv*2*  &
+        (psip(iz,ir,1)*psiw(iz,ir,2) + psip(iz,ir,2)*psiw(iz,ir,1))  &
+        - rinv*rinv*2*psiw(iz,ir,1)*psiw(iz,ir,2)  &
+        + 2*(psiw(iz,ir,1)*psinn(iz,ir,2) + psiw(iz,ir,2)*psinn(iz,ir,1)  &
+        + 2*psin(iz,ir,1)*psin(iz,ir,2)))
+    
+    slazsig(iz,ir)=slazsig(iz,ir) + 2*fpair*(  &
+        psip(iz,ir,1)*psip(iz,ir,1) -psip(iz,ir,2)*psip(iz,ir,2)  &
+        +psiw(iz,ir,1)*psipp(iz,ir,1)-psiw(iz,ir,2)*psipp(iz,ir,2)  &
+        +rinv*(psiw(iz,ir,1)*psip(iz,ir,1)-psiw(iz,ir,2)*psip(iz,ir,2))  &
+        +psinn(iz,ir,1)*psiw(iz,ir,1)-psinn(iz,ir,2)*psiw(iz,ir,2)  &
+        +psin(iz,ir,1)*psin(iz,ir,1)-psin(iz,ir,2)*psin(iz,ir,2))
+    
+  END DO
+END DO
+
+
+!*********************************************************************
+!                kinetic spin density
+!********************************************************************
+
+! r = 0
+IF((mm == 0).OR.(mm == (-1)))  THEN
+  ism = ABS(mm)+1
+  sigism = 3 -2*ism
+  DO iz=0,nz
+! perhaps spdenkinr = 0
+    spdenkinz(iz,0)=spdenkinz(iz,0)+sigism*fpair*(  &
+        psin(iz,0,ism)*psin(iz,0,ism))
+  END DO
+END IF
+IF((mm == 0).OR.(mm == (-2))) THEN
+  DO iz=0,nz
+    spdenkinz(iz,0)=spdenkinz(iz,0)-2*fpair* psin(iz,0,2)*psin(iz,0,2)
+  END DO
+ELSE IF((mm == 1).OR.(mm == (-1))) THEN
+  DO iz=0,nz
+    spdenkinz(iz,0)=spdenkinz(iz,0)+2*fpair* psin(iz,0,1)*psin(iz,0,1)
+  END DO
+END IF
+
+! now all other r
+DO ir=1,nr
+  r      = (sr+ir)*dr
+  f = mm*(mm+1)/(r*r)
+  fu = mm/r
+  fl = (mm+1)/r
+  DO iz=0,nz
+    spdenkinr(iz,ir)= spdenkinr(iz,ir)+2*fpair*(psip(iz,ir,1)*  &
+        psip(iz,ir,2) + f*psiw(iz,ir,1)*psiw(iz,ir,2)+  &
+        psin(iz,ir,2)*psin(iz,ir,1))
+    spdenkinz(iz,ir)=spdenkinz(iz,ir)+fpair*(psip(iz,ir,1)*  &
+        psip(iz,ir,1)+fu*fu*psiw(iz,ir,1)*psiw(iz,ir,1)  &
+        + psin(iz,ir,1)*psin(iz,ir,1) - (  &
+        psip(iz,ir,2)*psip(iz,ir,2)+fl*fl*psiw(iz,ir,2)*  &
+        psiw(iz,ir,2) + psin(iz,ir,2)*psin(iz,ir,2) ) )
+    
+  END DO
+END DO
+
+RETURN
+END SUBROUTINE densitodd
+!END NEW ODD
+
+
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: sdenti
 !> @brief

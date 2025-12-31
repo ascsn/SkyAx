@@ -325,8 +325,14 @@ DO  i=1,nom         ! loop over all blocks
         CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
                     rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq),  &
                     rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
-!      IF(thfb) WRITE(6,'(a,2i4,2(1pg13.5))') 'HFB 3:',mythread,jst,SUM(rhot),&
-!         SUM(psi(0:nz,0:nr,1:2,jst)**2)
+!NEW ODD
+        IF(toddterms) THEN
+          CALL densitodd(psi(0,0,1,jst),v2act,jst,  &
+              rotjr(0,0,iq), rotjz(0,0,iq), rotspden(0,0,iq),  &
+              spdenr(0,0,iq),spdenz(0,0,iq),d2spdenr(0,0,iq),  &
+              d2spdenz(0,0,iq),curphi(0,0,iq),spdenkr(0,0,iq), spdenkz(0,0,iq))
+        END IF
+!END NEW ODD
       END IF
     END IF
   END DO
@@ -442,10 +448,19 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
     DO jst=nlo,nhi
       iq = icharg(jst)
       v2act=adyrho*vsqf(jst)*wtpair_v2(jst)
-      IF(v2act > v2lim)  &
+      IF(v2act > v2lim)  THEN
           CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
           rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq), &
           rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
+!NEW ODD
+        IF(toddterms) THEN
+          CALL densitodd(psi(0,0,1,jst),v2act,jst,  &
+              rotjr(0,0,iq), rotjz(0,0,iq), rotspden(0,0,iq),  &
+              spdenr(0,0,iq),spdenz(0,0,iq),d2spdenr(0,0,iq),  &
+              d2spdenz(0,0,iq),curphi(0,0,iq),spdenkr(0,0,iq), spdenkz(0,0,iq))
+        END IF
+!END NEW ODD
+      END IF
       IF(tstab) THEN
         width = stwid/SQRT(anumb)
         fac   = EXP(-((spenrg(jst)-fer(iq))/width)**2)
