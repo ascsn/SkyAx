@@ -1,0 +1,20 @@
+There are four input files for the Fy(IVP3) family of parametrizations:
+
+for005.FyIVP3ZR_nonat   zero-range Fy(IVP3) with standard HFB iteration
+for005.FyIVP3ZR_nat     zero-range Fy(IVP3) with sub-iterations in 'HFB_natural'
+for005.FyIVP3FR_nonat   finite-range Fy(IVP3) with standard HFB iteration
+for005.FyIVP3FR_nat     finite-range Fy(IVP3) with sub-iterations in 'HFB_natural'
+
+The termination criterion is in all cases 'errenr=1D-11'. This guarantees for 158Yb
+radii to at least four digits and energies to at least five digits. 
+
+The version with sub-iterations in 'HFB_natural' uses a bit longer for one step,
+but converges faster. It is the preferable.
+
+For large-scale scans, one may sacrifice a bit of precision and use larger 'errenr'.
+
+
+The choice of convergence parameters, in particular 'x0inv', may be
+further explored. Larger 'x0inv' gives faster convergence, but
+unhances the danger of being trapped in HFB isomers. More than
+'x0inv=0.2' is not recommended.
