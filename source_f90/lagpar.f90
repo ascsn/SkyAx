@@ -41,7 +41,7 @@ REAL(8), ALLOCATABLE :: symatrix(:,:)
 
 LOGICAL, PARAMETER :: tbcs=.FALSE.    ! testswitch
 LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
-REAL(8) :: v2a,uva
+REAL(8) :: v2a,uva,fachfb
 INTEGER :: mist,npzist,jst,ist,is,iq,mythread
 
 REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
@@ -67,11 +67,15 @@ symcond = 0D0
 !$  mythread=OMP_GET_THREAD_NUM()
 !  WRITE(6,*) 'HFBSTEP 1: mythread=',mythread
 !     compute and store action of HFB Hamiltonian
+IF(iterbcs==0) fachfb = MIN(1D0*iter/iterhfb,1D0)
+!WRITE(7,'(a,1pg13.5)') 'FACHFB=',fachfb
 DO jst=istmin,istmax
 !  WRITE(6,*) 'HFBSTEP 2: mythread,jst=',mythread,jst
   CALL hpsi(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst),jst)
   v2a = vsqf(jst)
   uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+! augment for BCS cooling in case of 'iterhfb=0'
+  IF(iterbcs==0) uva = uva * fachfb
 !  WRITE(6,*) 'HFBSTEP 3: mythread,jst=',mythread,jst,v2a,uva
   IF(tbcs) THEN
     v2a=1D0
