@@ -1,93 +1,135 @@
+Explanation of the extension of SkyAx to odd nuclei:
+====================================================
+
+There are three major steps:
+
+  I. Extending the book-keeping to K<0 states:
+     -----------------------------------------
+     Even-even nuclei obey Cramer's degeneracy which 
+     associates to each  s.p. state with K>0 (where K is
+     the total spin z-component) an equivalent state with 
+     K<0, called henceforth the pairing-conjugate state. 
+     Thus the code for even-even nuclei handles only K>0 
+     states.
+     To allow for broken time parity, the quantum numbers
+     are extended to cover now also the range K<0. 
+     Those modifications in book-keeping cover the points
+     1-5 and 24-27.
+
+ II. Handle terms with time-odd densities:
+     -------------------------------------
+     Broken time parity activates the terms with time-odd
+     densities in the functional (see the paper 'EPJA...'
+     and for more technical detailes the apoendices in 
+     'diplomarbeitt...', both in the subdirectory 'doc'). 
+     These new terms must be implemented in the code. 
+     This is done in the points 7-9,11,and 13-22.
+
+III. Implement blocking for the odd nucleon:
+     =======================================
+     The odd nucleon and its pairing-conjgate state does 
+     not take part in pairing. This is realized by what is
+     called blocking of these tow states. Blokcking and
+     its book-keeping is the most involved piece in coding
+     and will require careful testing. A subtle case is
+     the s.p. energy entering the pairing scheme. The
+     pairing-conjugate state are note degenerated anymore.
+     The average of the two s.p. energies si used. The 
+     necessary modifications concern points 6, 12, 23, 24,
+     and 27-30.
+
+
 Protocol of modifications:
+==========================
 
 'm_init.f90':
 -------------
 
-* Extend 'k1' loop from '1,mmaxq' to 'mmin1,mmaxq' for 'mminq<0'.
+ 1 Extend 'k1' loop from '1,mmaxq' to 'mmin1,mmaxq' for 'mminq<0'.
   (lines 580-592)
 
-* 'mm1' extended to <0 values (lines 618-623)
+ 2 'mm1' extended to <0 values (lines 618-623)
 
-* Actual 'm' and parity extended.(lines 730-738)
+ 3 Actual 'm' and parity extended.(lines 730-738)
 
-* Time reflection of wavefunction for 'k1<0'. (lines 751-760)
+ 4 Time reflection of wavefunction for 'k1<0'. (lines 751-760)
 
-* Initialize book-keeping of pairing conjugate states. 
+ 5 Initialize book-keeping of pairing conjugate states. 
   (lines 923-930)
 
-* Subroutine to set blocking parameters. (lines 1079-1122)
+ 6 Subroutine to set blocking parameters. (lines 1079-1122)
 
 
 'm_fields.f90':
 ---------------
 
-* Define time-odd densities and potentials. (lines 42-53)
+ 7 Define time-odd densities and potentials. (lines 42-53)
   Allocate and initialize them. (lines 78-92)
 
 
 'm_dynpar.f90':
 ---------------
 
-* Landau parameters g and g' (still in reserve). (line 57)
+ 8 Landau parameters g and g' (still in reserve). (line 57)
 
-* Auxiliary parameters b8,b8p,b6,b6p. (line 68 )
+ 9 Auxiliary parameters b8,b8p,b6,b6p. (line 68 )
 
-* Switch parameter 'isTsym' defined. (lines 132-140)
-  And in NAMELIST 'force' included. (line 287)
+10 Switch parameter 'isTsym' defined. (lines 132-140)
+   And in NAMELIST 'force' included. (line 287)
 
-* Evaluate auxiliary parameters b8...(lines 415-435)
+11 Evaluate auxiliary parameters b8...(lines 415-435)
 
 'm_observ.f90':
 ---------------
 
-* Define modulus of computing conjugated states. (lines 20-22)
+12 Define modulus of computing conjugated states. (lines 20-22)
 
-* Extend pairing density to time-odd case. (lines 255-285)
+13 Extend pairing density to time-odd case. (lines 255-285)
 
-* Subroutine 'densitodd' for time-odd densities. (lines 2448-2705)
+14 Subroutine 'densitodd' for time-odd densities. (lines 2448-2705)
 
 
 'm_steputil.f90':
 -----------------
 
-* Call and apply time-odd Hamiltonian. (lines 131-142)
+15 Call and apply time-odd Hamiltonian. (lines 131-142)
 
-* Subroutine prepring action of time-odd Hamiltonian. (line 154-289)
+16 Subroutine preparing action of time-odd Hamiltonian. (line 154-289)
 
-* Time odd Fayans potentials. (line 391-438)
+17 Time odd Fayans potentials. (line 391-438)
 
-* Add time-odd densities in loop. (lines 693-703)
+18 Add time-odd densities in loop. (lines 693-703)
 
-* Compose time-odd Skyrme potentials. (lines 775-834)
+19 Compose time-odd Skyrme potentials. (lines 775-834)
 
-* Subroutine 'cpairpot' for pairing density in case of broken
-  Cramer's degeneracy. (lines 1467-1496)
+20 Subroutine 'cpairpot' for pairing density in case of broken
+   Cramer's degeneracy. (lines 1467-1496)
 
 
 'm_fyfunc_2D.f90':
 ------------------
 
-* Add subroutine 'fyfunc_odd'. (lines 273-305)
+21 Add subroutine 'fyfunc_odd'. (lines 273-305)
 
 
 
 'm_staticstep.f90':
 -------------------
 
-* Add call to odd densities. (lines 328-335,455-462)
+22 Add call to odd densities. (lines 328-335,455-462)
 
-* Build average s.p. energies for pairing. (lines 1025-1034)
+23 Build average s.p. energies for pairing. (lines 1025-1034)
 
 
 'm_levels.f90':
 ---------------
 
-* Define book-keeping arrays for handling blocking. 
+24 Define book-keeping arrays for handling blocking. 
   (lines 52-61)
 
-* Allocate book-keeping arrays. (lines 112-115)
+25 Allocate book-keeping arrays. (lines 112-115)
 
-* Deallocate book-keeping arrays. (line 131)
+26 Deallocate book-keeping arrays. (line 131)
 
 
 
@@ -95,22 +137,22 @@ Protocol of modifications:
 'skyax.f90':
 ------------
 
-* Update book-keeping of conjugates states. (lines 371-378)
+27 Update book-keeping of conjugates states. (lines 371-378)
 
 
 
 'hfb-natural.f90':
 ------------------
 
-* Build average s.p. energies for pairing. (lines 180-185,504-509)
+28 Build average s.p. energies for pairing. (lines 180-185,504-509)
 
 
 'm_pairing.f90':
 ----------------
 
-* Blocking implemented in computation of pair current.. (lines 84-114)
+29 Blocking implemented in computation of pair current.. (lines 84-114)
 
-* Subroutine to determine pairing conjugate states.
-  Subroutine to average s.p. energies between conjugates state.
-  (lines 1610-1721)
-  ?? parity check?
+30 Subroutine to determine pairing conjugate states.
+   Subroutine to average s.p. energies between conjugates state.
+   (lines 1610-1721)
+   ?? parity check included?
