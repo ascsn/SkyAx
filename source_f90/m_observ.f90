@@ -17,6 +17,9 @@ REAL(8) :: tempw=1D0     !<Step width for temperature loop.
 REAL(8) :: tempac=1D0    !<Actual temperature for current step.
 INTEGER :: itmax=1000    !<Maximum number of iterations for one deformation.
 INTEGER :: iprint=1000   !<Modulus for printing output.
+!NEW ODD
+INTEGER, PARAMETER :: mod_upd_conjstates=1000  !< Modulus for updating tabkle of conjugated states. 
+!END NEW ODD
 
 REAL(8) :: atnum    !<Mass number for nucleus.
 REAL(8) :: apnum    !<Proton number.
@@ -122,7 +125,7 @@ REAL(8) :: symcondf(2)   !< final HFB symmetry condition in 'hfb_natural'
 REAL(8),ALLOCATABLE,SAVE :: rmsfield(:,:) ! field containing r**2
 
 
-INTEGER,PARAMETER,PRIVATE :: isign_rso=1  !< +-1 to switch new/old magnetic contribution
+INTEGER,PARAMETER,PRIVATE :: isign_rso=1  !< +-1 to switch new/old magnetic contribution to radii
 INTEGER,PARAMETER,PRIVATE :: kfrm=512     !<Maximum dimension of formfactor fields.
 
 ! parameters for nucleon contribution to charge rms radius
@@ -171,6 +174,7 @@ USE constr
 USE wavefr, ONLY: psi,psifold
 USE fields
 USE levels
+USE steputil, ONLY: cpairpot
 
 
 IMPLICIT NONE
@@ -183,7 +187,7 @@ CHARACTER(LEN=40) :: format_conver
 
 REAL(8) :: dipout,z,v2,uv,epairtestn,epairtestp,etot1,fac,occ,occd,qs,&
            qsn,qsp,qsqn,qsqp,r2h,r2t,rmsb,rmsbn,rmsbp,r,qsq
-INTEGER :: ind,ir,iq,ist,iz,jst,nstm,ine
+INTEGER :: ind,ir,iq,ist,iz,jst,nstm,ine,lst
 LOGICAL :: topened
 
 INTEGER,SAVE :: lconp(0:4)     ! pointer to active constraints
@@ -236,7 +240,7 @@ END IF
 
 IF(ipair == 4) THEN                         ! compute entropy
   epair(1:2) = zero
-  DO ist=1,lst
+  DO ist=1,nst(1)+nst(2)
     iq   = icharg(ist)
     occ  = MAX(vsqf(ist),smal)
     occd = MAX(one-occ,smal)
@@ -249,24 +253,38 @@ END IF
 paircr(0:nz,0:nr,1:2)  = 0D0
 IF(testfolding) paircrtest(0:nz,0:nr,1:2)  = 0D0
 !     accumulate new pair-density
+!NEW ODD
 IF(thfbfold) THEN
   DO jst=1,nst(1)+nst(2)
     iq    = icharg(jst)
+    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE    !NEW ODD
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
-    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
     IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
-!    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-!    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+    IF(toddterms) THEN
+      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      CALL cpairpot(psifold(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
+    ELSE
+      CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    END IF
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)
     iq    = icharg(jst)
+    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE    !NEW ODD
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
-    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    IF(toddterms) THEN
+      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      CALL cpairpot(psi(0:nz,0:nr,1:2,jst),psi(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
+    ELSE
+      CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    END IF
   END DO
 END IF
+!END NEW ODD
+
 !c     now multiply with strength to obtain local pair-potential
 IF(.NOT.tFayans) THEN
   IF(ipair <= 6 .OR. ipair == 9) THEN
@@ -353,6 +371,7 @@ IF(itest >= 1 .OR. iter==itmax) THEN
       '  sum_s.p.energ.=',iter,SUM(spenrg(1:nst(1))*wate(1:nst(1))*vsqf(1:nst(1)))
 END IF
 !Copy previous s.p. energies to speold
+lst = nst(1)+nst(2)
 speold(1:lst) = spenrg(1:lst)
 
 !**********************************************************************
@@ -2450,25 +2469,32 @@ USE levels
 USE grid
 IMPLICIT NONE
 
-REAL, INTENT(IN)     :: psiw(0:nzd,0:nrd,nsd)
-REAL, INTENT(IN)     :: weight
-INTEGER, INTENT(IN)  :: ist
-REAL, INTENT(OUT)    :: rrotj(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: zrotj(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: rotsig(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: rsig(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: zsig(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: slarsig(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: slazsig(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: curr(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: spdenkinr(0:nzd,0:nrd)
-REAL, INTENT(OUT)    :: spdenkinz(0:nzd,0:nrd)
+REAL(8), INTENT(IN)     :: psiw(0:nzd,0:nrd,nsd)
+REAL(8), INTENT(IN)     :: weight
+INTEGER, INTENT(IN)     :: ist
+REAL(8), INTENT(OUT)    :: rrotj(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: zrotj(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: rotsig(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: rsig(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: zsig(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: slarsig(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: slazsig(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: curr(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: spdenkinr(0:nzd,0:nrd)
+REAL(8), INTENT(OUT)    :: spdenkinz(0:nzd,0:nrd)
 
-REAL(8) :: psinn(0:nzd,0:nrd,nsd)
-REAL(8) :: psipp(0:nzd,0:nrd,nsd)
-REAL(8) :: fpair
+REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
+REAL(8),ALLOCATABLE :: psipp(:,:,:),psinn(:,:,:)
+
+REAL(8) :: fpair,fpair2,rinv,xmlow,fup,flow,xm2,xm2l,xmup
+REAL(8) :: sigism,f,add
+INTEGER :: iz,ir,mm,nparrc,nparr,ism
 
 !-----------------------------------------------------------
+
+ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+ALLOCATE(psipp(0:nz,0:nr,nsd),psinn(0:nz,0:nr,nsd))
+
 
 !  in case of calculating one the half spectrum, set
 !  time-odd densitys to zero
@@ -2476,7 +2502,7 @@ REAL(8) :: fpair
 IF(istsym >= 1)THEN
   fpair  = weight*wate(ist)
 ELSE
-  fpair = zero
+  fpair = 0D0
 END IF
 
 
@@ -2666,22 +2692,25 @@ END IF
 
 ! now all other r
 DO ir=1,nr
-  r      = (sr+ir)*dr
-  f = mm*(mm+1)/(r*r)
-  fu = mm/r
-  fl = (mm+1)/r
+  rinv  = 1D0/((sr+ir)*dr)
+  f = mm*(mm+1)*(rinv*rinv)
+  fup = mm*rinv
+  flow = (mm+1)*rinv
   DO iz=0,nz
     spdenkinr(iz,ir)= spdenkinr(iz,ir)+2*fpair*(psip(iz,ir,1)*  &
         psip(iz,ir,2) + f*psiw(iz,ir,1)*psiw(iz,ir,2)+  &
         psin(iz,ir,2)*psin(iz,ir,1))
     spdenkinz(iz,ir)=spdenkinz(iz,ir)+fpair*(psip(iz,ir,1)*  &
-        psip(iz,ir,1)+fu*fu*psiw(iz,ir,1)*psiw(iz,ir,1)  &
+        psip(iz,ir,1)+fup*fup*psiw(iz,ir,1)*psiw(iz,ir,1)  &
         + psin(iz,ir,1)*psin(iz,ir,1) - (  &
-        psip(iz,ir,2)*psip(iz,ir,2)+fl*fl*psiw(iz,ir,2)*  &
+        psip(iz,ir,2)*psip(iz,ir,2)+flow*flow*psiw(iz,ir,2)*  &
         psiw(iz,ir,2) + psin(iz,ir,2)*psin(iz,ir,2) ) )
     
   END DO
 END DO
+
+DEALLOCATE(psip,psin,psipp,psinn)
+
 
 RETURN
 END SUBROUTINE densitodd

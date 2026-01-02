@@ -49,10 +49,16 @@ INTEGER,ALLOCATABLE :: nqz(:)     !< Longitudinal quantum numbers.
 INTEGER ,ALLOCATABLE:: icharg(:)  !<Isospin (1 for protons, 2 for neutrons).
 INTEGER,ALLOCATABLE :: iorder(:)  !<Pointer field for reordering according to the actual energy.
 
-INTEGER :: kblock=0         !<2*K values of blocked s.p. state. To be set at compile time. (Default 0)
-INTEGER :: mblock=0         !<M values of blocked s.p. state. To be set at compile time.
+!NEW ODD
+REAL(8),ALLOCATABLE :: rtpartn(:) !<Overlap os state and conjugate partner state (auxiliary)
+INTEGER,ALLOCATABLE :: itpartn(:) !<Pointer field for conjugate partner states
+INTEGER :: kblock(2)=(/0,0/)      !<2*K values of blocked s.p. state. (Default 0)
+INTEGER :: ktcblock(2)=(/0,0/)    !<2*K values of conjugate to blocked s.p. state. (Default 0)
+INTEGER :: mblock(2)=(/0,0/)      !<M values of blocked s.p. state. 
+INTEGER :: istblo(2)=(/0,0/)      !<Number of blocked s.p. state in level sequence.
+INTEGER :: istcblo(2)=(/0,0/)     !<Number of conjugate to blocked s.p. state in level sequence.
 INTEGER :: isoblo=0         !<Isospin of blocked s.p. state. To be set at compile time.
-INTEGER :: istblo           !<Number of blocked s.p. state in level sequence.
+!END NEW ODD
 INTEGER :: ifocsv           !<Switch to store occupation numbers intermediately (field 'oc').
 
 INTEGER :: nprot=0          !<Proton number.
@@ -64,7 +70,7 @@ INTEGER :: npsi(2)          !<Upper index of last wf with isospin i.
 INTEGER :: npart(2)         !<Particle numbers.
 INTEGER :: iokk(2)          !<Pointer to the 1 st index of state with \c iso.
 INTEGER :: numsta(2)        !<Number of available states for particle sort.
-INTEGER :: lst              !<Total no. of states.
+INTEGER :: ls              !<Total no. of states.
  
 INTEGER :: nom              !<Number of m blocks (maximum m quantum number +1).
 INTEGER :: mhi(mxd)         !<array storing the upper index for the wave functions 
@@ -103,6 +109,10 @@ SUBROUTINE alloc_levels(npsi)
   dvsqf=0.0D0 ;vsqfol=0.0D0;oc=0.0D0    ;cmpn=0.0D0  ;vsqobs=0.0D0;deltaf=0.0D0
   wtpair_uv=0.0D0;wtpair_v2=0.0D0;qspav=0.0D0 ;mpsi=0  ;npar=0  ;nrpar=0 ;nparz=0
   nqr=0   ;nqz=0   ;icharg=0;iorder=0;spevhh=0.0D0; nbuf=0
+!NEW ODD
+  ALLOCATE(itpartn(npsi),rtpartn(npsi))
+  itpartn=0;rtpartn=0D0
+!END NEW ODD
   RETURN
 END SUBROUTINE alloc_levels
 !---------------------------------------------------------------------------  
@@ -118,6 +128,10 @@ SUBROUTINE dealloc_levels
            wtpair_uv,wtpair_v2,qspav, mpsi,  npar,    nrpar, nparz,&
            nqr,  nqz,   icharg, iorder,  spevhh &
            )
+  DEALLOCATE(itpartn,rtpartn)    !NEW ODD
   RETURN
 END SUBROUTINE dealloc_levels
+
+
+
 END MODULE levels

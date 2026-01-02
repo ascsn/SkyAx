@@ -1,6 +1,7 @@
 Protocol of modifications:
 
-SSETUP in 'm_init.f90':
+'m_init.f90':
+-------------
 
 * Extend 'k1' loop from '1,mmaxq' to 'mmin1,mmaxq' for 'mminq<0'.
   (lines 580-592)
@@ -9,46 +10,107 @@ SSETUP in 'm_init.f90':
 
 * Actual 'm' and parity extended.(lines 730-738)
 
-* Time reflection of wavefunction for 'k1<0'. (lines 751-761)
+* Time reflection of wavefunction for 'k1<0'. (lines 751-760)
+
+* Initialize book-keeping of pairing conjugate states. 
+  (lines 923-930)
+
+* Subroutine to set blocking parameters. (lines 1079-1122)
 
 
 'm_fields.f90':
+---------------
 
 * Define time-odd densities and potentials. (lines 42-53)
   Allocate and initialize them. (lines 78-92)
 
 
 'm_dynpar.f90':
+---------------
 
-* Switch parameter 'isTsym' defined. (lines 130-138)
-  And in NAMELIST 'force' included. (line 285)
+* Landau parameters g and g' (still in reserve). (line 57)
 
+* Auxiliary parameters b8,b8p,b6,b6p. (line 68 )
+
+* Switch parameter 'isTsym' defined. (lines 132-140)
+  And in NAMELIST 'force' included. (line 287)
+
+* Evaluate auxiliary parameters b8...(lines 415-435)
 
 'm_observ.f90':
+---------------
 
-* Subroutuine 'densitodd' for time-odd densities. (lines 2413-2688)
+* Define modulus of computing conjugated states. (lines 20-22)
+
+* Extend pairing density to time-odd case. (lines 255-285)
+
+* Subroutine 'densitodd' for time-odd densities. (lines 2448-2705)
 
 
 'm_steputil.f90':
+-----------------
 
 * Call and apply time-odd Hamiltonian. (lines 131-142)
 
 * Subroutine prepring action of time-odd Hamiltonian. (line 154-289)
 
-* Time off Fayans potentials. (line 391-438)
+* Time odd Fayans potentials. (line 391-438)
 
-* Add time-odd densities in loop. (lines 656-666)
+* Add time-odd densities in loop. (lines 693-703)
 
-* Compose time-odd Skyrme potentials. (lines 738-797)
+* Compose time-odd Skyrme potentials. (lines 775-834)
+
+* Subroutine 'cpairpot' for pairing density in case of broken
+  Cramer's degeneracy. (lines 1467-1496)
 
 
 'm_fyfunc_2D.f90':
+------------------
 
 * Add subroutine 'fyfunc_odd'. (lines 273-305)
 
 
 
 'm_staticstep.f90':
+-------------------
 
 * Add call to odd densities. (lines 328-335,455-462)
 
+* Build average s.p. energies for pairing. (lines 1025-1034)
+
+
+'m_levels.f90':
+---------------
+
+* Define book-keeping arrays for handling blocking. 
+  (lines 52-61)
+
+* Allocate book-keeping arrays. (lines 112-115)
+
+* Deallocate book-keeping arrays. (line 131)
+
+
+
+
+'skyax.f90':
+------------
+
+* Update book-keeping of conjugates states. (lines 371-378)
+
+
+
+'hfb-natural.f90':
+------------------
+
+* Build average s.p. energies for pairing. (lines 180-185,504-509)
+
+
+'m_pairing.f90':
+----------------
+
+* Blocking implemented in computation of pair current.. (lines 84-114)
+
+* Subroutine to determine pairing conjugate states.
+  Subroutine to average s.p. energies between conjugates state.
+  (lines 1610-1721)
+  ?? parity check?

@@ -116,6 +116,7 @@ SUBROUTINE sstep(iter)
 
 USE coulomb, ONLY: wcolt
 USE util, ONLY: protfold
+USE fields
 
 IMPLICIT NONE
 
@@ -327,10 +328,10 @@ DO  i=1,nom         ! loop over all blocks
                     rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
 !NEW ODD
         IF(toddterms) THEN
-          CALL densitodd(psi(0,0,1,jst),v2act,jst,  &
-              rotjr(0,0,iq), rotjz(0,0,iq), rotspden(0,0,iq),  &
-              spdenr(0,0,iq),spdenz(0,0,iq),d2spdenr(0,0,iq),  &
-              d2spdenz(0,0,iq),curphi(0,0,iq),spdenkr(0,0,iq), spdenkz(0,0,iq))
+          CALL densitodd(psi(:,:,:,jst),v2act,jst,  &
+              rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
+              spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
+              d2spdenz(:,:,iq),curphi(:,:,iq),spdenkr(:,:,iq), spdenkz(:,:,iq))
         END IF
 !END NEW ODD
       END IF
@@ -454,10 +455,10 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
           rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
 !NEW ODD
         IF(toddterms) THEN
-          CALL densitodd(psi(0,0,1,jst),v2act,jst,  &
-              rotjr(0,0,iq), rotjz(0,0,iq), rotspden(0,0,iq),  &
-              spdenr(0,0,iq),spdenz(0,0,iq),d2spdenr(0,0,iq),  &
-              d2spdenz(0,0,iq),curphi(0,0,iq),spdenkr(0,0,iq), spdenkz(0,0,iq))
+          CALL densitodd(psi(:,:,1,jst),v2act,jst,  &
+              rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
+              spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
+              d2spdenz(:,:,iq),curphi(:,:,iq),spdenkr(:,:,iq), spdenkz(:,:,iq))
         END IF
 !END NEW ODD
       END IF
@@ -1022,13 +1023,16 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
           ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
     END IF
     itest = -1
-    CALL pairdn(spenrg,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
+!NEW ODD
+    CALL combine_spenergies(spenrg,speold,nst(1)+nst(2))
+    CALL pairdn(speold,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
         fer(1),epair(1),gap(1),feradd(1),  &
-        nst(1),nst(1),npiter,ipair,0,istblo,erra,itest-1)
+        nst(1),nst(1),npiter,ipair,0,istblo(1),erra,itest-1)
     ist2 = nst(1)+1
-    CALL pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
+    CALL pairdn(speold(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
         wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
-        nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
+        nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1), erra,itest-1)
+!END NEW ODD
 !    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
 !         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
     vsqobs(1:nsttot) = vsqf(1:nsttot)

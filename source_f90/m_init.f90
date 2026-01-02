@@ -40,7 +40,7 @@ IMPLICIT NONE
           '#  dz,dr: ',2F6.3,' nz,nr:',2I4,/,  &
           '# addrho,addpot,addocc: ',3F6.3,'  c0,qeps:',2F6.3,/,  &
           '# x0inv(fm),e0inv(mev): ',2F7.2)
-      IF(istblo > 0) WRITE(90,'(a,4i5)')  &
+      IF(SUM(istblo) > 0) WRITE(90,'(a,4i5)')  &
           '# blocking: kblock,mblock,isoblo,istblo=',  &
           kblock,mblock,isoblo,istblo
       IF(.NOT.tsym) THEN
@@ -436,6 +436,7 @@ SUBROUTINE ssetup
 
 USE paramr
 USE constr
+USE pairin, ONLY: findconjpart
 USE dynpar
 USE fields
 USE wavefr
@@ -450,7 +451,7 @@ REAL(8) :: amas,brosc,bzosc,ecur,hboma,hbomr,hbomz,octadd,octstp,phinor,&
            psirad,spin,sumnon,sumprt,sumtot,v2,wgt,xpi
 INTEGER :: ielse,iofk,iq,iqold,ir,is,isigis,ispgen,ist,iz,izm,izp,j,&
            jst,k1,kold,mm,mm1,mmaxq,mmr,mst,muplo,n,na,nnr,nnz,&
-           npuplo,nzho,len,irun, &
+           npuplo,nzho,len,irun,lst, &
            mminq,isTtmp                    !NEW ODD
 
 REAL(8) ::  xkappa(2),xmue(2),spnc(2),eocct(2)
@@ -579,7 +580,7 @@ END IF
 !**********************************************************************
 
 !NEW ODD
-if(isTSym.ge.1)then
+if(toddterms)then
   isTtmp = 0
 else
   isTtmp = 1
@@ -589,7 +590,7 @@ endif
 
 DO  iq=1,2
   mmaxq=mmax(iq)
-  mminq= -mmax(iq)*(1-isTtmp)   !NEW ODD
+  mminq= -mmax(iq)*(1-isTtmp)+1   !NEW ODD
   DO  mm=mminq,mmaxq      !NEW ODD
     k1=mm-1
     
@@ -726,8 +727,8 @@ DO  iq=1,2
             
 !        projection of the last component in momentum space
 
-              muplo  =  mpsi(jst)+ispgen-1
-              npuplo =  npar(jst)*isigis
+!              muplo  =  mpsi(jst)+ispgen-1
+!              npuplo =  npar(jst)*isigis
 !NEW ODD
               IF(mpsi(jst).GE.zero) THEN
                 muplo  =  mpsi(jst)+ispgen-1
@@ -750,7 +751,6 @@ DO  iq=1,2
 
 !NEW ODD
 ! apply time reflection for 'k1<0'
-******************************
               IF(k1<0) THEN
                 DO iz=0,nz; DO ir=0,nr 
                   copy = psi(iz,ir,1,lst) 
@@ -919,8 +919,16 @@ END DO
 
 
 IF(itest>0) WRITE(7,'(a)') ' SSETUP finished'
-! WRITE(7,'(a)') ' SSETUP finished'
 DEALLOCATE(wrk1,wrk2)
+
+!NEW ODD
+! initialize book-keeping of conjugate states
+IF(toddterms) THEN
+  CALL findconjpart(1)
+  CALL findconjpart(2)
+  CALL comp_block()
+END IF
+!END NEW ODD
 
 FLUSH (7)
 
@@ -1069,6 +1077,7 @@ psirad = psi(nnr)
 RETURN
 END SUBROUTINE radwf
 
+!NEW ODD
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: comp_block
 !> @brief
@@ -1077,7 +1086,8 @@ END SUBROUTINE radwf
 !! routine finds out what number this state has in the normal ordering 
 !! sequence of the code.
 !> @details
-!!
+!! Present version only for given state-number of blocked states. To be extended.
+!
 !--------------------------------------------------------------------------- 
 SUBROUTINE comp_block()
 USE paramr
@@ -1087,41 +1097,29 @@ USE levels
 USE grid
 IMPLICIT NONE
 
-REAL(8) :: signup
-INTEGER :: ist,iunit,mbact,nfin,ninit
+!REAL(8) :: signup
+INTEGER :: iq,iunit !,mbact,nfin,ninit
 
-IF(kblock > 2*mblock) THEN
-  signup = 1.0D0
-  mbact  = mblock
-ELSE
-  signup = -1.0D0
-  mbact  = mblock-1
-END IF
-IF(isoblo == 1) THEN
-  ninit = 1
-  nfin  = nst(1)
-ELSE IF(isoblo == 2) THEN
-  ninit = nst(1)+1
-  nfin  = nst(1)+nst(2)
-ELSE
-  STOP ' invalid isospin in blocking routine COMP_BLOCK'
-END IF
-
-DO ist=ninit,nfin
-  IF((mpsi(ist) == mbact) .AND. &
-     (signup*(cmpn(1,ist)-cmpn(2,ist)) >= 0.0D0) .AND. &
-     (vsqf(ist) < 0.8D0)) THEN
-    istblo = ist
-    EXIT
+DO iq=1,2
+  
+  IF(MOD(npart(iq),2).EQ.0) THEN
+    IF(istblo(iq).NE.0) STOP 'ISTBLO>0 for even particle number'
+    istcblo(iq) = itpartn(istblo(iq))
+    mblock(iq) = mpsi(istblo(iq))
+    kblock(iq) = 2*mblock(iq)+1
+    vsqf(istblo(iq))=1D0
+    vsqf(istcblo(iq))=0D0
   END IF
+
 END DO
 
 DO iunit=6,7
-  WRITE(iunit,'(a,4i5)') ' blocking found: kblock,mblock,isoblo,istblo=',  &
-      kblock,mblock,isoblo,istblo
+  WRITE(iunit,'(a,6i5)') ' blocking set: kblock,mblock,istblo=',  &
+      kblock,mblock,istblo
 END DO
 
 RETURN
 END SUBROUTINE comp_block
+!END NEW ODD
 
 END MODULE init

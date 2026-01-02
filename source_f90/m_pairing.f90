@@ -50,6 +50,7 @@ USE wavefr
 USE levels
 USE grid
 USE fyfunc, ONLY: fy_hfbpot
+USE steputil, ONLY: cpairpot
 
 IMPLICIT NONE
 
@@ -81,30 +82,37 @@ IF(testfolding) paircrtest(:,:,:) = 0D0
 IF(tregpair) regpairadd=1D0
 
 !     accumulate new pair-density
+!NEW ODD
 IF(thfbfold) THEN
   DO jst=1,nst(1)+nst(2)
     iq    = icharg(jst)
+    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE  
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
     CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
-    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
     IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
-!    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-!    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
-!    WRITE(6,'(a,3i4)') 'SPRADIUS before for jst,parity,m=',jst,nparz(1,jst),mpsi(jst)
-!    CALL spradius(psi(0:nz,0:nr,1:2,jst))
-!    WRITE(6,'(a,i4)') 'SPRADIUS after for jst=',jst
-!    CALL spradius(psifold(0:nz,0:nr,1:2,jst))
-!    WRITE(6,'(1x)')
+    IF(toddterms) THEN
+      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      CALL cpairpot(psifold(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
+    ELSE
+      CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    END IF
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)
     iq    = icharg(jst)
+    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE  
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
-    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    IF(toddterms) THEN
+      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      CALL cpairpot(psi(0:nz,0:nr,1:2,jst),psi(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
+    ELSE
+      CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    END IF
   END DO
 END IF
+!END NEW ODD
 
 
 !     now multiply with strength to obtain local pair-potential
@@ -490,14 +498,14 @@ IF(iab > -1) THEN
 END IF
 
 ! preset pairing weights, use pairgw_uv as workspace
-IF(eferm /= zero) THEN
+IF(eferm /= 0D0) THEN
   IF(tcutoff_WS) THEN
     efadd  = pair_cutoff
     deltac = efadd*0.1D0
     DO i=1,nmax
-      arg    = (e(i)-(eferm+efadd))/deltac
+      arg    = e(i)-(eferm+efadd)/deltac
       IF(arg > fifty) THEN
-        pairgw_uv(i)   = zero
+        pairgw_uv(i)   = 0D0
       ELSE IF(arg < -fifty) THEN
         pairgw_uv(i)   = 1D0
       ELSE
@@ -524,11 +532,11 @@ END IF
 
 !      prepare fermi-energy 'eferm', if not yet initialised.
 converged=.FALSE.
-IF(eferm == zero) THEN
-  partsm = zero
+IF(eferm == 0D0) THEN
+  partsm = 0D0
   DO it=1,nmax
     partsm = ph(it) + partsm
-    IF(partsm-partnm >= zero) THEN
+    IF(partsm-partnm >= 0D0) THEN
       converged=.TRUE.
       EXIT
     END IF
@@ -541,7 +549,7 @@ IF(eferm == zero) THEN
     IF(n <= it) THEN
       gw(n) = one
     ELSE
-      gw(n) = zero
+      gw(n) = 0D0
     END IF
   END DO
   xlam2 = 0.0
@@ -771,7 +779,7 @@ IF(iab >= 2) WRITE(6,'(a,10(/1x,10f8.3))')  &
 
 !      prepare fermi-energy 'eferm', if not yet initialised.
 converged=.FALSE.
-IF(efadd == zero) THEN
+IF(efadd == 0D0) THEN
   isum   = 0
   DO it=1,nmax
     itsum  = it
@@ -806,11 +814,11 @@ IF(iftang == 1) THEN
         elam   = eferm+efadd
       END IF
 ! compute actual particle number
-      parnum = zero
+      parnum = 0D0
       DO i=1,nmax
         arg    = (e(i)-elam)/deltac
         IF(arg > fifty) THEN
-          gw(i)   = zero
+          gw(i)   = 0D0
         ELSE IF(arg < -fifty) THEN
           gw(i)   = one
         ELSE
@@ -860,11 +868,11 @@ ELSE
     END IF
     efadd   = eferm3-eferm
     deltac  = MAX(efadd*delta,delta)
-    parnum  = zero
+    parnum  = 0D0
     DO i=1,nmax
       arg    = (e(i)-eferm3)/deltac
       IF(arg > fifty) THEN
-        gw(i)   = zero
+        gw(i)   = 0D0
       ELSE IF(arg < -fifty) THEN
         gw(i)   = one
       ELSE
@@ -875,7 +883,7 @@ ELSE
     dparnm = parnum-anz                                      ! axial
     IF(it == 1) THEN
       dparn1  = dparnm
-      IF(dparn1 > zero) THEN
+      IF(dparn1 > 0D0) THEN
         WRITE(6,'(a/i4,5(1pg12.4))')  &
             ' it,deltac,eferm1,eferm2,dparn1,dparn2=',  &
             it,deltac,eferm1,eferm2,dparn1,dparn2
@@ -885,7 +893,7 @@ ELSE
       END IF
     ELSE IF(it == 2) THEN
       dparn2  = dparnm
-      IF(dparn2 < zero) THEN
+      IF(dparn2 < 0D0) THEN
         WRITE(6,'(a/i4,5(1pg12.4))')  &
             ' it,deltac,eferm1,eferm2,dparn1,dparn2=',  &
             it,deltac,eferm1,eferm2,dparn1,dparn2
@@ -901,7 +909,7 @@ ELSE
     IF(it > 2) THEN
       IF(ABS(dparn3) < eps) THEN
         EXIT
-      ELSE IF(dparn3 > zero) THEN
+      ELSE IF(dparn3 > 0D0) THEN
         eferm2 = eferm3
         dparn2 = dparn3
       ELSE
@@ -915,7 +923,7 @@ END IF
 !-------------------------------------------------------------------------------
 !     finally the particle-number is checked and printed
 !-------------------------------------------------------------------------------
-partnm = zero
+partnm = 0D0
 DO i=1,nmax
   partnm = gw(i)*ph(i) + partnm
 END DO
@@ -1035,12 +1043,12 @@ wrk1 = 0.0d0
 wrk2 = 0.0d0
 
 !     reset accumulators for combinations of 'u' and 'v'.
-sv2   = zero                                  ! sum v^2
-suv   = zero                                  ! sum u*v
-suv4  = zero                                  ! sum u^4 v^4
-suv2  = zero                                  ! sum u^2 v^2
-su3v  = zero                                  ! sum u*v u^2
-suv3  = zero                                  ! sum u*v v^2
+sv2   = 0D0                                  ! sum v^2
+suv   = 0D0                                  ! sum u*v
+suv4  = 0D0                                  ! sum u^4 v^4
+suv2  = 0D0                                  ! sum u^2 v^2
+su3v  = 0D0                                  ! sum u*v u^2
+suv3  = 0D0                                  ! sum u*v v^2
 
 alpha  = 4.*xlam2
 
@@ -1195,12 +1203,12 @@ suv2rs(2)=sum(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2)
 suv2rs(1) = MAX(suv2rs(1),smal)
 suv2rs(2) = MAX(suv2rs(2),smal)
 
-!---- set response densities to zero ------------------------------------
-rrho  (0:nz,0:nr,1:2)=zero
-rtau  (0:nz,0:nr,1:2)=zero
-rrhols(0:nz,0:nr,1:2)=zero
-rd2rho(0:nz,0:nr,1:2)=zero
-rcoupt(0:nz,0:nr)    =zero
+!---- set response densities to 0D0 ------------------------------------
+rrho  (0:nz,0:nr,1:2)=0D0
+rtau  (0:nz,0:nr,1:2)=0D0
+rrhols(0:nz,0:nr,1:2)=0D0
+rd2rho(0:nz,0:nr,1:2)=0D0
+rcoupt(0:nz,0:nr)    =0D0
 
 !---- compute the response densities -------------------------------------
 !     rrho   -->   < rho Delta N >
@@ -1239,8 +1247,8 @@ DO ir=0,nr
 END DO
 
 IF (.NOT.tsym) THEN
-  wrk1(0,0:nr) = zero
-  wrk2(0,0:nr) = zero
+  wrk1(0,0:nr) = 0D0
+  wrk2(0,0:nr) = 0D0
 END IF
 
 xpotp = f1int(wrk1)
@@ -1599,6 +1607,120 @@ REAL(8) :: tarr(ndim),pnum
   pnum = parnmt(e, tarr, ph, gw, pairgw_uv,pairgw_v2, efermi, ndim, ndim, 0)
 
 END SUBROUTINE thermal_occ
+
+!NEW ODD
+SUBROUTINE findconjpart(iq)
+
+!> @brief
+!!This subroutine determines the pairing conjugate partner states.
+
+USE dynpar, ONLY: toddterms
+USE wavefr, ONLY: psi
+USE levels
+USE grid, ONLY: nz,nr,f1int
+
+IMPLICIT NONE
+
+INTEGER, INTENT(IN)  :: iq
+
+
+REAL(8),ALLOCATABLE :: wrk1(:,:)
+INTEGER,ALLOCATABLE :: itpartnsav(:)
+INTEGER :: istart,i1,i2
+REAL(8) :: supnorm,a
+LOGICAL :: tpartn
+
+LOGICAL, PARAMETER :: toverlap=.true.  ! energy or overlap decision
+
+IF(toddterms) THEN
+  tpartn = SUM(itpartn)>0
+  IF(tpartn) THEN
+    ALLOCATE(itpartnsav(nst(1)+nst(2)))
+    itpartnsav=itpartn
+  END IF
+  ALLOCATE(wrk1(0:nz,0:nr))
+!     search the time-conjugate partners
+  IF(iq == 1)THEN
+    istart= 1
+  ELSE
+    istart=nst(1)+1
+  END IF
+  DO i1=istart,nst(iq)+istart-1
+    IF(toverlap) THEN
+      supnorm = 0D0
+    ELSE
+      supnorm = 1D30
+    END IF
+    DO i2=istart,nst(iq)+istart-1
+      IF((mpsi(i1)+mpsi(i2)) == -1)THEN
+        IF(toverlap) THEN
+          wrk1(0:nz,0:nr)=psi(0:nz,0:nr,1,i1)*psi(0:nz,0:nr,2,i2)-  &
+                          psi(0:nz,0:nr,2,i1)*psi(0:nz,0:nr,1,i2)
+          a = ABS(f1int(wrk1))
+!         IF(i1==istblo(iq)) WRITE(7,'(a,2i4,3(1pg13.5))')
+!     &    'FCONJG:',i1,i2,spenrg(i1),spenrg(i2),a
+          IF(supnorm < a) THEN
+            supnorm = a
+            itpartn(i1) = i2
+            rtpartn(i1) = supnorm
+          END IF
+        ELSE
+          a = ABS(spenrg(i1)-spenrg(i2))
+          IF(supnorm > a) THEN
+            supnorm = a
+            itpartn(i1) = i2
+            rtpartn(i1) = supnorm
+          END IF
+        END IF
+      END IF
+    END DO
+  END DO
+  DO i1=istart,nst(iq)+istart-1
+    IF(i1 /= itpartn(itpartn(i1)).AND. (i1==istblo(1).OR.i1==istblo(2)))  &
+        WRITE(7,'(a,3i5,2f5.1,2f9.3)')  &
+        'FINDCONJ error: state=',i1,itpartn(i1),itpartn(itpartn(i1)),  &
+        mpsi(i1)+0.5,mpsi(itpartn(i1))+0.5, spenrg(i1),spenrg(itpartn(i1))
+    IF(tpartn .AND. itpartn(i1).NE.itpartnsav(i1)) WRITE(7,'(a,2i4)') &
+        'FINDCONJ change: new,old=',itpartn(i1),itpartnsav(i1)
+  END DO
+  DEALLOCATE(wrk1)
+  IF(tpartn) DEALLOCATE(itpartnsav)
+ELSE
+  itpartn = 0
+END IF
+
+RETURN
+END SUBROUTINE findconjpart
+
+SUBROUTINE combine_spenergies(spe_in,spe_out,nsttot)
+
+!> @brief
+!!This subroutine builds the average of s.p. energies between
+!!conjugate states.
+
+USE dynpar, ONLY: toddterms
+USE levels, ONLY: itpartn
+
+IMPLICIT NONE
+
+INTEGER, INTENT(IN)   :: nsttot
+REAL(8), INTENT(IN)   :: spe_in(nsttot)
+REAL(8), INTENT(OUT)  :: spe_out(nsttot)
+
+INTEGER :: ist
+
+IF(.NOT.toddterms) THEN
+  spe_out=spe_in
+  RETURN
+END IF
+
+DO ist=1,nsttot
+  spe_out(ist) = 0.5D0*(spe_in(ist)+spe_in(itpartn(ist)))
+END DO
+
+END SUBROUTINE combine_spenergies
+
+!END NEW ODD
 
 
 END MODULE
