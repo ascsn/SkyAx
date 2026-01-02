@@ -277,6 +277,10 @@ SUBROUTINE fyfunc_odd(rotjrp,rotjrn,rotjzp,rotjzn,  &
 !USE dynpar, ONLY:chgx,excfac
 IMPLICIT NONE
 
+REAL(8), INTENT(IN) :: rotjrp,rotjrn,rotjzp,rotjzn
+REAL(8), INTENT(IN) :: spdenrp,spdenrn,spdenzp,spdenzn
+REAL(8), INTENT(IN OUT) :: energd
+
 !     Energy contribution from minimal Galilean invariant  odd-odd terms.
 !     ! presently only for l*s
 !
@@ -286,7 +290,8 @@ IMPLICIT NONE
 !        spdenzp/n  =   r-component of spin density, protons and neutrons
 !
 
-REAL(8) :: rotjrs,rotjzs, rotjrd,rotjzd, spdenrs,spdenzs, spdenrd,spdenzd
+REAL(8) :: rotjrs,rotjzs,rotjrd,rotjzd 
+REAL(8) :: spdenrs,spdenzs,spdenrd,spdenzd
 
 rotjrs = rotjrp+rotjrn
 rotjzs = rotjzp+rotjzn

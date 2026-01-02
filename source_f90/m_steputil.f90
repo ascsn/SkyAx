@@ -51,7 +51,8 @@ INTEGER,PARAMETER :: ifclean=1
 REAL(8),ALLOCATABLE :: psi1(:,:,:),psi2(:,:,:),psi3(:,:,:)
 
 REAL(8) :: ebin,eferm2,esub,r,rinv,sigis,spefac,spenrg2,xmm
-INTEGER :: iq,ir,is,isi,mm,nparr
+REAL(8) :: sp,sn,ss,rn
+INTEGER :: iq,iz,ir,is,isi,mm,nparr
 
 ALLOCATE(psi1(0:nz,0:nr,nsd),psi2(0:nz,0:nr,nsd),psi3(0:nz,0:nr,nsd))
 psi1=0D0;psi2=0D0;psi3=0D0
@@ -130,11 +131,11 @@ END DO
 
 !NEW ODD
 IF(toddterms) THEN   ! time-odd part of Hamiltonian only if required
-  CALL hpsiodd(psiin,psic,ist)
+  CALL hpsiodd(psiin,psi1,ist)
   DO is=1,nsd
     DO ir=0,nr
       DO iz=0,nz
-        psiout(iz,ir,is) = psiout(iz,ir,is)+psic(iz,ir,is)
+        psiout(iz,ir,is) = psiout(iz,ir,is)+psi1(iz,ir,is)
       END DO
     END DO
   END DO
@@ -161,15 +162,15 @@ USE dynpar
 USE fields
 USE wavefr
 USE levels
-USE grid, ONLY: nr,nz,sr,laplace_spin,nablar_spin,nablaz_spin
+USE grid, ONLY: nr,nz,sr,laplace_spin,nablar_spin,nablaz_spin,nablar_scalar,nablaz_scalar
 IMPLICIT NONE
 
 !INCLUDE 'observ.inc'
 
 
-REAL(8), INTENT(IN OUT)  :: psiin(0:nzd,0:nrd,nsd)
-REAL(8), INTENT(OUT)     :: psiout(0:nzd,0:nrd,nsd)
-INTEGER, INTENT(IN OUT)  :: ist
+REAL(8), INTENT(IN)  :: psiin(0:nzd,0:nrd,nsd)
+REAL(8), INTENT(OUT) :: psiout(0:nzd,0:nrd,nsd)
+INTEGER, INTENT(IN)  :: ist
 
 REAL(8) :: drpotcz(0:nzd,0:nrd)
 REAL(8) :: drpotcr(0:nzd,0:nrd)
@@ -177,6 +178,13 @@ REAL(8) :: dzpotcz(0:nzd,0:nrd)
 REAL(8) :: dzpotcr(0:nzd,0:nrd)
 
 INTEGER,PARAMETER :: ifclean=1
+
+REAL(8) :: rinv,r,fac,ebin,sigis
+INTEGER :: mm,isi,is,iq,iz,ir,mmm
+REAL(8),ALLOCATABLE :: psi1(:,:,:),psi2(:,:,:),psi3(:,:,:)
+
+
+ALLOCATE(psi1(0:nz,0:nr,nsd),psi2(0:nz,0:nr,nsd),psi3(0:nz,0:nr,nsd))
 
 iq      = icharg(ist)
 ebin    = spenrg(ist)
@@ -285,6 +293,9 @@ DO is=1,2
   END DO
 END DO
 
+DEALLOCATE(psi1,psi2,psi3)
+
+
 RETURN
 END SUBROUTINE hpsiodd
 !END NEW ODD
@@ -337,7 +348,7 @@ LOGICAL,SAVE :: tfirstcall=.true.,tfirstround=.true.
 REAL(8) :: accn,accp,addpt,adparp,alpeff,d1pr,&
            d1pz,d1sr,d1sz,d2p,d2s,facne,facpr,parfac,potn,potold,&
            potp,r,r2,redpot,rlsrp,rlszp,rm,rnr,rp,rpr,rs,rsfac,rsfac2,&
-           rsinv,rspow,rspow7,ssp,sss,tp,ts,z
+           rsinv,rspow,rspow7,ssp,sss,tp,ts,z,sp,sn,ss,rn
 INTEGER :: ic,iq,ir,iz
 INTEGER, SAVE :: iterold
 
@@ -427,11 +438,11 @@ END IF
 !           contribution to energy
         CALL fyfunc_odd(rotjr(iz,ir,1),rotjr(iz,ir,2),  &
             rotjz(iz,ir,1),rotjz(iz,ir,2), spdenr(iz,ir,1),spdenr(iz,ir,2),  &
-            spdenz(iz,ir,1),spdenz(iz,ir,2), workenerg(iz,ir))
+            spdenz(iz,ir,1),spdenz(iz,ir,2), wrk1(iz,ir))
       END DO
     END DO
 !          energspin = energyFy
-    energyfy = f1int(workenerg)
+    energyfy = f1int(wrk1)
 !          energspin = energyFy-energspin
 !          IF(iter==itmax)
 !     &      WRITE(7,'(a,2(1pg13.5))') 'spin energy=',energspin,energyFy
@@ -617,9 +628,34 @@ CONTAINS
 
 SUBROUTINE Skyrme_potentials()
 
+INTEGER :: iq,iz,ir,parfac
+REAL(8) :: rsigp,rsigs,zsigp,zsigs,sig2 ,sigq2,sigc2
+REAL(8) :: cp,cs,rp,rs,sp,ss,d2zsigs,d2zsigp,taup,taus
+REAL(8) :: d1sr,d1pr,d1pz,d1sz,rlsrp,rlszp,rpr,rnr,rspow7
+REAL(8) :: b5,b5p,d2rsigp,d2rsigs
+
 REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
 
 ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+
+
+!! Switch additional potentials on after some iterations                                               
+!!! --> need to refresh b6 etc <-- do we want that??                              
+!    if(iter.ge.25) then
+!      fac = 0.5D0
+!    elseif(iter.ge.50) then
+!      fac = 1D00
+!    else
+!      fac = 0D0
+!    endif
+!    b6  = fac*b6
+!    b6p = fac*b6p
+!    b7  = fac*b7
+!    b7p = fac*b7p
+!    b8  = fac*b8
+!    b8p = fac*b8p
+
+
 
 !***************************************************************   
 !     first and secondderivatives on 'psip' and 'psin'
@@ -627,7 +663,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
   CALL laplace_scalar(rho(0:nz,0:nr,1),d2rho(0:nz,0:nr,1),+1,0,1,one)
   CALL laplace_scalar(rho(0:nz,0:nr,2),d2rho(0:nz,0:nr,2),+1,0,1,one)
 
-  IF(t4 /= zero) THEN
+  IF(t4 /= 0D0) THEN
     CALL nablaz_scalar(rho(0:nz,0:nr,1),psin(0:nz,0:nr,1), 1,1,one)
     CALL nablaz_scalar(rho(0:nz,0:nr,2),psin(0:nz,0:nr,2), 1,1,one)
     CALL nablar_scalar(rho(0:nz,0:nr,1),psip(0:nz,0:nr,1), 0,1,one)
@@ -698,7 +734,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
           pot(iz,ir,1) = redpot*potp + pot(iz,ir,1)
           pot(iz,ir,2) = redpot*potn + pot(iz,ir,2)
         END IF                                                  !new
-        IF(iq == 1 .AND. chgx /= zero)  &
+        IF(iq == 1 .AND. chgx /= 0D0)  &
             pot(iz,ir,1) = redpot*excfac*MAX(rp,smal)**edr + pot(iz,ir,1)
         IF(tpair .AND. iq == 2) THEN
           adparp = redpot*(pairfc(1)*(paircr(iz,ir,1)*paircr(iz,ir,1))  &
@@ -721,7 +757,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 !***************************************************************   
 !     compose spin-orbit potential
 !***************************************************************         
-        IF(t4 /= zero) THEN
+        IF(t4 /= 0D0) THEN
           d1pr    = psip(iz,ir,iq)
           d1sr    = psip(iz,ir,ic)+d1pr
           d1pz    = psin(iz,ir,iq)
@@ -755,8 +791,8 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
           d2rsigp    = d2spdenr(iz,ir,iq)
           d2rsigs    = d2spdenr(iz,ir,ic)+d2rsigp
         
-          pots(iz,ir,iq,2) = redpot*((-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
-              +2.0*(b6+b7*rspow+dglan-dglanp)*rsigs    !  add extra g_0 "dglan" as "dglan*rsigs"
+          pots(iz,ir,iq,2) = redpot*(  (-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
+              +2.0*(b6+b7*rspow+dglan-dglanp)*rsigs &   !  add extra g_0 "dglan" as "dglan*rsigs"
           -2.0*(b6p+b7p*rspow-2D0*dglanp)*rsigp -b8*d2rsigs + b8p*d2rsigp)  &
               +potold*pots(iz,ir,iq,2)
         
@@ -769,7 +805,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
           d2zsigs    = d2spdenz(iz,ir,ic)+d2zsigp
           
           pots(iz,ir,iq,1) = redpot*((-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
-              +2.0*(b6*zsigs+b7*rspow*zsigs)+dglan*zsigs
+              +2.0*(b6*zsigs+b7*rspow*zsigs)+dglan*zsigs  &
           -2.0*(b6p+b7p*rspow)*zsigp -b8*d2zsigs + b8p*d2zsigp)  &
               +potold*pots(iz,ir,iq,1)
         
@@ -947,7 +983,7 @@ DO  iq=1,2
     DO iz=0,nz
       rhoact = MAX(delr(iz,ir),smal)
       IF(rho(iz,ir,iq) > rhotrd) rhoact = rhocri+rhocri
-      delr(iz,ir) = MAX(zero,-LOG(rhoact/rhocri))
+      delr(iz,ir) = MAX(0D0,-LOG(rhoact/rhocri))
     END DO
   END DO
   
@@ -955,7 +991,7 @@ DO  iq=1,2
   
   iz1 = nz
   DO iz=nz-1,0,-1
-    IF(delr(iz,0) <= zero) EXIT
+    IF(delr(iz,0) <= 0D0) EXIT
     iz1 = iz
   END DO
 
@@ -1006,7 +1042,7 @@ INTEGER :: mm, is
 
 !     the straightforward imaginary-time step in case of "e0inv=0"
 
-IF(e0inv == zero) THEN
+IF(e0inv == 0D0) THEN
   psiout(0:nz,0:nr,1:2) = x0inv*psiin(0:nz,0:nr,1:2)
 ELSE
   
@@ -1015,14 +1051,14 @@ ELSE
   CALL damp_nucleon(rdnuc(0:nr,0:nr,:),zdnuc(0:nz,0:nz,:),psiin(0:nz,0:nr,:),&
                     psiout(0:nz,0:nr,:),nparz(1,ist),mpsi(ist),step)
 
-!       set boundary zeroes if parity requires it.
+!       set boundary 0D0es if parity requires it.
   DO is=1,2
     mm = mpsi(ist)+is-1
     IF (mm > 0) THEN
-      psiout(0:nz,0,is)  =  zero
+      psiout(0:nz,0,is)  =  0D0
     END IF
     IF (nparz(is,ist) == 2) THEN
-      psiout(0,0:nr,is)  =  zero
+      psiout(0,0:nr,is)  =  0D0
     END IF
   END DO
   
@@ -1154,7 +1190,7 @@ DO  in=1,nhi
   
   psiw(0:nz,0:nr,1:2,inw) = psiw(0:nz,0:nr,1:2,inw)*wnor
   
-  sum2 = zero
+  sum2 = 0D0
   DO is=1,nsd
     cmpn(is,ist) = wfovpc(psiw(0:nz,0:nr,is,inw))
     sum2         = cmpn(is,ist) + sum2
@@ -1272,7 +1308,7 @@ CALL update_energy_order(nst,eord,iorder)
 DO  j=1,nst
   iosav      = iorder(j)
   ve2=MIN(one,(npiq-rpcur)/wate(iosav))
-  ve2=MAX(ve2,zero)
+  ve2=MAX(ve2,0D0)
   rpcur=rpcur+wate(iosav)*ve2
   vsqf(iosav)=ve2
 END DO
@@ -1427,6 +1463,37 @@ END IF
 DEALLOCATE(psi1)
 RETURN
 END SUBROUTINE shiftcm
+
+!NEW ODD
+SUBROUTINE cpairpot(psiw1,psiw2,rhoacc,addwgt,ist)
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: cpairpot
+!> @brief
+!!Accumulates pairing density in case of broken Cramer' degeneracy
+
+USE levels, ONLY: wate
+USE grid, ONLY: nz,nr
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)      :: psiw1(0:nz,0:nr,2)
+REAL(8), INTENT(IN)      :: psiw2(0:nz,0:nr,2)
+REAL(8), INTENT(OUT)     :: rhoacc(0:nz,0:nr)
+REAL(8), INTENT(IN)      :: addwgt
+INTEGER, INTENT(IN)      :: ist
+
+REAL(8), PARAMETER :: lowadd=1D-9
+
+IF(addwgt<lowadd) RETURN
+
+rhoacc(0:nz,0:nr) = wate(ist)*addwgt * &
+      (psiw1(0:nz,0:nr,1)*psiw2(0:nz,0:nr,2)  &
+     -psiw1(0:nz,0:nr,2)*psiw2(0:nz,0:nr,1)) + rhoacc(0:nz,0:nr)
+
+RETURN
+END SUBROUTINE cpairpot
+!END NEW ODD
 
 
 END MODULE steputil

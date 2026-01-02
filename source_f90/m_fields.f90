@@ -9,7 +9,7 @@ MODULE fields
 
 USE paramr, ONLY : kqm
 USE grid,   ONLY : nz,nr
-USE dynpar, ONLY : tregpair
+USE dynpar, ONLY : tregpair,toddterms
 
 IMPLICIT NONE
 
@@ -26,7 +26,7 @@ REAL(8),ALLOCATABLE :: potdamp(:,:)    !<Damping potential for potential wall.
 !NEW ODD
 REAL(8),ALLOCATABLE :: potS(:,:,:,:)   !<(time-odd) spin potential
 REAL(8),ALLOCATABLE :: potC(:,:,:,:)   !<(time odd) spin-orbit potential.
-REAL(8),ALLOCATABLE :: potA(:,:,:,:)   !<(time odd) A potential
+REAL(8),ALLOCATABLE :: potA(:,:,:)   !<(time odd) A potential
 !END NEW ODD
 
 REAL(8),ALLOCATABLE :: rho(:,:,:)      !<Density.
@@ -76,14 +76,14 @@ IF(tregpair) ALLOCATE(regpairadd(0:nz,0:nr,kqm))
          d2rho =0.0d0; rhoti  =0.0d0 ;paircr=0.0d0 
 
 !NEW ODD
-IF(isTsym>0) THEN
+IF(toddterms) THEN
   ALLOCATE(&
-    rotjr(0:nzd,0:nrd,kqm),  rotjz(0:nzd,0:nrd,kqm),  rotspden(0:nzd,0:nrd,kqm),&
-    spdenr(0:nzd,0:nrd,kqm),  spdenz(0:nzd,0:nrd,kqm),  d2spdenr(0:nzd,0:nrd,kqm), &
-    d2spdenz(0:nzd,0:nrd,kqm), curphi(0:nzd,0:nrd,kqm),  spdenkr(0:nzd,0:nrd,kqm), spdenkz(0:nzd,0:nrd,kqm)&
+    rotjr(0:nz,0:nr,kqm),  rotjz(0:nz,0:nr,kqm),  rotspden(0:nz,0:nr,kqm),&
+    spdenr(0:nz,0:nr,kqm),  spdenz(0:nz,0:nr,kqm),  d2spdenr(0:nz,0:nr,kqm), &
+    d2spdenz(0:nz,0:nr,kqm), curphi(0:nz,0:nr,kqm),  spdenkr(0:nz,0:nr,kqm), spdenkz(0:nz,0:nr,kqm)&
   )
   ALLOCATE(&
-    potS(0:nzd,0:nrd,kqm,2),  potC(0:nzd,0:nrd,kqm,2),  potA(0:nzd,0:nrd,kqm)&
+    potS(0:nz,0:nr,kqm,2),  potC(0:nz,0:nr,kqm,2),  potA(0:nz,0:nr,kqm)&
   )
   potS=0D0;  potC=0D0;  potA=0D0
   rotjr=0D0;  rotjz=0D0;  rotspden=0D0;  spdenr=0D0;  spdenz=0D0
