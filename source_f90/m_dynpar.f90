@@ -132,10 +132,10 @@ LOGICAL :: tcoulfold=.FALSE.                !< switch to proton folding in Coulo
 !NEW ODD
 INTEGER :: isTsym=0                         !< level of handling spin terms
 !!For <t> isTsym=0 </tt> use Cramer's degeneracy
-!!For <t> isTsym=1 </tt> angualar momentum up-down separately, but no tiem-odd terms
+!!For <t> isTsym=1 </tt> angualar momentum up-down separately, but no time-odd terms
 !!For <t> isTsym=2 </tt> minimal Galilean invariant terms
 !!For <t> isTsym=3 </tt> volume spin terms in Skyrme functional
-!!For <t> isTsym=4 </tt> volume+surfacy spin terms in Skyrme functional
+!!For <t> isTsym=4 </tt> volume+surface spin terms in Skyrme functional
 LOGICAL :: toddterms                        !< switch to activate time-odd terms
 !END NEW ODD
 

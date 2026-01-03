@@ -39,6 +39,53 @@ III. Implement blocking for the odd nucleon:
      and 27-30.
 
 
+
+The extension introduces at the moment two new input parameters:
+                                           ---------------------
+
+isTsym =      level of treating time-odd terms
+               0 --> use Cramer's degeneracy (standard for 
+                     even-even nuclei)
+               1 --> angular momentum K>0,K<0 separately, 
+                     but no time-odd terms
+               2 --> minimal Galilean invariant terms
+               3 --> volume spin terms in Skyrme functional
+               4 --> volume+surface spin terms in Skyrme 
+                     functional (producing sometimes instabilities)
+              For Fayans functionals use isTsym=2, 
+              for Skyrme functionals isTsym=3 or 4.
+
+istblo(1:2) = explicit choice of number of blocked state.
+              This is a preliminary strategy for the testing phase,
+              technically simply, inconvenient to use.
+              It requires a two-pass computation. One does a first 
+              run with 'istblo=0', i.e. without blocking. Then one
+              looks through the s.p. states near the end of 
+              'out_detail.*' and picks the state of interest. The
+              number of the state in the sequence is entered via
+              'istblo', for a proton state in 'istblo(1)' and for
+              a neutron state in 'istblo(2)'. For odd-odd nuclei,
+              one has to specify both entries.
+              
+
+
+There remain a couple of things yet to be done:
+                                ---------------
+
+* Testing is the priority task. First, we should make sure that
+  the code still runs correctly for even-even nuclei. Then we
+  should proceed to spherical odd-even and even-odd nuclei. 
+  Benchmark results can be produced with the old Fortran77 code.
+
+* Implement more automatic choice of blocked states. e.g. scanning
+  all state near the Fermi energy with given K.
+
+* Check and complete 'doxygen' entries, if we want to continue
+  with documentation in 'doxygen'.
+
+
+
+
 Protocol of modifications:
 ==========================
 
