@@ -10,9 +10,13 @@ import io # Needed to handle string data like a file
 script_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(script_dir)
 folders = ['x0inv0.1', 'x0inv0.2', 'x0inv0.3']
-files = ['conver.ZR', 'conver.FR'] # Using uppercase as per your file names
+subfolders = ['nat', 'nonat']
+# File names with suffixes: nat uses "1", nonat uses "0"
+file_suffixes = {'nat': '1', 'nonat': '0'}
+files = ['conver.ZR', 'conver.FR'] # Base file names
 data_paths = {
-    folder_name: os.path.join(parent_dir, folder_name) for folder_name in folders
+    (folder_name, subfolder): os.path.join(parent_dir, folder_name, subfolder) 
+    for folder_name in folders for subfolder in subfolders
 }
 
 # Define the full list of column names for the data section
@@ -20,88 +24,110 @@ COL_NAMES = [
     'iter', 'energy', 'variance', 'difference', 'qtotal', 
     'devoc2', 'devmf2', 'rmsp', 'x0inv', 'epair_1', 'epair_2' # epair(1:2) split into two
 ]
-n = 5000  # Number of iterations to skip for plotting
-# --- 2. Load Data Function ---
+n = 2000  # Number of iterations to skip for plotting
+# --- 2. Load Data Function (UPDATED to read ALL columns) ---
 
 def load_full_convergence_data(filepath):
+    """
+    Loads data, fixes 'touching' numbers, and ensures numeric types for Matplotlib.
+    """
     HEADER_LINES_TO_SKIP = 6
-    COL_NAMES = [
-        'iter', 'energy', 'variance', 'difference', 'qtotal', 
-        'devoc2', 'devmf2', 'rmsp', 'x0inv', 'epair_1', 'epair_2'
-    ]
     
     try:
         with open(filepath, 'r') as f:
             all_lines = f.readlines()
         
+        # Filter out headers and 'itermcount'
         data_lines = all_lines[HEADER_LINES_TO_SKIP:]
         
-        cleaned_lines = []
+        processed_lines = []
         for line in data_lines:
-            if 'itermcount' in line:
+            if 'itermcount' in line.lower() or not line.strip():
                 continue
             
-            # IMPROVED REGEX:
-            # (?<![eE])  -> Lookbehind: Ensure the previous character is NOT 'e' or 'E'
-            # (-)        -> Match the minus sign
-            # Replace it with " -" (a space and the minus)
-            fixed_line = re.sub(r'(?<![eE])-', r' -', line)
-            
-            cleaned_lines.append(fixed_line)
+            # FIX: Insert space between a digit and a minus sign (e.g., "2-7" -> "2 -7")
+            # This handles the overflow between the last two columns.
+            fixed_line = re.sub(r'(\d)-', r'\1 -', line)
+            processed_lines.append(fixed_line)
         
-        if not cleaned_lines:
+        if not processed_lines:
             return None
 
-        data_string = "".join(cleaned_lines)
-        
-        # Read the cleaned string
+        # Read into DataFrame
         df = pd.read_csv(
-            io.StringIO(data_string),
-            sep=r'\s+',
+            io.StringIO("".join(processed_lines)),
+            sep='\\s+',
             header=None,
-            names=COL_NAMES,
-            engine='python' # More robust for complex whitespace
+            names=COL_NAMES
         )
+
+        # CRITICAL: Force all columns to numeric. 
+        # Any string leftovers become NaN, which Matplotlib ignores instead of crashing.
+        df = df.apply(pd.to_numeric, errors='coerce')
+        
         return df
+        
     except Exception as e:
-        print(f"Error processing {filepath}: {e}")
-        return None    
+        print(f"Error reading {filepath}: {e}")
+        return None
+    
 # --- 3. Load the Data ---
 
-data_zr = {}
-data_fr = {}
+# Separate dictionaries for nat and nonat data
+data_nat_zr = {}
+data_nat_fr = {}
+data_nonat_zr = {}
+data_nonat_fr = {}
 
-for folder_name, full_folder_path in data_paths.items():
+for (folder_name, subfolder), full_folder_path in data_paths.items():
+    suffix = file_suffixes[subfolder]
+    
     for file in files:
-        filepath = os.path.join(full_folder_path, file)
+        # Add the appropriate suffix to the filename
+        filename_with_suffix = file + suffix
+        filepath = os.path.join(full_folder_path, filename_with_suffix)
+        
+        print(f"Trying to load: {filepath}")  # Debug print
         
         # Check for existence and try .upper() only if not found (safer approach)
         if not os.path.exists(filepath):
-             filepath_upper = os.path.join(full_folder_path, file.upper())
+             filepath_upper = os.path.join(full_folder_path, filename_with_suffix.upper())
              if os.path.exists(filepath_upper):
                  filepath = filepath_upper
-             # else, let the load function fail if it truly doesn't exist
+                 print(f"Found uppercase version: {filepath_upper}")  # Debug print
+             else:
+                 print(f"File not found: {filepath}")  # Debug print
+                 continue
         
         df = load_full_convergence_data(filepath)
 
         if df is not None:
-            # Use the folder name for the label and store the data in the correct dict
-            if file == 'conver.ZR': 
-                data_zr[folder_name] = df
-            elif file == 'conver.FR':
-                data_fr[folder_name] = df
+            print(f"Successfully loaded data from {filepath}")  # Debug print
+            # Store data in the appropriate dictionary based on subfolder and file type
+            if subfolder == 'nat':
+                if file == 'conver.ZR': 
+                    data_nat_zr[folder_name] = df
+                elif file == 'conver.FR':
+                    data_nat_fr[folder_name] = df
+            elif subfolder == 'nonat':
+                if file == 'conver.ZR': 
+                    data_nonat_zr[folder_name] = df
+                elif file == 'conver.FR':
+                    data_nonat_fr[folder_name] = df
+        else:
+            print(f"Failed to load data from {filepath}")  # Debug print
 
 
 # --- 4. Plotting Function (Generalized for any column) ---
 
-def plot_convergence_variable(variable_name, zr_data, fr_data):
+def plot_convergence_variable(variable_name, zr_data, fr_data, suffix):
     """
     Creates the two-panel plot (ZR and FR) for a given variable.
     """
     
     # Check if data for the variable exists in the dataframes
     if not zr_data and not fr_data:
-        print(f"Skipping plot for {variable_name}: No data loaded.")
+        print(f"Skipping plot for {variable_name} ({suffix}): No data loaded.")
         return
 
     # Set up the plot figure
@@ -116,7 +142,7 @@ def plot_convergence_variable(variable_name, zr_data, fr_data):
         for label, df in zr_data.items():
             ax1.plot(df['iter'][n:], df[variable_name][n:], label=label, marker='o', markersize=3) # linestyle Added for distinction
     
-    ax1.set_title(f'Convergence of {variable_name.title()} (Zero Range)', fontsize=14)
+    ax1.set_title(f'Convergence of {variable_name.title()} (Zero Range) - {suffix.upper()}', fontsize=14)
     ax1.set_ylabel(y_label, fontsize=12)
     ax1.set_yscale('log') if variable_name in ['difference', 'variance'] else None
     ax1.grid(True, linestyle='--', alpha=0.6)
@@ -128,7 +154,7 @@ def plot_convergence_variable(variable_name, zr_data, fr_data):
         for label, df in fr_data.items():
             ax2.plot(df['iter'][n:], df[variable_name][n:], label=label, marker='o', markersize=3) # Added linestyle for distinction
 
-    ax2.set_title(f'Convergence of {variable_name.title()} (Finite Range)', fontsize=14)
+    ax2.set_title(f'Convergence of {variable_name.title()} (Finite Range) - {suffix.upper()}', fontsize=14)
     ax2.set_xlabel('Iteration', fontsize=12)
     ax2.set_ylabel(y_label, fontsize=12)
     ax2.set_yscale('log') if variable_name in ['difference', 'variance'] else None
@@ -137,8 +163,8 @@ def plot_convergence_variable(variable_name, zr_data, fr_data):
     ax2.legend(loc='best')
 
     # Save the plot with the requested naming convention
-    plot_filename = f'comparison_{variable_name}_{n}.png'
-    plt.savefig(plot_filename)
+    plot_filename = f'comparison_{variable_name}_{n}_{suffix}.pdf'
+    plt.savefig(plot_filename, format='pdf', bbox_inches='tight')
     plt.close(fig) # Close the figure to free up memory
     print(f"Plot saved as {plot_filename}")
 
@@ -149,6 +175,10 @@ VARIABLES_TO_PLOT = ['energy', 'variance', 'difference','rmsp', 'epair_1', 'epai
 # VARIABLES_TO_PLOT = ['qtotal', 'devoc2', 'devmf2']
 
 for var in VARIABLES_TO_PLOT:
-    plot_convergence_variable(var, data_zr, data_fr)
+    # Create plots for NAT data
+    plot_convergence_variable(var, data_nat_zr, data_nat_fr, 'nat')
+    
+    # Create plots for NONAT data  
+    plot_convergence_variable(var, data_nonat_zr, data_nonat_fr, 'nonat')
 
 print("All convergence plots have been successfully generated.")

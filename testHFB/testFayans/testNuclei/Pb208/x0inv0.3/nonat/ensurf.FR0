@@ -1,0 +1,9 @@
+#t Pb208                                                                      
+# Plot potential energy surface for:
+ #test Pb208                                                            
+# Nmass=  208, Ncharge=   82
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.200  c0,qeps: 0.800******
+# x0inv(fm),e0inv(mev):    0.30 100.00
+# bet2   bet2p  bet2n  bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn 
+  0.000  0.000  0.000 -0.000 -0.000 -0.000 -1629.02327162925   -0.1   -0.1  -5.97  -6.19   -0.138   -0.142 10234  0.00000  5.5146  5.4521  5.5549  81.998352 125.993478   6.245634
