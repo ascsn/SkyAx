@@ -689,7 +689,7 @@ REAL(8) :: efree
           beta3,beta3p,beta3n,beta4,beta4p,beta4n,  &
           energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
     ELSE
-      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f9.5,3f8.4,3f11.6)') &
+      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f16.12,3f8.4,3f11.6)') &
           beta2,beta2p,beta2n,beta4,beta4p,beta4n,  &
           energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
     END IF
