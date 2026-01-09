@@ -174,7 +174,7 @@ USE constr
 USE wavefr, ONLY: psi,psifold
 USE fields
 USE levels
-USE steputil, ONLY: cpairpot
+!USE steputil, ONLY: cpairpot
 
 
 IMPLICIT NONE
@@ -2760,6 +2760,40 @@ rhoacc(0:nz,0:nr) = fpair * (psiw(:,:,1)**2+psiw(:,:,2)**2) + rhoacc(0:nz,0:nr)
 
 RETURN
 END SUBROUTINE sdenti
+
+
+!NEW ODD
+SUBROUTINE cpairpot(psiw1,psiw2,rhoacc,addwgt,ist)
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: cpairpot
+!> @brief
+!!Accumulates pairing density in case of broken Cramer' degeneracy
+
+USE levels, ONLY: wate
+USE grid, ONLY: nz,nr
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)      :: psiw1(0:nz,0:nr,2)
+REAL(8), INTENT(IN)      :: psiw2(0:nz,0:nr,2)
+REAL(8), INTENT(OUT)     :: rhoacc(0:nz,0:nr)
+REAL(8), INTENT(IN)      :: addwgt
+INTEGER, INTENT(IN)      :: ist
+
+REAL(8), PARAMETER :: lowadd=1D-9
+
+IF(addwgt<lowadd) RETURN
+
+rhoacc(0:nz,0:nr) = wate(ist)*addwgt * &
+      (psiw1(0:nz,0:nr,1)*psiw2(0:nz,0:nr,2)  &
+     -psiw1(0:nz,0:nr,2)*psiw2(0:nz,0:nr,1)) + rhoacc(0:nz,0:nr)
+
+RETURN
+END SUBROUTINE cpairpot
+!END NEW ODD
+
+
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: zcmobs
 !> @brief
