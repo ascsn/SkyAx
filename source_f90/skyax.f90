@@ -371,7 +371,8 @@ FLUSH(6)
 
 !NEW ODD
         ! update book-keeping of conjugated states
-        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
+!        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
+        IF(MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterbcs) THEN
           CALL findconjpart(1)
           CALL findconjpart(2)
           CALL comp_block()

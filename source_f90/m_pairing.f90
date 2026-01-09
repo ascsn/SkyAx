@@ -45,12 +45,12 @@ SUBROUTINE hfbpot(iter)
 USE paramr
 USE dynpar
 USE fields
-USE observ, ONLY: sdenti,spradius
+USE observ, ONLY: sdenti,spradius,cpairpot
 USE wavefr
 USE levels
 USE grid
 USE fyfunc, ONLY: fy_hfbpot
-USE steputil, ONLY: cpairpot
+!USE steputil, ONLY: cpairpot
 
 IMPLICIT NONE
 
