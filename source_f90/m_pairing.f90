@@ -503,7 +503,7 @@ IF(eferm /= 0D0) THEN
     efadd  = pair_cutoff
     deltac = efadd*0.1D0
     DO i=1,nmax
-      arg    = e(i)-(eferm+efadd)/deltac
+      arg    = (e(i)-(eferm+efadd))/deltac
       IF(arg > fifty) THEN
         pairgw_uv(i)   = 0D0
       ELSE IF(arg < -fifty) THEN
