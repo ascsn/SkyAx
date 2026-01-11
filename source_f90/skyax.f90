@@ -384,7 +384,8 @@ FLUSH(6)
           WRITE(6,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm x0inv'
           WRITE(7,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv'
 !        END IF
-        IF(iter /= 0) THEN
+!        IF(iter /= 0) THEN
+        IF(iter >2) THEN
           WRITE(6,5050)  &
               iter,energy,beta2,beta3, LOG10(MAX(devh2,smal)),&
               LOG10(MAX(ABS(econ),smal)),LOG10(MAX(ABS(qcon),smal)), zcm,x0inv

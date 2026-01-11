@@ -1634,10 +1634,10 @@ LOGICAL, PARAMETER :: toverlap=.true.  ! energy or overlap decision
 
 IF(toddterms) THEN
   tpartn = SUM(itpartn)>0
-  IF(tpartn) THEN
+!  IF(tpartn) THEN
     ALLOCATE(itpartnsav(nst(1)+nst(2)))
     itpartnsav=itpartn
-  END IF
+!  END IF
   ALLOCATE(wrk1(0:nz,0:nr))
 !     search the time-conjugate partners
   IF(iq == 1)THEN
@@ -1680,11 +1680,11 @@ IF(toddterms) THEN
         WRITE(7,'(a,3i5,2f5.1,2f9.3)')  &
         'FINDCONJ error: state=',i1,itpartn(i1),itpartn(itpartn(i1)),  &
         mpsi(i1)+0.5,mpsi(itpartn(i1))+0.5, spenrg(i1),spenrg(itpartn(i1))
-    IF(tpartn .AND. itpartn(i1).NE.itpartnsav(i1)) WRITE(7,'(a,2i4)') &
+      IF(tpartn .AND. itpartn(i1).NE.itpartnsav(i1)) WRITE(7,'(a,2i4)') &
         'FINDCONJ change: new,old=',itpartn(i1),itpartnsav(i1)
   END DO
   DEALLOCATE(wrk1)
-  IF(tpartn) DEALLOCATE(itpartnsav)
+  DEALLOCATE(itpartnsav)
 ELSE
   itpartn = 0
 END IF

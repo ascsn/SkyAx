@@ -168,8 +168,8 @@ IMPLICIT NONE
 !INCLUDE 'observ.inc'
 
 
-REAL(8), INTENT(IN)  :: psiin(0:nzd,0:nrd,nsd)
-REAL(8), INTENT(OUT) :: psiout(0:nzd,0:nrd,nsd)
+REAL(8), INTENT(IN)  :: psiin(0:nz,0:nr,nsd)
+REAL(8), INTENT(OUT) :: psiout(0:nz,0:nr,nsd)
 INTEGER, INTENT(IN)  :: ist
 
 REAL(8) :: drpotcz(0:nzd,0:nrd)
@@ -232,7 +232,7 @@ DO is=1,2
   END IF
   DO ir=0,nr
     r   = (sr+ir)*dr
-    rinv = one/r
+    IF(ir>0) rinv = one/r
     DO iz=0,nz
       isi = 3-is
       

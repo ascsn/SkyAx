@@ -52,7 +52,7 @@ REAL(8) :: beta1n   !<Neutron dipole deformation parameter.
 REAL(8) :: beta2    !<Quadrupole deformation parameter.
 REAL(8) :: beta2p   !<Proton quadrupole deformation parameter.
 REAL(8) :: beta2n   !<Neutron quadrupole deformation parameter.
-REAL(8) :: beta3    !<Octupole deformation parameter.
+REAL(8) :: beta3=0D0    !<Octupole deformation parameter.
 REAL(8) :: beta3p   !<Proton octupole deformation parameter.
 REAL(8) :: beta3n   !<Neutron octupole deformation parameter.
 REAL(8) :: beta4    !<Hexadecupole deformation parameter.
@@ -555,7 +555,8 @@ WRITE(7,'(a,2f8.3,5(1pg12.4))') '  proton:',apnum,rmsp,dp,qsp,op,hp,qp
 WRITE(7,'(a,2f8.3,5(1pg12.4))') ' neutron:',annum,rmsn,dn,qsn,on,hn,qn
 WRITE(7,'(a,2f8.3,5(1pg12.4))') '   total:',atnum,rms,d,qs,o,h,q
 WRITE(7,'(a,8x,(1pg12.4))') '   diff:',rmsn-rmsp
-WRITE(7,'(/a,2i4,3(1pg20.12))') ' dipoles:  Z,N,cm,isovector,polariz=',  &
+IF(ABS(dipin)>0D0) &
+  WRITE(7,'(/a,2i4,3(1pg20.12))') ' dipoles:  Z,N,cm,isovector,polariz=',  &
     npart(1),npart(2),zcm,dipout,-e2*dipout/dipin
 WRITE(7,'(/a)') '            beta_1      beta_2      beta_3      beta_4  '
 WRITE(7,'(a,4(1pg12.4))') '  proton:',beta1p,beta2p,beta3p,beta4p
@@ -2632,6 +2633,7 @@ END DO
 
 
 ! only z-comp changes
+ir=0
 IF((mm == 0).OR.(mm == (-2))) THEN
   DO iz=0,nz
     slazsig(iz,ir)=slazsig(iz,ir) - 4*fpair*psip(iz,ir,2)*psip(iz,ir,2)

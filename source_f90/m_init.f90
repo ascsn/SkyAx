@@ -580,7 +580,7 @@ END IF
 !**********************************************************************
 
 !NEW ODD
-if(toddterms)then
+if(istsym>0)then
   isTtmp = 0
 else
   isTtmp = 1
@@ -1102,8 +1102,9 @@ INTEGER :: iq,iunit !,mbact,nfin,ninit
 
 DO iq=1,2
   
-  IF(MOD(npart(iq),2).EQ.0) THEN
-    IF(istblo(iq).NE.0) STOP 'ISTBLO>0 for even particle number'
+  IF(MOD(npart(iq),2).EQ.0 .AND. istblo(iq).NE.0) &
+      STOP 'ISTBLO>0 not possible for even particle number'
+  IF(istblo(iq).NE.0) THEN
     istcblo(iq) = itpartn(istblo(iq))
     mblock(iq) = mpsi(istblo(iq))
     kblock(iq) = 2*mblock(iq)+1
