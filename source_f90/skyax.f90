@@ -482,7 +482,7 @@ FLUSH(6)
         adyrho = 1.0
         adypot = 1.0
         CALL sstep(iteract)                       ! "afterburn"
-        CALL sinfo(iteract)
+        CALL sinfo(itmax)   !(iteract)
         iprint = ipold
         ipri_fields  = iplold
         itest  = itesto
