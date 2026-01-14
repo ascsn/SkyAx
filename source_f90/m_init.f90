@@ -666,7 +666,7 @@ DO  iq=1,2
                     ' kmpsi (dim of debe for ang mom) too small:',kmpsi
                 STOP
               END IF
-              npar(lst)   = isigis*(MOD(nnz,2)*2-1)
+              npar(lst)   = isigis*(MOD(nnz,2)*2-1)*SIGN(1,k1)    !NEW ODD
               IF(tsym)THEN
                 nparz(1,lst)= (3-npar(lst))/2
                 nparz(2,lst)= 3-nparz(1,lst)
@@ -730,12 +730,23 @@ DO  iq=1,2
 !              muplo  =  mpsi(jst)+ispgen-1
 !              npuplo =  npar(jst)*isigis
 !NEW ODD
+! apply time reflection for 'k1<0'
+              IF(k1<0) THEN
+                DO iz=0,nz; DO ir=0,nr 
+                  copy = psi(iz,ir,1,lst) 
+                  psi(iz,ir,1,lst)=-psi(iz,ir,2,lst)
+                  psi(iz,ir,2,lst)=copy
+                END DO; END DO
+              END IF
+!END NEW ODD
+!NEW ODD
               IF(mpsi(jst).GE.zero) THEN
                 muplo  =  mpsi(jst)+ispgen-1
                 npuplo =  npar(jst)*isigis
               ELSE
                 muplo = abs(mpsi(jst)+1)+ispgen -1
                 npuplo =  (-1)*npar(jst)*isigis
+!                npuplo =  npar(jst)*isigis
               END IF
 !END NEW ODD
               IF (npuplo > 0 .OR. MOD(muplo,2) == 0) THEN
@@ -749,16 +760,6 @@ DO  iq=1,2
                 END IF
               END IF
 
-!NEW ODD
-! apply time reflection for 'k1<0'
-              IF(k1<0) THEN
-                DO iz=0,nz; DO ir=0,nr 
-                  copy = psi(iz,ir,1,lst) 
-                  psi(iz,ir,1,lst)=(-1)*psi(iz,ir,2,lst)
-                  psi(iz,ir,2,lst)=copy
-                END DO; END DO
-              END IF
-!END NEW ODD
             
               spn(lst)=zero
               DO  is=1,2
@@ -872,16 +873,30 @@ END DO
 ifocsv = 0                                   ! reset flag
 WRITE(6,'(a)') ' reset IFOCSV=0'
 
+!NEW ODD
+! initialize book-keeping of conjugate states
+IF(istsym>0) THEN
+  CALL findconjpart(1)
+  CALL findconjpart(2)
+  CALL comp_block()
+  CALL test_print(psi(0:nz,0:nr,1,36),0,5,0,5,'psi1 36')
+  CALL test_print(psi(0:nz,0:nr,2,36),0,5,0,5,'psi2 36')
+  CALL test_print(psi(0:nz,0:nr,1,57),0,5,0,5,'psi1 57')
+  CALL test_print(psi(0:nz,0:nr,2,57),0,5,0,5,'psi2 57')
+
+END IF
+!END NEW ODD
+
 !     print levels
 
 WRITE(7,'(/a,2f8.3//18x,a,12x,a/a,a)')  &
     ' The initial levels, chosen up to EOCC(1/2)=',eocc,  &
     'parities','components', '   Nr Iso  j_z total  r    z   v^2  1.   2.',  &
-    ' osc.quant'
+    ' osc.quant    conj.state'
 DO ist=1,LEN
-  WRITE(7,'(i5,i4,f6.1,3i5,f6.3,2f5.1,f7.3)')  &
+  WRITE(7,'(i5,i4,f6.1,3i5,f6.3,2f5.1,f7.3,i5)')  &
       ist,icharg(ist),mpsi(ist)+0.5,npar(ist),nrpar(ist), nparz(1,ist),  &
-      vsqf(ist),cmpn(1,ist),cmpn(2,ist),(spenrg(ist)+70.0)/hboma
+      vsqf(ist),cmpn(1,ist),cmpn(2,ist),(spenrg(ist)+70.0)/hboma,itpartn(ist)
 END DO
 WRITE(7,'(a)') ' '
 WRITE(6,'(a)') 's.p. states initialized'
@@ -921,14 +936,6 @@ END DO
 IF(itest>0) WRITE(7,'(a)') ' SSETUP finished'
 DEALLOCATE(wrk1,wrk2)
 
-!NEW ODD
-! initialize book-keeping of conjugate states
-IF(toddterms) THEN
-  CALL findconjpart(1)
-  CALL findconjpart(2)
-  CALL comp_block()
-END IF
-!END NEW ODD
 
 FLUSH (7)
 
