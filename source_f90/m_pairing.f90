@@ -1614,7 +1614,7 @@ SUBROUTINE findconjpart(iq)
 !> @brief
 !!This subroutine determines the pairing conjugate partner states.
 
-USE dynpar, ONLY: toddterms
+USE dynpar, ONLY: toddterms,istsym
 USE wavefr, ONLY: psi
 USE levels
 USE grid, ONLY: nz,nr,f1int
@@ -1632,7 +1632,7 @@ LOGICAL :: tpartn
 
 LOGICAL, PARAMETER :: toverlap=.true.  ! energy or overlap decision
 
-IF(toddterms) THEN
+IF(istsym>0) THEN
   tpartn = SUM(itpartn)>0
 !  IF(tpartn) THEN
     ALLOCATE(itpartnsav(nst(1)+nst(2)))
@@ -1676,7 +1676,8 @@ IF(toddterms) THEN
     END DO
   END DO
   DO i1=istart,nst(iq)+istart-1
-    IF(i1 /= itpartn(itpartn(i1)).AND. (i1==istblo(1).OR.i1==istblo(2)))  &
+!    IF(i1 /= itpartn(itpartn(i1)).AND. (i1==istblo(1).OR.i1==istblo(2)))  &
+    IF(i1 /= itpartn(itpartn(i1)))  &
         WRITE(7,'(a,3i5,2f5.1,2f9.3)')  &
         'FINDCONJ error: state=',i1,itpartn(i1),itpartn(itpartn(i1)),  &
         mpsi(i1)+0.5,mpsi(itpartn(i1))+0.5, spenrg(i1),spenrg(itpartn(i1))
@@ -1688,6 +1689,7 @@ IF(toddterms) THEN
 ELSE
   itpartn = 0
 END IF
+
 
 RETURN
 END SUBROUTINE findconjpart

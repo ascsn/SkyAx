@@ -228,12 +228,19 @@ qq0=0D0;qq1=0D0;qq2=0D0;qq3=0D0;qq4=0D0;
 qh0=0D0;qh1=0D0;qh2=0D0;qh3=0D0;qh4=0D0;
 qh = 0D0; qdh = 0D0; qhdig = 0D0
 symcondiso = 0D0
+IF(istsym>0) THEN
+  CALL findconjpart(1)
+  CALL findconjpart(2)
+!  CALL comp_block()
+END IF
 
 IF(thfb .AND. 1==2) THEN
   nlo=nst(1)+1
   nhi=nst(1)+nst(2)
   WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
 END IF
+
+
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &
@@ -243,7 +250,6 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 DO  i=1,nom         ! loop over all blocks
 !$  mythread=OMP_GET_THREAD_NUM()
   im=load_m(mythread,i)
-!  IF(thfb.AND.im>0) WRITE(6,*) 'IM=',im,i,mythread
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
   nlo=mlo(im)        ! lowest state for given 'im''
@@ -1122,10 +1128,10 @@ WRITE(*,*) 'INIT_LOAD:',num_threads,nom
 DO i=1,nom
   CALL add_block(load_m,MOD(i-1,num_threads),i)
 END DO
-WRITE(6,*) 'LOAD_M:'
-DO i=1,nom
-  WRITE(6,'(200i3)') load_m(:,i)
-END DO
+!WRITE(6,*) 'LOAD_M:'
+!DO i=1,nom
+!  WRITE(6,'(200i3)') load_m(:,i)
+!END DO
 
 END SUBROUTINE init_load
 

@@ -114,6 +114,17 @@ DO  is=1,2
           -potls(0:nz,0,iq,2)*(-sigis*psi2(0:nz,0,is) +psi2(0:nz,0,is) )  &
           + psiout(0:nz,0,isi)
     END IF
+!NEW ODD
+    IF(mm == (-1)) THEN
+      psiout(0:nz,0,is) =  &
+        -sigis*potls(0:nz,0,iq,1)*psi2(0:nz,0,is) &
+        + psiout(0:nz,0,is)      ! 1 = r   2 = z                                  
+      psiout(0:nz,0,isi)=   &
+        -sigis*potls(0:nz,0,iq,1)*psi3(0:nz,0,is)  &
+        +potls(0:nz,0,iq,2)*(sigis*psi2(0:nz,0,is)+psi2(0:nz,0,is) )   &
+        + psiout(0:nz,0,isi)
+    END IF
+!ND NEW ODD
 !   now all other r
     DO ir=1,nr
       r   = (sr+ir)*dr
@@ -628,8 +639,8 @@ CONTAINS
 
 SUBROUTINE Skyrme_potentials()
 
-INTEGER :: iq,iz,ir,parfac
-REAL(8) :: rsigp,rsigs,zsigp,zsigs,sig2 ,sigq2,sigc2
+INTEGER :: iq,iz,ir
+REAL(8) :: rsigp,rsigs,zsigp,zsigs,sig2 ,sigq2,sigc2,parfac
 REAL(8) :: cp,cs,rp,rs,sp,ss,d2zsigs,d2zsigp,taup,taus
 REAL(8) :: d1sr,d1pr,d1pz,d1sz,rlsrp,rlszp,rpr,rnr,rspow7
 REAL(8) :: b5,b5p,d2rsigp,d2rsigs

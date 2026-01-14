@@ -601,13 +601,13 @@ DO  iq=1,2
       ine    = iokk(iq)+ist-1
       ind    = iorder(ine)+iokk(iq)-1
       IF(tcutoff_uvspace) THEN
-        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3)')  &
+        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
-          nparz(1,ind),wtpair_uv(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind)
+          nparz(1,ind),wtpair_uv(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind),itpartn(ind)
       ELSE
-        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3)')  &
+        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
-          nparz(1,ind),wtpair_v2(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind)
+          nparz(1,ind),wtpair_v2(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind),itpartn(ind)
       END IF
       IF(spenrg(ind)<0D0) boundnum(iq)=boundnum(iq)+vsqf(ind)*wate(ind)
     END DO
@@ -616,7 +616,7 @@ DO  iq=1,2
   ELSE
     WRITE(7,'(/10x,a,16x,a/a,a)') 'parities','components',  &
         '   Nr Iso j_z tot r z  wtpair  v^2      uv  delta',&
-        '   energy  energy-variances'
+        '   energy  energy-variances  s.p.radius conj.state'
     boundnum(iq) = 0D0
     DO ist=1,nstm
       ine    = iokk(iq)+ist-1
@@ -627,14 +627,14 @@ DO  iq=1,2
           nparz(1,ind),wtpair_uv(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
           deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind), &
-          spradius(psi(:,:,:,ind)) !spevhh(ind)
+          spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       ELSE
         WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_v2(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
           deltaf(ind),spenrg(ind),spevar(ind),  &
-          spradius(psi(:,:,:,ind)) !spevhh(ind)
+          spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       END IF
       IF(spenrg(ind)<0D0) boundnum(iq)=boundnum(iq)+vsqf(ind)*wate(ind)
     END DO
