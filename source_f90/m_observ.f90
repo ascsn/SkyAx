@@ -354,7 +354,8 @@ IF(tFayans) THEN
   ekin   = h2meff(1)*f1int(tau(:,:,1))+h2meff(2)*f1int(tau(:,:,2))
   etot1  = ekin+energyFy+ecoul/2D0
   energy = ekin+energyFy+ecoul/2D0-ezp+etpair
-  IF(itest>0) WRITE(7,'(a,i5,6(1pg13.5))') &
+!  IF(itest>0) WRITE(7,'(a,i5,6(1pg13.5))') &
+  WRITE(7,'(a,i5,6(1pg13.5))') &
       'energyFy=',iter,etot1,ekin,energyFy,epair,ezp,f1int(rho(:,:,1))
 ELSE
   CALL energ()           ! energy directly from density
@@ -2498,19 +2499,19 @@ USE levels
 USE grid
 IMPLICIT NONE
 
-REAL(8), INTENT(IN)     :: psiw(0:nzd,0:nrd,nsd)
+REAL(8), INTENT(IN)     :: psiw(0:nz,0:nr,nsd)
 REAL(8), INTENT(IN)     :: weight
 INTEGER, INTENT(IN)     :: ist
-REAL(8), INTENT(OUT)    :: rrotj(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: zrotj(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: rotsig(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: rsig(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: zsig(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: slarsig(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: slazsig(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: curr(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: spdenkinr(0:nzd,0:nrd)
-REAL(8), INTENT(OUT)    :: spdenkinz(0:nzd,0:nrd)
+REAL(8), INTENT(IN OUT)    :: rrotj(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: zrotj(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: rotsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: rsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: zsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: slarsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: slazsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: curr(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: spdenkinr(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: spdenkinz(0:nz,0:nr)
 
 REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
 REAL(8),ALLOCATABLE :: psipp(:,:,:),psinn(:,:,:)
@@ -2528,7 +2529,8 @@ ALLOCATE(psipp(0:nz,0:nr,nsd),psinn(0:nz,0:nr,nsd))
 !  in case of calculating one the half spectrum, set
 !  time-odd densitys to zero
 
-IF(istsym >= 1)THEN
+!WRITE(6,*) 'CUR in SUBR:',ist,SUM(curr**2)
+IF(toddterms)THEN
   fpair  = weight*wate(ist)
 ELSE
   fpair = 0D0
@@ -2597,6 +2599,8 @@ END DO
 !                Current j
 !  curr = phi-comp. Current
 !**********************************************************************
+!IF(ist==80 .OR. ist==23) THEN
+!WRITE(6,*) SUM(curr**2)
 !---- r=0
 ! nothing has to be done
 DO iz=0,nz
@@ -2609,11 +2613,13 @@ DO ir=1,nr
   fup  = mm*rinv
   flow = (mm+1D0)*rinv
   DO iz=0,nz
-    add = fpair*(fup*psiw(iz,ir,1)*  &
-        psiw(iz,ir,1) + flow*psiw(iz,ir,2)*psiw(iz,ir,2))
+    add = fpair*(fup*psiw(iz,ir,1)*psiw(iz,ir,1) &
+                 + flow*psiw(iz,ir,2)*psiw(iz,ir,2))
     curr(iz,ir)= curr(iz,ir)+add
   END DO
 END DO
+!WRITE(6,*) 'CURR:',ist,mm,itpartn(ist),mpsi(itpartn(ist)),mm+1,fpair,SUM(curr**2),SUM(psiw**2)
+!END IF
 
 !**********************************************************************
 

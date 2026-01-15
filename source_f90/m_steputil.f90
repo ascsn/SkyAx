@@ -141,7 +141,7 @@ DO  is=1,2
 END DO
 
 !NEW ODD
-IF(toddterms) THEN   ! time-odd part of Hamiltonian only if required
+IF(toddterms) THEN ! time-odd part of Hamiltonian only if required
   CALL hpsiodd(psiin,psi1,ist)
   DO is=1,nsd
     DO ir=0,nr
@@ -183,10 +183,10 @@ REAL(8), INTENT(IN)  :: psiin(0:nz,0:nr,nsd)
 REAL(8), INTENT(OUT) :: psiout(0:nz,0:nr,nsd)
 INTEGER, INTENT(IN)  :: ist
 
-REAL(8) :: drpotcz(0:nzd,0:nrd)
-REAL(8) :: drpotcr(0:nzd,0:nrd)
-REAL(8) :: dzpotcz(0:nzd,0:nrd)
-REAL(8) :: dzpotcr(0:nzd,0:nrd)
+REAL(8) :: drpotcz(0:nz,0:nr)
+REAL(8) :: drpotcr(0:nz,0:nr)
+REAL(8) :: dzpotcz(0:nz,0:nr)
+REAL(8) :: dzpotcr(0:nz,0:nr)
 
 INTEGER,PARAMETER :: ifclean=1
 
@@ -453,7 +453,7 @@ END IF
       END DO
     END DO
 !          energspin = energyFy
-    energyfy = f1int(wrk1)
+    energyfy = f1int(wrk1)+energyFy
 !          energspin = energyFy-energspin
 !          IF(iter==itmax)
 !     &      WRITE(7,'(a,2(1pg13.5))') 'spin energy=',energspin,energyFy
