@@ -2006,9 +2006,12 @@ DO ist=1,nst(1)+nst(2)
     IF(mm == 1) THEN
       psip(0:nz,ir,is) = 0D0
       psin(0:nz,ir,is) = 2D0*psi1(0:nz,ir,is)
+    ELSE IF(mm == -1) then
+      psin(0:nz,ir,is) = 0D0
+      psip(0:nz,ir,is) = 2D0*psi1(0:nz,ir,is)
     ELSE
-      psip(0:nz,ir,is) = psi1(0:nz,ir,is)
-      psin(0:nz,ir,is) = psip(0:nz,ir,is)
+      psip(0:nz,ir,is) = 0D0 !psi1(0:nz,ir,is)
+      psin(0:nz,ir,is) = 0D0 !psip(0:nz,ir,is)
     END IF
     DO ir=1,nr
       psip(0:nz,ir,is) = psi1(0:nz,ir,is)-mm/r(ir)*psi(0:nz,ir,is,ist)
@@ -2019,6 +2022,7 @@ DO ist=1,nst(1)+nst(2)
   npist  = nparz(1,ist)
   vi    = sqrtb(vsqf(ist))
   ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
   deltai = deltaf(ist)*wtpair_uv(ist)
   edifi  = spenrg(ist)-eferm
   equasi = SQRT(edifi*edifi+deltai*deltai)
@@ -2028,22 +2032,27 @@ DO ist=1,nst(1)+nst(2)
   IF(intest == 1) WRITE(7,'(a,i3,1pg12.4)')  &
       ' test: ist, <Nabla**2>=',ist,tstovl
   DO jst=jstmin,jstmax
-    IF((npist == nparz(1,jst) .AND.  &
-          (mist+1 == mpsi(jst) .OR. mist-1 == mpsi(jst)) ) .OR.  &
-          (npist == nparz(2,jst) .AND.  &
-          (mist == 0 .AND. mpsi(jst) == 0))            ) THEN
+    IF( ( npist == nparz(1,jst) .AND.  &
+          (mist+1 == mpsi(jst) .OR. mist-1 == mpsi(jst)) )  &
+        .OR.  &
+        ( npist == nparz(2,jst) .AND.  &
+          ( (mist == 0 .AND. mpsi(jst) == 0)  &
+           .OR.(mist.eq.-1 .and. mpsi(jst).eq.-1)))      ) then
       vj    = sqrtb(vsqf(jst))
       uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
       deltaj = deltaf(jst)*wtpair_uv(jst)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
-      IF(mist == 0 .AND. mpsi(jst) == 0) THEN
+      IF(isTsym.LE.0 .AND. mist == 0 .AND. mpsi(jst) == 0) THEN
         pij    = wfovoc(psi(0:nz,0:nr,1,jst),psin(0:nz,0:nr,2))  &
             + wfovoc(psi(0:nz,0:nr,2,jst),psin(0:nz,0:nr,1))
       ELSE IF(mist+1 == mpsi(jst)) THEN
         pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
       ELSE IF(mist-1 == mpsi(jst)) THEN
         pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psin)
+      ELSE
+        pij = 0D0
       END IF
       sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
       IF(intest == 1) WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
@@ -2051,9 +2060,14 @@ DO ist=1,nst(1)+nst(2)
           ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij, pij*(vj*ui-uj*vi)
       IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
           ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+!               pij    = pij*(vj*ui-uj*vi)
+!               pij    = pij*pij
+!               sumexy = pij/(equasi+equasj) + sumexy
+!               sumwxy  = pij + sumwxy
     END IF
   END DO
 END DO
+IF(isTsym>0) sumdir=sumdir/2D0
 widdxy = sumdir/2.0
 
 !     2. loop to accumulate c.m. width along z
@@ -2079,6 +2093,7 @@ DO ist=1,nst(1)+nst(2)
   npist  = nparz(1,ist)
   vi    = sqrtb(vsqf(ist))
   ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
   deltai = deltaf(ist)*wtpair_uv(ist)
   edifi  = spenrg(ist)-eferm
   equasi = SQRT(edifi*edifi+deltai*deltai)
@@ -2091,6 +2106,7 @@ DO ist=1,nst(1)+nst(2)
     IF(npist == nparz(2,jst) .AND. mist == mpsi(jst)) THEN
       vj    = sqrtb(vsqf(jst))
       uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
       deltaj = deltaf(jst)*wtpair_uv(jst)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
@@ -2105,6 +2121,7 @@ DO ist=1,nst(1)+nst(2)
     END IF
   END DO
 END DO
+IF(isTsym>0) sumdir=sumdir/2D0
 widdz  = sumdir
 
 
@@ -2120,7 +2137,8 @@ IF(ifzpe == 1) THEN
 ELSE
   ezp = 0.0D0
 END IF
-IF(itest>=0) WRITE(7,'(a,3(1pg12.4))') ' total ZPE: ',ezp
+IF(itest>=0) WRITE(7,'(a,3(1pg12.4))') ' total ZPE: ',ezp,widdz,widdxy
+WRITE(7,'(a,3(1pg12.4))') ' total ZPE: ',ezp,widdz,widdxy
 
 DEALLOCATE(psi1,psin,psip)
 
@@ -2395,6 +2413,16 @@ IF(mm == 0) THEN
 ELSE IF(mm == 1) THEN
   wrk1(0:nz,0) = (fpair+fpair) * ( psip(0:nz,0,1)**2 )               ! save that for spin-orbit
   taud(0:nz,0) = wrk1(0:nz,0) + taud(0:nz,0)
+!NEW ODD
+ELSE IF(mm == (-1)) THEN
+    rhod(0:nz,0) = fpair * psiw(0:nz,0,2)*psiw(0:nz,0,2) + rhod(0:nz,0)
+    wrk1(0:nz,0) = fpair * ( psin(0:nz,0,2)*psin(0:nz,0,2)  &
+        + 2.0*psip(0:nz,0,1)*psip(0:nz,0,1) )              ! save that for spin-orbit               
+    taud(0:nz,0) = wrk1(0:nz,0)  + taud(0:nz,0)
+ELSE IF(mm == (-2)) THEN
+    wrk1(0:nz,0) = (fpair+fpair) * ( psip(0:nz,0,2)*psip(0:nz,0,2) )           ! save that for spin-orbit                
+    taud(0:nz,0) = wrk1(0:nz,0) + taud(0:nz,0)
+!END NEW ODD
 END IF
 
 !---- all other 'r'
