@@ -2736,7 +2736,7 @@ xnormin=f1int(fldin)
 xnormout=f1int(fldout)
 IF(ttestnorms) WRITE(6,*) 'Prot.Fold. norms:',xnormin,xnormout
 
-fldout=fldout*xnormin/xnormout
+fldout=fldout*xnormin/MAX(xnormout,1D-99)
 
 RETURN
 END SUBROUTINE protonfolding
