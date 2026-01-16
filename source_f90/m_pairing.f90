@@ -112,6 +112,7 @@ ELSE
     END IF
   END DO
 END IF
+!WRITE(6,*) 'PAIRCR:',SUM(paircr(0:nz,0:nr,1)**2),SUM(paircr(0:nz,0:nr,2)**2),wate
 !END NEW ODD
 
 

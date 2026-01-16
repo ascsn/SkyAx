@@ -2808,6 +2808,7 @@ SUBROUTINE cpairpot(psiw1,psiw2,rhoacc,addwgt,ist)
 
 USE levels, ONLY: wate
 USE grid, ONLY: nz,nr
+USE wavefr, ONLY: wfovoc,wfovpc
 
 IMPLICIT NONE
 
@@ -2819,11 +2820,12 @@ INTEGER, INTENT(IN)      :: ist
 
 REAL(8), PARAMETER :: lowadd=1D-9
 
-IF(addwgt<lowadd) RETURN
+IF(ABS(addwgt)<lowadd) RETURN
 
 rhoacc(0:nz,0:nr) = wate(ist)*addwgt * &
       (psiw1(0:nz,0:nr,1)*psiw2(0:nz,0:nr,2)  &
      -psiw1(0:nz,0:nr,2)*psiw2(0:nz,0:nr,1)) + rhoacc(0:nz,0:nr)
+
 
 RETURN
 END SUBROUTINE cpairpot
