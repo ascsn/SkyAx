@@ -267,12 +267,12 @@ IF(1>2) WRITE(6,*) 'odd dens. before:' &
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &
-!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond)
+!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond, &
+!$OMP           rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)
 !!!$ mythread=OMP_GET_THREAD_NUM()
 ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 DO  i=1,nom         ! loop over all blocks
 !$  mythread=OMP_GET_THREAD_NUM()
-  IF(toddterms .AND. mythread== 2) STOP 'odd terms not yet suited for OPENMP'
   im=load_m(mythread,i)
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
@@ -468,7 +468,7 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
 !**********************************************************************
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(i,mythread,im,nhi,nlo,nadd,iq,is,jst,psin,width,fac,rhot,taut,drholst,rholsrt,rholszt) &
-!$OMP REDUCTION(+: rhosur)  
+!$OMP REDUCTION(+: rhosur,rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)  
 
 !$ mythread=OMP_GET_THREAD_NUM()
   DO  i=1,nom         ! loop over all blocks
