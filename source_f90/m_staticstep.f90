@@ -116,6 +116,7 @@ SUBROUTINE sstep(iter)
 
 USE coulomb, ONLY: wcolt
 USE util, ONLY: protfold
+USE fields
 
 IMPLICIT NONE
 
@@ -207,6 +208,20 @@ tau(0:nz,0:nr,1:2)     = redfac*tau(0:nz,0:nr,1:2)
 drhols(0:nz,0:nr,1:2)  = redfac*drhols(0:nz,0:nr,1:2)
 rholsr(0:nz,0:nr,1:2)  = redfac*rholsr(0:nz,0:nr,1:2)
 rholsz(0:nz,0:nr,1:2)  = redfac*rholsz(0:nz,0:nr,1:2)
+!NEW ODD
+IF(toddterms) THEN
+  rotjr(0:nz,0:nr,1:2)  = redfac*rotjr(0:nz,0:nr,1:2)
+  rotjz(0:nz,0:nr,1:2)  = redfac*rotjz(0:nz,0:nr,1:2)
+  rotspden(0:nz,0:nr,1:2)  = redfac*rotspden(0:nz,0:nr,1:2)
+  spdenr(0:nz,0:nr,1:2)  = redfac*spdenr(0:nz,0:nr,1:2)
+  spdenz(0:nz,0:nr,1:2)  = redfac*spdenz(0:nz,0:nr,1:2)
+  d2spdenr(0:nz,0:nr,1:2)  = redfac*d2spdenr(0:nz,0:nr,1:2)
+  d2spdenz(0:nz,0:nr,1:2)  = redfac*d2spdenz(0:nz,0:nr,1:2)
+  curphi(0:nz,0:nr,1:2)  = redfac*curphi(0:nz,0:nr,1:2)
+  spdenkr(0:nz,0:nr,1:2)  = redfac*spdenkr(0:nz,0:nr,1:2)
+  spdenkz(0:nz,0:nr,1:2)  = redfac*spdenkz(0:nz,0:nr,1:2)
+END IF
+!END NEW ODD
 IF(tswicon) rhoti(0:nz,0:nr,1:2) = redfac*rhoti(0:nz,0:nr,1:2)  ! for CHF
 IF(tstab) rhosur(0:nz,0:nr,1:2)=0D0   ! for stabilizing wall
 
@@ -227,12 +242,28 @@ qq0=0D0;qq1=0D0;qq2=0D0;qq3=0D0;qq4=0D0;
 qh0=0D0;qh1=0D0;qh2=0D0;qh3=0D0;qh4=0D0;
 qh = 0D0; qdh = 0D0; qhdig = 0D0
 symcondiso = 0D0
+IF(istsym>0) THEN
+  CALL findconjpart(1)
+  CALL findconjpart(2)
+!  CALL comp_block()
+END IF
 
 IF(thfb .AND. 1==2) THEN
   nlo=nst(1)+1
   nhi=nst(1)+nst(2)
   WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
 END IF
+
+IF(1>2) WRITE(6,*) 'odd dens. before:' &
+  ,SQRT(SUM(rotjr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotjz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotspden(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(curphi(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkz(:,:,1:2)**2)/(nr+1)/(nz+1)) 
+
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &
@@ -241,8 +272,8 @@ IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 DO  i=1,nom         ! loop over all blocks
 !$  mythread=OMP_GET_THREAD_NUM()
+  IF(toddterms .AND. mythread== 2) STOP 'odd terms not yet suited for OPENMP'
   im=load_m(mythread,i)
-!  IF(thfb.AND.im>0) WRITE(6,*) 'IM=',im,i,mythread
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
   nlo=mlo(im)        ! lowest state for given 'im''
@@ -303,6 +334,7 @@ DO  i=1,nom         ! loop over all blocks
 !      end of inner loop over states within a block of same 'm'
     END DO
     
+
     IF(tdiag) CALL diag_wf(hmatr(nlo:nhi,nlo:nhi),nlo,nhi-nlo+1)
 
     END IF
@@ -325,8 +357,15 @@ DO  i=1,nom         ! loop over all blocks
         CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
                     rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq),  &
                     rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
-!      IF(thfb) WRITE(6,'(a,2i4,2(1pg13.5))') 'HFB 3:',mythread,jst,SUM(rhot),&
-!         SUM(psi(0:nz,0:nr,1:2,jst)**2)
+!NEW ODD
+        IF(toddterms) THEN
+!          WRITE(6,*) 'CUR before call:',jst,SUM(curphi(:,:,iq)**2)
+          CALL densitodd(psi(:,:,:,jst),v2act,jst,  &
+              rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
+              spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
+              d2spdenz(:,:,iq),curphi(:,:,iq),spdenkr(:,:,iq), spdenkz(:,:,iq))
+        END IF
+!END NEW ODD
       END IF
     END IF
   END DO
@@ -353,6 +392,15 @@ DO  i=1,nom         ! loop over all blocks
 END DO
 DEALLOCATE(psip,psin)
 !$OMP END PARALLEL
+IF(1>2) WRITE(6,*) 'odd dens. after:'  &
+  ,SQRT(SUM(rotjr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotjz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotspden(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(curphi(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkz(:,:,1:2)**2)/(nr+1)/(nz+1)) 
 
 IF(loadweight(1)>0.0d0.AND.num_threads>1.AND.MOD(iter,10)==1) CALL loadbalancing()
 
@@ -442,10 +490,20 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
     DO jst=nlo,nhi
       iq = icharg(jst)
       v2act=adyrho*vsqf(jst)*wtpair_v2(jst)
-      IF(v2act > v2lim)  &
+      IF(v2act > v2lim)  THEN
           CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
           rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq), &
           rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
+!NEW ODD
+        IF(toddterms) THEN
+!        IF(toddterms .AND. 1>2) THEN
+          CALL densitodd(psi(:,:,1,jst),v2act,jst,  &
+              rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
+              spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
+              d2spdenz(:,:,iq),curphi(:,:,iq),spdenkr(:,:,iq), spdenkz(:,:,iq))
+        END IF
+!END NEW ODD
+      END IF
       IF(tstab) THEN
         width = stwid/SQRT(anumb)
         fac   = EXP(-((spenrg(jst)-fer(iq))/width)**2)
@@ -1007,13 +1065,16 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
           ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
     END IF
     itest = -1
-    CALL pairdn(spenrg,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
+!NEW ODD
+    CALL combine_spenergies(spenrg,speold,nst(1)+nst(2))
+    CALL pairdn(speold,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
         fer(1),epair(1),gap(1),feradd(1),  &
-        nst(1),nst(1),npiter,ipair,0,istblo,erra,itest-1)
+        nst(1),nst(1),npiter,ipair,0,istblo(1),erra,itest-1)
     ist2 = nst(1)+1
-    CALL pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
+    CALL pairdn(speold(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
         wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
-        nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
+        nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1), erra,itest-1)
+!END NEW ODD
 !    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
 !         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
     vsqobs(1:nsttot) = vsqf(1:nsttot)
@@ -1103,10 +1164,10 @@ WRITE(*,*) 'INIT_LOAD:',num_threads,nom
 DO i=1,nom
   CALL add_block(load_m,MOD(i-1,num_threads),i)
 END DO
-WRITE(6,*) 'LOAD_M:'
-DO i=1,nom
-  WRITE(6,'(200i3)') load_m(:,i)
-END DO
+!WRITE(6,*) 'LOAD_M:'
+!DO i=1,nom
+!  WRITE(6,'(200i3)') load_m(:,i)
+!END DO
 
 END SUBROUTINE init_load
 
