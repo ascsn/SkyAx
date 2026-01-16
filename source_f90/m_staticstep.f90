@@ -1069,11 +1069,11 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     CALL combine_spenergies(spenrg,speold,nst(1)+nst(2))
     CALL pairdn(speold,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
         fer(1),epair(1),gap(1),feradd(1),  &
-        nst(1),nst(1),npiter,ipair,0,istblo(1),erra,itest-1)
+        nst(1),nst(1),npiter,ipair,0,istblo(1),istcblo(1),erra,itest-1)
     ist2 = nst(1)+1
     CALL pairdn(speold(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
         wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
-        nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1), erra,itest-1)
+        nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1),istcblo(2)-nst(1),erra,itest-1)
 !END NEW ODD
 !    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
 !         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)

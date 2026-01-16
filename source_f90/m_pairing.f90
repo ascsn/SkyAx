@@ -210,14 +210,34 @@ END IF
 IF(thfbfold) THEN
   DO jst=1,nst(1)+nst(2)
     iq     = icharg(jst)
-    work(:,:)=(psifold(:,:,1,jst)**2+psifold(:,:,2,jst)**2)*pairpt(:,:,iq)
+    IF(toddterms) THEN
+      IF(jst==istblo(iq) .OR. jst==istcblo(iq)) THEN
+        work=0D0
+      ELSE
+        work(:,:)=(psifold(:,:,1,jst)*psifold(:,:,2,itpartn(jst)) &
+                   +psifold(:,:,2,jst)*psifold(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
+      END IF
+    ELSE
+      work(:,:)=(psifold(:,:,1,jst)**2+psifold(:,:,2,jst)**2)*pairpt(:,:,iq)
+    END IF
     deltaf(jst) = f1int(work)
+    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)
     iq     = icharg(jst)
-    work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
+    IF(toddterms) THEN
+      IF(jst==istblo(iq) .OR. jst==istcblo(iq)) THEN
+        work=0D0
+      ELSE
+        work(:,:)=(psi(:,:,1,jst)*psi(:,:,2,itpartn(jst)) &
+                   +psi(:,:,2,jst)*psi(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
+      END IF
+    ELSE
+      work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
+    END IF
     deltaf(jst) = f1int(work)
+    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
   END DO
 END IF
 
@@ -426,6 +446,8 @@ END FUNCTION geff_regpair
 !> INTEGER, takes offset for addressing wavefunctions.
 !> @param[in] nblock
 !> INTEGER, takes address of blocked state (none if 0).
+!> @param[in] ncblock
+!> INTEGER, takes address of conjugate to blocked state (none if 0).
 !> @param[in] eps
 !> INTEGER, takes end condition for pairing iteration; iteration terminates 
 !! if error in particle number is smaller than \c eps and if \c eferm and/or 
@@ -435,11 +457,11 @@ END FUNCTION geff_regpair
 !! larger value prints more.
 !--------------------------------------------------------------------------- 
 SUBROUTINE pairdn(e,delta,gw,ph,pairgw_uv,pairgw_v2,partnm,eferm,epair,avdelt,  &
-    efadd,nmax,ndim,iter,ipair,iwfoff,nblock, eps,iab)
+    efadd,nmax,ndim,iter,ipair,iwfoff,nblock,ncblock, eps,iab)
 
 USE paramr
 USE levels, ONLY: npsi
-USE dynpar, ONLY: pair_cutoff,tcutoff_WS,tcutoff_uvspace
+USE dynpar, ONLY: pair_cutoff,tcutoff_WS,tcutoff_uvspace,istsym
 IMPLICIT NONE
 
 REAL(8), INTENT(IN)       :: e(ndim)
@@ -458,7 +480,7 @@ INTEGER, INTENT(IN)       :: ndim
 INTEGER, INTENT(IN)       :: iter
 INTEGER, INTENT(IN)       :: ipair
 INTEGER, INTENT(IN)       :: iwfoff
-INTEGER, INTENT(IN)       :: nblock
+INTEGER, INTENT(IN)       :: nblock,ncblock
 REAL(8), INTENT(IN)       :: eps
 INTEGER, INTENT(IN)       :: iab
 
@@ -486,6 +508,7 @@ REAL(8) :: actnum,arg,dchi1,dchi11,dchi12,dchi2,dchi22,delcut,deltaa,deltac,det,
            quenf2,sumduv,sumepa,sumuv,tlam,tlam2,tstnum,v2,vol
 REAL(8) :: avg
 LOGICAL :: converged
+
 
 ALLOCATE(vln(npsi(2)))
 vln=0D0
@@ -548,7 +571,7 @@ IF(eferm == 0D0) THEN
       'initialization: partsm,partnm=',partsm,partnm,' eferm=',eferm
   DO n=1,nmax
     IF(n <= it) THEN
-      gw(n) = one
+      gw(n) = 1D0
     ELSE
       gw(n) = 0D0
     END IF
@@ -560,8 +583,8 @@ END IF
 IF(ipair /= 9.AND.ipair /= 11) THEN
   
 ! standard case where p.n. is iterated, misusing 'gw' as workspace
-  eferm = rbrent(e, delta, ph, gw, pairgw_uv,pairgw_v2, partnm, ndim, nmax, nblock, iab)
-  parnum = parnmt(e, delta, ph, gw, pairgw_uv,pairgw_v2, eferm, ndim, nmax, nblock)
+  eferm = rbrent(e, delta, ph, gw, pairgw_uv,pairgw_v2, partnm, ndim, nmax, nblock,ncblock, iab)
+  parnum = parnmt(e, delta, ph, gw, pairgw_uv,pairgw_v2, eferm, ndim, nmax, nblock,ncblock)
   it=0
   
 !       the LN case where p.n. and p.n. fluctuations are iterated
@@ -677,7 +700,15 @@ DO na=1,nmax
   deltaa = delta(na)*pairgw_uv(na)
   edif   = e(na)-eferm
   equasi = SQRT(edif*edif+deltaa*deltaa)
-  v2     = half-half*edif/equasi
+  IF(na == nblock .AND. istsym==0) THEN
+    v2 = 0.5D0
+  ELSE IF(na == nblock) THEN
+    v2 = 1D0
+  ELSE IF(na == ncblock) THEN
+    v2 = 0D0
+  ELSE
+    v2     = half-half*edif/equasi
+  END IF
   phact  = half*ph(na)   ! for axial
   vol    = phact*SQRT(MAX(v2-v2*v2,xsmallp))*pairgw_v2(na)
   sumuv  = vol        + sumuv
@@ -1353,11 +1384,13 @@ END SUBROUTINE respax
 !> INTEGER, takes maximum number of s.p. states.
 !> @param[in] nblock
 !> INTEGER, takes address of blocked state (none if 0).
+!> @param[in] ncblock
+!> INTEGER, takes address of conjugate to blocked state (none if 0).
 !> @param[in] iab
 !> INTEGER, takes print level; significant values are -2, -1, 0 and 1;
 !! larger value prints more.
 !--------------------------------------------------------------------------- 
-REAL(8) FUNCTION rbrent(e,delta,ph,gw,pairgw_uv,pairgw_v2,partnm,ndim,nmax,nblock,iab)
+REAL(8) FUNCTION rbrent(e,delta,ph,gw,pairgw_uv,pairgw_v2,partnm,ndim,nmax,nblock,ncblock,iab)
 
 USE paramr
 IMPLICIT NONE
@@ -1371,7 +1404,7 @@ REAL(8), INTENT(IN)                  :: pairgw_v2(ndim)
 REAL(8), INTENT(IN)                  :: partnm
 INTEGER, INTENT(IN)                  :: ndim
 INTEGER, INTENT(IN)                  :: nmax
-INTEGER, INTENT(IN)                  :: nblock
+INTEGER, INTENT(IN)                  :: nblock,ncblock
 INTEGER, INTENT(IN)                  :: iab
 
 REAL(8),PARAMETER :: ra0=-1D2,rb0=1D2,reps=12D-14,rtolw=1D-16
@@ -1384,9 +1417,9 @@ REAL(8) :: ra,rb,rc,rd,re,rfa,rfb,rfbo,rfc,rmin1,rmin2,rp,rq,rr,rs,rtol1,rxm
 ra  = ra0
 rb  = rb0
 rfa = partnm - parnmt(e, delta, ph, gw, pairgw_uv,pairgw_v2, ra, ndim, nmax,  &
-    nblock)
+    nblock,ncblock)
 rfb = partnm - parnmt(e, delta, ph, gw, pairgw_uv,pairgw_v2, rb, ndim, nmax,  &
-    nblock)
+    nblock,ncblock)
 rfc = rfb
 rc  = rb
 rd  = rb-ra
@@ -1487,7 +1520,7 @@ ELSE
     END IF
     rfbo = rfb
     rfb  = partnm - parnmt( e, delta, ph, gw, pairgw_uv,pairgw_v2, rb,  &
-        ndim,nmax,nblock)
+        ndim,nmax,nblock,ncblock)
     
     IF(iab > 0) THEN
       WRITE (6,'(I3,A,F28.18,A,F28.18,A,F28.18)')  &
@@ -1529,11 +1562,13 @@ END FUNCTION rbrent
 !> INTEGER, takes maximum number of s.p. states.
 !> @param[in] nblock
 !> INTEGER, takes address of blocked state (none if 0).
+!> @param[in] ncblock
+!> INTEGER, takes address of conjugate to blocked state (none if 0).
 !--------------------------------------------------------------------------- 
-REAL(8) FUNCTION parnmt(e, delta, ph, gw, pairgw_uv,pairgw_v2, efermi, ndim, nmax, nblock)
+REAL(8) FUNCTION parnmt(e, delta, ph, gw, pairgw_uv,pairgw_v2, efermi, ndim, nmax, nblock,ncblock)
 
 USE paramr
-USE dynpar, ONLY: ipair
+USE dynpar, ONLY: ipair,istsym
 
 IMPLICIT NONE
 
@@ -1546,7 +1581,7 @@ REAL(8), INTENT(IN)            :: pairgw_v2(ndim)
 REAL(8), INTENT(IN)            :: efermi
 INTEGER, INTENT(IN)            :: ndim
 INTEGER, INTENT(IN)            :: nmax
-INTEGER, INTENT(IN)            :: nblock
+INTEGER, INTENT(IN)            :: nblock,ncblock
 
 REAL(8),PARAMETER :: mintemp=0.001D0
 INTEGER :: na
@@ -1572,8 +1607,12 @@ ELSE
     delta2 = delta2*delta2
     edif   = e(na)-efermi
     equasi = SQRT(edif*edif+delta2)
-    IF(na == nblock) THEN
+    IF(na == nblock .AND. istsym==0) THEN
       gw(na) = 0.5D0
+    ELSE IF(na == nblock) THEN
+      gw(na) = 1D0
+    ELSE IF(na == ncblock) THEN
+      gw(na) = 0D0
     ELSE
       gw(na) = 0.5D0  * (1.0D0 - edif/equasi)
       gw(na) = MAX(gw(na),smal)
@@ -1601,11 +1640,11 @@ INTEGER, INTENT(IN)                  :: ndim
 
 REAL(8) :: tarr(ndim),pnum
 
-  !eferm = rbrent(e, delta, ph, gw, pairgw_uv,pairgw_v2, partnm, ndim, nmax, nblock, iab)
+  !eferm = rbrent(e, delta, ph, gw, pairgw_uv,pairgw_v2, partnm, ndim, nmax, nblock,ncblock, iab)
   !parnum = parnmt(e, delta, ph, gw, pairgw_uv,pairgw_v2, eferm, ndim, nmax, nblock)
   tarr=t
-  efermi = rbrent(e, tarr, ph, gw, pairgw_uv,pairgw_v2, parnum, ndim, ndim, 0, 0)
-  pnum = parnmt(e, tarr, ph, gw, pairgw_uv,pairgw_v2, efermi, ndim, ndim, 0)
+  efermi = rbrent(e, tarr, ph, gw, pairgw_uv,pairgw_v2, parnum, ndim, ndim, 0, 0, 0)
+  pnum = parnmt(e, tarr, ph, gw, pairgw_uv,pairgw_v2, efermi, ndim, ndim, 0, 0)
 
 END SUBROUTINE thermal_occ
 
