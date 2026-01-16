@@ -26,7 +26,7 @@ REAL(8), INTENT(IN OUT)  :: efermiso
 REAL(8), INTENT(IN)      :: partnumin
 
 
-INTEGER :: istbloact,is,iab,isonpl,ist,jst,istbuf,iter,m1  !,npsid
+INTEGER :: istbloact,istcbloact,is,iab,isonpl,ist,jst,istbuf,iter,m1  !,npsid
 INTEGER :: n1,n2,na,nb,nae,namax,nmaxa,nbe,nbhi,nbmax,nblo,np1,nq,nqi
 REAL(8) :: partnum,efadd,avsymcond,cahcb,cbhca,dampstep,delstep,fackincut
 REAL(8) :: hermg,hermh,hermhm,ovlaa,ovlab,spemax,spemin,symcondmax,v2avar
@@ -76,12 +76,14 @@ IF(iso==1) THEN
   efadd=feradd(1)
   efermiso=fer(1)
   istbloact=istblo(1)
+  istcbloact=itpartn(istbloact)
 ELSE IF(iso==2) THEN
   nmaxa=nst(2)
   isonpl=nst(1)
   efadd=feradd(2)
   efermiso=fer(2)
   istbloact=istblo(2)-nst(1)
+  istcbloact=istcblo(2)-nst(1)
   WRITE(6,'(i4)') npart(2)
 ELSE
   STOP 'HFB: ISO must be 1 or 2'
@@ -181,7 +183,7 @@ IF(tnewv2) THEN
   CALL combine_spenergies(spenat,speold,nst(1)+nst(2))
   CALL pairdn(speold,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
-      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)  
+      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,istcbloact,erra,itest-1)  
 !END NEW ODD
   IF(pairstab /= 0) epair(iso) = epairstab
   IF(toccmix) v2a=addocc*v2a+conocc*gwa
@@ -505,7 +507,7 @@ IF(ttimer) CALL stimer(1,'pairdn')
   CALL combine_spenergies(spenat,speold,nst(1)+nst(2))                   
   CALL pairdn(speold,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
-      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)
+      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,istcbloact,erra,itest-1)
 !END NEW ODD
 IF(ttimer) CALL stimer(2,'pairdn')
   IF(tcutoff_uvspace) THEN                               ! check

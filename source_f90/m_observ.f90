@@ -623,14 +623,14 @@ DO  iq=1,2
       ine    = iokk(iq)+ist-1
       ind    = iorder(ine)+iokk(iq)-1
       IF(tcutoff_uvspace) THEN
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4),i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_uv(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
           deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind), &
           spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       ELSE
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4),i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_v2(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &

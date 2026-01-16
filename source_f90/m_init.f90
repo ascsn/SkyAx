@@ -1122,8 +1122,8 @@ DO iq=1,2
 END DO
 
 DO iunit=6,7
-  WRITE(iunit,'(a,6i5)') ' blocking set: kblock,mblock,istblo=',  &
-      kblock,mblock,istblo
+  WRITE(iunit,'(a,20i5)') ' blocking set: kblock,mblock,istblo,istcblo=',  &
+      kblock,mblock,istblo,istcblo
 END DO
 
 RETURN
