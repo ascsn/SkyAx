@@ -51,7 +51,8 @@ NAMELIST /static/ nprot,nneut,betain,octini,deocc,mmax,&
                   dipin,e0inv,x0inv,addrho,addpot,addocc,&
                   errenr,errvar,erra,npiter,itpini,&
                   ndrun,nqrun,norun,nhrun,&
-                  colerr,irepc,cmssqr,itpfix,inodiag,tvaryx0
+                  colerr,irepc,cmssqr,itpfix,inodiag,tvaryx0, &
+                  istblo
 NAMELIST /constraint/ swicon0,betmin0,betmax0,betaw0,&
                       swicon2,betmin2,betmax2,betaw2,&
                       swicon3,betmin3,betmax3,betaw3,&
@@ -67,6 +68,9 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 !     read namelist main                                              *
 !                                                                     *
 !**********************************************************************
+  istblo = 0
+
+
   READ(5,main)
 
   
@@ -178,7 +182,6 @@ FLUSH(6)
   IF(itpfix==0) itpfix=itmax+1
 
                                ! force parameters
-  istblo = 0
   IF(b4p == zero) b4p = t4*oh
   
   CALL prep_qsoll(nmass*1D0) !Also sets grid size
@@ -335,7 +338,6 @@ FLUSH(6)
 !**********************************************************************
       
       eold   = energy
-      istblo = 0
       itmaxact=itmax
       tfirst = iqact0==0.AND.iqact2==0.AND.iqact3==0.AND.iqact4==0
 !      IF(iflmb0==1) itmaxact=itcons2     ! prepare for later direct iteration

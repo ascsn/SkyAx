@@ -267,12 +267,12 @@ IF(1>2) WRITE(6,*) 'odd dens. before:' &
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &
-!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond)
+!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond, &
+!$OMP           rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)
 !!!$ mythread=OMP_GET_THREAD_NUM()
 ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 DO  i=1,nom         ! loop over all blocks
 !$  mythread=OMP_GET_THREAD_NUM()
-  IF(toddterms .AND. mythread== 2) STOP 'odd terms not yet suited for OPENMP'
   im=load_m(mythread,i)
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
@@ -468,7 +468,7 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
 !**********************************************************************
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(i,mythread,im,nhi,nlo,nadd,iq,is,jst,psin,width,fac,rhot,taut,drholst,rholsrt,rholszt) &
-!$OMP REDUCTION(+: rhosur)  
+!$OMP REDUCTION(+: rhosur,rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)  
 
 !$ mythread=OMP_GET_THREAD_NUM()
   DO  i=1,nom         ! loop over all blocks
@@ -1069,11 +1069,11 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     CALL combine_spenergies(spenrg,speold,nst(1)+nst(2))
     CALL pairdn(speold,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
         fer(1),epair(1),gap(1),feradd(1),  &
-        nst(1),nst(1),npiter,ipair,0,istblo(1),erra,itest-1)
+        nst(1),nst(1),npiter,ipair,0,istblo(1),istcblo(1),erra,itest-1)
     ist2 = nst(1)+1
     CALL pairdn(speold(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
         wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
-        nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1), erra,itest-1)
+        nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1),istcblo(2)-nst(1),erra,itest-1)
 !END NEW ODD
 !    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
 !         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
