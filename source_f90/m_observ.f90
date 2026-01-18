@@ -623,14 +623,14 @@ DO  iq=1,2
       ine    = iokk(iq)+ist-1
       ind    = iorder(ine)+iokk(iq)-1
       IF(tcutoff_uvspace) THEN
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4),i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_uv(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
           deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind), &
           spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       ELSE
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4),i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_v2(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
@@ -2808,6 +2808,7 @@ SUBROUTINE cpairpot(psiw1,psiw2,rhoacc,addwgt,ist)
 
 USE levels, ONLY: wate
 USE grid, ONLY: nz,nr
+USE wavefr, ONLY: wfovoc,wfovpc
 
 IMPLICIT NONE
 
@@ -2819,11 +2820,12 @@ INTEGER, INTENT(IN)      :: ist
 
 REAL(8), PARAMETER :: lowadd=1D-9
 
-IF(addwgt<lowadd) RETURN
+IF(ABS(addwgt)<lowadd) RETURN
 
 rhoacc(0:nz,0:nr) = wate(ist)*addwgt * &
       (psiw1(0:nz,0:nr,1)*psiw2(0:nz,0:nr,2)  &
      -psiw1(0:nz,0:nr,2)*psiw2(0:nz,0:nr,1)) + rhoacc(0:nz,0:nr)
+
 
 RETURN
 END SUBROUTINE cpairpot
