@@ -4,13 +4,13 @@
 
 ```bash
 # Test with 2 states (fast)
-python3 ../../Applications/quick_block_v3.py for005 --test
+python3 quick_block.py for005 --test
 
 # Full scan with 6 states, 8 CPUs
-python3 ../../Applications/quick_block_v3.py for005 --cpus 8 --max-states 6
+python3 quick_block.py for005 --cpus 8 --max-states 6
 
 # Custom parallelization: 4 processes × 2 threads = 8 total
-python3 ../../Applications/auto_blocking_v3.py --input for005 \
+python3 auto_block.py --input for005 \
     --exec ../../skyax.gfortran.omp --processes 4 --threads 2 --max-states 6
 ```
 
