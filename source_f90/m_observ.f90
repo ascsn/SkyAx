@@ -355,8 +355,8 @@ IF(tFayans) THEN
   etot1  = ekin+energyFy+ecoul/2D0
   energy = ekin+energyFy+ecoul/2D0-ezp+etpair
 !  IF(itest>0) WRITE(7,'(a,i5,6(1pg13.5))') &
-  WRITE(7,'(a,i5,6(1pg13.5))') &
-      'energyFy=',iter,etot1,ekin,energyFy,epair,ezp,f1int(rho(:,:,1))
+!  WRITE(7,'(a,i5,6(1pg13.5))') &
+!      'energyFy=',iter,etot1,ekin,energyFy,epair,ezp,f1int(rho(:,:,1))
 ELSE
   CALL energ()           ! energy directly from density
   etot1  = energy
@@ -1537,7 +1537,8 @@ WRITE(7,'(a,9f9.4)') 'rms_C^2:', &
    rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
    rmspback*rmspback-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
 WRITE(7,'(a,7(1pg13.5))') '  rms_C:', &
-   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc, &
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor)
 !   SQRT(6D0*(foc(1)-foc(2))/(delk**2)/foc(1))
 
 

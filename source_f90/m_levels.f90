@@ -82,7 +82,7 @@ INTEGER,ALLOCATABLE :: nbuf(:)        !<array storing the m value for the wave f
 REAL(8) :: betain=0.1D0               !< Deformation of initial oscillator wavefunctions.
 REAL(8) :: octini=0D0                 !< Initial octupole deformation (by oczupole squeezing).
 REAL(8) :: deocc(2)=(/1.9D0,1.9D0/)   !< Number of additional oscillator shells (above Fermi state) for initialization.
-INTEGER :: mmax(2)=(/19,19/)          !< Maximum m quantum number of protons and neutrons.
+INTEGER :: mmax(2)=(/29,29/)          !< Maximum m quantum number of protons and neutrons.
 
 
 REAL(8) :: eocc(2)                   !< Number of oscillator shells for in initialization, derived from basic number (according to N or Z) plus 'deocc'.
@@ -126,7 +126,7 @@ SUBROUTINE dealloc_levels
            wate,  spn,   spenrg,spevar,  speold,vsqf,&
            dvsqf, vsqfol,oc,    cmpn,    vsqobs,deltaf,&
            wtpair_uv,wtpair_v2,qspav, mpsi,  npar,    nrpar, nparz,&
-           nqr,  nqz,   icharg, iorder,  spevhh &
+           nqr,  nqz,   icharg, iorder,  spevhh, nbuf &
            )
   DEALLOCATE(itpartn,rtpartn)    !NEW ODD
   RETURN
