@@ -39,7 +39,7 @@ PRIVATE
 !*************************************************************************
 !  Parameter settings
 !*************************************************************************
-REAL(8) :: caugmlagrb=50D0   !< Curvature parameter for augmented Lagrangian method, to be used in connection with 'itypco=-1'. Curvature here with respect to dimensionless deformation.
+REAL(8) :: caugmlagrb=20D0  !50D0   !< Curvature parameter for augmented Lagrangian method, to be used in connection with 'itypco=-1'. Curvature here with respect to dimensionless deformation.
 
 INTEGER,PARAMETER :: ifqqpr=1     !< switch for detailed protocol of <QQ> etc (experienced users only)
 INTEGER,PARAMETER :: ioccmx=1     !< switch for propagation of occ.number
