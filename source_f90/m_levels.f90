@@ -57,7 +57,7 @@ INTEGER :: ktcblock(2)=(/0,0/)    !<2*K values of conjugate to blocked s.p. stat
 INTEGER :: mblock(2)=(/0,0/)      !<M values of blocked s.p. state. 
 INTEGER :: istblo(2)=(/0,0/)      !<Number of blocked s.p. state in level sequence.
 INTEGER :: istcblo(2)=(/0,0/)     !<Number of conjugate to blocked s.p. state in level sequence.
-INTEGER :: isoblo=0         !<Isospin of blocked s.p. state. To be set at compile time.
+INTEGER :: isoblo=0               !<Isospin of blocked s.p. state. To be set at compile time.
 !END NEW ODD
 INTEGER :: ifocsv           !<Switch to store occupation numbers intermediately (field 'oc').
 

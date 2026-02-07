@@ -15,6 +15,7 @@ USE init
 USE fyfunc
 USE util, ONLY :plot_2d,write_skyax_header
 USE pairin, ONLY: findconjpart
+USE blocking, ONLY: comp_block
 
 IMPLICIT NONE
 
