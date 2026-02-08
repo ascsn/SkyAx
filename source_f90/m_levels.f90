@@ -48,9 +48,8 @@ INTEGER,ALLOCATABLE :: nqr(:)     !< Radial quantum numbers.
 INTEGER,ALLOCATABLE :: nqz(:)     !< Longitudinal quantum numbers.
 INTEGER ,ALLOCATABLE:: icharg(:)  !<Isospin (1 for protons, 2 for neutrons).
 INTEGER,ALLOCATABLE :: iorder(:)  !<Pointer field for reordering according to the actual energy.
-
 !NEW ODD
-REAL(8),ALLOCATABLE :: rtpartn(:) !<Overlap os state and conjugate partner state (auxiliary)
+REAL(8),ALLOCATABLE :: rtpartn(:) !<Overlap of state and conjugate partner state (auxiliary)
 INTEGER,ALLOCATABLE :: itpartn(:) !<Pointer field for conjugate partner states
 INTEGER :: kblock(2)=(/0,0/)      !<2*K values of blocked s.p. state. (Default 0)
 INTEGER :: ktcblock(2)=(/0,0/)    !<2*K values of conjugate to blocked s.p. state. (Default 0)
@@ -59,6 +58,7 @@ INTEGER :: istblo(2)=(/0,0/)      !<Number of blocked s.p. state in level sequen
 INTEGER :: istcblo(2)=(/0,0/)     !<Number of conjugate to blocked s.p. state in level sequence.
 INTEGER :: isoblo=0               !<Isospin of blocked s.p. state. To be set at compile time.
 !END NEW ODD
+
 INTEGER :: ifocsv           !<Switch to store occupation numbers intermediately (field 'oc').
 
 INTEGER :: nprot=0          !<Proton number.

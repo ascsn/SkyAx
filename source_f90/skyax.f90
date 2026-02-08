@@ -15,7 +15,7 @@ USE init
 USE fyfunc
 USE util, ONLY :plot_2d,write_skyax_header
 USE pairin, ONLY: findconjpart
-USE blocking, ONLY: comp_block
+USE blocking, ONLY: comp_block,blnprot,blnneut,scan_block,absdiff
 
 IMPLICIT NONE
 
@@ -53,7 +53,7 @@ NAMELIST /static/ nprot,nneut,betain,octini,deocc,mmax,&
                   errenr,errvar,erra,npiter,itpini,&
                   ndrun,nqrun,norun,nhrun,&
                   colerr,irepc,cmssqr,itpfix,inodiag,tvaryx0, &
-                  istblo
+                  istblo,absdiff
 NAMELIST /constraint/ swicon0,betmin0,betmax0,betaw0,&
                       swicon2,betmin2,betmax2,betaw2,&
                       swicon3,betmin3,betmax3,betaw3,&
@@ -159,6 +159,9 @@ FLUSH(6)
   anumb  = npart(1)+npart(2) 
   IF(tvaryx0) x0invmin=x0inv
   IF(tvaryx0) x0inv=x0inv*2.0
+  blnneut = (MOD(npart(1),2)==1)
+  blnprot = (MOD(npart(2),2)==1)
+
 !**********************************************************************
 !                                                                     *
 !     read namelist constraint                                        *
@@ -250,7 +253,7 @@ FLUSH(6)
   
   iqact0o=0;iqact2o=0;iqact3o=0;iqact4o=0;
   itert  = 0                         ! set counter for total iterations
-  DO  iqact0=0,nqmax0; qact0=iqact0*qw0+qmin0
+  outer_loop : DO  iqact0=0,nqmax0; qact0=iqact0*qw0+qmin0
   DO  iqact2=0,nqmax2; qact2=iqact2*qw2+qmin2
   DO  iqact3=0,nqmax3; qact3=iqact3*qw3+qmin3
   DO  iqact4=0,nqmax4; qact4=iqact4*qw4+qmin4
@@ -334,13 +337,19 @@ FLUSH(6)
       
     CALL  iteration_loop()    ! the static iteration
 
+    IF( (blnprot .OR. blnneut) .AND. SUM(istblo)==0) THEN
+
+      CALL scan_block()
+      EXIT outer_loop   ! scan blocking not for series of constrained calculations
+
+    END IF
 
     END DO       ! temperature loop
     
   END DO       ! L=4 loop
   END DO       ! L=3 loop
   END DO       ! L=2 loop
-  END DO       ! L=0 loop
+  END DO outer_loop      ! L=0 loop
   
 !**********************************************************************
 !                                                                     *
