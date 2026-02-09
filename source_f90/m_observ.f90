@@ -675,7 +675,7 @@ USE grid
 USE dynpar
 !USE constr, ONLY: iflmb0
 USE fields, ONLY: rho
-USE levels, ONLY: npart
+USE levels, ONLY: npart,kblock
 
 INTEGER, INTENT(IN) :: iter
 !LOGICAL :: topen173
@@ -686,14 +686,14 @@ REAL(8) :: efree
           POSITION='APPEND')
   IF(ipair /= 4) THEN
     IF(.NOT.tsym) THEN
-      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f9.5,3f8.4,3f11.6)')  &
+      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i6,2f5.1,f16.12,3f8.4,3f11.6)')  &
           beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
           beta3,beta3p,beta3n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,kblock*0.5D0,rmsc,rms,rmsp,rmsn,boundnum,ezp
     ELSE
-      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f16.12,3f8.4,3f11.6)') &
+      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,2f5.1,f16.12,3f8.4,3f11.6)') &
           beta2,beta2p,beta2n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,kblock*0.5D0,rmsc,rms,rmsp,rmsn,boundnum,ezp
     END IF
     IF(ABS(apnum-npart(1)) > 1.0E-5  &
         .OR. ABS(annum-npart(2)) > 1.0E-5 ) WRITE(90,'(35x,a,2(1pg14.6))')  &

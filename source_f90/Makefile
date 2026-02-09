@@ -137,15 +137,16 @@ m_pairing.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
 hfb-natural.o : m_pairing.o m_dynpar.o m_fields.o m_grid.o \
               m_levels.o m_observ.o m_paramr.o m_wavefr.o m_fyfunc_2D.o Makefile
 
-m_init.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
-           m_levels.o m_observ.o m_paramr.o m_wavefr.o m_pairing.o \
-           m_util.o m_steputil.o m_blocking.o Makefile
-
 m_staticstep.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o \
                  m_grid.o m_levels.o m_observ.o m_paramr.o m_wavefr.o m_hdiag.o \
 		         m_pairing.o m_util.o m_steputil.o m_init.o Makefile
 
-m_blocking.o : m_dynpar.o m_grid.o m_levels.o m_paramr.o m_wavefr.o Makefile
+m_init.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
+           m_levels.o m_observ.o m_paramr.o m_wavefr.o m_pairing.o \
+           m_util.o m_steputil.o m_blocking.o Makefile
+
+m_blocking.o : m_dynpar.o m_grid.o m_levels.o m_paramr.o m_wavefr.o m_pairing.o \
+               m_staticstep.o m_util.o Makefile
 
 user_interface.o : Makefile
 
