@@ -149,8 +149,8 @@ FLUSH(6)
   anumb  = npart(1)+npart(2) 
   IF(tvaryx0) x0invmin=x0inv
   IF(tvaryx0) x0inv=x0inv*2.0
-  blnneut = (MOD(npart(1),2)==1)
-  blnprot = (MOD(npart(2),2)==1)
+  blnneut = (MOD(npart(2),2)==1)
+  blnprot = (MOD(npart(1),2)==1)
 
 !**********************************************************************
 !                                                                     *
@@ -536,6 +536,13 @@ SUBROUTINE write_headers()
     WRITE(7,6004)
     6004    FORMAT(' stabilized BCS only allowed for ipair=5,7')
     STOP 'wrong setup for stabilized BCS'
+  END IF
+
+  IF((blnprot .OR. blnneut) .AND. SUM(istblo).NE.0) THEN
+    WRITE(7,'(a,f6.2,a)') &
+      'Scan blocked copnfigurations up to exc. energy',absdiff,' MeV'
+    WRITE(6,'(a,f6.2,a)') &
+      'Scan blocked copnfigurations up to exc. energy',absdiff,' MeV'
   END IF
   
 ! switch 'iflmb0' presently only for L=2

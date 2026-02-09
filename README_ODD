@@ -48,3 +48,5 @@ worked up in the order of increasing quasiparticle energies.
 
 
 
+Next to be done: Implement computation of total agular momentum J and
+print it side by side with azimuthal angular momentum K.
