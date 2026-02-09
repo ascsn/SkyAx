@@ -34,6 +34,7 @@ REAL(8) :: pairenhance=2D0 !<initial enhancement of pairing strength
 REAL(8) :: v2limh=1D-6,delmix=0.8D0  !< damping switches for HFB step
 !REAL(8) :: v2limh=1D0,delmix=0D0   !< damping switches for HFB step
 LOGICAL :: tnobcs=.TRUE.   !<suppresses initial BCS phase after first run along a deformation path
+LOGICAL :: tvaryx0=.FALSE.                   !< switch to variable szep size
 CHARACTER (LEN=3) :: outnam = "tst"  !< 3-digit qualifier for output files
 CHARACTER (LEN=80) :: title=" "  !< Title for the actual run, printed in the header of output files.
 

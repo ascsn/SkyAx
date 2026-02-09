@@ -18,6 +18,7 @@ REAL(8), ALLOCATABLE :: rspln(:)      !<Workspace for Lipkin Nogami.
 REAL(8), ALLOCATABLE :: suv2rs(:)     !<Workspace for Lipkin Nogami.
 
 INTEGER :: ilnrsp=1       !<Activates mean-field contribution to Lipkin-Nogami
+PUBLIC findconjpart
 
 CONTAINS
 

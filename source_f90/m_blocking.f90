@@ -11,7 +11,8 @@ USE paramr
 USE levels
 USE dynpar
 USE grid
-USE constr, ONLY: tfresh
+USE init, ONLY: ssetup,inipai
+USE staticstep, ONLY: sstep
 
 INTEGER, PARAMETER :: kblist=20   !<Maximum possible number of blocked states in each species.
 INTEGER :: akblock(kblist,2)      !<Storage of 2*K values of blocked s.p. state.
@@ -33,6 +34,218 @@ LOGICAL, PARAMETER :: ttrack=.TRUE.  !<Switch for test output
 
 CONTAINS
 
+!---------------------------------------------------------------------------  
+! DESCRIPTION: iteration_loop
+!> @brief
+!!Subroutine for one full static solution 
+SUBROUTINE iteration_loop()
+
+USE observ !, ONLY: itmax
+USE constr
+USE pairin, ONLY: findconjpart
+USE util, ONLY: plot_2d
+
+IMPLICIT NONE
+
+REAL(8) :: oldoct,dnewoct,econprev,devh2prev,x0invmin,econs,qconsav,devh2s
+REAL(8) :: pairfcsav(2),fxisav,h1xisav,hgradxisav,pairfacact
+INTEGER :: iplold,ipold,iter,itesto,itmaxact,itermcount !,iwu,nchg,nmass,number_threads=1
+INTEGER :: ipairsav,iteract,ntermcount
+LOGICAL :: tfirst=.TRUE.,thfbsav,tafter
+      
+  thfbsav = ipair==6 .OR. ipair==8
+  ipairsav = ipair
+  IF(thfbsav) THEN
+    fxisav = fxi
+    h1xisav = h1xi
+    hgradxisav = hgradxi
+    pairfcsav = pairfc
+  END IF
+
+      eold   = energy
+      itmaxact=itmax
+!      tfirst = iqact0==0.AND.iqact2==0.AND.iqact3==0.AND.iqact4==0
+!      IF(iflmb0==1) itmaxact=itcons2     ! prepare for later direct iteration
+      itermcount=0                        ! set termination counter
+      iterations: DO iter=0,itmaxact
+        oldoct=beta3
+
+        ! set actual HFB/BCS option
+        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) .OR. .NOT.thfbsav) THEN
+          thfb = thfbsav
+          ipair = ipairsav
+        ELSE
+          thfb = .FALSE.
+          ipair = ipairsav-1
+        END IF
+
+        ! initialize gradual pairing enhancment 
+        IF(thfbsav .AND. (tfresh .OR. tfirst)) THEN
+          IF(iter<iterhfb) THEN
+            pairfacact = 1D0+pairenhance*MAX(0,iterhfb-iter)/iterhfb
+            fxi = fxisav*pairfacact
+            h1xi = h1xisav*pairfacact
+            hgradxi = hgradxisav*pairfacact
+            IF(.NOT.tFayans) pairfc = pairfcsav*pairfacact
+          ELSE
+            fxi = fxisav
+            h1xi = h1xisav
+            hgradxi = hgradxisav
+            IF(.NOT.tFayans) pairfc = pairfcsav
+          END IF
+        ELSE
+        END IF
+
+!NEW ODD
+        ! update book-keeping of conjugated states
+!        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
+        IF(MOD(iter,mod_upd_conjstates)==1 .AND. iter>iterbcs) THEN
+          CALL findconjpart(1)
+          CALL findconjpart(2)
+          CALL comp_block()            ! ???
+        END IF
+!END NEW ODD
+
+
+!        IF(MOD(iter,iprint)==1) THEN
+          WRITE(6,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm x0inv'
+          WRITE(7,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv'
+!        END IF
+!        IF(iter /= 0) THEN
+        IF(iter >2) THEN
+          WRITE(6,5050)  &
+              iter,energy,beta2,beta3, LOG10(MAX(devh2,smal)),&
+              LOG10(MAX(ABS(econ),smal)),LOG10(MAX(ABS(qcon),smal)), zcm,x0inv
+          WRITE(7,5050)  &
+              iter,energy,beta2,beta3, LOG10(MAX(devh2,smal)),&
+              LOG10(MAX(ABS(econ),smal)),LOG10(MAX(ABS(qcon),smal)), zcm,x0inv
+          IF(check_border_density()) WRITE(6,*)'***WARNING: Grid might be too small. Density at border >1E-6!'
+          CALL flush(7)
+          5050 FORMAT(i5,X,f9.2,2(X,f8.3),3(3X,f7.3),X,1pg12.4,0pf7.3)
+        END IF
+        
+!     set addition-weights for mixing density and potential,
+!     first iteration needs a refresh
+        
+        IF(iter <= 3) THEN
+          adyrho = 1D0
+          adypot = 1D0
+        ELSE
+          adyrho = addrho
+          adypot = addpot
+
+        END IF
+        
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV10:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
+        CALL sstep(iter)
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV11:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
+        CALL sinfo(iter)
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV12:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
+        
+        dnewoct=beta3
+        iteract = iter
+        
+!        IF(econ < 10.0*errenr .AND. kblock > 0 .AND. SUM(istblo) <= 0)  &
+!            CALL comp_block                           !NEW ODD: activate with KBLOCK-entry
+        itert  = itert+1
+        IF(iter>iterhfb) THEN
+          IF(iter > itpini+3 .AND. tswicon) THEN
+            IF (econ < errenr .AND. devh2 < errvar .AND. &
+                ABS(qcon) < qerr .AND. ABS(zcm) < 1E-3  .AND. &
+                ABS(oldoct-dnewoct) < 1E-3) itermcount=1+itermcount
+          ELSE IF (.NOT.tswicon) THEN
+            IF(econ < errenr .AND. devh2 < errvar) THEN
+              itermcount=1+itermcount
+              WRITE(71,'(a,i4)') 'itermcount enhanced:',itermcount
+            ELSE
+              IF(itermcount>0) WRITE(71,'(a,i4)') 'itermcount reset'
+              itermcount = 0
+            END IF
+          END IF
+!          IF(itermcount>0) WRITE(71,'(a,i3)') 'itermcount=',itermcount
+!          WRITE(7,'(a,i3)') 'itermcount=',itermcount
+          IF( itermcount==ntermcount) EXIT iterations
+        END IF
+        
+        IF(tvaryx0) THEN
+          IF(energy<econprev .AND. devh2<(devh2prev*(1.0d0-1.0d-5))) THEN
+             x0inv=x0inv*1.005
+          ELSE
+             x0inv=x0inv*0.9
+          END IF
+          IF(x0inv<x0invmin) x0inv=x0invmin
+          econprev=energy
+          devh2prev=devh2
+       END IF
+        
+        IF(iter > itcons0) THEN
+          qlamb0  = zero
+          tswicon0 = .FALSE.
+        END IF
+        IF(iter > itcons2) THEN
+          qlamb2  = zero
+          tswicon2 = .FALSE.
+        END IF
+        IF(iter > itcons3) THEN
+          qlamb3  = zero
+          tswicon3 = .FALSE.
+        END IF
+        IF(iter > itcons4) THEN
+          qlamb4  = zero
+          tswicon4 = .FALSE.
+        END IF
+         
+      END DO iterations
+      
+!**********************************************************************
+!                                                                     *
+!     end of static iteration                                         *
+!                                                                     *
+!**********************************************************************
+      
+!     one more iteration to put observables up to date
+      
+!      IF(tafter .AND. iflmb0 /= 1) THEN
+      IF(tafter) THEN
+        iter = iteract
+        ipold  = iprint
+        iprint = 1
+        iplold = ipri_fields
+        itesto = itest
+        IF(ipri_fields>0) ipri_fields  = 1
+        itest  = 0
+        econs  = econ
+        qconsav  = qcon
+        devh2s = devh2
+        adyrho = 1.0
+        adypot = 1.0
+        CALL sstep(iteract)                       ! "afterburn"
+        CALL sinfo(itmax)
+        iprint = ipold
+        ipri_fields  = iplold
+        itest  = itesto
+        econ   = econs
+        qcon   = qconsav
+        devh2  = devh2s
+      END IF
+      IF(tpri_2d)  CALL plot_2d()
+      CALL occ_lz()
+      
+      CALL user_interface_1()        ! user defined corrections
+      
+!     optionally compute localization criterion
+      
+      IF(klocal == 1) CALL localize()
+      
+      CALL write_ensurf(iter)
+
+      tfirst=.FALSE.
+
+      RETURN
+
+END SUBROUTINE iteration_loop
+
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: scan_block
@@ -50,7 +263,9 @@ IF(blnprot) CALL search_block(1)
 IF(blnneut) CALL search_block(2) 
 
 
-
+IF(blnprot .AND. .NOT.blnneut) CALL block1(1)
+IF(.NOT.blnprot .AND. blnneut) CALL block1(2)
+IF(blnprot .AND. blnneut) CALL block2()
 
 
 END SUBROUTINE scan_block
@@ -61,6 +276,8 @@ END SUBROUTINE scan_block
 !> @brief
 !! Computes the SHF solution for one blocked nucleon configuration.
 SUBROUTINE block1(iq)
+
+USE constr, ONLY: tfresh
 
 IMPLICIT NONE
 
@@ -86,10 +303,10 @@ DO  blist = 1,maxblist(iq)
 !  kblock(iqtest) = 0
   
   
-  WRITE(6,'(a,4(i4),1pg13.5)')'Search the minimal energy:  &
+  WRITE(6,'(a,4(i4),1pg13.5)')'Search the ground state for:  &
       mblock kblock isoblock istblo',  &
       mblock(iq),kblock(iq),isoblo,istblo(iq),edifblo(blist,iq)
-  WRITE(7,'(a,5i4,1pg13.5)')'Search the minimal energy:  &
+  WRITE(7,'(a,5i4,1pg13.5)')'Search the ground state for:  &
       mblock kblock isoblock istblo',  &
       mblock(iq),kblock(iq),isoblo,istblo(iq),istcblo(iq),edifblo(blist,iq)
   CALL flush(7)
@@ -121,6 +338,8 @@ END SUBROUTINE block1
 !> @brief
 !! Computes the SHF solution for one proton and one neutron blocked.
 SUBROUTINE block2()
+
+USE constr, ONLY: tfresh
 
 IMPLICIT NONE
 

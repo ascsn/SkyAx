@@ -35,4 +35,16 @@ installed in neither 2D code. WE have to discuss how to deal with that.
 
 
 
+Update 9. February 2026:
+------------------------
+
+An automatic search and scan for blocking configurations has been coded.
+The tools for that are collected in 'm_blocking.f90'. The routine
+'search_block' looks for all s.p. states whose quasi-particle energy is
+below a given threshold 'absdiff' and stores them in a book-keeping
+array. The 'absdiff' is communicated through namelist 'static' and has a 
+default value of 2 MeV. The entries in the book-keeping fields are then
+worked up in the order of increasing quasiparticle energies.
+
+
 

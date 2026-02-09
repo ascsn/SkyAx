@@ -47,11 +47,11 @@ IMPLICIT NONE
         WRITE(90,'(3a)')  &
             '# bet1   bet1p  bet1n  bet2   bet2p  bet2n  bet3   bet3p  bet3n', &
             '  bet4   bet4p  bet4n   energy           epairp epairn ferp   fern', &
-            '  gapp   gapn   iter   rmsc    rms    rmsp    rmsn     N_boundp  N_boundn'
+            '  gapp   gapn   iter  K_p   K_n    rmsc    rms    rmsp    rmsn     N_boundp  N_boundn'
       ELSE
         WRITE(90,'(3a)') '# bet2   bet2p  bet2n  ',  &
             'bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter',  &
-            '  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn '
+            '  K_p   K_n    rmsc    rms      rmsp    rmsn    N_boundp  N_boundn '
       END IF
     ELSE
       WRITE(90,1092) title,npart(1)+npart(2),npart(1),  &

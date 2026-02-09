@@ -16,6 +16,8 @@ USE observ
 USE wavefr
 USE levels
 USE grid
+!USE init, ONLY: ssetupc
+!USE util, ONLY: plot_2d
 USE hdiag
 USE pairin
 USE steputil
@@ -32,7 +34,7 @@ REAL(8), PUBLIC :: qh0,qh1,qh2,qh3,qh4 !< counter for <Q h>
 REAL(8), PUBLIC :: qhdig               !< counter for diagonal part of <Q h>, only L=2
 
 LOGICAL, PUBLIC,PARAMETER :: tshiftcm=.TRUE.   !< shift c.m. to z=0
-
+PUBLIC sstep
 
 PRIVATE
 
@@ -88,9 +90,10 @@ INTEGER, PRIVATE :: num_threads                !< number of OMP threads
 INTEGER, PRIVATE :: mythread                   !< OMP thread number of current thread
 INTEGER,ALLOCATABLE,PRIVATE :: load_m(:,:)     !< array for load balancing 
 REAL(8),ALLOCATABLE,PRIVATE :: loadweight(:)   !< array to measure load of mblocks
-PUBLIC sstep
 
 CONTAINS
+
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: sstep
