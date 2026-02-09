@@ -310,6 +310,11 @@ DO  blist = 1,maxblist(iq)
       mblock kblock isoblock istblo',  &
       mblock(iq),kblock(iq),isoblo,istblo(iq),istcblo(iq),edifblo(blist,iq)
   CALL flush(7)
+  OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam,  &
+          POSITION='APPEND')
+  WRITE(90,'(a,4i5,f8.3)') 'Blocking  isoblo,mblock,kblock,istblo,equasi=',&
+    isoblo,mblock(iq),kblock(iq),istblo(iq),edifblo(blist,iq)
+  CLOSE(90)
 
   IF(tfresh) THEN
     CALL ssetup                    
@@ -415,14 +420,19 @@ DO ip1=1,maxblist_total
 ! necessary for odd-odd nuclei
 !        kblock(iqtest) = 0
   
+  WRITE(7,'(a,8(i4))') 'Ground state for:  &
+        mblock kblock istblo',mblock,kblock,istblo
   IF(ttrack) THEN
     WRITE(6,'(a,8(i4))')'Search the minimal energy:  &
-        mblock kblock istblo',mblock,kblock,istblo
-    WRITE(7,'(a,8(i4))')'Search the minimal energy:  &
         mblock kblock istblo',mblock,kblock,istblo
     WRITE(*,*) 'before iteration loop in BLOCK2'
     WRITE(7,*) 'before iteration loop in BLOCK2'
   END IF
+  OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam,  &
+          POSITION='APPEND')
+  WRITE(90,'(a,6i5,2f8.3)') 'Double blocking mblock,kblock,istblo,equasi=',&
+    mblock,kblock,istblo,edifblo(blist1,1),edifblo(blist2,2)
+  CLOSE(90)
   
   CALL flush(7)
 
