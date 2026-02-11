@@ -37,7 +37,6 @@ INTEGER :: iqact0o,iqact2o,iqact3o,iqact4o    ! save previous values
 INTEGER :: ipairsav            ! saves initial setting of pairing model
 INTEGER :: iteract             ! saves actual iteration number
 INTEGER,SAVE :: itermcount=0      ! counts subsequent occurence of termination condition
-INTEGER,PARAMETER :: ntermcount=3 ! nr. of termination counts required   
 
 NAMELIST /main/ iprint,itmax,itest,&
                 iterbcs,iterhfb,pairenhance,modnat,iternat,tnobcs,&
@@ -538,11 +537,11 @@ SUBROUTINE write_headers()
     STOP 'wrong setup for stabilized BCS'
   END IF
 
-  IF((blnprot .OR. blnneut) .AND. SUM(istblo).NE.0) THEN
-    WRITE(7,'(a,f6.2,a)') &
-      'Scan blocked copnfigurations up to exc. energy',absdiff,' MeV'
+  IF((blnprot .OR. blnneut) .AND. SUM(istblo)==0) THEN
+    WRITE(7,'(10x,a,f6.2,a,i5)') &
+      'Scan blocked configurations up to exc. energy',absdiff,' MeV'
     WRITE(6,'(a,f6.2,a)') &
-      'Scan blocked copnfigurations up to exc. energy',absdiff,' MeV'
+      'Scan blocked configurations up to exc. energy',absdiff,' MeV'
   END IF
   
 ! switch 'iflmb0' presently only for L=2

@@ -642,7 +642,7 @@ DO is=1,nsd
   isigma = 3-2*is
   izpact = (3*(1-isigma)/2+izpfld*isigma)*isym + (1-isym)
   
-  CALL mulr(dampr(:,:,imact),  fldin(:,:,is),fldbuf        ,one   ,0)
+  CALL mulr(dampr(:,:,imact),  fldin(:,:,is),fldbuf        ,1D0   ,0)
   CALL mulz(dampz(:,:,izpact), fldbuf,       fldout(:,:,is),factor,0)
 END DO
 

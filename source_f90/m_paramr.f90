@@ -12,6 +12,7 @@ MODULE paramr
 
 IMPLICIT NONE
 
+LOGICAL,PARAMETER :: tfindconj=.FALSE.   !<Switch to activate repeated search for pairing conjugate states 
 LOGICAL,PARAMETER :: tpairon=.true.      !<Switch for using DDDI contrib. to mean field (strongly recommended).
 LOGICAL,PARAMETER :: tadsic=.false.      !<Remove self-interaction in Coulomb term
 REAL(8),PARAMETER :: einitbubble=0.0D0   !<Tries to drive bubble by adding a -m**2 potential for a few initial iterations.

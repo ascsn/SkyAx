@@ -38,8 +38,8 @@ IMPLICIT NONE
       1098 FORMAT('# Plot potential energy surface for:',/,1X,a,/,  &
           '# Nmass=',i5,', Ncharge=',i5,/,  &
           '#  dz,dr: ',2F6.3,' nz,nr:',2I4,/,  &
-          '# addrho,addpot,addocc: ',3F6.3,'  c0,qeps:',2F6.3,/,  &
-          '# x0inv(fm),e0inv(mev): ',2F7.2)
+          '# addrho,addpot,addocc: ',3F6.3,'  c0,qeps:',F6.3,1PG12.4/,  &
+          '# x0inv(fm),e0inv(mev): ',2(0PF7.2))
       IF(SUM(istblo) > 0) WRITE(90,'(a,4i5)')  &
           '# blocking: kblock,mblock,isoblo,istblo=',  &
           kblock,mblock,isoblo,istblo
@@ -47,11 +47,11 @@ IMPLICIT NONE
         WRITE(90,'(3a)')  &
             '# bet1   bet1p  bet1n  bet2   bet2p  bet2n  bet3   bet3p  bet3n', &
             '  bet4   bet4p  bet4n   energy           epairp epairn ferp   fern', &
-            '  gapp   gapn   iter  K_p   K_n    rmsc    rms    rmsp    rmsn     N_boundp  N_boundn'
+            '  gapp   gapn   iter  K_p   K_n   J_p  J_n    rmsc    rms    rmsp    rmsn     N_boundp  N_boundn'
       ELSE
         WRITE(90,'(3a)') '# bet2   bet2p  bet2n  ',  &
             'bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter',  &
-            '  K_p   K_n    rmsc    rms      rmsp    rmsn    N_boundp  N_boundn '
+            '  K_p   K_n  J_p   J_n    rmsc    rms      rmsp    rmsn    N_boundp  N_boundn '
       END IF
     ELSE
       WRITE(90,1092) title,npart(1)+npart(2),npart(1),  &
@@ -444,7 +444,7 @@ USE levels
 USE grid
 USE observ
 USE steputil, ONLY: vsqtr
-USE blocking, ONLY: comp_block
+!USE blocking, ONLY: comp_block
 
 IMPLICIT NONE
 
@@ -879,7 +879,7 @@ WRITE(6,'(a)') ' reset IFOCSV=0'
 IF(istsym>0) THEN
   CALL findconjpart(1)
   CALL findconjpart(2)
-  CALL comp_block()
+!  CALL comp_block()
   CALL test_print(psi(0:nz,0:nr,1,36),0,5,0,5,'psi1 36')
   CALL test_print(psi(0:nz,0:nr,2,36),0,5,0,5,'psi2 36')
   CALL test_print(psi(0:nz,0:nr,1,57),0,5,0,5,'psi1 57')
