@@ -116,6 +116,9 @@ m_constr.o : m_paramr.o m_dynpar.o m_levels.o m_grid.o m_fields.o Makefile
 
 m_hdiag.o : m_grid.o m_levels.o m_paramr.o m_wavefr.o Makefile
 
+m_blocking.o : m_dynpar.o m_grid.o m_levels.o m_paramr.o m_wavefr.o m_pairing.o \
+               m_staticstep.o m_util.o m_init.o Makefile
+
 m_observ.o : m_paramr.o m_grid.o m_constr.o m_dynpar.o m_wavefr.o \
              m_levels.o m_fields.o Makefile
 
@@ -123,7 +126,7 @@ m_coulomb.o : m_paramr.o m_fields.o m_wavefr.o m_levels.o m_grid.o \
               m_constr.o m_dynpar.o m_observ.o Makefile
 
 m_steputil.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
-               m_levels.o m_observ.o m_paramr.o m_wavefr.o Makefile
+               m_levels.o m_observ.o m_paramr.o m_wavefr.o lagpar.f90 Makefile
 
 m_fyfunc_2D.o : m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
              m_observ.o m_paramr.o m_wavefr.o Makefile
@@ -143,10 +146,8 @@ m_staticstep.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o \
 
 m_init.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
            m_levels.o m_observ.o m_paramr.o m_wavefr.o m_pairing.o \
-           m_util.o m_steputil.o m_blocking.o Makefile
+           m_util.o m_steputil.o Makefile
 
-m_blocking.o : m_dynpar.o m_grid.o m_levels.o m_paramr.o m_wavefr.o m_pairing.o \
-               m_staticstep.o m_util.o Makefile
 
 user_interface.o : Makefile
 

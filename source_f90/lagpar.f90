@@ -342,12 +342,12 @@ ALLOCATE(zdnuc_dyn(0:nz,0:nz,4), rdnuc_dyn(0:nr,0:nr,0:kmpsi))
   END DO
 
   mm = mpsi(ist)
-  IF(mm<0) STOP 'DAMNUC_HFB not yet prepared for negative MPSI'
+!  IF(mm<0) STOP 'DAMNUC_HFB not yet prepared for negative MPSI'
   DO impsi=mm,mm+1
-    CALL matr_inv(rdnuc_dyn(0:nr,0:nr,impsi),nr+1,nr+1)
-    IF (impsi > 0) THEN
-      rdnuc_dyn(0,0:nr,impsi) = 0D0
-      rdnuc_dyn(0:nr,0,impsi) = 0D0 ! addition PK
+    CALL matr_inv(rdnuc_dyn(0:nr,0:nr,ABS(impsi)),nr+1,nr+1)
+    IF (ABS(impsi) > 0) THEN
+      rdnuc_dyn(0,0:nr,ABS(impsi)) = 0D0
+      rdnuc_dyn(0:nr,0,ABS(impsi)) = 0D0 ! addition PK
     END IF
   END DO
 
@@ -365,7 +365,8 @@ ELSE
 !       set boundary zeroes if parity requires it.
   DO is=1,2
     mm = mpsi(ist)+is-1
-    IF (mm > 0) THEN
+!    IF (mm > 0) THEN
+    IF (ABS(mm) > 0) THEN
       psiout(0:nz,0,is)  =  0D0
     END IF
     IF (nparz(is,ist) == 2) THEN

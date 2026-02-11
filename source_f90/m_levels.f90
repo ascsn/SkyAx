@@ -57,6 +57,7 @@ INTEGER :: mblock(2)=(/0,0/)      !<M values of blocked s.p. state.
 INTEGER :: istblo(2)=(/0,0/)      !<Number of blocked s.p. state in level sequence.
 INTEGER :: istcblo(2)=(/0,0/)     !<Number of conjugate to blocked s.p. state in level sequence.
 INTEGER :: isoblo=0               !<Isospin of blocked s.p. state. To be set at compile time.
+REAL(8) :: angblock(2)=(/0D0,0D0/)   !<The total angular mmentum of the blocked states
 !END NEW ODD
 
 INTEGER :: ifocsv           !<Switch to store occupation numbers intermediately (field 'oc').

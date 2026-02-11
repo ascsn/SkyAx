@@ -245,7 +245,7 @@ qq0=0D0;qq1=0D0;qq2=0D0;qq3=0D0;qq4=0D0;
 qh0=0D0;qh1=0D0;qh2=0D0;qh3=0D0;qh4=0D0;
 qh = 0D0; qdh = 0D0; qhdig = 0D0
 symcondiso = 0D0
-IF(istsym>0) THEN
+IF(istsym>0 .AND. tfindconj) THEN
   CALL findconjpart(1)
   CALL findconjpart(2)
 !  CALL comp_block()

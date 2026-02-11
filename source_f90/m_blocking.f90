@@ -47,10 +47,12 @@ USE util, ONLY: plot_2d
 
 IMPLICIT NONE
 
+INTEGER,PARAMETER :: ntermcount=3 ! nr. of termination counts required   
+
 REAL(8) :: oldoct,dnewoct,econprev,devh2prev,x0invmin,econs,qconsav,devh2s
 REAL(8) :: pairfcsav(2),fxisav,h1xisav,hgradxisav,pairfacact
 INTEGER :: iplold,ipold,iter,itesto,itmaxact,itermcount !,iwu,nchg,nmass,number_threads=1
-INTEGER :: ipairsav,iteract,ntermcount
+INTEGER :: ipairsav,iteract
 LOGICAL :: tfirst=.TRUE.,thfbsav,tafter
       
   thfbsav = ipair==6 .OR. ipair==8
@@ -99,7 +101,8 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,tafter
 !NEW ODD
         ! update book-keeping of conjugated states
 !        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
-        IF(MOD(iter,mod_upd_conjstates)==1 .AND. iter>iterbcs) THEN
+        IF((MOD(iter,mod_upd_conjstates)==1 .AND. iter>iterbcs) .OR. &
+           iter==iterbcs .OR. iter==iterhfb) THEN
           CALL findconjpart(1)
           CALL findconjpart(2)
           CALL comp_block()            ! ???
@@ -107,10 +110,10 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,tafter
 !END NEW ODD
 
 
-!        IF(MOD(iter,iprint)==1) THEN
+        IF(MOD(iter,iprint)==1) THEN
           WRITE(6,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm x0inv'
           WRITE(7,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv'
-!        END IF
+        END IF
 !        IF(iter /= 0) THEN
         IF(iter >2) THEN
           WRITE(6,5050)  &
@@ -162,8 +165,11 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,tafter
               itermcount = 0
             END IF
           END IF
-!          IF(itermcount>0) WRITE(71,'(a,i3)') 'itermcount=',itermcount
-!          WRITE(7,'(a,i3)') 'itermcount=',itermcount
+          IF(itermcount>0) THEN
+            WRITE(71,'(a,i3)') 'itermcount=',itermcount
+            WRITE(7,'(a,i3)') 'itermcount=',itermcount
+            WRITE(6,'(a,i3)') 'itermcount=',itermcount
+          END IF
           IF( itermcount==ntermcount) EXIT iterations
         END IF
         
@@ -237,9 +243,20 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,tafter
       
       IF(klocal == 1) CALL localize()
       
+
+
+      angblock=0D0
+      IF(blnprot .AND. .NOT.blnneut .AND. SUM(istblo)>0) angblock(1)=angularmom(istblo(1))  
+      IF(.NOT.blnprot .AND. blnneut .AND. SUM(istblo)>0) angblock(2)=angularmom(istblo(2))  
+      IF(blnprot .AND. blnneut .AND. SUM(istblo)>0) THEN
+        angblock(1)=angularmom(istblo(1))  
+        angblock(2)=angularmom(istblo(2))  
+      END IF
       CALL write_ensurf(iter)
 
       tfirst=.FALSE.
+
+      IF(tpri_conver) WRITE(71,'(1x/1x)')
 
       RETURN
 
@@ -263,9 +280,10 @@ IF(blnprot) CALL search_block(1)
 IF(blnneut) CALL search_block(2) 
 
 
+  
 IF(blnprot .AND. .NOT.blnneut) CALL block1(1)
 IF(.NOT.blnprot .AND. blnneut) CALL block1(2)
-IF(blnprot .AND. blnneut) CALL block2()
+IF(blnprot .AND. blnneut)  CALL block2()
 
 
 END SUBROUTINE scan_block
@@ -323,7 +341,6 @@ DO  blist = 1,maxblist(iq)
 
   CALL iteration_loop()
   
-  
 !  ang = 0
 !  CALL calangularmomentum(istblo(iq),ang)
 !  blenergy(blist,iq) = energy       ! binding energy for the particular blocking state
@@ -350,8 +367,8 @@ IMPLICIT NONE
 
 INTEGER :: iq,maxblist_total,ip,ip1,ip2,blist1,blist2,ipsav(2)
 REAL(8) :: energmin,energmax
-REAL(8), ALLOCATABLE ::  total_energy(:),ipoint(:,:)
-
+REAL(8), ALLOCATABLE :: total_energy(:)
+INTEGER, ALLOCATABLE :: ipoint(:,:)
 
 maxblist_total=maxblist(1)*maxblist(2)
 allocate(total_energy(maxblist_total),ipoint(1:2,maxblist_total))
