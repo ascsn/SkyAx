@@ -15,7 +15,7 @@ USE init
 USE fyfunc
 USE util, ONLY :plot_2d,write_skyax_header
 USE pairin, ONLY: findconjpart
-USE blocking, ONLY: comp_block,blnprot,blnneut,scan_block,absdiff,iteration_loop
+USE blocking, ONLY: comp_block,blnprot,blnneut,scan_block,maxexenerg,iteration_loop,maxamomdiff
 
 IMPLICIT NONE
 
@@ -50,7 +50,7 @@ NAMELIST /static/ nprot,nneut,betain,octini,deocc,mmax,&
                   errenr,errvar,erra,npiter,itpini,&
                   ndrun,nqrun,norun,nhrun,&
                   colerr,irepc,cmssqr,itpfix,inodiag,tvaryx0, &
-                  istblo,absdiff
+                  istblo,maxexenerg,maxamomdiff
 NAMELIST /constraint/ swicon0,betmin0,betmax0,betaw0,&
                       swicon2,betmin2,betmax2,betaw2,&
                       swicon3,betmin3,betmax3,betaw3,&
@@ -539,9 +539,11 @@ SUBROUTINE write_headers()
 
   IF((blnprot .OR. blnneut) .AND. SUM(istblo)==0) THEN
     WRITE(7,'(10x,a,f6.2,a,i5)') &
-      'Scan blocked configurations up to exc. energy',absdiff,' MeV'
+      'Scan blocked configurations up to exc. energy ',maxexenerg,' MeV'
+    WRITE(7,'(10x,a,f6.2,a,i5)') &
+      'Scan blocked configurations up a.m. difference',maxamomdiff
     WRITE(6,'(a,f6.2,a)') &
-      'Scan blocked configurations up to exc. energy',absdiff,' MeV'
+      'Scan blocked configurations up to exc. energy',maxexenerg,' MeV'
   END IF
   
 ! switch 'iflmb0' presently only for L=2

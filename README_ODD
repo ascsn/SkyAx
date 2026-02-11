@@ -48,5 +48,20 @@ worked up in the order of increasing quasiparticle energies.
 
 
 
-Next to be done: Implement computation of total agular momentum J and
-print it side by side with azimuthal angular momentum K.
+
+Update 11. February 2026:
+------------------------
+
+The energy window for selecting blocked configuration has been renamed
+from 'absdiff' to 'maxexenerg'. 
+
+A routine for computing the total angular momenutm of a gven s.p. state
+has been implemented.
+
+A further selector for blcked configuration has been introduced- It is
+'maxamomdiff' which confines the configuration to blocked  s.p. states
+whose difference between azimuthal angular momenutm K and total angular
+momentum J is smaller then 'maxamomdiff'. A small value of 'maxamomdiff'
+is useful for nearly spherical odd-even or even-odd nuclei.
+
+

@@ -27,7 +27,8 @@ REAL(8) :: updo(kblist,2)         !<Storage for difference of upper to lower com
 
 INTEGER :: maxblist(2)
 LOGICAL :: blnprot,blnneut        !<Switches to indicate odd nuclein number
-REAL(8) :: absdiff=2D0            !<Maximum s.p. excitation energy for blocking configurations
+REAL(8) :: maxexenerg=2D0         !<Maximum s.p. excitation energy for blocking configurations
+REAL(8) :: maxamomdiff=1D3        !<Maximum difference between atzimuthal and total angular momentum
 
 LOGICAL, PARAMETER :: ttrack=.TRUE.  !<Switch for test output
 
@@ -341,14 +342,6 @@ DO  blist = 1,maxblist(iq)
 
   CALL iteration_loop()
   
-!  ang = 0
-!  CALL calangularmomentum(istblo(iq),ang)
-!  blenergy(blist,iq) = energy       ! binding energy for the particular blocking state
-!  iparity = npar(istblo(iq))*nrpar(istblo(iq))
-!  WRITE(17,'(a)') 'SEARCH_ENERGY: blist,m,k,iso,maxb,energ,ist,par,ang'
-!  WRITE(17,'(5i4,1pg13.5,2i4,2(1pg13.5))')  &
-!      blist,mblock(iq),kblock(iq),isoblo,maxblist(iq)  &
-!      ,blenergy(blist,iq),istblo, iparity,ang
   
   
 END DO
@@ -461,16 +454,6 @@ DO ip1=1,maxblist_total
   CALL iteration_loop()
   
   
-!  ang = 0
-!  CALL calangularmomentum(istblo(1),angularmom(1))
-!  CALL calangularmomentum(istblo(2),angularmom(2))
-!  blenergy(blist1,1) = energy       ! binding energy for the particular blocking state
-!  iparity = npar(istblo(iq))*nrpar(istblo(iq))
-!  WRITE(17,'(a)') 'SEARCH_ENERGY2: blist,m,k,iso,maxb,energ,ist,par,ang,rmsc'
-!  WRITE(17,'(6i4,1pg13.5,2i4,3(1pg13.5))')  &
-!      blist1,blist2,mblock,kblock,energy,istblo,angularmom,rmsc
-!  CALL flush(17)
-  
 END DO
 
 
@@ -508,7 +491,10 @@ END SUBROUTINE block2
 !! energy.
 SUBROUTINE search_block(iq)
 
+USE observ, ONLY: angularmom
+
 IMPLICIT NONE
+
 
 INTEGER, INTENT(IN)  :: iq   ! isospin for which levels are scanned
 
@@ -529,12 +515,12 @@ DO ist=1,nstm
   ind    = iorder(ine)+iokk(iq)-1
 
   equasi=SQRT((spenrg(ind)-fer(iq))**2+deltaf(ind)**2)  
-  IF(equasi < absdiff) THEN  
+  IF(equasi < maxexenerg) THEN  
 
     ! exclude a couple of unwanted cases
     IF(( ((blnprot.AND.blnneut).AND.iq==1)  &
         .OR.(.NOT.(blnprot.AND.blnneut))   ) .AND. mpsi(ind)<0 ) CYCLE
-!    IF(ABS(mpsi(ind)+0.5D0-angular(ind))>0.3D0) CYCLE    ! select maximum K orientation --> postpone
+    IF(ABS(mpsi(ind)+0.5D0-angularmom(ind))>maxamomdiff) CYCLE   
 
     blist = blist +1                              ! counter for the blocking states
     amblock(blist,iq) = mpsi(ind)    
