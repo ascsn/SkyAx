@@ -90,18 +90,20 @@ DO jst=istmin,istmax
     END IF
   ELSE
     IF(thfbfold) THEN
-      psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
-      psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
+!      psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
+!      psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
+      psip(0:nz,0:nr,1)=-pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,itpartn(jst))
+      psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,itpartn(jst))
       CALL Gaussfolding_spin(psip,psin,nparz(1,jst),mpsi(jst),1)
       DO is=1,2
         hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
             +psin(0:nz,0:nr,is)*uva
       END DO
     ELSE
-      DO is=1,2
-        hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
-            +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,is,jst)*uva
-      END DO
+      hfbpsi(0:nz,0:nr,1,jst) = hfbpsi(0:nz,0:nr,1,jst)*v2a  &
+          -pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,2,itpartn(jst))*uva
+      hfbpsi(0:nz,0:nr,2,jst) = hfbpsi(0:nz,0:nr,2,jst)*v2a  &
+          +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,1,itpartn(jst))*uva
     END IF
   END IF
 !  WRITE(6,'(a,i4,4(1pg13.5))') 'HPSI:',jst,v2a,uva, &
