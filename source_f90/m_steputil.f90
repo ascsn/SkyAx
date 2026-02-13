@@ -420,6 +420,7 @@ END IF
 !***************************************************
   
   IF(toddterms) THEN
+!    WRITE(6,'(a,6(1pg13.5))') 'ROTJ etc:',SUM(rotjr**2),SUM(rotjz**2),SUM(rotspden**2)
     DO ir=0,nr
       DO iz=0,nz
 !           calculate S_r
@@ -452,6 +453,7 @@ END IF
             spdenz(iz,ir,1),spdenz(iz,ir,2), wrk1(iz,ir))
       END DO
     END DO
+!    WRITE(6,'(a,6(1pg13.5))') 'POTJ etc:',SUM(pots**2),SUM(pota**2)
 !          energspin = energyFy
     energyfy = f1int(wrk1)+energyFy
 !          energspin = energyFy-energspin
@@ -881,7 +883,8 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
 !***************************************************************   
   !     compose mean-field potentials
 !***************************************************************   
-!  pot(0,0,:) =0D0
+!  pot(0,0,:) =
+  WRITE(6,'(a,6(1pg13.5))') 'DRHOLS:',SUM(drhols**2),SUM(psip**2),SUM(psin**2)
   iq=1
   ic=3-iq
   DO  ir=0,nr
@@ -917,6 +920,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
 
   DEALLOCATE(psip,psin,workenerg)
 
+  WRITE(6,'(a,6(1pg13.5))') 'POTLS:',SUM(potls**2)
 !  WRITE(6,*) 'end of FAYANS:',SUM(pot(:,:,1)),SUM(pot(:,:,2))
 END SUBROUTINE Fayans_potentials
 

@@ -93,7 +93,7 @@ IF(thfbfold) THEN
     CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
     IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psifold(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -106,7 +106,7 @@ ELSE
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psi(0:nz,0:nr,1:2,jst),psi(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -216,13 +216,13 @@ IF(thfbfold) THEN
         work=0D0
       ELSE
         work(:,:)=(psifold(:,:,1,jst)*psifold(:,:,2,itpartn(jst)) &
-                   +psifold(:,:,2,jst)*psifold(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
+                   -psifold(:,:,2,jst)*psifold(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
       END IF
     ELSE
       work(:,:)=(psifold(:,:,1,jst)**2+psifold(:,:,2,jst)**2)*pairpt(:,:,iq)
     END IF
     deltaf(jst) = f1int(work)
-    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
+!    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)
@@ -232,13 +232,13 @@ ELSE
         work=0D0
       ELSE
         work(:,:)=(psi(:,:,1,jst)*psi(:,:,2,itpartn(jst)) &
-                   +psi(:,:,2,jst)*psi(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
+                   -psi(:,:,2,jst)*psi(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
       END IF
     ELSE
       work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
     END IF
     deltaf(jst) = f1int(work)
-    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
+!    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
   END DO
 END IF
 

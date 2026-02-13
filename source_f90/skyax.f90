@@ -21,7 +21,6 @@ IMPLICIT NONE
 
 !CHARACTER (LEN=20) :: set
 
-LOGICAL,PARAMETER :: tafter=.true.           ! switch to "afterburn"
 
 LOGICAL :: thfbsav                           ! global switch to HFB (dep. on ipair)
 LOGICAL :: tfirst                            ! signals first run along a deformation path

@@ -49,12 +49,13 @@ USE util, ONLY: plot_2d
 IMPLICIT NONE
 
 INTEGER,PARAMETER :: ntermcount=3 ! nr. of termination counts required   
+LOGICAL,PARAMETER :: tafter=.true.           ! switch to "afterburn"
 
 REAL(8) :: oldoct,dnewoct,econprev,devh2prev,x0invmin,econs,qconsav,devh2s
 REAL(8) :: pairfcsav(2),fxisav,h1xisav,hgradxisav,pairfacact
 INTEGER :: iplold,ipold,iter,itesto,itmaxact,itermcount !,iwu,nchg,nmass,number_threads=1
 INTEGER :: ipairsav,iteract
-LOGICAL :: tfirst=.TRUE.,thfbsav,tafter
+LOGICAL :: tfirst=.TRUE.,thfbsav
       
   thfbsav = ipair==6 .OR. ipair==8
   ipairsav = ipair
