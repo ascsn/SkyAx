@@ -186,7 +186,11 @@ DO ist=istmin,istmax
   IF(tqq) CALL accumulate_variances_2(ist,istmin,istmax,hfbpsi(:,:,:,ist),qdh,hdh,hddh,hdhdh)  
 !  WRITE(6,*) 'HFBSTEP 8: mythread,v2=',mythread,vsqf(ist),&
 !   SUM(psi(0:nz,0:nr,1:2,ist)**2),SUM(hfbpsi(0:nz,0:nr,1:2,ist)**2)
-  psi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
+  IF(thfb) THEN
+    hfbpsi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
+  ELSE
+    psi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
+  END IF
   IF(tbcs .AND. iq==1 .AND. mpsi(ist)==0) THEN
     WRITE(7,'(a,i4)') 'ortho-normality after: ist=',ist
     WRITE(7,'(100(1pg13.5))')  &

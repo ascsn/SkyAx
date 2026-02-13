@@ -26,7 +26,7 @@ ifort_domp : export COMPILERFLAGS_SKYAX = -g -traceback -CB -qopenmp -mcmodel=la
 gf        : export EXEC_SKYAX = skyax.gfortran.seq
 gf_omp    : export EXEC_SKYAX = skyax.gfortran.omp
 gf_d      : export EXEC_SKYAX = skyax.gfortran.dbg
-ifort     : export EXEC_SKYAX = skyax.ifort.seq
+ifort     : export EXEC_SKYAX = skyax.ifort.test  #skyax.ifort.seq
 ifort_dbg : export EXEC_SKYAX = skyax.ifort.dbg
 ifort_omp : export EXEC_SKYAX = skyax.ifort.omp
 ifort_domp : export EXEC_SKYAX = skyax.ifort.domp

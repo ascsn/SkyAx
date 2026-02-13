@@ -7,6 +7,7 @@
 !------------------------------------------------------------------------------
 MODULE blocking
 
+USE wavefr, ONLY: psi
 USE paramr
 USE levels
 USE dynpar
@@ -142,6 +143,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
         END IF
         
 !IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV10:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
+! WRITE(*,*) 'before ENTRY:',SUM(psi(0:nr,0:nz,1:2,1:nst(1))**2)
         CALL sstep(iter)
 !IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV11:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
         CALL sinfo(iter)
