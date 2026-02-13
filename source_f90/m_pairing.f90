@@ -252,6 +252,7 @@ END IF
 !     stabilized pairing gap
 IF(pairstab.NE.0D0) THEN
   IF(tFayans) THEN
+    WRITE(*,*) epair
     buff(1)=ABS(pairstab/epairtestp)
     buff(2)=ABS(pairstab/epairtestn)
     DO jst=1,nst(1)+nst(2)

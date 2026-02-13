@@ -131,7 +131,8 @@ INTEGER :: nlo,nhi,i
 !$ REAL(8) :: wtime1,wtime2
 LOGICAL :: topened
 
-REAL(8), ALLOCATABLE :: temp(:,:,:,:)
+REAL(8), POINTER :: psipointer(:,:,:,:)
+REAL(8), POINTER :: temp(:,:,:,:)
 REAL(8),ALLOCATABLE :: wrk1(:,:),wrk2(:,:),wrk4(:,:)
 REAL(8),ALLOCATABLE :: rhot(:,:,:), taut(:,:,:), drholst(:,:,:),rholsrt(:,:,:),rholszt(:,:,:)
 
@@ -143,6 +144,9 @@ wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0;rhot=0D0;taut=0D0;drholst=0D0;rholsrt=0D0;r
 !psip=0D0;psin=0D0;
 !IF(ifqq==1 .AND. inodiag<itmax) &
 !  STOP "option IFQQ=1 incompatible with mean-field diagonalization"
+
+
+! WRITE(*,*) 'ENTRY:',SUM(psi(0:nr,0:nz,1:2,1:nst(1))**2)
 
 
 IF(tcstp .AND. tswicon) THEN
@@ -257,6 +261,8 @@ IF(thfb .AND. 1==2) THEN
   WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
 END IF
 
+
+
 IF(1>2) WRITE(6,*) 'odd dens. before:' &
   ,SQRT(SUM(rotjr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
   ,SQRT(SUM(rotjz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
@@ -279,6 +285,7 @@ DO  i=1,nom         ! loop over all blocks
   im=load_m(mythread,i)
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
+  IF(nhi<1) CYCLE
   nlo=mlo(im)        ! lowest state for given 'im''
   nadd=nhi-nlo+1     ! number of states in 'im' block
   kpsic=mim(im)      ! actual 'm' value for 'im,'
@@ -294,9 +301,10 @@ DO  i=1,nom         ! loop over all blocks
       CALL hfbstep(temp,symcond,nlo,nhi,iter,.TRUE.)
 !      WRITE(6,'(a,4i4,1pg13.5)') 'HFB:',mythread,i,nlo,nhi,symcond
       symcondiso(iq) = symcondiso(iq) + symcond
+      CALL schmit(temp(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
     ELSE
-    IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
-    DO  jst=nlo,nhi
+      IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
+      DO  jst=nlo,nhi
       
 !**********************************************************************
 !                                                                     *
@@ -304,24 +312,24 @@ DO  i=1,nom         ! loop over all blocks
 !                                                                     *
 !**********************************************************************
       
-      ! action of Hamiltonian on wf
-      CALL hpsi(psi(0:nz,0:nr,1:2,jst),psin(0:nz,0:nr,1:2),jst)        !IN:psi,jst OUT: psin
-      IF(tdiag) CALL collmatr(hmatr,temp(0:nz,0:nr,1:nsd,:),&
-                              psin(0:nz,0:nr,1:2),nlo,nhi,jst,npsi(2))
+        ! action of Hamiltonian on wf
+        CALL hpsi(psi(0:nz,0:nr,1:2,jst),psin(0:nz,0:nr,1:2),jst)        !IN:psi,jst OUT: psin
+        IF(tdiag) CALL collmatr(hmatr,temp(0:nz,0:nr,1:nsd,:),&
+                                psin(0:nz,0:nr,1:2),nlo,nhi,jst,npsi(2))
 !      IF(tdiag) CALL collmatr(hmatr(nlo:nhi,nlo:nhi),temp(0:nz,0:nr,1:nsd,nlo:nhi),&
 !                              psin(0:nz,0:nr,1:2),nlo,jst,nadd)
-      CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,nlo,nhi,&
-           spevar(jst),spenrg(jst),&     !s.p. properties
-           qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&      !accumulated properties
-                                  qh4,qhdig,devmf2,devgap,devh2,devoc2)
-      ! apply damping
-      CALL damnuc(psin(0:nz,0:nr,1:2),psip(0:nz,0:nr,1:2),jst)!INPUT:psin, OUTPUT:psip
-        
-      CALL accumulate_variances_2(jst,nlo,nhi,psip,qdh,hdh,hddh,hdhdh)!INPUT:jst,nlo,nhi OUTPUT:qdh,hdh,hddh,hdhdh
+        CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,nlo,nhi,&
+             spevar(jst),spenrg(jst),&     !s.p. properties
+             qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&      !accumulated properties
+                                    qh4,qhdig,devmf2,devgap,devh2,devoc2)
+        ! apply damping
+        CALL damnuc(psin(0:nz,0:nr,1:2),psip(0:nz,0:nr,1:2),jst)!INPUT:psin, OUTPUT:psip
+          
+        CALL accumulate_variances_2(jst,nlo,nhi,psip,qdh,hdh,hddh,hdhdh)!INPUT:jst,nlo,nhi OUTPUT:qdh,hdh,hddh,hdhdh
 
 !      IF(tcstp) WRITE(*,*) 'QQ-test1:',qq2,qq3,qh2,qh3
       ! the key iteration step
-      psi(0:nz,0:nr,1:nsd,jst) = psi(0:nz,0:nr,1:nsd,jst)-psip(0:nz,0:nr,1:nsd)
+        psi(0:nz,0:nr,1:nsd,jst) = psi(0:nz,0:nr,1:nsd,jst)-psip(0:nz,0:nr,1:nsd)
 
        
 !        CALL hpsi(psi(0:nz,0:nr,1:2,jst),psin(0:nz,0:nr,1:2),jst)
@@ -335,36 +343,45 @@ DO  i=1,nom         ! loop over all blocks
 
 
 !      end of inner loop over states within a block of same 'm'
-    END DO
-    
+      END DO
 
-    IF(tdiag) CALL diag_wf(hmatr(nlo:nhi,nlo:nhi),nlo,nhi-nlo+1)
+      IF(tdiag) CALL diag_wf(hmatr(nlo:nhi,nlo:nhi),nlo,nhi-nlo+1)
+      CALL schmit(psi(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
 
     END IF
     
 !   Schmidt orthonormmalization of the states  ( needed after "diag_wf")
 !    IF(thfb) WRITE(6,*) 'BEFORE SCHMIT:',mythread,SUM(psi(0:nz,0:nr,1:2,nlo:nhi)**2)
-    CALL schmit(psi(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
   END IF
+!???  IF(thfb) psi=temp
   
 !   begin loop to compute the new density and s.p.energies.
 !   within a block of same 'm'
+
+!  ALLOCATE(psipointer(0:nr,0:nz,1:2,nlo:nhi))
+ IF(thfb .AND. iter>0) THEN
+!    temp => psipointer
+    psipointer => temp
+  ELSE
+!    psi => psipointer 
+    psipointer => psi
+  END IF
   rhot=0.0d0; taut=0.0d0; drholst=0.0d0; rholsrt=0.0d0; rholszt=0.0d0
   DO jst=nlo,nhi
     iq = icharg(jst)
     v2act=adyrho*vsqf(jst)*wtpair_v2(jst)
     IF(v2act > v2lim) THEN
       IF(tswicon .AND.iter > 0.AND.iter <= itcons) THEN
-        CALL sdenti(psi(0:nz,0:nr,1:2,jst),rhot(0:nz,0:nr,iq),v2act,jst)
+        CALL sdenti(psipointer(0:nz,0:nr,1:2,jst),rhot(0:nz,0:nr,iq),v2act,jst)
       ELSE
-        CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
+        CALL densit(psipointer(0:nz,0:nr,1:2,jst),v2act,jst,  &
                     rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq),  &
                     rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
 !NEW ODD
         IF(toddterms) THEN
 !        IF(toddterms .AND. istsym>2) THEN
 !          WRITE(6,*) 'CUR before call:',jst,SUM(curphi(:,:,iq)**2)
-          CALL densitodd(psi(:,:,:,jst),v2act,jst,  &
+          CALL densitodd(psipointer(:,:,:,jst),v2act,jst,  &
               rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
               spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
               d2spdenz(:,:,iq),curphi(:,:,iq),spdenkr(:,:,iq), spdenkz(:,:,iq))
@@ -373,6 +390,7 @@ DO  i=1,nom         ! loop over all blocks
       END IF
     END IF
   END DO
+  NULLIFY(psipointer)
   !$omp critical 
   IF(tswicon .AND.iter > 0.AND.iter <= itcons) THEN
     rhoti=rhoti+rhot
@@ -396,6 +414,10 @@ DO  i=1,nom         ! loop over all blocks
 END DO
 DEALLOCATE(psip,psin)
 !$OMP END PARALLEL
+
+
+IF(thfb .AND. iter>0) psi=temp
+
 IF(1>2) WRITE(6,*) 'odd dens. after:'  &
   ,SQRT(SUM(rotjr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
   ,SQRT(SUM(rotjz(:,:,1:2)**2)/(nr+1)/(nz+1)) &

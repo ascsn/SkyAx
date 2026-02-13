@@ -1132,6 +1132,9 @@ INTEGER :: isort(nhwd)
 REAL(8) :: emin,ovlp,sum2,wnor
 INTEGER :: i,imin,in,in1,inw,is,isav,ist,jn,jnw,jst,n,npari,nparj,mythread
 
+IF(nhi==0) RETURN
+!WRITE(*,*) 'SCHMIT entered:',istadd,nhi,SUM(psiw**2)
+
 IF(tstab .AND. iford /= 1)  &
     STOP ' TSTAB=.TRUE. needs energy ordering in SCHMIT. set IFORD=1'
 
