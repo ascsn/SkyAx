@@ -263,7 +263,7 @@ IF(thfbfold) THEN
 !    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
     IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psifold(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -276,7 +276,7 @@ ELSE
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psi(0:nz,0:nr,1:2,jst),psi(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -314,6 +314,8 @@ IF(.NOT.tFayans) THEN
     epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
   END IF
   etpair= epairtestp+ epairtestn
+  epair(1) = epairtestp
+  epair(2) = epairtestn
   IF(ipair <= 4)  etpair=epair(1)+epair(2)
 END IF
 
@@ -505,7 +507,7 @@ IF(iter == 0 .AND. tpri_conver) THEN
   END IF
 ELSE IF(tpri_conver) THEN
   IF(.NOT.tswicon) THEN
-    WRITE(71,'(i5,f11.4,9(1pg12.5))')  &
+    WRITE(71,'(i5,f11.4,9(1pg13.5))')  &
         iter,energy,devh2,econ,q,devoc2,devmf2,rmsp,x0inv,epair
 !        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv,epair
   ELSE

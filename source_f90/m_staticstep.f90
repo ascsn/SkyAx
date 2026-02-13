@@ -362,6 +362,7 @@ DO  i=1,nom         ! loop over all blocks
                     rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
 !NEW ODD
         IF(toddterms) THEN
+!        IF(toddterms .AND. istsym>2) THEN
 !          WRITE(6,*) 'CUR before call:',jst,SUM(curphi(:,:,iq)**2)
           CALL densitodd(psi(:,:,:,jst),v2act,jst,  &
               rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
@@ -481,7 +482,7 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
     nlo=mlo(im)
     nadd=nhi-nlo+1
     iq=miq(im)
-    ! Multirupole correction and ortho-normalization
+    ! Multipole correction and ortho-normalization
     DO jst=nlo,nhi
       DO is=1,2
         psi(0:nz,0:nr,is,jst) = wrk4(0:nz,0:nr)*psi(0:nz,0:nr,is,jst)
@@ -499,7 +500,7 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
           rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
 !NEW ODD
         IF(toddterms) THEN
-!        IF(toddterms .AND. 1>2) THEN
+!        IF(toddterms .AND. istsym>2) THEN
           CALL densitodd(psi(:,:,1,jst),v2act,jst,  &
               rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
               spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
