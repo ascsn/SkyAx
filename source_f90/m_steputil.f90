@@ -884,7 +884,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
   !     compose mean-field potentials
 !***************************************************************   
 !  pot(0,0,:) =
-  WRITE(6,'(a,6(1pg13.5))') 'DRHOLS:',SUM(drhols**2),SUM(psip**2),SUM(psin**2)
+!  WRITE(6,'(a,6(1pg13.5))') 'DRHOLS:',SUM(drhols**2),SUM(psip**2),SUM(psin**2)
   iq=1
   ic=3-iq
   DO  ir=0,nr
@@ -920,7 +920,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
 
   DEALLOCATE(psip,psin,workenerg)
 
-  WRITE(6,'(a,6(1pg13.5))') 'POTLS:',SUM(potls**2)
+!  WRITE(6,'(a,6(1pg13.5))') 'POTLS:',SUM(potls**2)
 !  WRITE(6,*) 'end of FAYANS:',SUM(pot(:,:,1)),SUM(pot(:,:,2))
 END SUBROUTINE Fayans_potentials
 

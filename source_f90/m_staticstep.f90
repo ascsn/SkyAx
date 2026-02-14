@@ -273,6 +273,20 @@ IF(1>2) WRITE(6,*) 'odd dens. before:' &
   ,SQRT(SUM(spdenkr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
   ,SQRT(SUM(spdenkz(:,:,1:2)**2)/(nr+1)/(nz+1)) 
 
+!  DO jst=1,nst(1)+nst(2)
+!    iq    = icharg(jst)
+!    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE  
+!    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
+!  END DO
+!  DO jst=1,nst(1)+nst(2)
+!        WRITE(*,'(a,4i5,5(1pg13.5))') 'jst,conjgover:',jst,itpartn(jst), &
+!          mpsi(jst),mpsi(itpartn(jst)), &
+!          conjg_wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst))), &
+!          wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst))), &
+!          wfovlp(psifold(:,:,:,jst),psifold(:,:,:,jst)), &
+!          wfovlp(psifold(:,:,:,itpartn(jst)),psifold(:,:,:,itpartn(jst)))
+!  END DO
+
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &

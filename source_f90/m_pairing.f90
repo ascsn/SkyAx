@@ -222,7 +222,7 @@ IF(thfbfold) THEN
       work(:,:)=(psifold(:,:,1,jst)**2+psifold(:,:,2,jst)**2)*pairpt(:,:,iq)
     END IF
     deltaf(jst) = f1int(work)
-!    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
+    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
   END DO
 ELSE
   DO jst=1,nst(1)+nst(2)
@@ -238,7 +238,7 @@ ELSE
       work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
     END IF
     deltaf(jst) = f1int(work)
-!    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
+    IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
   END DO
 END IF
 
@@ -252,7 +252,7 @@ END IF
 !     stabilized pairing gap
 IF(pairstab.NE.0D0) THEN
   IF(tFayans) THEN
-    WRITE(*,*) epair
+!    WRITE(*,*) epair
     buff(1)=ABS(pairstab/epairtestp)
     buff(2)=ABS(pairstab/epairtestn)
     DO jst=1,nst(1)+nst(2)
