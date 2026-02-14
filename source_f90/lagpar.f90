@@ -41,7 +41,9 @@ REAL(8), ALLOCATABLE :: symatrix(:,:)
 
 LOGICAL, PARAMETER :: tbcs=.FALSE.    ! testswitch
 LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
+LOGICAL, PARAMETER :: tconj=.TRUE.   ! switches to use conjugate state in HFB step
 REAL(8) :: v2a,uva,fachfb
+REAL(8) :: xno1,xno2,ov12
 INTEGER :: mist,npzist,jst,ist,is,iq,mythread
 
 REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
@@ -90,20 +92,37 @@ DO jst=istmin,istmax
     END IF
   ELSE
     IF(thfbfold) THEN
-!      psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
-!      psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
-      psip(0:nz,0:nr,1)=-pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,itpartn(jst))
-      psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,itpartn(jst))
+      IF(tconj) THEN
+        psip(0:nz,0:nr,1)=SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,itpartn(jst))
+        psip(0:nz,0:nr,2)=-SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,itpartn(jst))
+!        xno1 =  wfovlp(psifold(:,:,:,jst),psifold(:,:,:,jst))
+!        xno2 =  wfovlp(psifold(:,:,:,itpartn(jst)),psifold(:,:,:,itpartn(jst)))
+!        ov12 =  conjg_wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst)))/SQRT(xno1*xno2)
+!        IF(ABS(ov12)<0.9999D0) WRITE(*,'(a,4i5,4(1pg13.5))') 'jst,conjgover:',jst,itpartn(jst), &
+!          mpsi(jst),mpsi(itpartn(jst)), ov12, &
+!          wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst)))/SQRT(xno1*xno2), &
+!          xno1,xno2
+      ELSE
+        psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
+        psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
+      END IF
       CALL Gaussfolding_spin(psip,psin,nparz(1,jst),mpsi(jst),1)
       DO is=1,2
         hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
             +psin(0:nz,0:nr,is)*uva
       END DO
     ELSE
-      hfbpsi(0:nz,0:nr,1,jst) = hfbpsi(0:nz,0:nr,1,jst)*v2a  &
-          -pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,2,itpartn(jst))*uva
-      hfbpsi(0:nz,0:nr,2,jst) = hfbpsi(0:nz,0:nr,2,jst)*v2a  &
-          +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,1,itpartn(jst))*uva
+      IF(tconj) THEN
+        hfbpsi(0:nz,0:nr,1,jst) = hfbpsi(0:nz,0:nr,1,jst)*v2a  &
+            +SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,2,itpartn(jst))*uva   
+        hfbpsi(0:nz,0:nr,2,jst) = hfbpsi(0:nz,0:nr,2,jst)*v2a  &
+            -SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,1,itpartn(jst))*uva   
+      ELSE
+        hfbpsi(0:nz,0:nr,1,jst) = hfbpsi(0:nz,0:nr,1,jst)*v2a  &
+            +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,1,jst)*uva
+        hfbpsi(0:nz,0:nr,2,jst) = hfbpsi(0:nz,0:nr,2,jst)*v2a  &
+            +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,2,jst)*uva
+      END IF
     END IF
   END IF
 !  WRITE(6,'(a,i4,4(1pg13.5))') 'HPSI:',jst,v2a,uva, &

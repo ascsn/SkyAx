@@ -110,7 +110,7 @@ m_levels.o : m_paramr.o Makefile
 
 m_fields.o : m_paramr.o m_grid.o Makefile
 
-m_wavefr.o : m_paramr.o m_grid.o Makefile
+m_wavefr.o : m_paramr.o m_grid.o m_levels.o Makefile
 
 m_constr.o : m_paramr.o m_dynpar.o m_levels.o m_grid.o m_fields.o Makefile
 
