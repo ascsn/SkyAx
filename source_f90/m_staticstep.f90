@@ -628,7 +628,7 @@ CALL mfhmlt(iter)
 !CALL user_interface_6()    ! to replace 'mfhmlt' for alternative mean-field
 
 DEALLOCATE(hmatr)
-IF(tdiag) DEALLOCATE(temp)
+DEALLOCATE(temp)
 DEALLOCATE(wrk1,wrk2,wrk4)
 DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 
