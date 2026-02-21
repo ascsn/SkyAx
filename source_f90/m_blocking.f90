@@ -633,4 +633,365 @@ RETURN
 END SUBROUTINE comp_block
 
 
+!---------------------------------------------------------------------------  
+! DESCRIPTION: write_com
+!> @brief
+!!Writes all relevant parameters and fields for the solution of
+!!the unblocked ground state of odd nuclei for later re-use.
+!--------------------------------------------------------------------------- 
+SUBROUTINE write_com()
+
+USE paramr
+USE constr
+USE dynpar
+USE fields
+USE observ
+USE wavefr
+USE levels
+USE grid
+USE coulomb
+USE pairin
+!USE staticstep
+!USE init
+
+IMPLICIT NONE
+
+!CHARACTER (LEN=3), INTENT(IN OUT)        :: outnam
+CHARACTER (LEN=20) :: set
+
+INTEGER :: npsid
+
+npsid=npsi(2)
+
+OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
+IF(tswicon) WRITE(101,*) distsf(0:nzd,0:nrd),  &
+    qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nzd,0:nrd)
+IF(tswicon0) WRITE(101,*) qcfac0(0:nzd,0:nrd), qfac0(0:nzd,0:nrd)
+IF(tswicon2) WRITE(101,*) qcfac2(0:nzd,0:nrd), qfac2(0:nzd,0:nrd)
+IF(tswicon3) WRITE(101,*) qcfac3(0:nzd,0:nrd), qfac3(0:nzd,0:nrd)
+IF(tswicon4) WRITE(101,*) qcfac4(0:nzd,0:nrd), qfac4(0:nzd,0:nrd)
+CLOSE(101)
+
+
+!      open(102,status='unknown',form='formatted',
+!     & file='recoulomb.'//outnam)
+!      write(102,*)
+!     &                  cbgrho(0:nzd,0:nrd,0:KANGMOL,0:KANGMOM),
+!     &                  cbgfld(0:nzd,0:nrd,0:KANGMOL,0:KANGMOM),
+!     &                  cbgmom(0:KANGMOL),
+!     &                  cfldbuf(0:nzd,0:nrd),
+!     &                  cdmpmas(0:nzd,0:nrd)
+OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
+WRITE(103,*) derz1(0:nzd,0:nzd,1:4),  &
+    derz2(0:nzd,0:nzd,1:4), derr1(0:nrd,0:nrd,1:4),  &
+    derr2a(0:nrd,0:nrd,0:kmpsi,1:2), derz2f(0:nzd,0:nzd,1:4),  &
+    derr1f(0:nrd,0:nrd,1:4),  &
+    derr2af(0:nrd,0:nrd,0:kmpsi,1:2), r1inv(0:nrd,0:nrd),  &
+    r2inv(0:nrd,0:nrd),  &
+    zdnuc(0:nzd,0:nzd,1:4), rdnuc(0:nrd,0:nrd,0:kmpsi),  &
+    zdmes(0:nzd,0:nzd,1), rdmes(0:nrd,0:nrd,1),  &
+    iband_derr, iband_derz
+
+OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
+WRITE(104,*) cmono,cquad,chex,cdip,coct,  &
+    cmssqr,colerr,dmsfac, errenr,errvar,irepc,itpfix, itert
+
+!OPEN(105,STATUS='unknown',FORM='formatted', FILE='regridpr.'//outnam)
+!WRITE(105,*) dr,dz,sr,sz,drsqr,dzsqr,dvol,sym,  &
+!    nr,nz,nrm1,nzm1,nro,nzo,isym,icm, icutr,icutz,idrtyp
+!CLOSE(105)
+
+!OPEN(106,STATUS='unknown',FORM='formatted', FILE='redampar.'//outnam)
+!WRITE(106,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
+!CLOSE(106)
+
+OPEN(107,STATUS='unknown',FORM='formatted', FILE='reforces.'//outnam)
+WRITE(107,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
+CLOSE(107)
+
+
+OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
+WRITE(108,*) gap(1:2),fer(1:2),  &
+    epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
+    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
+
+OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
+WRITE(109,*) pot(0:nzd,0:nrd,1:kqm),  &
+    coulpt(0:nzd,1:nrd), bmass(0:nzd,0:nrd,1:kqm),  &
+    potls(0:nzd,0:nrd,1:kqm,1:2),  &
+    drbmas(0:nzd,0:nrd,1:kqm),dzbmas(0:nzd,0:nrd,1:kqm),  &
+    potadd(0:nzd,0:nrd,1:kqm),rhosur(0:nzd,0:nrd,1:kqm),  &
+    pairpt(0:nzd,0:nrd,1:kqm),potdamp(0:nzd,0:nrd)
+
+OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
+WRITE(110,*) rho(0:nzd,0:nrd,1:kqm),  &
+    crho(0:nzd,0:nrd), tau(0:nzd,0:nrd,1:kqm),  &
+    drhols(0:nzd,0:nrd,1:kqm), rholsr(0:nzd,0:nrd,1:kqm),  &
+    rholsz(0:nzd,0:nrd,1:kqm), d2rho(0:nzd,0:nrd,1:kqm),  &
+    rhoti(0:nzd,0:nrd,1:kqm), paircr(0:nzd,0:nrd,1:kqm)
+
+OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
+!WRITE(111,*) crhom(0:nzd,0:nrd,0:kangmo),  &
+!    coulm(0:nzd,0:nrd,0:kangmo), crhoq(0:nzd,0:nrd,0:kangmo),  &
+!    coulq(0:nzd,0:nrd,0:kangmo), crhoh(0:nzd,0:nrd,0:kangmo),  &
+!    coulh(0:nzd,0:nrd,0:kangmo), crhod(0:nzd,0:nrd,0:kangmo),  &
+!    could(0:nzd,0:nrd,0:kangmo), crhoo(0:nzd,0:nrd,0:kangmo),  &
+!    coulo(0:nzd,0:nrd,0:kangmo), wcolt(0:nzd,0:nrd),sqrm(0:nzd,0:nrd),  &
+!    nqrun,nhrun,ndrun,norun
+WRITE(111,*) wcolt(0:nzd,0:nrd),nqrun,nhrun,ndrun,norun
+
+!OPEN(112,STATUS='unknown',FORM='formatted', FILE='reinipar.'//outnam)
+!WRITE(112,*) hbomz,hbomr,betain,octini,bzosc,brosc,  &
+!    eocc(1:2),deocc(1:2),mmax(1:2)
+!!      ,locc(1:10)
+!CLOSE(112)
+
+OPEN(113,STATUS='unknown',FORM='formatted', FILE='relevels.'//outnam)
+WRITE(113,*) wate(1:npsid)  ,spn(1:npsid)     ,  &
+    spenrg(1:npsid), spevar(1:npsid),speold(1:npsid),  &
+    oc(1:npsid),  &
+    vsqf(1:npsid)  ,dvsqf(1:npsid) ,  &
+    vsqfol(1:npsid),cmpn(nsd,1:npsid),vsqobs(1:npsid),  &
+    deltaf(1:npsid),wtpair_uv(1:npsid),wtpair_v2(1:npsid), qspav(1:npsid) ,  &
+    mpsi(1:npsid)  ,npar(1:npsid)    ,nrpar(1:npsid) , nparz(1:2,1:npsid) ,  &
+    nqr(1:npsid)   ,nqz(1:npsid)     ,  &
+    icharg(1:npsid),iorder(1:npsid),ifocsv,maxblist(1:2),        &
+    akblock(1:kblist,1:2), amblock(1:kblist,1:2),  &
+    aisoblo(1:kblist,1:2), aistblo(1:kblist,1:2)
+
+
+
+OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
+WRITE(114,*) anumb,  &
+    nst(1:2),npart(1:2),iokk(1:2),numsta(1:2)
+
+OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
+WRITE(115,*) nom,mhi(1:mxd),  &
+    mlo(1:mxd),miq(1:mxd),mim(1:mxd)
+
+OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
+WRITE(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
+    beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
+    beta3,beta3p,beta3n,beta4,beta4p,beta4n, zcm,rdmsc,surfc
+!    rchrg2,crmaso,crmasp,crmasq,xinert,bmassc,bmassr,scmass,  &
+!    pnmass,pnmas0,zpetri,omgtri, pwid,pwido,ammass,amwid,ampnms,  &
+!    zpecmx,widcmx,zpecmz,widcmz,widdxy,widdz, tmass
+
+!OPEN(117,STATUS='unknown',FORM='formatted', FILE='recntrlv.'//outnam)
+!WRITE(117,*) econ,eold,energy,energr,ekin,epot,ecoul,etpair,  &
+!    eshell,erearr,equad,devh2,ERR,qerr,qold,qcon,  &
+!    devmf2,devoc2,devgap,varqsq,qq,qdh, itmax,ivs,itest,iprint,iplot,ifcran
+!CLOSE(117)
+
+!OPEN(118,STATUS='unknown',FORM='formatted', FILE='reord.'//outnam)
+!WRITE(118,*) iord2(1:npsid),spen2(1:npsid),  &
+!    ireg(1:2)
+!CLOSE(118)
+
+OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
+WRITE(119,*) psi(0:nzd,0:nrd,1:nsd,1:npsid)
+CLOSE(119)
+
+!      close(102)
+CLOSE(103)
+CLOSE(104)
+CLOSE(108)
+CLOSE(109)
+CLOSE(110)
+CLOSE(111)
+CLOSE(113)
+CLOSE(114)
+CLOSE(115)
+CLOSE(116)
+
+RETURN
+
+END SUBROUTINE write_com
+
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: read_com
+!> @brief
+!!Reads all relevant parameters and fields for the solution of
+!!the unblocked ground state as starting configuration for a
+!!caölcuation with blocking
+SUBROUTINE read_com(iter)
+
+USE paramr
+USE constr
+USE dynpar
+USE fields
+USE observ
+USE wavefr
+USE levels
+USE grid
+USE coulomb
+USE pairin
+!USE staticstep
+!USE init
+
+IMPLICIT NONE
+
+INTEGER, INTENT(IN OUT)                  :: iter
+!CHARACTER (LEN=3), INTENT(IN OUT)        :: outnam
+CHARACTER (LEN=20) :: set
+
+INTEGER :: npsid
+
+npsid=npsi(2)
+
+
+OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
+IF(tswicon) READ(101,*) distsf(0:nzd,0:nrd),  &
+    qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nzd,0:nrd)
+IF(tswicon0) READ(101,*) qcfac0(0:nzd,0:nrd), qfac0(0:nzd,0:nrd)
+IF(tswicon2) READ(101,*) qcfac2(0:nzd,0:nrd), qfac2(0:nzd,0:nrd)
+IF(tswicon3) READ(101,*) qcfac3(0:nzd,0:nrd), qfac3(0:nzd,0:nrd)
+IF(tswicon4) READ(101,*) qcfac4(0:nzd,0:nrd), qfac4(0:nzd,0:nrd)
+CLOSE(101)
+
+!      WRITE(7,'(a,3i4)') 'READ_COM 2:',nst,itpartn(73)
+
+OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
+READ(103,*) derz1(0:nzd,0:nzd,1:4),  &
+    derz2(0:nzd,0:nzd,1:4), derr1(0:nrd,0:nrd,1:4),  &
+    derr2a(0:nrd,0:nrd,0:kmpsi,1:2), derz2f(0:nzd,0:nzd,1:4),  &
+    derr1f(0:nrd,0:nrd,1:4),   &
+    derr2af(0:nrd,0:nrd,0:kmpsi,1:2), r1inv(0:nrd,0:nrd),  &
+    r2inv(0:nrd,0:nrd),  &
+    zdnuc(0:nzd,0:nzd,1:4), rdnuc(0:nrd,0:nrd,0:kmpsi),  &
+    zdmes(0:nzd,0:nzd,1), rdmes(0:nrd,0:nrd,1),  &
+    iband_derr, iband_derz
+
+!      WRITE(7,'(a,3i4)') 'READ_COM 3:',nst,itpartn(73)
+
+OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
+READ(104,*) cmono,cquad,chex,cdip,coct,  &
+    cmssqr,colerr,dmsfac, errenr,errvar,irepc,itpfix, itert
+WRITE(7,'(a,3i4)') 'READ_COM 4:',nst,itpartn(73)
+
+!OPEN(105,STATUS='unknown',FORM='formatted', FILE='regridpr.'//outnam)
+!READ(105,*) dr,dz,sr,sz,drsqr,dzsqr,dvol,sym,  &
+!    nr,nz,nrm1,nzm1,nro,nzo,isym,icm, icutr,icutz,idrtyp
+!CLOSE(105)
+
+
+!OPEN(106,STATUS='unknown',FORM='formatted', FILE='redampar.'//outnam)
+!READ(106,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
+!WRITE(7,'(a,3i4)') 'READ_COM 6:',nst,itpartn(73)
+!CLOSE(106)
+
+OPEN(107,STATUS='unknown',FORM='formatted', FILE='reforces.'//outnam)
+READ(107,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
+CLOSE(107)
+
+OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
+READ(108,*) gap(1:2),fer(1:2),  &
+    epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
+    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
+
+OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
+READ(109,*) pot(0:nzd,0:nrd,1:kqm),  &
+    coulpt(0:nzd,1:nrd), bmass(0:nzd,0:nrd,1:kqm),  &
+    potls(0:nzd,0:nrd,1:kqm,1:2),  &
+    drbmas(0:nzd,0:nrd,1:kqm),dzbmas(0:nzd,0:nrd,1:kqm),  &
+    potadd(0:nzd,0:nrd,1:kqm),rhosur(0:nzd,0:nrd,1:kqm),  &
+    pairpt(0:nzd,0:nrd,1:kqm),potdamp(0:nzd,0:nrd)
+
+OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
+READ(110,*) rho(0:nzd,0:nrd,1:kqm),  &
+    crho(0:nzd,0:nrd), tau(0:nzd,0:nrd,1:kqm),  &
+    drhols(0:nzd,0:nrd,1:kqm), rholsr(0:nzd,0:nrd,1:kqm),  &
+    rholsz(0:nzd,0:nrd,1:kqm), d2rho(0:nzd,0:nrd,1:kqm),  &
+    rhoti(0:nzd,0:nrd,1:kqm), paircr(0:nzd,0:nrd,1:kqm)
+
+OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
+!READ(111,*) crhom(0:nzd,0:nrd,0:kangmo),  &
+!    coulm(0:nzd,0:nrd,0:kangmo), crhoq(0:nzd,0:nrd,0:kangmo),  &
+!    coulq(0:nzd,0:nrd,0:kangmo), crhoh(0:nzd,0:nrd,0:kangmo),  &
+!    coulh(0:nzd,0:nrd,0:kangmo), crhod(0:nzd,0:nrd,0:kangmo),  &
+!    could(0:nzd,0:nrd,0:kangmo), crhoo(0:nzd,0:nrd,0:kangmo),  &
+!    coulo(0:nzd,0:nrd,0:kangmo), wcolt(0:nzd,0:nrd),sqrm(0:nzd,0:nrd),  &
+!    nqrun,nhrun,ndrun,norun
+READ(111,*) wcolt(0:nzd,0:nrd),nqrun,nhrun,ndrun,norun
+
+!OPEN(112,STATUS='unknown',FORM='formatted', FILE='reinipar.'//outnam)
+!READ(112,*) hbomz,hbomr,betain,octini,bzosc,brosc,  &
+!    eocc(1:2),deocc(1:2),mmax(1:2)
+!!      ,locc(1:10)
+!CLOSE(112)
+
+WRITE(7,'(a,2i4/200i4)')  &
+    'conj. in READ a:',nst,itpartn(nst(1)+1:nst(1)+nst(2))
+OPEN(113,STATUS='unknown',FORM='formatted', FILE='relevels.'//outnam)
+READ(113,*) wate(1:npsid)  ,spn(1:npsid)     ,  &
+    spenrg(1:npsid), spevar(1:npsid),speold(1:npsid),  &
+    oc(1:npsid),  &
+    vsqf(1:npsid)  ,dvsqf(1:npsid) ,  &
+    vsqfol(1:npsid),cmpn(nsd,1:npsid),vsqobs(1:npsid),  &
+    deltaf(1:npsid),wtpair_uv(1:npsid),wtpair_v2(1:npsid), qspav(1:npsid) ,  &
+    mpsi(1:npsid)  ,npar(1:npsid)    ,nrpar(1:npsid) , nparz(1:2,1:npsid) ,  &
+    nqr(1:npsid)   ,nqz(1:npsid)     ,  &
+    icharg(1:npsid),iorder(1:npsid),ifocsv,maxblist(1:2),       &
+    akblock(1:kblist,1:2), amblock(1:kblist,1:2),  &
+    aisoblo(1:kblist,1:2), aistblo(1:kblist,1:2)
+WRITE(7,'(a,2i4/200i4)')  &
+    'conj. in READ b:',nst,itpartn(nst(1)+1:nst(1)+nst(2))
+
+
+
+
+OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
+READ(114,*) anumb,  &
+    nst(1:2),npart(1:2),iokk(1:2),numsta(1:2)
+WRITE(7,'(a,2i4/200i4)')  &
+    'conj. in READ c:',nst,itpartn(nst(1)+1:nst(1)+nst(2))
+
+OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
+READ(115,*) nom,mhi(mxd),  &
+    mlo(mxd),miq(mxd),mim(mxd)
+
+OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
+READ(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
+    beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
+    beta3,beta3p,beta3n,beta4,beta4p,beta4n, zcm,rdmsc,surfc
+!    ,rchrg2crmaso,crmasp,crmasq,xinert,bmassc,bmassr,scmass,  &
+!    pnmass,pnmas0,zpetri,omgtri, pwid,pwido,ammass,amwid,ampnms,  &
+!    zpecmx,widcmx,zpecmz,widcmz,widdxy,widdz, tmass
+
+!OPEN(117,STATUS='unknown',FORM='formatted', FILE='recntrlv.'//outnam)
+!READ(117,*) econ,eold,energy,energr,ekin,epot,ecoul,etpair,  &
+!    eshell,erearr,equad,devh2,ERR,qerr,qold,qcon,  &
+!    devmf2,devoc2,devgap,varqsq,qq,qdh, itmax,ivs,itest,iprint,iplot,ifcran
+!CLOSE(117)
+
+!OPEN(118,STATUS='unknown',FORM='formatted', FILE='reord.'//outnam)
+!READ(118,*) iord2(1:npsid),spen2(1:npsid),  &
+!    ireg(1:2)
+!CLOSE(118)
+
+OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
+READ(119,*) psi(0:nzd,0:nrd,1:nsd,1:npsid)
+CLOSE(119)
+
+CLOSE(101)
+!      close(102)
+CLOSE(103)
+CLOSE(104)
+CLOSE(108)
+CLOSE(109)
+CLOSE(110)
+CLOSE(111)
+CLOSE(113)
+CLOSE(114)
+CLOSE(115)
+CLOSE(116)
+
+
+RETURN
+
+END SUBROUTINE read_com
+
+
 END MODULE blocking
