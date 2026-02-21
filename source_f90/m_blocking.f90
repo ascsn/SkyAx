@@ -76,7 +76,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
         oldoct=beta3
 
         ! set actual HFB/BCS option
-        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) .OR. .NOT.thfbsav) THEN
+        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) .OR. .NOT.thfbsav .OR. trestart) THEN
           thfb = thfbsav
           ipair = ipairsav
         ELSE
@@ -86,7 +86,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
 
         ! initialize gradual pairing enhancment 
         IF(thfbsav .AND. (tfresh .OR. tfirst)) THEN
-          IF(iter<iterhfb) THEN
+          IF(iter<iterhfb .AND. .NOT.trestart) THEN
             pairfacact = 1D0+pairenhance*MAX(0,iterhfb-iter)/iterhfb
             fxi = fxisav*pairfacact
             h1xi = h1xisav*pairfacact
@@ -279,6 +279,8 @@ END SUBROUTINE iteration_loop
 SUBROUTINE scan_block()
 !USE wavefr
 IMPLICIT NONE
+CLOSE(116)
+IF(trestart) CALL write_com()          ! save the time-even configuration for re-cycling
 
 IF(blnprot) CALL search_block(1)  
 IF(blnneut) CALL search_block(2) 
@@ -309,6 +311,8 @@ INTEGER :: blist
 
 DO  blist = 1,maxblist(iq)
   
+  IF(trestart) CALL read_com()          ! fetch the time-even configuration for re-cycling
+
   mblock(iq) = amblock(blist,iq)
   kblock(iq) = akblock(blist,iq)
   isoblo = aisoblo(blist,iq)
@@ -338,7 +342,7 @@ DO  blist = 1,maxblist(iq)
     isoblo,mblock(iq),kblock(iq),istblo(iq),edifblo(blist,iq)
   CLOSE(90)
 
-  IF(tfresh) THEN
+  IF(tfresh .AND. .NOT.trestart) THEN
     CALL ssetup                    
     CALL inipai(npart(1)+npart(2))
   END IF
@@ -412,6 +416,9 @@ energmax = energmin+(energmax-energmin)/2D0
 
 !     now scan the states
 DO ip1=1,maxblist_total
+
+  IF(trestart) CALL read_com()          ! fetch the time-even configuration for re-cycling
+
   blist1 = ipoint(1,ip1)
   blist2 = ipoint(2,ip1)
   IF(total_energy(ip1)>energmax) EXIT
@@ -449,7 +456,7 @@ DO ip1=1,maxblist_total
   
   CALL flush(7)
 
-  IF(tfresh) THEN
+  IF(tfresh .AND. .NOT.trestart) THEN
     CALL ssetup                    
     CALL inipai(npart(1)+npart(2))
   END IF
@@ -656,45 +663,51 @@ USE pairin
 
 IMPLICIT NONE
 
+
 !CHARACTER (LEN=3), INTENT(IN OUT)        :: outnam
-CHARACTER (LEN=20) :: set
+!CHARACTER (LEN=20) :: set
 
 INTEGER :: npsid
 
+WRITE(*,*) 'WRITE_COM entered'
 npsid=npsi(2)
+WRITE(*,*) 'WRITE_COM npsid=',npsid
 
 OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
-IF(tswicon) WRITE(101,*) distsf(0:nzd,0:nrd),  &
-    qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nzd,0:nrd)
-IF(tswicon0) WRITE(101,*) qcfac0(0:nzd,0:nrd), qfac0(0:nzd,0:nrd)
-IF(tswicon2) WRITE(101,*) qcfac2(0:nzd,0:nrd), qfac2(0:nzd,0:nrd)
-IF(tswicon3) WRITE(101,*) qcfac3(0:nzd,0:nrd), qfac3(0:nzd,0:nrd)
-IF(tswicon4) WRITE(101,*) qcfac4(0:nzd,0:nrd), qfac4(0:nzd,0:nrd)
+IF(tswicon) WRITE(101,*) distsf(0:nz,0:nr),  &
+    qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nz,0:nr)
+IF(tswicon0) WRITE(101,*) qcfac0(0:nz,0:nr), qfac0(0:nz,0:nr)
+IF(tswicon2) WRITE(101,*) qcfac2(0:nz,0:nr), qfac2(0:nz,0:nr)
+IF(tswicon3) WRITE(101,*) qcfac3(0:nz,0:nr), qfac3(0:nz,0:nr)
+IF(tswicon4) WRITE(101,*) qcfac4(0:nz,0:nr), qfac4(0:nz,0:nr)
 CLOSE(101)
 
+WRITE(*,*) 'WRITE_COM after 101'
 
 !      open(102,status='unknown',form='formatted',
 !     & file='recoulomb.'//outnam)
 !      write(102,*)
-!     &                  cbgrho(0:nzd,0:nrd,0:KANGMOL,0:KANGMOM),
-!     &                  cbgfld(0:nzd,0:nrd,0:KANGMOL,0:KANGMOM),
+!     &                  cbgrho(0:nz,0:nr,0:KANGMOL,0:KANGMOM),
+!     &                  cbgfld(0:nz,0:nr,0:KANGMOL,0:KANGMOM),
 !     &                  cbgmom(0:KANGMOL),
-!     &                  cfldbuf(0:nzd,0:nrd),
-!     &                  cdmpmas(0:nzd,0:nrd)
+!     &                  cfldbuf(0:nz,0:nr),
+!     &                  cdmpmas(0:nz,0:nr)
 OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
-WRITE(103,*) derz1(0:nzd,0:nzd,1:4),  &
-    derz2(0:nzd,0:nzd,1:4), derr1(0:nrd,0:nrd,1:4),  &
-    derr2a(0:nrd,0:nrd,0:kmpsi,1:2), derz2f(0:nzd,0:nzd,1:4),  &
-    derr1f(0:nrd,0:nrd,1:4),  &
-    derr2af(0:nrd,0:nrd,0:kmpsi,1:2), r1inv(0:nrd,0:nrd),  &
-    r2inv(0:nrd,0:nrd),  &
-    zdnuc(0:nzd,0:nzd,1:4), rdnuc(0:nrd,0:nrd,0:kmpsi),  &
-    zdmes(0:nzd,0:nzd,1), rdmes(0:nrd,0:nrd,1),  &
+WRITE(103,*) derz1(0:nz,0:nz,1:4),  &
+    derz2(0:nz,0:nz,1:4), derr1(0:nr,0:nr,1:4),  &
+    derr2a(0:nr,0:nr,0:kmpsi,1:2), derz2f(0:nz,0:nz,1:4),  &
+    derr1f(0:nr,0:nr,1:4),  &
+    derr2af(0:nr,0:nr,0:kmpsi,1:2), r1inv(0:nr,0:nr),  &
+    r2inv(0:nr,0:nr),  &
+    zdnuc(0:nz,0:nz,1:4), rdnuc(0:nr,0:nr,0:kmpsi),  &
+    zdmes(0:nz,0:nz,1), rdmes(0:nr,0:nr,1),  &
     iband_derr, iband_derz
+CLOSE(103)
 
 OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
 WRITE(104,*) cmono,cquad,chex,cdip,coct,  &
     cmssqr,colerr,dmsfac, errenr,errvar,irepc,itpfix, itert
+CLOSE(104)
 
 !OPEN(105,STATUS='unknown',FORM='formatted', FILE='regridpr.'//outnam)
 !WRITE(105,*) dr,dz,sr,sz,drsqr,dzsqr,dvol,sym,  &
@@ -714,31 +727,35 @@ OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
 WRITE(108,*) gap(1:2),fer(1:2),  &
     epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
     rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
+CLOSE(108)
 
 OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
-WRITE(109,*) pot(0:nzd,0:nrd,1:kqm),  &
-    coulpt(0:nzd,1:nrd), bmass(0:nzd,0:nrd,1:kqm),  &
-    potls(0:nzd,0:nrd,1:kqm,1:2),  &
-    drbmas(0:nzd,0:nrd,1:kqm),dzbmas(0:nzd,0:nrd,1:kqm),  &
-    potadd(0:nzd,0:nrd,1:kqm),rhosur(0:nzd,0:nrd,1:kqm),  &
-    pairpt(0:nzd,0:nrd,1:kqm),potdamp(0:nzd,0:nrd)
+WRITE(109,*) pot(0:nz,0:nr,1:kqm),  &
+    coulpt(0:nz,1:nr), bmass(0:nz,0:nr,1:kqm),  &
+    potls(0:nz,0:nr,1:kqm,1:2),  &
+    drbmas(0:nz,0:nr,1:kqm),dzbmas(0:nz,0:nr,1:kqm),  &
+    potadd(0:nz,0:nr,1:kqm),rhosur(0:nz,0:nr,1:kqm),  &
+    pairpt(0:nz,0:nr,1:kqm),potdamp(0:nz,0:nr)
+CLOSE(109)
 
 OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
-WRITE(110,*) rho(0:nzd,0:nrd,1:kqm),  &
-    crho(0:nzd,0:nrd), tau(0:nzd,0:nrd,1:kqm),  &
-    drhols(0:nzd,0:nrd,1:kqm), rholsr(0:nzd,0:nrd,1:kqm),  &
-    rholsz(0:nzd,0:nrd,1:kqm), d2rho(0:nzd,0:nrd,1:kqm),  &
-    rhoti(0:nzd,0:nrd,1:kqm), paircr(0:nzd,0:nrd,1:kqm)
+WRITE(110,*) rho(0:nz,0:nr,1:kqm),  &
+    crho(0:nz,0:nr), tau(0:nz,0:nr,1:kqm),  &
+    drhols(0:nz,0:nr,1:kqm), rholsr(0:nz,0:nr,1:kqm),  &
+    rholsz(0:nz,0:nr,1:kqm), d2rho(0:nz,0:nr,1:kqm),  &
+    rhoti(0:nz,0:nr,1:kqm), paircr(0:nz,0:nr,1:kqm)
+CLOSE(110)
 
 OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
-!WRITE(111,*) crhom(0:nzd,0:nrd,0:kangmo),  &
-!    coulm(0:nzd,0:nrd,0:kangmo), crhoq(0:nzd,0:nrd,0:kangmo),  &
-!    coulq(0:nzd,0:nrd,0:kangmo), crhoh(0:nzd,0:nrd,0:kangmo),  &
-!    coulh(0:nzd,0:nrd,0:kangmo), crhod(0:nzd,0:nrd,0:kangmo),  &
-!    could(0:nzd,0:nrd,0:kangmo), crhoo(0:nzd,0:nrd,0:kangmo),  &
-!    coulo(0:nzd,0:nrd,0:kangmo), wcolt(0:nzd,0:nrd),sqrm(0:nzd,0:nrd),  &
+!WRITE(111,*) crhom(0:nz,0:nr,0:kangmo),  &
+!    coulm(0:nz,0:nr,0:kangmo), crhoq(0:nz,0:nr,0:kangmo),  &
+!    coulq(0:nz,0:nr,0:kangmo), crhoh(0:nz,0:nr,0:kangmo),  &
+!    coulh(0:nz,0:nr,0:kangmo), crhod(0:nz,0:nr,0:kangmo),  &
+!    could(0:nz,0:nr,0:kangmo), crhoo(0:nz,0:nr,0:kangmo),  &
+!    coulo(0:nz,0:nr,0:kangmo), wcolt(0:nz,0:nr),sqrm(0:nz,0:nr),  &
 !    nqrun,nhrun,ndrun,norun
-WRITE(111,*) wcolt(0:nzd,0:nrd),nqrun,nhrun,ndrun,norun
+WRITE(111,*) wcolt(0:nz,0:nr),nqrun,nhrun,ndrun,norun
+CLOSE(111)
 
 !OPEN(112,STATUS='unknown',FORM='formatted', FILE='reinipar.'//outnam)
 !WRITE(112,*) hbomz,hbomr,betain,octini,bzosc,brosc,  &
@@ -758,16 +775,17 @@ WRITE(113,*) wate(1:npsid)  ,spn(1:npsid)     ,  &
     icharg(1:npsid),iorder(1:npsid),ifocsv,maxblist(1:2),        &
     akblock(1:kblist,1:2), amblock(1:kblist,1:2),  &
     aisoblo(1:kblist,1:2), aistblo(1:kblist,1:2)
-
-
+CLOSE(113)
 
 OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
 WRITE(114,*) anumb,  &
     nst(1:2),npart(1:2),iokk(1:2),numsta(1:2)
+CLOSE(114)
 
 OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
 WRITE(115,*) nom,mhi(1:mxd),  &
     mlo(1:mxd),miq(1:mxd),mim(1:mxd)
+CLOSE(115)
 
 OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
 WRITE(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
@@ -776,6 +794,7 @@ WRITE(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
 !    rchrg2,crmaso,crmasp,crmasq,xinert,bmassc,bmassr,scmass,  &
 !    pnmass,pnmas0,zpetri,omgtri, pwid,pwido,ammass,amwid,ampnms,  &
 !    zpecmx,widcmx,zpecmz,widcmz,widdxy,widdz, tmass
+CLOSE(116)
 
 !OPEN(117,STATUS='unknown',FORM='formatted', FILE='recntrlv.'//outnam)
 !WRITE(117,*) econ,eold,energy,energr,ekin,epot,ecoul,etpair,  &
@@ -789,20 +808,10 @@ WRITE(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
 !CLOSE(118)
 
 OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
-WRITE(119,*) psi(0:nzd,0:nrd,1:nsd,1:npsid)
+WRITE(119,*) psi(0:nz,0:nr,1:nsd,1:npsid)
 CLOSE(119)
 
 !      close(102)
-CLOSE(103)
-CLOSE(104)
-CLOSE(108)
-CLOSE(109)
-CLOSE(110)
-CLOSE(111)
-CLOSE(113)
-CLOSE(114)
-CLOSE(115)
-CLOSE(116)
 
 RETURN
 
@@ -816,7 +825,7 @@ END SUBROUTINE write_com
 !!Reads all relevant parameters and fields for the solution of
 !!the unblocked ground state as starting configuration for a
 !!caölcuation with blocking
-SUBROUTINE read_com(iter)
+SUBROUTINE read_com()
 
 USE paramr
 USE constr
@@ -833,9 +842,9 @@ USE pairin
 
 IMPLICIT NONE
 
-INTEGER, INTENT(IN OUT)                  :: iter
+!INTEGER, INTENT(IN OUT)                  :: iter
 !CHARACTER (LEN=3), INTENT(IN OUT)        :: outnam
-CHARACTER (LEN=20) :: set
+!CHARACTER (LEN=20) :: set
 
 INTEGER :: npsid
 
@@ -843,26 +852,27 @@ npsid=npsi(2)
 
 
 OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
-IF(tswicon) READ(101,*) distsf(0:nzd,0:nrd),  &
-    qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nzd,0:nrd)
-IF(tswicon0) READ(101,*) qcfac0(0:nzd,0:nrd), qfac0(0:nzd,0:nrd)
-IF(tswicon2) READ(101,*) qcfac2(0:nzd,0:nrd), qfac2(0:nzd,0:nrd)
-IF(tswicon3) READ(101,*) qcfac3(0:nzd,0:nrd), qfac3(0:nzd,0:nrd)
-IF(tswicon4) READ(101,*) qcfac4(0:nzd,0:nrd), qfac4(0:nzd,0:nrd)
+IF(tswicon) READ(101,*) distsf(0:nz,0:nr),  &
+    qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nz,0:nr)
+IF(tswicon0) READ(101,*) qcfac0(0:nz,0:nr), qfac0(0:nz,0:nr)
+IF(tswicon2) READ(101,*) qcfac2(0:nz,0:nr), qfac2(0:nz,0:nr)
+IF(tswicon3) READ(101,*) qcfac3(0:nz,0:nr), qfac3(0:nz,0:nr)
+IF(tswicon4) READ(101,*) qcfac4(0:nz,0:nr), qfac4(0:nz,0:nr)
 CLOSE(101)
 
 !      WRITE(7,'(a,3i4)') 'READ_COM 2:',nst,itpartn(73)
 
 OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
-READ(103,*) derz1(0:nzd,0:nzd,1:4),  &
-    derz2(0:nzd,0:nzd,1:4), derr1(0:nrd,0:nrd,1:4),  &
-    derr2a(0:nrd,0:nrd,0:kmpsi,1:2), derz2f(0:nzd,0:nzd,1:4),  &
-    derr1f(0:nrd,0:nrd,1:4),   &
-    derr2af(0:nrd,0:nrd,0:kmpsi,1:2), r1inv(0:nrd,0:nrd),  &
-    r2inv(0:nrd,0:nrd),  &
-    zdnuc(0:nzd,0:nzd,1:4), rdnuc(0:nrd,0:nrd,0:kmpsi),  &
-    zdmes(0:nzd,0:nzd,1), rdmes(0:nrd,0:nrd,1),  &
+READ(103,*) derz1(0:nz,0:nz,1:4),  &
+    derz2(0:nz,0:nz,1:4), derr1(0:nr,0:nr,1:4),  &
+    derr2a(0:nr,0:nr,0:kmpsi,1:2), derz2f(0:nz,0:nz,1:4),  &
+    derr1f(0:nr,0:nr,1:4),   &
+    derr2af(0:nr,0:nr,0:kmpsi,1:2), r1inv(0:nr,0:nr),  &
+    r2inv(0:nr,0:nr),  &
+    zdnuc(0:nz,0:nz,1:4), rdnuc(0:nr,0:nr,0:kmpsi),  &
+    zdmes(0:nz,0:nz,1), rdmes(0:nr,0:nr,1),  &
     iband_derr, iband_derz
+CLOSE(103)
 
 !      WRITE(7,'(a,3i4)') 'READ_COM 3:',nst,itpartn(73)
 
@@ -870,6 +880,7 @@ OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
 READ(104,*) cmono,cquad,chex,cdip,coct,  &
     cmssqr,colerr,dmsfac, errenr,errvar,irepc,itpfix, itert
 WRITE(7,'(a,3i4)') 'READ_COM 4:',nst,itpartn(73)
+CLOSE(104)
 
 !OPEN(105,STATUS='unknown',FORM='formatted', FILE='regridpr.'//outnam)
 !READ(105,*) dr,dz,sr,sz,drsqr,dzsqr,dvol,sym,  &
@@ -890,31 +901,35 @@ OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
 READ(108,*) gap(1:2),fer(1:2),  &
     epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
     rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
+CLOSE(108)
 
 OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
-READ(109,*) pot(0:nzd,0:nrd,1:kqm),  &
-    coulpt(0:nzd,1:nrd), bmass(0:nzd,0:nrd,1:kqm),  &
-    potls(0:nzd,0:nrd,1:kqm,1:2),  &
-    drbmas(0:nzd,0:nrd,1:kqm),dzbmas(0:nzd,0:nrd,1:kqm),  &
-    potadd(0:nzd,0:nrd,1:kqm),rhosur(0:nzd,0:nrd,1:kqm),  &
-    pairpt(0:nzd,0:nrd,1:kqm),potdamp(0:nzd,0:nrd)
+READ(109,*) pot(0:nz,0:nr,1:kqm),  &
+    coulpt(0:nz,1:nr), bmass(0:nz,0:nr,1:kqm),  &
+    potls(0:nz,0:nr,1:kqm,1:2),  &
+    drbmas(0:nz,0:nr,1:kqm),dzbmas(0:nz,0:nr,1:kqm),  &
+    potadd(0:nz,0:nr,1:kqm),rhosur(0:nz,0:nr,1:kqm),  &
+    pairpt(0:nz,0:nr,1:kqm),potdamp(0:nz,0:nr)
+CLOSE(109)
 
 OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
-READ(110,*) rho(0:nzd,0:nrd,1:kqm),  &
-    crho(0:nzd,0:nrd), tau(0:nzd,0:nrd,1:kqm),  &
-    drhols(0:nzd,0:nrd,1:kqm), rholsr(0:nzd,0:nrd,1:kqm),  &
-    rholsz(0:nzd,0:nrd,1:kqm), d2rho(0:nzd,0:nrd,1:kqm),  &
-    rhoti(0:nzd,0:nrd,1:kqm), paircr(0:nzd,0:nrd,1:kqm)
+READ(110,*) rho(0:nz,0:nr,1:kqm),  &
+    crho(0:nz,0:nr), tau(0:nz,0:nr,1:kqm),  &
+    drhols(0:nz,0:nr,1:kqm), rholsr(0:nz,0:nr,1:kqm),  &
+    rholsz(0:nz,0:nr,1:kqm), d2rho(0:nz,0:nr,1:kqm),  &
+    rhoti(0:nz,0:nr,1:kqm), paircr(0:nz,0:nr,1:kqm)
+CLOSE(110)
 
 OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
-!READ(111,*) crhom(0:nzd,0:nrd,0:kangmo),  &
-!    coulm(0:nzd,0:nrd,0:kangmo), crhoq(0:nzd,0:nrd,0:kangmo),  &
-!    coulq(0:nzd,0:nrd,0:kangmo), crhoh(0:nzd,0:nrd,0:kangmo),  &
-!    coulh(0:nzd,0:nrd,0:kangmo), crhod(0:nzd,0:nrd,0:kangmo),  &
-!    could(0:nzd,0:nrd,0:kangmo), crhoo(0:nzd,0:nrd,0:kangmo),  &
-!    coulo(0:nzd,0:nrd,0:kangmo), wcolt(0:nzd,0:nrd),sqrm(0:nzd,0:nrd),  &
+!READ(111,*) crhom(0:nz,0:nr,0:kangmo),  &
+!    coulm(0:nz,0:nr,0:kangmo), crhoq(0:nz,0:nr,0:kangmo),  &
+!    coulq(0:nz,0:nr,0:kangmo), crhoh(0:nz,0:nr,0:kangmo),  &
+!    coulh(0:nz,0:nr,0:kangmo), crhod(0:nz,0:nr,0:kangmo),  &
+!    could(0:nz,0:nr,0:kangmo), crhoo(0:nz,0:nr,0:kangmo),  &
+!    coulo(0:nz,0:nr,0:kangmo), wcolt(0:nz,0:nr),sqrm(0:nz,0:nr),  &
 !    nqrun,nhrun,ndrun,norun
-READ(111,*) wcolt(0:nzd,0:nrd),nqrun,nhrun,ndrun,norun
+READ(111,*) wcolt(0:nz,0:nr),nqrun,nhrun,ndrun,norun
+CLOSE(111)
 
 !OPEN(112,STATUS='unknown',FORM='formatted', FILE='reinipar.'//outnam)
 !READ(112,*) hbomz,hbomr,betain,octini,bzosc,brosc,  &
@@ -936,6 +951,7 @@ READ(113,*) wate(1:npsid)  ,spn(1:npsid)     ,  &
     icharg(1:npsid),iorder(1:npsid),ifocsv,maxblist(1:2),       &
     akblock(1:kblist,1:2), amblock(1:kblist,1:2),  &
     aisoblo(1:kblist,1:2), aistblo(1:kblist,1:2)
+CLOSE(113)
 WRITE(7,'(a,2i4/200i4)')  &
     'conj. in READ b:',nst,itpartn(nst(1)+1:nst(1)+nst(2))
 
@@ -945,12 +961,14 @@ WRITE(7,'(a,2i4/200i4)')  &
 OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
 READ(114,*) anumb,  &
     nst(1:2),npart(1:2),iokk(1:2),numsta(1:2)
+CLOSE(114)
 WRITE(7,'(a,2i4/200i4)')  &
     'conj. in READ c:',nst,itpartn(nst(1)+1:nst(1)+nst(2))
 
 OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
 READ(115,*) nom,mhi(mxd),  &
     mlo(mxd),miq(mxd),mim(mxd)
+CLOSE(115)
 
 OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
 READ(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
@@ -959,6 +977,7 @@ READ(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
 !    ,rchrg2crmaso,crmasp,crmasq,xinert,bmassc,bmassr,scmass,  &
 !    pnmass,pnmas0,zpetri,omgtri, pwid,pwido,ammass,amwid,ampnms,  &
 !    zpecmx,widcmx,zpecmz,widcmz,widdxy,widdz, tmass
+CLOSE(116)
 
 !OPEN(117,STATUS='unknown',FORM='formatted', FILE='recntrlv.'//outnam)
 !READ(117,*) econ,eold,energy,energr,ekin,epot,ecoul,etpair,  &
@@ -972,21 +991,10 @@ READ(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
 !CLOSE(118)
 
 OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
-READ(119,*) psi(0:nzd,0:nrd,1:nsd,1:npsid)
+READ(119,*) psi(0:nz,0:nr,1:nsd,1:npsid)
 CLOSE(119)
 
-CLOSE(101)
 !      close(102)
-CLOSE(103)
-CLOSE(104)
-CLOSE(108)
-CLOSE(109)
-CLOSE(110)
-CLOSE(111)
-CLOSE(113)
-CLOSE(114)
-CLOSE(115)
-CLOSE(116)
 
 
 RETURN

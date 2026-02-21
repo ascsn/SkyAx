@@ -49,7 +49,7 @@ NAMELIST /static/ nprot,nneut,betain,octini,deocc,mmax,&
                   errenr,errvar,erra,npiter,itpini,&
                   ndrun,nqrun,norun,nhrun,&
                   colerr,irepc,cmssqr,itpfix,inodiag,tvaryx0, &
-                  istblo,maxexenerg,maxamomdiff
+                  istblo,maxexenerg,maxamomdiff,trestart
 NAMELIST /constraint/ swicon0,betmin0,betmax0,betaw0,&
                       swicon2,betmin2,betmax2,betaw2,&
                       swicon3,betmin3,betmax3,betaw3,&
