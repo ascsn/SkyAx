@@ -105,7 +105,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
         ! update book-keeping of conjugated states
 !        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
         IF((MOD(iter,mod_upd_conjstates)==1 .AND. iter>iterbcs) .OR. &
-           iter==iterbcs .OR. iter==iterhfb) THEN
+           ((iter==iterbcs .OR. iter==iterhfb) .AND. .NOT.trestart)) THEN
           CALL findconjpart(1)
           CALL findconjpart(2)
           CALL comp_block()            ! ???
@@ -280,11 +280,11 @@ SUBROUTINE scan_block()
 !USE wavefr
 IMPLICIT NONE
 CLOSE(116)
-IF(trestart) CALL write_com()          ! save the time-even configuration for re-cycling
 
 IF(blnprot) CALL search_block(1)  
 IF(blnneut) CALL search_block(2) 
 
+IF(trestart) CALL write_com()          ! save the time-even configuration for re-cycling
 
   
 IF(blnprot .AND. .NOT.blnneut) CALL block1(1)
@@ -669,9 +669,7 @@ IMPLICIT NONE
 
 INTEGER :: npsid
 
-WRITE(*,*) 'WRITE_COM entered'
 npsid=npsi(2)
-WRITE(*,*) 'WRITE_COM npsid=',npsid
 
 OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
 IF(tswicon) WRITE(101,*) distsf(0:nz,0:nr),  &
@@ -682,7 +680,6 @@ IF(tswicon3) WRITE(101,*) qcfac3(0:nz,0:nr), qfac3(0:nz,0:nr)
 IF(tswicon4) WRITE(101,*) qcfac4(0:nz,0:nr), qfac4(0:nz,0:nr)
 CLOSE(101)
 
-WRITE(*,*) 'WRITE_COM after 101'
 
 !      open(102,status='unknown',form='formatted',
 !     & file='recoulomb.'//outnam)
@@ -724,7 +721,7 @@ CLOSE(107)
 
 
 OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
-WRITE(108,*) gap(1:2),fer(1:2),  &
+WRITE(108,*) gap(1:2),fer(1:2),itpartn(npsid),  &
     epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
     rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
 CLOSE(108)
@@ -879,7 +876,7 @@ CLOSE(103)
 OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
 READ(104,*) cmono,cquad,chex,cdip,coct,  &
     cmssqr,colerr,dmsfac, errenr,errvar,irepc,itpfix, itert
-WRITE(7,'(a,3i4)') 'READ_COM 4:',nst,itpartn(73)
+!WRITE(7,'(a,3i4)') 'READ_COM 4:',nst,itpartn(73)
 CLOSE(104)
 
 !OPEN(105,STATUS='unknown',FORM='formatted', FILE='regridpr.'//outnam)
@@ -898,7 +895,7 @@ READ(107,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
 CLOSE(107)
 
 OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
-READ(108,*) gap(1:2),fer(1:2),  &
+READ(108,*) gap(1:2),fer(1:2),itpartn(npsid),  &
     epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
     rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
 CLOSE(108)
@@ -990,6 +987,7 @@ CLOSE(116)
 !    ireg(1:2)
 !CLOSE(118)
 
+
 OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
 READ(119,*) psi(0:nz,0:nr,1:nsd,1:npsid)
 CLOSE(119)
@@ -1000,6 +998,106 @@ CLOSE(119)
 RETURN
 
 END SUBROUTINE read_com
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: clean_com
+!> @brief
+!!Removes all files which were created to contain restart information.
+
+SUBROUTINE clean_com()
+
+USE paramr
+USE constr
+USE dynpar
+USE fields
+USE observ
+USE wavefr
+USE levels
+USE grid
+USE coulomb
+USE pairin
+!USE staticstep
+!USE init
+
+IMPLICIT NONE
+
+!INTEGER, INTENT(IN OUT)                  :: iter
+!CHARACTER (LEN=3), INTENT(IN OUT)        :: outnam
+!CHARACTER (LEN=20) :: set
+
+INTEGER :: npsid
+
+npsid=npsi(2)
+
+
+OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
+CLOSE(101,STATUS='DELETE')
+
+
+OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
+CLOSE(103,STATUS='DELETE')
+
+
+OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
+CLOSE(104,STATUS='DELETE')
+
+!OPEN(105,STATUS='unknown',FORM='formatted', FILE='regridpr.'//outnam)
+!CLOSE(105,STATUS='DELETE')
+
+
+!OPEN(106,STATUS='unknown',FORM='formatted', FILE='redampar.'//outnam)
+!CLOSE(106,STATUS='DELETE')
+
+OPEN(107,STATUS='unknown',FORM='formatted', FILE='reforces.'//outnam)
+CLOSE(107,STATUS='DELETE')
+
+OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
+CLOSE(108,STATUS='DELETE')
+
+OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
+CLOSE(109,STATUS='DELETE')
+
+OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
+CLOSE(110,STATUS='DELETE')
+
+OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
+CLOSE(111,STATUS='DELETE')
+
+!OPEN(112,STATUS='unknown',FORM='formatted', FILE='reinipar.'//outnam)
+!READ(112,*) hbomz,hbomr,betain,octini,bzosc,brosc,  &
+!    eocc(1:2),deocc(1:2),mmax(1:2)
+!!      ,locc(1:10)
+!CLOSE(112,STATUS='DELETE')
+
+OPEN(113,STATUS='unknown',FORM='formatted', FILE='relevels.'//outnam)
+CLOSE(113,STATUS='DELETE')
+
+
+OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
+CLOSE(114,STATUS='DELETE')
+
+
+OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
+CLOSE(115,STATUS='DELETE')
+
+OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
+CLOSE(116,STATUS='DELETE')
+
+!OPEN(117,STATUS='unknown',FORM='formatted', FILE='recntrlv.'//outnam)
+!CLOSE(117,STATUS='DELETE')
+
+!OPEN(118,STATUS='unknown',FORM='formatted', FILE='reord.'//outnam)
+!CLOSE(118,STATUS='DELETE')
+
+OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
+CLOSE(119,STATUS='DELETE')
+
+
+
+RETURN
+
+END SUBROUTINE clean_com
 
 
 END MODULE blocking
