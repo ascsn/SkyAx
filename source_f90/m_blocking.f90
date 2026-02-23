@@ -56,7 +56,7 @@ REAL(8) :: oldoct,dnewoct,econprev,devh2prev,x0invmin,econs,qconsav,devh2s
 REAL(8) :: pairfcsav(2),fxisav,h1xisav,hgradxisav,pairfacact
 INTEGER :: iplold,ipold,iter,itesto,itmaxact,itermcount !,iwu,nchg,nmass,number_threads=1
 INTEGER :: ipairsav,iteract
-LOGICAL :: tfirst=.TRUE.,thfbsav
+LOGICAL :: tfirst=.TRUE.,thfbsav,trestartact
       
   thfbsav = ipair==6 .OR. ipair==8
   ipairsav = ipair
@@ -66,7 +66,11 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
     hgradxisav = hgradxi
     pairfcsav = pairfc
   END IF
-
+  IF(SUM(istblo)==0 .OR. .NOT. trestart) THEN
+    trestartact = .FALSE.
+  ELSE
+    trestartact = .TRUE.
+  END IF
       eold   = energy
       itmaxact=itmax
 !      tfirst = iqact0==0.AND.iqact2==0.AND.iqact3==0.AND.iqact4==0
@@ -76,7 +80,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
         oldoct=beta3
 
         ! set actual HFB/BCS option
-        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) .OR. .NOT.thfbsav .OR. trestart) THEN
+        IF(iter>iterbcs .OR. (tnobcs .AND. .NOT.tfirst) .OR. .NOT.thfbsav .OR. trestartact) THEN
           thfb = thfbsav
           ipair = ipairsav
         ELSE
@@ -86,7 +90,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
 
         ! initialize gradual pairing enhancment 
         IF(thfbsav .AND. (tfresh .OR. tfirst)) THEN
-          IF(iter<iterhfb .AND. .NOT.trestart) THEN
+          IF(iter<iterhfb .AND. .NOT.trestartact) THEN
             pairfacact = 1D0+pairenhance*MAX(0,iterhfb-iter)/iterhfb
             fxi = fxisav*pairfacact
             h1xi = h1xisav*pairfacact
@@ -105,7 +109,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav
         ! update book-keeping of conjugated states
 !        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
         IF((MOD(iter,mod_upd_conjstates)==1 .AND. iter>iterbcs) .OR. &
-           ((iter==iterbcs .OR. iter==iterhfb) .AND. .NOT.trestart)) THEN
+           ((iter==iterbcs .OR. iter==iterhfb) .AND. .NOT.trestartact)) THEN
           CALL findconjpart(1)
           CALL findconjpart(2)
           CALL comp_block()            ! ???
