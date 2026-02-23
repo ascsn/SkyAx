@@ -15,13 +15,13 @@ USE paramr, ONLY : xxxl,ixxxl,oh,one
 IMPLICIT NONE
 
 ! numerical parameters for iteration etc
-REAL(8) :: x0inv=0.3D0     !<Overall factor in front of the damping operator.
-REAL(8) :: e0inv=120D0     !<Witdh of the damping operator.
-REAL(8) :: addrho=0.2D0    !<Fraction of new density to be added to the old, used to compute 'adyrho'.
+REAL(8) :: x0inv=0.1D0     !<Overall factor in front of the damping operator.
+REAL(8) :: e0inv=110D0     !<Witdh of the damping operator.
+REAL(8) :: addrho=0.15D0   !<Fraction of new density to be added to the old, used to compute 'adyrho'.
 REAL(8) :: addpot=1D0      !<Fraction of new potential to be added to the old.
-REAL(8) :: addocc=0.3D0    !<Fraction of new occupation numbers 'VSQF' to be added to the old.
+REAL(8) :: addocc=0.2D0    !<Fraction of new occupation numbers 'VSQF' to be added to the old.
 REAL(8) :: errenr=1D-9     !<Termination criterion for energy change.
-REAL(8) :: errvar=1D-1     !<Termination criterion for energy variance.
+REAL(8) :: errvar=1D-2     !<Termination criterion for energy variance.
 REAL(8) :: adyrho          !<Dynamical fraction of new density.
 REAL(8) :: adypot          !<Dynamical  fraction of new potential.
 INTEGER :: mpmax           !<Max no. of z component of angular momentum.
