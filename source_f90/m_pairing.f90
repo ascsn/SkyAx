@@ -1669,7 +1669,7 @@ INTEGER, INTENT(IN)  :: iq
 REAL(8),ALLOCATABLE :: wrk1(:,:)
 REAL(8),ALLOCATABLE :: supmatrix(:,:)
 INTEGER,ALLOCATABLE :: itpartnsav(:)
-INTEGER :: istart,i1,i2,imis
+INTEGER :: istart,i1,i2,imis,ip1,ipp1
 REAL(8) :: supnorm,a
 LOGICAL :: tpartn
 
@@ -1724,20 +1724,46 @@ IF(istsym>0) THEN
       END IF
     END DO
   END DO
+
+! scan dangling pointers
+  DO i1=istart,nst(iq)+istart-1
+    ip1=0
+    ipp1=0
+    DO i2=istart,nst(iq)+istart-1
+      IF(i1==itpartn(i2) .AND. ip1.NE.0) ipp1=i2
+      IF(i1==itpartn(i2) .AND. ip1==0) ip1=i2
+    END DO
+    IF(ipp1>0) THEN
+      WRITE(7,'(a,3i5,3f9.3)') 'FINDCONJ double pointer=',i1,ip1,ipp1,&
+       spenrg(i1+istart-1),spenrg(ip1+istart-1),spenrg(ipp1+istart-1)
+      IF(ttestover) WRITE(7,'(10x,300(1pg13.5))') supmatrix(:,ip1-istart+1)
+      IF(ttestover) WRITE(7,'(10x,300(1pg13.5))') supmatrix(:,ipp1-istart+1)
+    END IF
+  END DO
+
+! scan mismatchesc
   i2=0
   DO i1=istart,nst(iq)+istart-1
 !    IF(i1 /= itpartn(itpartn(i1)).AND. (i1==istblo(1).OR.i1==istblo(2)))  &
     IF(i1 /= itpartn(itpartn(i1)))  THEN
         imis=i1
+        ip1 = itpartn(i1)
+        ipp1 = itpartn(ip1)
         i2=1+i2
-        WRITE(7,'(a,3i5,2f5.1,2f9.3)')  &
-        'FINDCONJ error: state=',i1,itpartn(i1),itpartn(itpartn(i1)),  &
-        mpsi(i1)+0.5,mpsi(itpartn(i1))+0.5, spenrg(i1),spenrg(itpartn(i1))
+        WRITE(7,'(a,4i5,f5.1,3f9.3)')  &
+        'FINDCONJ error: state=',i1,ip1,ipp1,itpartn(ipp1),  &
+        mpsi(i1)+0.5, spenrg(i1),spenrg(ip1),spenrg(ipp1)
+        IF(ttestover) WRITE(7,'(22x,3(1pg13.5))') &
+          supmatrix(i1-istart+1,ip1-istart+1), &  
+          supmatrix(ip1-istart+1,ipp1-istart+1), &  
+          supmatrix(ipp1-istart+1,itpartn(ipp1)-istart+1)
+        IF(ttestover) WRITE(7,'(22x,300(1pg13.5))') supmatrix(:,i1-istart+1)
     END IF
       IF(tpartn .AND. itpartn(i1).NE.itpartnsav(i1)) WRITE(7,'(a,2i4)') &
         'FINDCONJ change: new,old=',itpartn(i1),itpartnsav(i1)
   END DO
-  IF(ttestover .AND. thfb .AND. i2>3) THEN
+!  IF(ttestover .AND. thfb .AND. i2>3) THEN
+  IF(ttestover .AND. thfb .AND. i2>33) THEN
     WRITE(7,'(a)') 'sequence of m values:'
     WRITE(7,'(20i5)') (mpsi(i1+istart-1),i1=1,nst(iq))
     WRITE(7,'(a)') 'chain of mismathces:'
