@@ -108,7 +108,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,trestartact
 !NEW ODD
         ! update book-keeping of conjugated states
 !        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
-        IF((MOD(iter,mod_upd_conjstates)==1 .AND. iter>iterbcs) .OR. &
+        IF((MOD(iter-1,mod_upd_conjstates)==0 .AND. iter>iterbcs) .OR. &
            ((iter==iterbcs .OR. iter==iterhfb) .AND. .NOT.trestartact)) THEN
           CALL findconjpart(1)
           CALL findconjpart(2)
@@ -635,10 +635,10 @@ DO iq=1,2
 
 END DO
 
-DO iunit=6,7
-  WRITE(iunit,'(a,20i5)') ' blocking set: kblock,mblock,istblo,istcblo=',  &
-      kblock,mblock,istblo,istcblo
-END DO
+!DO iunit=6,7
+!  WRITE(iunit,'(a,20i5)') ' blocking set: kblock,mblock,istblo,istcblo=',  &
+!      kblock,mblock,istblo,istcblo
+!END DO
 
 RETURN
 END SUBROUTINE comp_block
@@ -725,9 +725,9 @@ CLOSE(107)
 
 
 OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
-WRITE(108,*) gap(1:2),fer(1:2),itpartn(npsid),  &
-    epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
-    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
+WRITE(108,*) itpartn(1:npsid),fer(1:2)
+!    gap(1:2),epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
+!    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
 CLOSE(108)
 
 OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
@@ -899,9 +899,9 @@ READ(107,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
 CLOSE(107)
 
 OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
-READ(108,*) gap(1:2),fer(1:2),itpartn(npsid),  &
-    epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
-    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
+READ(108,*) itpartn(1:npsid),fer(1:2)
+!    gap(1:2),epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
+!    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini,
 CLOSE(108)
 
 OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)

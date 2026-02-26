@@ -41,7 +41,7 @@ REAL(8), ALLOCATABLE :: symatrix(:,:)
 
 LOGICAL, PARAMETER :: tbcs=.FALSE.    ! testswitch
 LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
-LOGICAL, PARAMETER :: tconj=.TRUE.   ! switches to use conjugate state in HFB step
+LOGICAL, PARAMETER :: tconj=.FALSE.   ! switches to use conjugate state in HFB step
 REAL(8) :: v2a,uva,fachfb
 REAL(8) :: xno1,xno2,ov12
 INTEGER :: mist,npzist,jst,ist,is,iq,mythread
@@ -74,8 +74,14 @@ IF(iterbcs==0) fachfb = MIN(1D0*iter/iterhfb,1D0)
 DO jst=istmin,istmax
 !  WRITE(6,*) 'HFBSTEP 2: mythread,jst=',mythread,jst
   CALL hpsi(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst),jst)
-  v2a = vsqf(jst)
-  uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+  IF(jst==istblo(iq) .OR. jst==istcblo(iq)) THEN 
+    v2a=1D0
+    uva=0D0
+  ELSE
+    v2a = vsqf(jst)
+!    uva = SQRT(MAX(v2a-v2a*v2a,1D-16))*wtpair_uv(jst)
+    uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+  END IF
 ! augment for BCS cooling in case of 'iterhfb=0'
   IF(iterbcs==0) uva = uva * fachfb
 !  WRITE(6,*) 'HFBSTEP 3: mythread,jst=',mythread,jst,v2a,uva
@@ -150,11 +156,19 @@ DO ist=istmin,istmax
       hlagr(ist,jst) = wfovlp(psi(0:nz,0:nr,1:2,ist),hfbpsi(0:nz,0:nr,1:2,jst))
       symatrix(ist,jst) = hlagr(ist,jst)
       IF(ist /= jst) THEN
-        hlagr(jst,ist) = wfovlp(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,ist))
-        symatrix(ist,jst) = hlagr(ist,jst)-hlagr(jst,ist)
-        symatrix(jst,ist) = symatrix(ist,jst)
-        hlagr(ist,jst) = 0.5D0*(hlagr(ist,jst)+hlagr(jst,ist))
-        hlagr(jst,ist) = hlagr(ist,jst)
+        IF(ist==istblo(iq) .OR. jst==istblo(iq) .OR.            & 
+              ist==istcblo(iq) .OR. jst==istcblo(iq)) THEN
+          hlagr(jst,ist)=0D0
+          hlagr(ist,jst)=0D0
+          symatrix(ist,jst)=0D0
+          symatrix(jst,ist)=0D0
+        ELSE
+          hlagr(jst,ist) = wfovlp(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,ist))
+          symatrix(ist,jst) = hlagr(ist,jst)-hlagr(jst,ist)
+          symatrix(jst,ist) = symatrix(ist,jst)
+          hlagr(ist,jst) = 0.5D0*(hlagr(ist,jst)+hlagr(jst,ist))
+          hlagr(jst,ist) = hlagr(ist,jst)
+        END IF
       END IF
     ELSE
       hlagr(ist,jst) = 0D0
