@@ -50,7 +50,7 @@ USE util, ONLY: plot_2d
 IMPLICIT NONE
 
 INTEGER,PARAMETER :: ntermcount=3 ! nr. of termination counts required   
-LOGICAL,PARAMETER :: tafter=.true.           ! switch to "afterburn"
+LOGICAL,PARAMETER :: tafter=.FALSE.           ! switch to "afterburn"
 
 REAL(8) :: oldoct,dnewoct,econprev,devh2prev,x0invmin,econs,qconsav,devh2s
 REAL(8) :: pairfcsav(2),fxisav,h1xisav,hgradxisav,pairfacact
@@ -146,12 +146,8 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,trestartact
 
         END IF
         
-!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV10:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
-! WRITE(*,*) 'before ENTRY:',SUM(psi(0:nr,0:nz,1:2,1:nst(1))**2)
         CALL sstep(iter)
-!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV11:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
         CALL sinfo(iter)
-!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV12:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
         
         dnewoct=beta3
         iteract = iter
@@ -234,7 +230,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,trestartact
         adyrho = 1.0
         adypot = 1.0
         CALL sstep(iteract)                       ! "afterburn"
-        CALL sinfo(itmax)
+        CALL sinfo(iteract)
         iprint = ipold
         ipri_fields  = iplold
         itest  = itesto

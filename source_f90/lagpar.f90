@@ -78,9 +78,11 @@ DO jst=istmin,istmax
     v2a=1D0
     uva=0D0
   ELSE
-    v2a = vsqf(jst)
+   v2a = vsqf(jst)
 !    uva = SQRT(MAX(v2a-v2a*v2a,1D-16))*wtpair_uv(jst)
-    uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+   uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+!   v2a = SQRT(vsqf(jst))   !??
+!   uva = SQRT(1D0-v2a*v2a)
   END IF
 ! augment for BCS cooling in case of 'iterhfb=0'
   IF(iterbcs==0) uva = uva * fachfb
