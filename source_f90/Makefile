@@ -17,6 +17,7 @@ gf        : export COMPILERFLAGS_SKYAX = -Ofast -march=native -mcmodel=large
 gf_omp    : export COMPILERFLAGS_SKYAX = -Ofast -march=native -fopenmp
 gf_d      : export COMPILERFLAGS_SKYAX = -g -fbacktrace -Wall -fbounds-check -finit-real=NaN -ffpe-trap=invalid,zero,overflow
 ifort     : export COMPILERFLAGS_SKYAX = -O3 -xhost -mcmodel=large
+#ifort     : export COMPILERFLAGS_SKYAX = -O3 -xSSE4.2 -fast 
 ifort_dbg : export COMPILERFLAGS_SKYAX = -g -traceback -CB -mcmodel=large -check uninit
 ifort_omp : export COMPILERFLAGS_SKYAX = -O3 -xhost -qopenmp -mcmodel=large
 ifort_domp : export COMPILERFLAGS_SKYAX = -g -traceback -CB -qopenmp -mcmodel=large -check uninit
@@ -37,7 +38,7 @@ ifort_domp : export EXEC_SKYAX = skyax.ifort.domp
 # gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
 # Uncomment below for ICER, MSU.
 gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -llapack -lblas
-# gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -lmkl
+#gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -qmkl
 # ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -qmkl
 #gf gf_d gf_omp: export LIBS_SKYAX = -mkl
 # gf gf_d ifort : export LIBS_SKYAX = -lblas -llapack 
