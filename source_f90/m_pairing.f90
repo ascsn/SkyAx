@@ -546,7 +546,7 @@ IF(eferm /= 0D0) THEN
     CALL cutoff(e,pairgw_uv,ph,actnum,nmax,eferm,efadd,delcut, tstnum,iter,eps,-2)
   END IF
 ELSE
-  pairgw_uv(1:nmax) = one
+  pairgw_uv(1:nmax) = 1D0
 END IF
 ! place pairing weight into correct field
 IF(tcutoff_uvspace) THEN
@@ -555,6 +555,8 @@ ELSE
   pairgw_v2(1:nmax)=pairgw_uv(1:nmax)
   pairgw_uv(1:nmax)=1D0
 END IF
+!  IF(nblock>0)    WRITE(7,'(a,i4,4(1pg13.5))') 'PAIRGW:',nblock,pairgw_uv(nblock),pairgw_v2(ncblock), &
+!                   pairgw_uv(nblock),pairgw_v2(ncblock)
 
 !      prepare fermi-energy 'eferm', if not yet initialised.
 converged=.FALSE.

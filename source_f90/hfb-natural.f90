@@ -211,10 +211,12 @@ IF(tprint) THEN
   WRITE(6,'(a,3(1pg13.5),2i4)') 'test hermiticity:',  &
       SQRT(hermh/nmaxa**2),SQRT(hermg/nmaxa**2),hermhm,namax+isonpl, nbmax+isonpl
 END IF
+uva(:)=SQRT(MAX((1D0-v2a(:))*v2a(:),xsmall))
 IF(tcutoff_uvspace) THEN                             ! check that!
-  uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)      
-ELSE
-  uva(:)=SQRT((1D0-v2a(:))*v2a(:))
+!  uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)      
+  uva(:)=uva(:)*paircut_uv(:)      
+!ELSE
+!  uva(:)=SQRT((1D0-v2a(:))*v2a(:))
 END IF
 
 avsymcond=0D0
@@ -510,10 +512,12 @@ IF(ttimer) CALL stimer(1,'pairdn')
       nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,istcbloact,erra,itest-1)
 !END NEW ODD
 IF(ttimer) CALL stimer(2,'pairdn')
-  IF(tcutoff_uvspace) THEN                               ! check
-    uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)
-  ELSE
-    uva(:)=SQRT((1D0-v2a(:))*v2a(:))
+  uva(:)=SQRT(MAX((1D0-v2a(:))*v2a(:),xsmall))
+  IF(tcutoff_uvspace) THEN                             ! check that!
+!    uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)      
+    uva(:)=uva(:)*paircut_uv(:)      
+!  ELSE
+!    uva(:)=SQRT((1D0-v2a(:))*v2a(:))
   END IF
 IF(ttimer) CALL stimer(1,'symcond2')
   avsymcond=0D0

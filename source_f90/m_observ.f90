@@ -18,7 +18,7 @@ REAL(8) :: tempac=1D0    !<Actual temperature for current step.
 INTEGER :: itmax=1000    !<Maximum number of iterations for one deformation.
 INTEGER :: iprint=1000   !<Modulus for printing output.
 !NEW ODD
-INTEGER, PARAMETER :: mod_upd_conjstates=1000  !< Modulus for updating tabkle of conjugated states. 
+INTEGER, PARAMETER :: mod_upd_conjstates=1000  !< Modulus for updating table of conjugated states. 
 !END NEW ODD
 
 REAL(8) :: atnum    !<Mass number for nucleus.
@@ -521,7 +521,9 @@ ELSE IF(tpri_conver) THEN
          qcons(lconp(ir)),ir=1,maxcon)
   END IF
 END IF
-IF(energy /= zero) econ   = ABS((energy-eold)/energy)
+!IF(energy /= zero) econ   = ABS((energy-eold)/energy)
+IF(energy /= zero .AND. iter<itmax) econ   = ABS((energy-eold)/energy)
+
 !copy total energy to storage for previous iteration
 eold   = energy
 

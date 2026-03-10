@@ -296,7 +296,13 @@ IF(num_threads==-1) THEN
   CALL damnuc(psiact,psip,istact)
 ELSE
 !!!!$  WRITE(6,*) 'OpenMP switch',OMP_GET_THREAD_NUM() !mythread
-  CALL damnuc_HFB(psiact,psip,istact,e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix,x0inv/MAX(v2act,v2limh))
+  IF(istact==istblo(iq) .OR. istact==istcblo(iq)) THEN
+    CALL damnuc_HFB(psiact,psip,istact,e0inv,x0inv)
+  ELSE
+    CALL damnuc_HFB(psiact,psip,istact,&
+                    e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix,&
+                    x0inv/MAX(v2act,v2limh))
+  END IF
 END IF
 psiact = psip
 

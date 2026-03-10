@@ -108,7 +108,7 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,trestartact
 !NEW ODD
         ! update book-keeping of conjugated states
 !        IF(toddterms .AND. MOD(iter,mod_upd_conjstates)==0 .AND. iter>iterhfb) THEN
-        IF((MOD(iter-1,mod_upd_conjstates)==0 .AND. iter>iterbcs) .OR. &
+        IF((MOD(iter-1,mod_upd_conjstates)==0 .AND. iter>iterbcs .AND. iter<(iterbcs+iterhfb)) .OR. &
            ((iter==iterbcs .OR. iter==iterhfb) .AND. .NOT.trestartact)) THEN
           CALL findconjpart(1)
           CALL findconjpart(2)
@@ -148,6 +148,8 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,trestartact
         
         CALL sstep(iter)
         CALL sinfo(iter)
+!          WRITE(7,'(a,4(1pg13.5))') 'WTPAIR:',wtpair_uv(istblo(2)),wtpair_v2(istblo(2)), &
+!                   wtpair_uv(istcblo(2)),wtpair_v2(istcblo(2))
         
         dnewoct=beta3
         iteract = iter
@@ -237,6 +239,10 @@ LOGICAL :: tfirst=.TRUE.,thfbsav,trestartact
         econ   = econs
         qcon   = qconsav
         devh2  = devh2s
+      ELSE
+!          WRITE(7,'(a,4(1pg13.5))') 'WTPAIR:',wtpair_uv(istblo(2)),wtpair_v2(istblo(2)), &
+!                   wtpair_uv(istcblo(2)),wtpair_v2(istcblo(2))
+        CALL sinfo(itmax)
       END IF
       IF(tpri_2d)  CALL plot_2d()
       CALL occ_lz()

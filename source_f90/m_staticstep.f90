@@ -1114,6 +1114,8 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     CALL pairdn(speold(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
         wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
         nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1),istcblo(2)-nst(1),erra,itest-1)
+!          WRITE(7,'(a,4(1pg13.5))') 'WTPAIR:',wtpair_uv(istblo(2)),wtpair_v2(istblo(2)), &
+!                   wtpair_uv(istcblo(2)),wtpair_v2(istcblo(2))
 !END NEW ODD
 !    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
 !         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
