@@ -73,6 +73,30 @@ REAL(8) FUNCTION wfovlp(psia,psib)
 END FUNCTION wfovlp
 
 !---------------------------------------------------------------------------  
+! DESCRIPTION: conjg_wfovlp
+!> @brief
+!!Computes the overlap between a wave function and a the time-conjugated
+!!other wavefauntion.
+!>
+!> @param[in] psia
+!> REAL(8), array, takes the first wave function.
+!> @param[in] psib
+!> REAL(8), array, takes the second, time-conjugated  wave function.
+!--------------------------------------------------------------------------- 
+REAL(8) FUNCTION conjg_wfovlp(psia,psib)
+
+  IMPLICIT NONE
+  
+  REAL(8), INTENT(IN)         :: psia(0:nz,0:nr,nsd)
+  REAL(8), INTENT(IN)         :: psib(0:nz,0:nr,nsd)
+
+  conjg_wfovlp=-f2int(psia(0:nz,0:nr,1),psib(0:nz,0:nr,2))+f2int(psia(0:nz,0:nr,2),psib(0:nz,0:nr,1))
+
+  RETURN
+  
+END FUNCTION conjg_wfovlp
+
+!---------------------------------------------------------------------------  
 ! DESCRIPTION: time_reversal
 !> @brief
 !!Returns the time-reversed state of \c psia

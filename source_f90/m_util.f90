@@ -173,7 +173,7 @@ END SUBROUTINE polint
 !!Folding of given density \c rhoin with Gaussian of width \c rcut1. Result is 
 !!returned on \c rhofold. 
 !> @details
-!!Uses Taylor expansion of Gaussain in momentum space.
+!!Uses Taylor expansion of Gaussian in momentum space.
 !>
 !> @param[in] rhoin
 !> REAL(8), array, takes the input density.
@@ -246,6 +246,11 @@ END IF
 
 RETURN
 END SUBROUTINE stimer
+
+
+ 
+
+
 
 
 END MODULE

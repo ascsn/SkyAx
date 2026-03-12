@@ -5,11 +5,14 @@ Automated blocking state selection for SkyAx odd-nucleus calculations.
 Physical principle:
 - Run the target odd nucleus with NO blocking (istblo=0,0)
 - Identify states near the Fermi surface (partial occupation v²~0.5)
-- Test blocking each candidate state
+- Test blocking each candidate state (in parallel at Python level)
 - Select configuration with lowest energy
 
-The blocked state prevents pairing correlations for that orbital,
-representing the unpaired nucleon in the odd system.
+Features:
+- Parses clean state format from bottom of out_details.sk2
+- Filters conjugate pairs (prefers positive j_z)
+- Python-level parallelization for testing multiple states simultaneously
+- Proper file management to avoid conflicts
 """
 
 import sys
@@ -18,10 +21,13 @@ import subprocess
 import shutil
 from pathlib import Path
 import argparse
+import os
+from multiprocessing import Pool, cpu_count
+from functools import partial
 
 
 class BlockingScanner:
-    def __init__(self, input_file, executable, workdir='.', num_threads=1):
+    def __init__(self, input_file, executable, workdir='.', num_threads=1, num_processes=1):
         """
         Initialize the blocking scanner.
         
@@ -29,12 +35,14 @@ class BlockingScanner:
             input_file: Path to input file (for TARGET odd nucleus)
             executable: Path to SkyAx executable
             workdir: Working directory for calculations
-            num_threads: Number of OpenMP threads
+            num_threads: Number of OpenMP threads per process
+            num_processes: Number of parallel Python processes
         """
         self.input_file = Path(input_file).resolve()
         self.executable = Path(executable).resolve()
         self.workdir = Path(workdir).resolve()
         self.num_threads = num_threads
+        self.num_processes = num_processes
         
         self.workdir.mkdir(exist_ok=True, parents=True)
         
@@ -56,27 +64,18 @@ class BlockingScanner:
         
         return int(nprot_match.group(1)), int(nneut_match.group(1))
     
-    def modify_input(self, input_file, output_file, istblo_p=None, istblo_n=None, 
-                    nprot=None, nneut=None):
+    def modify_input(self, input_file, output_file, istblo_p=None, istblo_n=None):
         """
-        Modify input file to set blocking states and/or particle numbers.
+        Modify input file to set blocking states.
         
         Args:
             input_file: Original input file path
             output_file: Path for modified input file
             istblo_p: Proton blocking state number (None to keep original)
             istblo_n: Neutron blocking state number (None to keep original)
-            nprot: Proton number (None to keep original)
-            nneut: Neutron number (None to keep original)
         """
         with open(input_file, 'r') as f:
             content = f.read()
-        
-        # Replace particle numbers if specified
-        if nprot is not None:
-            content = re.sub(r'nprot\s*=\s*\d+', f'nprot={nprot}', content)
-        if nneut is not None:
-            content = re.sub(r'nneut\s*=\s*\d+', f'nneut={nneut}', content)
         
         # Replace istblo if both values specified
         if istblo_p is not None and istblo_n is not None:
@@ -104,13 +103,10 @@ class BlockingScanner:
         Returns:
             float: Total energy in MeV (or None if failed)
         """
-        import os
         env = os.environ.copy()
         env['OMP_NUM_THREADS'] = str(self.num_threads)
         
         log_file = self.workdir / f"{log_prefix}.log"
-        
-        print(f"  Running: {log_file.stem}...")
         
         try:
             with open(input_file, 'r') as fin, open(log_file, 'w') as fout:
@@ -133,7 +129,7 @@ class BlockingScanner:
                     if match:
                         energy = float(match.group(2))  # Use second value (from densities)
             
-            # Archive output files
+            # Archive output files with unique names
             for pattern in ['out_*']:
                 for f in self.workdir.glob(pattern):
                     new_name = f.with_name(f"{log_prefix}_{f.name}")
@@ -144,36 +140,47 @@ class BlockingScanner:
             return energy
             
         except subprocess.TimeoutExpired:
-            print(f"    WARNING: Run timed out")
+            print(f"    WARNING: {log_prefix} timed out")
             return None
         except Exception as e:
-            print(f"    ERROR: {e}")
+            print(f"    ERROR in {log_prefix}: {e}")
             return None
     
     def parse_state_details(self, details_file):
         """
         Parse out_details.sk2 file to extract single-particle state information.
+        Uses the clean formatted section at the bottom of the file.
         
         Returns:
             list: List of state dictionaries with keys:
-                  number, isospin (iq), jz, K, v2, energy, conjugate, etc.
+                  number, isospin, jz, K (tot), v2, energy, conjugate, etc.
         """
         states = []
+        in_state_section = False
         
         with open(details_file, 'r') as f:
             for line in f:
-                # Format: "  Nr Iso j_z tot r z wtpair v² uv delta energy ... conj"
-                # Example: "  398 2  1.5   4   1   4   0.99997 0.83282 ... 290"
-                # We need to capture more fields to get the conjugate (last column)
-                match = re.match(r'\s*(\d+)\s+(\d+)\s+([-\d.]+)\s+([-\d]+)\s+\d+\s+([-\d]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+).*\s+(\d+)\s*$', line)
+                # Look for section headers
+                if 'parities' in line and 'components' in line:
+                    in_state_section = True
+                    continue
+                
+                if not in_state_section:
+                    continue
+                
+                # Parse state lines in format:
+                # "  315 2 -0.5 -1 -1  2 1.00000 0.99994  0.01  0.53  -42.274  2.1720E-03   3.284      354"
+                # Nr Iso j_z tot r z wtpair v^2 uv delta energy energy-variances s.p.radius conj.state
+                match = re.match(r'\s*(\d+)\s+(\d+)\s+([-\d.]+)\s+([-\d]+)\s+([-\d]+)\s+(\d+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([\dE.+-]+)\s+([\d.]+)\s+(\d+)', line)
+                
                 if match:
                     number = int(match.group(1))
                     isospin = int(match.group(2))  # 1=proton, 2=neutron
                     jz = float(match.group(3))
-                    K = int(match.group(4))
-                    v2 = float(match.group(7))
-                    energy = float(match.group(10))
-                    conjugate = int(match.group(11))
+                    K = int(match.group(4))  # tot quantum number
+                    v2 = float(match.group(8))
+                    energy = float(match.group(11))
+                    conjugate = int(match.group(14))
                     
                     states.append({
                         'number': number,
@@ -191,10 +198,7 @@ class BlockingScanner:
         """
         Find candidate blocking states from spectrum.
         
-        Look for states near Fermi surface with partial occupation (v² ~ 0.5)
-        or highly occupied states (v² > 0.5) that represent the unpaired nucleon.
-        
-        Filters out conjugate pairs (only keeps one state from each conjugate pair).
+        Filters conjugate pairs (prefers positive j_z when possible).
         
         Args:
             states: List of state dictionaries
@@ -218,8 +222,16 @@ class BlockingScanner:
             
             # For blocking, look for states with significant occupation
             # v² close to 0.5 indicates Fermi surface
-            # v² > 0.5 indicates occupied states that could be blocked
             if 0.1 < state['v2'] < 0.99:
+                # Prefer positive j_z from conjugate pair
+                # Check if conjugate exists and has opposite j_z
+                conj_state = next((s for s in states if s['number'] == state['conjugate']), None)
+                
+                if conj_state and conj_state['jz'] * state['jz'] < 0:
+                    # Conjugate pair with opposite j_z - prefer positive
+                    if state['jz'] < 0:
+                        continue  # Skip this one, the positive j_z version will be added
+                
                 # Score by distance from v²=0.5 (Fermi surface)
                 score = abs(state['v2'] - 0.5)
                 candidates.append((score, state))
@@ -231,14 +243,72 @@ class BlockingScanner:
         # Return just the state dictionaries, not scores
         return [state for score, state in candidates[:max_states]]
     
+    @staticmethod
+    def test_single_blocking(args):
+        """
+        Static method to test a single blocking configuration.
+        Used for parallel execution.
+        
+        Args:
+            args: Tuple of (scanner, state, isospin, i, total, ref_energy)
+        
+        Returns:
+            dict: Results including energy and state info
+        """
+        scanner, state, isospin, i, total, ref_energy = args
+        
+        istblo_p = state['number'] if isospin == 1 else 0
+        istblo_n = state['number'] if isospin == 2 else 0
+        
+        iso_label = 'p' if isospin == 1 else 'n'
+        log_prefix = f"block_{state['number']}"
+        
+        print(f"  [{i}/{total}] Testing istblo=({istblo_p},{istblo_n}) "
+              f"[{iso_label}, K={state['K']}, v²={state['v2']:.3f}, jz={state['jz']:.1f}]")
+        
+        # Create input with blocking (use unique subdirectory to avoid conflicts)
+        state_dir = scanner.workdir / f"state_{state['number']}"
+        state_dir.mkdir(exist_ok=True, parents=True)
+        test_input = state_dir / "for005"
+        scanner.modify_input(scanner.input_file, test_input,
+                           istblo_p=istblo_p, istblo_n=istblo_n)
+        
+        # Temporarily change workdir for this calculation
+        original_workdir = scanner.workdir
+        scanner.workdir = state_dir
+        energy = scanner.run_skyax(test_input, log_prefix)
+        scanner.workdir = original_workdir
+        
+        # Move results back to main workdir
+        if energy is not None:
+            for f in state_dir.glob(f"{log_prefix}_*"):
+                dest = scanner.workdir / f.name
+                if dest.exists():
+                    dest.unlink()
+                shutil.move(str(f), str(dest))
+        
+        result = {
+            'state_number': state['number'],
+            'isospin': isospin,
+            'K': state['K'],
+            'jz': state['jz'],
+            'v2': state['v2'],
+            'istblo_p': istblo_p,
+            'istblo_n': istblo_n,
+            'energy': energy
+        }
+        
+        if energy is not None:
+            delta = energy - ref_energy
+            print(f"    → Energy: {energy:.3f} MeV (ΔE = {delta:+.3f} vs no blocking)")
+        else:
+            print(f"    → FAILED")
+        
+        return result
+    
     def scan_blocking_states(self, max_states=10):
         """
-        Main workflow:
-        1. Determine target nucleus (odd-N, odd-Z, or odd-odd)
-        2. Run target nucleus with NO blocking to get reference spectrum
-        3. Extract candidate states (near Fermi surface) from this spectrum
-        4. Test each blocking configuration
-        5. Return best configuration
+        Main workflow with parallel state testing.
         
         Args:
             max_states: Maximum number of candidate states to test
@@ -249,6 +319,8 @@ class BlockingScanner:
         print("=" * 70)
         print("AUTOMATED BLOCKING STATE SELECTION")
         print("=" * 70)
+        print(f"Parallelization: {self.num_processes} Python processes × "
+              f"{self.num_threads} OpenMP threads = {self.num_processes * self.num_threads} total threads")
         
         # Parse target nucleus
         target_nprot, target_nneut = self.parse_input_nucleus(self.input_file)
@@ -264,16 +336,16 @@ class BlockingScanner:
             print("\nWARNING: Even-even nucleus detected. No blocking needed.")
             return {'istblo_p': 0, 'istblo_n': 0, 'energy': None}
         
-        # Step 1: Run target nucleus with NO blocking to get reference spectrum
+        # Step 1: Run target nucleus with NO blocking
         print("\n" + "=" * 70)
         print("STEP 1: Initial Calculation (No Blocking)")
         print("=" * 70)
-        print(f"Running {target_nprot}p + {target_nneut}n with istblo=(0,0) to identify candidates...")
+        print(f"Running {target_nprot}p + {target_nneut}n with istblo=(0,0)...")
         
         ref_input = self.workdir / "for005_initial"
-        self.modify_input(self.input_file, ref_input, 
-                         istblo_p=0, istblo_n=0)
+        self.modify_input(self.input_file, ref_input, istblo_p=0, istblo_n=0)
         
+        print("  Running: initial...")
         ref_energy = self.run_skyax(ref_input, "initial")
         
         if ref_energy is None:
@@ -282,7 +354,7 @@ class BlockingScanner:
         
         print(f"  Initial energy (no blocking): {ref_energy:.3f} MeV")
         
-        # Parse spectrum from unblocked calculation
+        # Parse spectrum
         details_file = self.workdir / "initial_out_details.sk2"
         if not details_file.exists():
             print(f"\nERROR: Details file not found: {details_file}")
@@ -301,20 +373,18 @@ class BlockingScanner:
         if odd_protons:
             p_cand = self.find_candidate_states(states, isospin=1, max_states=max_states)
             candidates.extend([(state, 1) for state in p_cand])
-            print(f"\nProton candidates (states near Fermi surface):")
+            print(f"\nProton candidates (states near Fermi surface, positive j_z preferred):")
             for i, state in enumerate(p_cand, 1):
-                print(f"  {i}. State {state['number']:3d}: K={state['K']:2d}, "
-                      f"v²={state['v2']:.3f}, E={state['energy']:7.2f} MeV, "
-                      f"conj={state['conjugate']:3d}")
+                print(f"  {i}. State {state['number']:3d}: K={state['K']:2d}, jz={state['jz']:4.1f}, "
+                      f"v²={state['v2']:.3f}, E={state['energy']:7.2f} MeV, conj={state['conjugate']:3d}")
         
         if odd_neutrons:
             n_cand = self.find_candidate_states(states, isospin=2, max_states=max_states)
             candidates.extend([(state, 2) for state in n_cand])
-            print(f"\nNeutron candidates (states near Fermi surface):")
+            print(f"\nNeutron candidates (states near Fermi surface, positive j_z preferred):")
             for i, state in enumerate(n_cand, 1):
-                print(f"  {i}. State {state['number']:3d}: K={state['K']:2d}, "
-                      f"v²={state['v2']:.3f}, E={state['energy']:7.2f} MeV, "
-                      f"conj={state['conjugate']:3d}")
+                print(f"  {i}. State {state['number']:3d}: K={state['K']:2d}, jz={state['jz']:4.1f}, "
+                      f"v²={state['v2']:.3f}, E={state['energy']:7.2f} MeV, conj={state['conjugate']:3d}")
         
         if not candidates:
             print("\nWARNING: No blocking candidates found!")
@@ -322,42 +392,27 @@ class BlockingScanner:
         
         print(f"\nTotal configurations to test: {len(candidates)}")
         
-        # Step 3: Test blocking configurations
+        # Step 3: Test blocking configurations (in parallel)
         print("\n" + "=" * 70)
-        print(f"STEP 3: Test Blocking Configurations")
+        print(f"STEP 3: Test Blocking Configurations (Parallel)")
         print("=" * 70)
         
-        results = []
+        # Prepare arguments for parallel execution
+        test_args = [
+            (self, state, isospin, i, len(candidates), ref_energy)
+            for i, (state, isospin) in enumerate(candidates, 1)
+        ]
         
-        for i, (state, isospin) in enumerate(candidates, 1):
-            istblo_p = state['number'] if isospin == 1 else 0
-            istblo_n = state['number'] if isospin == 2 else 0
-            
-            iso_label = 'p' if isospin == 1 else 'n'
-            print(f"\nConfig {i}/{len(candidates)}: istblo=({istblo_p},{istblo_n}) "
-                  f"[{iso_label}, K={state['K']}, v²={state['v2']:.3f}]")
-            
-            # Create input with blocking
-            test_input = self.workdir / f"for005_block_{state['number']}"
-            self.modify_input(self.input_file, test_input,
-                            istblo_p=istblo_p, istblo_n=istblo_n)
-            
-            energy = self.run_skyax(test_input, f"block_{state['number']}")
-            
-            if energy is not None:
-                results.append({
-                    'state_number': state['number'],
-                    'isospin': isospin,
-                    'K': state['K'],
-                    'v2': state['v2'],
-                    'istblo_p': istblo_p,
-                    'istblo_n': istblo_n,
-                    'energy': energy
-                })
-                delta = energy - ref_energy
-                print(f"  Energy: {energy:.3f} MeV (ΔE = {delta:+.3f} vs no blocking)")
-            else:
-                print(f"  FAILED")
+        # Run in parallel
+        if self.num_processes > 1:
+            with Pool(processes=self.num_processes) as pool:
+                results = pool.map(BlockingScanner.test_single_blocking, test_args)
+        else:
+            # Serial execution
+            results = [BlockingScanner.test_single_blocking(args) for args in test_args]
+        
+        # Filter out failed calculations
+        results = [r for r in results if r['energy'] is not None]
         
         if not results:
             print("\nERROR: All blocking calculations failed")
@@ -378,12 +433,13 @@ class BlockingScanner:
             delta_vs_initial = r['energy'] - ref_energy
             marker = " <-- BEST" if r == best else ""
             iso_label = 'p' if r['isospin'] == 1 else 'n'
-            print(f"  istblo=({r['istblo_p']:3d},{r['istblo_n']:3d}) [{iso_label}]: "
+            print(f"  istblo=({r['istblo_p']:3d},{r['istblo_n']:3d}) [{iso_label}, K={r['K']:2d}, jz={r['jz']:4.1f}]: "
                   f"E = {r['energy']:10.3f} MeV  (ΔE = {delta:+7.3f} MeV, "
                   f"vs no-block: {delta_vs_initial:+7.3f}){marker}")
         
         print(f"\n{'=' * 70}")
         print(f"RECOMMENDED: istblo=({best['istblo_p']},{best['istblo_n']})")
+        print(f"  State {best['state_number']}: K={best['K']}, jz={best['jz']:.1f}, v²={best['v2']:.3f}")
         print(f"Ground state energy: {best['energy']:.3f} MeV")
         print(f"Improvement over no blocking: {best['energy'] - ref_energy:+.3f} MeV")
         print(f"{'=' * 70}")
@@ -399,11 +455,18 @@ def main():
 Physical approach:
   - Runs target odd nucleus with NO blocking to identify spectrum
   - Finds states near Fermi surface (partially occupied, v² ~ 0.5)
-  - Tests blocking each candidate state
+  - Tests blocking each candidate state (in parallel)
   - Selects configuration with lowest energy
 
+Parallelization:
+  --processes: Number of parallel Python processes (tests multiple states simultaneously)
+  --threads: Number of OpenMP threads per process
+  Total parallelism = processes × threads
+
 Example:
-  python auto_blocking_v2.py --input for005 --exec ../../skyax.gfortran.omp --threads 4 --max-states 5
+  # 2 Python processes, 2 OpenMP threads each = 4 total threads
+  python auto_blocking_v3.py --input for005 --exec ../../skyax.gfortran.omp \\
+                              --processes 2 --threads 2 --max-states 6
         """
     )
     
@@ -411,20 +474,30 @@ Example:
                         help='Input file for target odd nucleus')
     parser.add_argument('--exec', '-e', required=True,
                         help='Path to SkyAx executable')
-    parser.add_argument('--workdir', '-w', default='autoblock_v2',
-                        help='Working directory (default: autoblock_v2)')
+    parser.add_argument('--workdir', '-w', default='autoblock_v3',
+                        help='Working directory (default: autoblock_v3)')
     parser.add_argument('--threads', '-t', type=int, default=1,
-                        help='Number of OpenMP threads (default: 1)')
+                        help='Number of OpenMP threads per process (default: 1)')
+    parser.add_argument('--processes', '-p', type=int, default=1,
+                        help='Number of parallel Python processes (default: 1)')
     parser.add_argument('--max-states', '-m', type=int, default=10,
                         help='Maximum candidate states to test (default: 10)')
     
     args = parser.parse_args()
     
+    # Validate parallelization
+    total_threads = args.processes * args.threads
+    available_cpus = cpu_count()
+    if total_threads > available_cpus:
+        print(f"WARNING: Total threads ({total_threads}) exceeds available CPUs ({available_cpus})")
+        print(f"         Consider reducing --processes or --threads")
+    
     scanner = BlockingScanner(
         args.input,
         args.exec,
         args.workdir,
-        args.threads
+        args.threads,
+        args.processes
     )
     
     result = scanner.scan_blocking_states(max_states=args.max_states)
