@@ -41,7 +41,9 @@ REAL(8), ALLOCATABLE :: symatrix(:,:)
 
 LOGICAL, PARAMETER :: tbcs=.FALSE.    ! testswitch
 LOGICAL, PARAMETER :: ttest=.FALSE.   ! testswitch
+LOGICAL, PARAMETER :: tconj=.FALSE.   ! switches to use conjugate state in HFB step
 REAL(8) :: v2a,uva,fachfb
+REAL(8) :: xno1,xno2,ov12
 INTEGER :: mist,npzist,jst,ist,is,iq,mythread
 
 REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
@@ -72,8 +74,16 @@ IF(iterbcs==0) fachfb = MIN(1D0*iter/iterhfb,1D0)
 DO jst=istmin,istmax
 !  WRITE(6,*) 'HFBSTEP 2: mythread,jst=',mythread,jst
   CALL hpsi(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,jst),jst)
-  v2a = vsqf(jst)
-  uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+  IF(jst==istblo(iq) .OR. jst==istcblo(iq)) THEN 
+    v2a=1D0
+    uva=0D0
+  ELSE
+   v2a = vsqf(jst)
+!    uva = SQRT(MAX(v2a-v2a*v2a,1D-16))*wtpair_uv(jst)
+   uva = SQRT(MAX(v2a-v2a*v2a,xsmall))*wtpair_uv(jst)
+!   v2a = SQRT(vsqf(jst))   !??
+!   uva = SQRT(1D0-v2a*v2a)
+  END IF
 ! augment for BCS cooling in case of 'iterhfb=0'
   IF(iterbcs==0) uva = uva * fachfb
 !  WRITE(6,*) 'HFBSTEP 3: mythread,jst=',mythread,jst,v2a,uva
@@ -90,18 +100,37 @@ DO jst=istmin,istmax
     END IF
   ELSE
     IF(thfbfold) THEN
-      psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
-      psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
+      IF(tconj) THEN
+        psip(0:nz,0:nr,1)=SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,itpartn(jst))
+        psip(0:nz,0:nr,2)=-SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,itpartn(jst))
+!        xno1 =  wfovlp(psifold(:,:,:,jst),psifold(:,:,:,jst))
+!        xno2 =  wfovlp(psifold(:,:,:,itpartn(jst)),psifold(:,:,:,itpartn(jst)))
+!        ov12 =  conjg_wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst)))/SQRT(xno1*xno2)
+!        IF(ABS(ov12)<0.9999D0) WRITE(*,'(a,4i5,4(1pg13.5))') 'jst,conjgover:',jst,itpartn(jst), &
+!          mpsi(jst),mpsi(itpartn(jst)), ov12, &
+!          wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst)))/SQRT(xno1*xno2), &
+!          xno1,xno2
+      ELSE
+        psip(0:nz,0:nr,1)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,1,jst)
+        psip(0:nz,0:nr,2)=pairpt(0:nz,0:nr,iq)*psifold(0:nz,0:nr,2,jst)
+      END IF
       CALL Gaussfolding_spin(psip,psin,nparz(1,jst),mpsi(jst),1)
       DO is=1,2
         hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
             +psin(0:nz,0:nr,is)*uva
       END DO
     ELSE
-      DO is=1,2
-        hfbpsi(0:nz,0:nr,is,jst) = hfbpsi(0:nz,0:nr,is,jst)*v2a  &
-            +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,is,jst)*uva
-      END DO
+      IF(tconj) THEN
+        hfbpsi(0:nz,0:nr,1,jst) = hfbpsi(0:nz,0:nr,1,jst)*v2a  &
+            +SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,2,itpartn(jst))*uva   
+        hfbpsi(0:nz,0:nr,2,jst) = hfbpsi(0:nz,0:nr,2,jst)*v2a  &
+            -SIGN(1,mpsi(jst))*pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,1,itpartn(jst))*uva   
+      ELSE
+        hfbpsi(0:nz,0:nr,1,jst) = hfbpsi(0:nz,0:nr,1,jst)*v2a  &
+            +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,1,jst)*uva
+        hfbpsi(0:nz,0:nr,2,jst) = hfbpsi(0:nz,0:nr,2,jst)*v2a  &
+            +pairpt(0:nz,0:nr,iq)*psi(0:nz,0:nr,2,jst)*uva
+      END IF
     END IF
   END IF
 !  WRITE(6,'(a,i4,4(1pg13.5))') 'HPSI:',jst,v2a,uva, &
@@ -129,11 +158,19 @@ DO ist=istmin,istmax
       hlagr(ist,jst) = wfovlp(psi(0:nz,0:nr,1:2,ist),hfbpsi(0:nz,0:nr,1:2,jst))
       symatrix(ist,jst) = hlagr(ist,jst)
       IF(ist /= jst) THEN
-        hlagr(jst,ist) = wfovlp(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,ist))
-        symatrix(ist,jst) = hlagr(ist,jst)-hlagr(jst,ist)
-        symatrix(jst,ist) = symatrix(ist,jst)
-        hlagr(ist,jst) = 0.5D0*(hlagr(ist,jst)+hlagr(jst,ist))
-        hlagr(jst,ist) = hlagr(ist,jst)
+        IF(ist==istblo(iq) .OR. jst==istblo(iq) .OR.            & 
+              ist==istcblo(iq) .OR. jst==istcblo(iq)) THEN
+          hlagr(jst,ist)=0D0
+          hlagr(ist,jst)=0D0
+          symatrix(ist,jst)=0D0
+          symatrix(jst,ist)=0D0
+        ELSE
+          hlagr(jst,ist) = wfovlp(psi(0:nz,0:nr,1:2,jst),hfbpsi(0:nz,0:nr,1:2,ist))
+          symatrix(ist,jst) = hlagr(ist,jst)-hlagr(jst,ist)
+          symatrix(jst,ist) = symatrix(ist,jst)
+          hlagr(ist,jst) = 0.5D0*(hlagr(ist,jst)+hlagr(jst,ist))
+          hlagr(jst,ist) = hlagr(ist,jst)
+        END IF
       END IF
     ELSE
       hlagr(ist,jst) = 0D0
@@ -186,7 +223,11 @@ DO ist=istmin,istmax
   IF(tqq) CALL accumulate_variances_2(ist,istmin,istmax,hfbpsi(:,:,:,ist),qdh,hdh,hddh,hdhdh)  
 !  WRITE(6,*) 'HFBSTEP 8: mythread,v2=',mythread,vsqf(ist),&
 !   SUM(psi(0:nz,0:nr,1:2,ist)**2),SUM(hfbpsi(0:nz,0:nr,1:2,ist)**2)
-  psi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
+  IF(thfb) THEN
+    hfbpsi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
+  ELSE
+    psi(:,:,:,ist) = psi(:,:,:,ist)-hfbpsi(:,:,:,ist)
+  END IF
   IF(tbcs .AND. iq==1 .AND. mpsi(ist)==0) THEN
     WRITE(7,'(a,i4)') 'ortho-normality after: ist=',ist
     WRITE(7,'(100(1pg13.5))')  &
@@ -255,7 +296,13 @@ IF(num_threads==-1) THEN
   CALL damnuc(psiact,psip,istact)
 ELSE
 !!!!$  WRITE(6,*) 'OpenMP switch',OMP_GET_THREAD_NUM() !mythread
-  CALL damnuc_HFB(psiact,psip,istact,e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix,x0inv/MAX(v2act,v2limh))
+  IF(istact==istblo(iq) .OR. istact==istcblo(iq)) THEN
+    CALL damnuc_HFB(psiact,psip,istact,e0inv,x0inv)
+  ELSE
+    CALL damnuc_HFB(psiact,psip,istact,&
+                    e0inv+pptmax*uvact/MAX(v2act,v2limh)*delmix,&
+                    x0inv/MAX(v2act,v2limh))
+  END IF
 END IF
 psiact = psip
 
@@ -342,12 +389,12 @@ ALLOCATE(zdnuc_dyn(0:nz,0:nz,4), rdnuc_dyn(0:nr,0:nr,0:kmpsi))
   END DO
 
   mm = mpsi(ist)
-  IF(mm<0) STOP 'DAMNUC_HFB not yet prepared for negative MPSI'
+!  IF(mm<0) STOP 'DAMNUC_HFB not yet prepared for negative MPSI'
   DO impsi=mm,mm+1
-    CALL matr_inv(rdnuc_dyn(0:nr,0:nr,impsi),nr+1,nr+1)
-    IF (impsi > 0) THEN
-      rdnuc_dyn(0,0:nr,impsi) = 0D0
-      rdnuc_dyn(0:nr,0,impsi) = 0D0 ! addition PK
+    CALL matr_inv(rdnuc_dyn(0:nr,0:nr,ABS(impsi)),nr+1,nr+1)
+    IF (ABS(impsi) > 0) THEN
+      rdnuc_dyn(0,0:nr,ABS(impsi)) = 0D0
+      rdnuc_dyn(0:nr,0,ABS(impsi)) = 0D0 ! addition PK
     END IF
   END DO
 
@@ -365,7 +412,8 @@ ELSE
 !       set boundary zeroes if parity requires it.
   DO is=1,2
     mm = mpsi(ist)+is-1
-    IF (mm > 0) THEN
+!    IF (mm > 0) THEN
+    IF (ABS(mm) > 0) THEN
       psiout(0:nz,0,is)  =  0D0
     END IF
     IF (nparz(is,ist) == 2) THEN

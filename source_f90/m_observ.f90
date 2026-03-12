@@ -18,7 +18,7 @@ REAL(8) :: tempac=1D0    !<Actual temperature for current step.
 INTEGER :: itmax=1000    !<Maximum number of iterations for one deformation.
 INTEGER :: iprint=1000   !<Modulus for printing output.
 !NEW ODD
-INTEGER, PARAMETER :: mod_upd_conjstates=1000  !< Modulus for updating tabkle of conjugated states. 
+INTEGER, PARAMETER :: mod_upd_conjstates=1000  !< Modulus for updating table of conjugated states. 
 !END NEW ODD
 
 REAL(8) :: atnum    !<Mass number for nucleus.
@@ -263,7 +263,7 @@ IF(thfbfold) THEN
 !    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
     IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psifold(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -276,7 +276,7 @@ ELSE
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psi(0:nz,0:nr,1:2,jst),psi(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -314,6 +314,8 @@ IF(.NOT.tFayans) THEN
     epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
   END IF
   etpair= epairtestp+ epairtestn
+  epair(1) = epairtestp
+  epair(2) = epairtestn
   IF(ipair <= 4)  etpair=epair(1)+epair(2)
 END IF
 
@@ -355,8 +357,8 @@ IF(tFayans) THEN
   etot1  = ekin+energyFy+ecoul/2D0
   energy = ekin+energyFy+ecoul/2D0-ezp+etpair
 !  IF(itest>0) WRITE(7,'(a,i5,6(1pg13.5))') &
-  WRITE(7,'(a,i5,6(1pg13.5))') &
-      'energyFy=',iter,etot1,ekin,energyFy,epair,ezp,f1int(rho(:,:,1))
+!  WRITE(7,'(a,i5,6(1pg13.5))') &
+!      'energyFy=',iter,etot1,ekin,energyFy,epair,ezp,f1int(rho(:,:,1))
 ELSE
   CALL energ()           ! energy directly from density
   etot1  = energy
@@ -505,7 +507,7 @@ IF(iter == 0 .AND. tpri_conver) THEN
   END IF
 ELSE IF(tpri_conver) THEN
   IF(.NOT.tswicon) THEN
-    WRITE(71,'(i5,f11.4,9(1pg12.5))')  &
+    IF(MOD(iter,itzpe).NE.1) WRITE(71,'(i5,f11.4,9(1pg13.5))')  &
         iter,energy,devh2,econ,q,devoc2,devmf2,rmsp,x0inv,epair
 !        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv,epair
   ELSE
@@ -519,7 +521,9 @@ ELSE IF(tpri_conver) THEN
          qcons(lconp(ir)),ir=1,maxcon)
   END IF
 END IF
-IF(energy /= zero) econ   = ABS((energy-eold)/energy)
+!IF(energy /= zero) econ   = ABS((energy-eold)/energy)
+IF(energy /= zero .AND. iter<itmax) econ   = ABS((energy-eold)/energy)
+
 !copy total energy to storage for previous iteration
 eold   = energy
 
@@ -617,25 +621,25 @@ DO  iq=1,2
   ELSE
     WRITE(7,'(/10x,a,16x,a/a,a)') 'parities','components',  &
         '   Nr Iso j_z tot r z  wtpair  v^2      uv  delta',&
-        '   energy  energy-variances  s.p.radius conj.state'
+        '   energy  E-variance  ang.mom.  s.p.radius conj.state'
     boundnum(iq) = 0D0
     DO ist=1,nstm
       ine    = iokk(iq)+ist-1
       ind    = iorder(ine)+iokk(iq)-1
       IF(tcutoff_uvspace) THEN
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4),i5)')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,1pg12.4,0pf6.3,f8.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_uv(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
           deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind), &
-          spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
+          angularmom(ind), spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       ELSE
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4),i5)')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,1pg12.4,0pf6.3,f8.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_v2(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
           deltaf(ind),spenrg(ind),spevar(ind),  &
-          spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
+          angularmom(ind),spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       END IF
       IF(spenrg(ind)<0D0) boundnum(iq)=boundnum(iq)+vsqf(ind)*wate(ind)
     END DO
@@ -675,7 +679,7 @@ USE grid
 USE dynpar
 !USE constr, ONLY: iflmb0
 USE fields, ONLY: rho
-USE levels, ONLY: npart
+USE levels, ONLY: npart,kblock,angblock
 
 INTEGER, INTENT(IN) :: iter
 !LOGICAL :: topen173
@@ -686,14 +690,14 @@ REAL(8) :: efree
           POSITION='APPEND')
   IF(ipair /= 4) THEN
     IF(.NOT.tsym) THEN
-      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f9.5,3f8.4,3f11.6)')  &
+      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i6,2f5.1,2f6.2,f16.12,3f8.4,2f11.6,2(1pg12.4))')  &
           beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
           beta3,beta3p,beta3n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,kblock*0.5D0,angblock,rmsc,rms,rmsp,rmsn,boundnum,devh2,econ
     ELSE
-      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,f16.12,3f8.4,3f11.6)') &
+      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,2f5.1,2f6.2,f16.12,3f8.4,2f11.6,2(1pg12.4))') &
           beta2,beta2p,beta2n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,gap,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,kblock*0.5D0,angblock,rmsc,rms,rmsp,rmsn,boundnum,devh2,econ
     END IF
     IF(ABS(apnum-npart(1)) > 1.0E-5  &
         .OR. ABS(annum-npart(2)) > 1.0E-5 ) WRITE(90,'(35x,a,2(1pg14.6))')  &
@@ -1537,7 +1541,8 @@ WRITE(7,'(a,9f9.4)') 'rms_C^2:', &
    rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
    rmspback*rmspback-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
 WRITE(7,'(a,7(1pg13.5))') '  rms_C:', &
-   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc, &
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor)
 !   SQRT(6D0*(foc(1)-foc(2))/(delk**2)/foc(1))
 
 
@@ -2954,5 +2959,110 @@ DEALLOCATE(auxrho,auxz,auxr2)
 RETURN
 END FUNCTION spradius
 !END SUBROUTINE spradius
+
+!------------calangularmomentum-------------
+
+!  
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: angularmom
+!> @brief
+!!This routine computes the total angular momentum of the
+!! s.p. wavefunction with label 'ist'.
+!--------------------------------------------------------------------------- 
+!SUBROUTINE calangularmomentum(ist,angularmom)
+REAL(8) FUNCTION angularmom(ist)
+
+USE paramr
+USE grid, ONLY: nz,nr,sr,sz,icm,dr,dz,nablaz_spin,nablar_spin
+USE wavefr
+USE levels
+
+IMPLICIT NONE
+
+INTEGER, INTENT(IN) :: ist
+!REAL(8), INTENT(OUT) :: angularmom
+!INCLUDE 'dynpar.inc'
+!INCLUDE 'fields.inc'
+!INCLUDE 'derivs.inc'
+
+REAL(8),ALLOCATABLE :: psi1(:,:,:),psi2(:,:,:),psi3(:,:,:),psi4(:,:,:) !,psip(:,:,:)
+REAL(8),ALLOCATABLE :: psin(:,:,:),psip(:,:,:)
+
+INTEGER :: iz,ir
+REAL(8) :: r,z,rinv,amom2
+
+
+ALLOCATE(psi1(0:nz,0:nr,2),psi2(0:nz,0:nr,2),psi3(0:nz,0:nr,2),psi4(0:nz,0:nr,2))
+ALLOCATE(psin(0:nz,0:nr,2),psip(0:nz,0:nr,2))
+
+! calculate derivatives
+CALL nablaz_spin(psi(:,:,:,ist),psin,nparz(1,ist),1,1D0)
+CALL nablar_spin(psi(:,:,:,ist),psip,  mpsi(ist),1,1D0)
+
+DO iz=0,nz
+  DO ir=0,nr
+    r = (ir+sr)*dr
+    z = (iz+sz-icm)*dz
+    IF(ir == 0)THEN
+      rinv = zero
+    ELSE
+      rinv = 1.0/r
+    END IF
+! psi1 = L_r|psi>
+    
+    IF(ir > 0)THEN
+      psi1(iz,ir,1)= rinv*z*mpsi(ist)*psi(iz,ir,1,ist)
+      psi1(iz,ir,2)= rinv*z*(mpsi(ist)+1)*psi(iz,ir,2,ist)
+    ELSE
+      IF(mpsi(ist) == 1) THEN
+        psi1(iz,ir,1)=z*psip(iz,ir,1)
+        psi1(iz,ir,2)=0
+      ELSE IF(mpsi(ist) == 0) THEN
+        psi1(iz,ir,1)=0
+        psi1(iz,ir,2)=z*psip(iz,ir,2)
+      ELSE
+        psi1(iz,ir,1)=0
+        psi1(iz,ir,2)=0
+      END IF
+    END IF
+! psi2 = L_phi|psi>
+    psi2(iz,ir,1)=r*psin(iz,ir,1) - z*psip(iz,ir,1)
+    psi2(iz,ir,2)=r*psin(iz,ir,2) - z*psip(iz,ir,2)
+    
+! psi3 = L_z|psi>
+    psi3(iz,ir,1)=mpsi(ist)*psi(iz,ir,1,ist)
+    psi3(iz,ir,2)=(mpsi(ist)+1)*psi(iz,ir,2,ist)
+    
+! psi4 = (L_r*s_r +L_phi*s_phi+L_z*s_z)|psi>
+    psi4(iz,ir,1)= + r*psin(iz,ir,2) - z*psip(iz,ir,2)  &
+        + mpsi(ist)*psi(iz,ir,1,ist)
+    psi4(iz,ir,2)= - r*psin(iz,ir,1) + z*psip(iz,ir,1)  &
+        - (mpsi(ist)+1)*psi(iz,ir,2,ist)
+    IF(ir > 0) THEN
+      psi4(iz,ir,1)=psi4(iz,ir,1) -z*rinv*psi(iz,ir,2,ist)*(mpsi(ist)+1)
+      psi4(iz,ir,2)=psi4(iz,ir,2) -z*rinv*psi(iz,ir,1,ist)*(mpsi(ist))
+    ELSE
+      IF(mpsi(ist) == 0) THEN
+        psi4(iz,ir,1)=psi4(iz,ir,1)-z*psip(iz,ir,2)
+      ELSE IF(mpsi(ist) == 1)THEN
+        psi4(iz,ir,2)=psi4(iz,ir,2)-z*psip(iz,ir,1)
+      END IF
+    END IF
+  END DO
+END DO
+amom2 = wfovlp(psi1,psi1)+wfovlp(psi2,psi2) +wfovlp(psi3,psi3)  &
+    +wfovlp(psi4,psi(:,:,:,ist))+0.75D0
+DEALLOCATE(psi1,psi2,psi3,psi4,psin,psip)
+
+
+angularmom = 0.5D0*(-1.0+ SQRT(1.0+4.0*(amom2)))
+
+
+RETURN
+END FUNCTION angularmom
+!END SUBROUTINE calangularmomentum
+
+
 
 END MODULE observ

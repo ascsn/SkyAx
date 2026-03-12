@@ -48,17 +48,18 @@ INTEGER,ALLOCATABLE :: nqr(:)     !< Radial quantum numbers.
 INTEGER,ALLOCATABLE :: nqz(:)     !< Longitudinal quantum numbers.
 INTEGER ,ALLOCATABLE:: icharg(:)  !<Isospin (1 for protons, 2 for neutrons).
 INTEGER,ALLOCATABLE :: iorder(:)  !<Pointer field for reordering according to the actual energy.
-
 !NEW ODD
-REAL(8),ALLOCATABLE :: rtpartn(:) !<Overlap os state and conjugate partner state (auxiliary)
+REAL(8),ALLOCATABLE :: rtpartn(:) !<Overlap of state and conjugate partner state (auxiliary)
 INTEGER,ALLOCATABLE :: itpartn(:) !<Pointer field for conjugate partner states
 INTEGER :: kblock(2)=(/0,0/)      !<2*K values of blocked s.p. state. (Default 0)
 INTEGER :: ktcblock(2)=(/0,0/)    !<2*K values of conjugate to blocked s.p. state. (Default 0)
 INTEGER :: mblock(2)=(/0,0/)      !<M values of blocked s.p. state. 
 INTEGER :: istblo(2)=(/0,0/)      !<Number of blocked s.p. state in level sequence.
 INTEGER :: istcblo(2)=(/0,0/)     !<Number of conjugate to blocked s.p. state in level sequence.
-INTEGER :: isoblo=0         !<Isospin of blocked s.p. state. To be set at compile time.
+INTEGER :: isoblo=0               !<Isospin of blocked s.p. state. To be set at compile time.
+REAL(8) :: angblock(2)=(/0D0,0D0/)   !<The total angular mmentum of the blocked states
 !END NEW ODD
+
 INTEGER :: ifocsv           !<Switch to store occupation numbers intermediately (field 'oc').
 
 INTEGER :: nprot=0          !<Proton number.
@@ -82,7 +83,7 @@ INTEGER,ALLOCATABLE :: nbuf(:)        !<array storing the m value for the wave f
 REAL(8) :: betain=0.1D0               !< Deformation of initial oscillator wavefunctions.
 REAL(8) :: octini=0D0                 !< Initial octupole deformation (by oczupole squeezing).
 REAL(8) :: deocc(2)=(/1.9D0,1.9D0/)   !< Number of additional oscillator shells (above Fermi state) for initialization.
-INTEGER :: mmax(2)=(/19,19/)          !< Maximum m quantum number of protons and neutrons.
+INTEGER :: mmax(2)=(/29,29/)          !< Maximum m quantum number of protons and neutrons.
 
 
 REAL(8) :: eocc(2)                   !< Number of oscillator shells for in initialization, derived from basic number (according to N or Z) plus 'deocc'.
@@ -126,7 +127,7 @@ SUBROUTINE dealloc_levels
            wate,  spn,   spenrg,spevar,  speold,vsqf,&
            dvsqf, vsqfol,oc,    cmpn,    vsqobs,deltaf,&
            wtpair_uv,wtpair_v2,qspav, mpsi,  npar,    nrpar, nparz,&
-           nqr,  nqz,   icharg, iorder,  spevhh &
+           nqr,  nqz,   icharg, iorder,  spevhh, nbuf &
            )
   DEALLOCATE(itpartn,rtpartn)    !NEW ODD
   RETURN

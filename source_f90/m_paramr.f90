@@ -12,6 +12,7 @@ MODULE paramr
 
 IMPLICIT NONE
 
+LOGICAL,PARAMETER :: tfindconj=.FALSE.   !<Switch to activate repeated search for pairing conjugate states 
 LOGICAL,PARAMETER :: tpairon=.true.      !<Switch for using DDDI contrib. to mean field (strongly recommended).
 LOGICAL,PARAMETER :: tadsic=.false.      !<Remove self-interaction in Coulomb term
 REAL(8),PARAMETER :: einitbubble=0.0D0   !<Tries to drive bubble by adding a -m**2 potential for a few initial iterations.
@@ -40,7 +41,7 @@ REAL(8),PARAMETER :: zero=0D0            !<0.0
 REAL(8),PARAMETER :: one=1D0             !<1.0
 REAL(8),PARAMETER :: two=2D0             !<2.0
 REAL(8),PARAMETER :: xxxl=HUGE(1D0)      !<Largest REAL(8).
-REAL(8),PARAMETER :: xsmall=1D-30        ! some small value
+REAL(8),PARAMETER :: xsmall=1D-20 !30        ! some small value
 REAL(8),PARAMETER :: pi=4.0d0*atan(1.0d0)!<The constant \f$ \pi \f$.
 REAL(8),PARAMETER :: edr=1.0d0/3.0d0     !<1/3
 REAL(8),PARAMETER :: oh=0.5D0            !<1/2

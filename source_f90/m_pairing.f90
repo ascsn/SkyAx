@@ -18,6 +18,7 @@ REAL(8), ALLOCATABLE :: rspln(:)      !<Workspace for Lipkin Nogami.
 REAL(8), ALLOCATABLE :: suv2rs(:)     !<Workspace for Lipkin Nogami.
 
 INTEGER :: ilnrsp=1       !<Activates mean-field contribution to Lipkin-Nogami
+PUBLIC findconjpart
 
 CONTAINS
 
@@ -92,7 +93,7 @@ IF(thfbfold) THEN
     CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
     IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psifold(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -105,7 +106,7 @@ ELSE
     v2    = vsqf(jst)
     uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
     IF(toddterms) THEN
-      IF(mpsi(jst).lt.0) uv = (-1.0)*uv
+      IF(mpsi(jst).lt.0) uv = -uv
       CALL cpairpot(psi(0:nz,0:nr,1:2,jst),psi(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
     ELSE
       CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
@@ -215,7 +216,7 @@ IF(thfbfold) THEN
         work=0D0
       ELSE
         work(:,:)=(psifold(:,:,1,jst)*psifold(:,:,2,itpartn(jst)) &
-                   +psifold(:,:,2,jst)*psifold(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
+                   -psifold(:,:,2,jst)*psifold(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
       END IF
     ELSE
       work(:,:)=(psifold(:,:,1,jst)**2+psifold(:,:,2,jst)**2)*pairpt(:,:,iq)
@@ -231,7 +232,7 @@ ELSE
         work=0D0
       ELSE
         work(:,:)=(psi(:,:,1,jst)*psi(:,:,2,itpartn(jst)) &
-                   +psi(:,:,2,jst)*psi(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
+                   -psi(:,:,2,jst)*psi(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
       END IF
     ELSE
       work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
@@ -251,6 +252,7 @@ END IF
 !     stabilized pairing gap
 IF(pairstab.NE.0D0) THEN
   IF(tFayans) THEN
+!    WRITE(*,*) epair
     buff(1)=ABS(pairstab/epairtestp)
     buff(2)=ABS(pairstab/epairtestn)
     DO jst=1,nst(1)+nst(2)
@@ -544,7 +546,11 @@ IF(eferm /= 0D0) THEN
     CALL cutoff(e,pairgw_uv,ph,actnum,nmax,eferm,efadd,delcut, tstnum,iter,eps,-2)
   END IF
 ELSE
-  pairgw_uv(1:nmax) = one
+  pairgw_uv(1:nmax) = 1D0
+END IF
+IF(nblock>0) THEN
+  pairgw_uv(nblock) = 1D0
+  pairgw_uv(ncblock) = 0D0
 END IF
 ! place pairing weight into correct field
 IF(tcutoff_uvspace) THEN
@@ -553,6 +559,8 @@ ELSE
   pairgw_v2(1:nmax)=pairgw_uv(1:nmax)
   pairgw_uv(1:nmax)=1D0
 END IF
+!  IF(nblock>0)    WRITE(7,'(a,i4,4(1pg13.5))') 'PAIRGW:',nblock,pairgw_uv(nblock),pairgw_v2(ncblock), &
+!                   pairgw_uv(nblock),pairgw_v2(ncblock)
 
 !      prepare fermi-energy 'eferm', if not yet initialised.
 converged=.FALSE.
@@ -1654,7 +1662,7 @@ SUBROUTINE findconjpart(iq)
 !> @brief
 !!This subroutine determines the pairing conjugate partner states.
 
-USE dynpar, ONLY: toddterms,istsym
+USE dynpar, ONLY: toddterms,istsym,thfb
 USE wavefr, ONLY: psi
 USE levels
 USE grid, ONLY: nz,nr,f1int
@@ -1665,12 +1673,14 @@ INTEGER, INTENT(IN)  :: iq
 
 
 REAL(8),ALLOCATABLE :: wrk1(:,:)
+REAL(8),ALLOCATABLE :: supmatrix(:,:)
 INTEGER,ALLOCATABLE :: itpartnsav(:)
-INTEGER :: istart,i1,i2
+INTEGER :: istart,i1,i2,imis,ip1,ipp1
 REAL(8) :: supnorm,a
 LOGICAL :: tpartn
 
-LOGICAL, PARAMETER :: toverlap=.true.  ! energy or overlap decision
+LOGICAL, PARAMETER :: toverlap=.TRUE.  ! overlap or energy decision
+LOGICAL, PARAMETER :: ttestover=.FALSE.  ! activates tests
 
 IF(istsym>0) THEN
   tpartn = SUM(itpartn)>0
@@ -1685,6 +1695,10 @@ IF(istsym>0) THEN
   ELSE
     istart=nst(1)+1
   END IF
+  IF(ttestover) THEN
+    ALLOCATE(supmatrix(nst(iq),nst(iq)))
+    supmatrix=0D0
+  END IF
   DO i1=istart,nst(iq)+istart-1
     IF(toverlap) THEN
       supnorm = 0D0
@@ -1697,6 +1711,7 @@ IF(istsym>0) THEN
           wrk1(0:nz,0:nr)=psi(0:nz,0:nr,1,i1)*psi(0:nz,0:nr,2,i2)-  &
                           psi(0:nz,0:nr,2,i1)*psi(0:nz,0:nr,1,i2)
           a = ABS(f1int(wrk1))
+          IF(ttestover) supmatrix(i2-istart+1,i1-istart+1) = a
 !         IF(i1==istblo(iq)) WRITE(7,'(a,2i4,3(1pg13.5))')
 !     &    'FCONJG:',i1,i2,spenrg(i1),spenrg(i2),a
           IF(supnorm < a) THEN
@@ -1715,15 +1730,70 @@ IF(istsym>0) THEN
       END IF
     END DO
   END DO
+
+! scan dangling pointers
+  DO i1=istart,nst(iq)+istart-1
+    ip1=0
+    ipp1=0
+    DO i2=istart,nst(iq)+istart-1
+      IF(i1==itpartn(i2) .AND. ip1.NE.0) ipp1=i2
+      IF(i1==itpartn(i2) .AND. ip1==0) ip1=i2
+    END DO
+    IF(ipp1>0) THEN
+      WRITE(7,'(a,3i5,3f9.3)') 'FINDCONJ double pointer=',i1,ip1,ipp1,&
+       spenrg(i1+istart-1),spenrg(ip1+istart-1),spenrg(ipp1+istart-1)
+      IF(ttestover) WRITE(7,'(10x,300(1pg13.5))') supmatrix(:,ip1-istart+1)
+      IF(ttestover) WRITE(7,'(10x,300(1pg13.5))') supmatrix(:,ipp1-istart+1)
+    END IF
+  END DO
+
+! scan mismatchesc
+  i2=0
   DO i1=istart,nst(iq)+istart-1
 !    IF(i1 /= itpartn(itpartn(i1)).AND. (i1==istblo(1).OR.i1==istblo(2)))  &
-    IF(i1 /= itpartn(itpartn(i1)))  &
-        WRITE(7,'(a,3i5,2f5.1,2f9.3)')  &
-        'FINDCONJ error: state=',i1,itpartn(i1),itpartn(itpartn(i1)),  &
-        mpsi(i1)+0.5,mpsi(itpartn(i1))+0.5, spenrg(i1),spenrg(itpartn(i1))
+    IF(i1 /= itpartn(itpartn(i1)))  THEN
+        imis=i1
+        ip1 = itpartn(i1)
+        ipp1 = itpartn(ip1)
+        i2=1+i2
+        WRITE(7,'(a,4i5,f5.1,3f9.3)')  &
+        'FINDCONJ error: state=',i1,ip1,ipp1,itpartn(ipp1),  &
+        mpsi(i1)+0.5, spenrg(i1),spenrg(ip1),spenrg(ipp1)
+        IF(ttestover) WRITE(7,'(22x,3(1pg13.5))') &
+          supmatrix(i1-istart+1,ip1-istart+1), &  
+          supmatrix(ip1-istart+1,ipp1-istart+1), &  
+          supmatrix(ipp1-istart+1,itpartn(ipp1)-istart+1)
+        IF(ttestover) WRITE(7,'(22x,300(1pg13.5))') supmatrix(:,i1-istart+1)
+    END IF
       IF(tpartn .AND. itpartn(i1).NE.itpartnsav(i1)) WRITE(7,'(a,2i4)') &
         'FINDCONJ change: new,old=',itpartn(i1),itpartnsav(i1)
   END DO
+!  IF(ttestover .AND. thfb .AND. i2>3) THEN
+  IF(ttestover .AND. thfb .AND. i2>33) THEN
+    WRITE(7,'(a)') 'sequence of m values:'
+    WRITE(7,'(20i5)') (mpsi(i1+istart-1),i1=1,nst(iq))
+    WRITE(7,'(a)') 'chain of mismathces:'
+    imis=49
+    WRITE(7,'(10i5)') imis,itpartn(imis),itpartn(itpartn(imis)), &
+       itpartn(itpartn(itpartn(imis))),itpartn(itpartn(itpartn(itpartn(imis)))),&
+       itpartn(itpartn(itpartn(itpartn(itpartn(imis)))))
+    WRITE(7,'(a)') 'matrix of conjugate  norm overlaps'
+    DO i1=1,nst(iq)
+!      IF(mpsi(i1+istart-1)>0) CYCLE
+!      IF(mpsi(i1+istart-1)<-1) CYCLE
+!      WRITE(7,'(500(10(1pg13.5)))') (supmatrix(i2,i1),i2=1,nst(iq))
+!      WRITE(7,'(1x)')
+      a=MAXVAL(supmatrix(:,i1))
+      WRITE(7,'(i5,f6.1,2(1pg13.5))') i1,mpsi(i1+istart-1)+0.5D0,a,spenrg(i1+istart-1)
+    END DO  
+    WRITE(7,'(a)') 'non-symmetric pieces of matrix '
+    DO i1=1,nst(iq); DO i2=1,i1-1
+      IF(ABS(supmatrix(i1,i2)-supmatrix(i2,i1))>1D-3) &
+        WRITE(7,'(a,2i5,2(1pg13.5))') 'non symmetric:',i1,i2,supmatrix(i1,i2),supmatrix(i2,i1)
+    END DO; END DO
+    STOP 'matrix printed'  
+  END IF
+  IF(ttestover) DEALLOCATE(supmatrix)
   DEALLOCATE(wrk1)
   DEALLOCATE(itpartnsav)
 ELSE

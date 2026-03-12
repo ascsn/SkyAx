@@ -420,24 +420,25 @@ END IF
 !***************************************************
   
   IF(toddterms) THEN
+!    WRITE(6,'(a,6(1pg13.5))') 'ROTJ etc:',SUM(rotjr**2),SUM(rotjz**2),SUM(rotspden**2)
     DO ir=0,nr
       DO iz=0,nz
 !           calculate S_r
         sp = rotjr(iz,ir,1)
         sn = rotjr(iz,ir,2)
         ss = sp+sn
-        pots(iz,ir,1,1) = redpot*(-clsp*ss - clsm*(sp-sn))  &
-            +potold*pots(iz,ir,1,1)
-        pots(iz,ir,2,1) = redpot*(-clsp*ss + clsm*(sp-sn))  &
-            +potold*pots(iz,ir,2,1)
+        potS(iz,ir,1,1) = redpot*(-clsp*ss - clsm*(sp-sn))  &
+            +potold*potS(iz,ir,1,1)
+        potS(iz,ir,2,1) = redpot*(-clsp*ss + clsm*(sp-sn))  &
+            +potold*potS(iz,ir,2,1)
 !           calculate S_z
         sp = rotjz(iz,ir,1)
         sn = rotjz(iz,ir,2)
         ss = sp+sn
-        pots(iz,ir,1,2) = redpot*(-clsp*ss - clsm*(sp-sn))  &
-            +potold*pots(iz,ir,1,2)
-        pots(iz,ir,2,2) = redpot*(-clsp*ss + clsm*(sp-sn))  &
-            +potold*pots(iz,ir,2,2)
+        potS(iz,ir,1,2) = redpot*(-clsp*ss - clsm*(sp-sn))  &
+            +potold*potS(iz,ir,1,2)
+        potS(iz,ir,2,2) = redpot*(-clsp*ss + clsm*(sp-sn))  &
+            +potold*potS(iz,ir,2,2)
 !           calculate A_phi
         rp = rotspden(iz,ir,1)
         rn = rotspden(iz,ir,2)
@@ -452,6 +453,7 @@ END IF
             spdenz(iz,ir,1),spdenz(iz,ir,2), wrk1(iz,ir))
       END DO
     END DO
+!    WRITE(6,'(a,6(1pg13.5))') 'POTJ etc:',SUM(potS**2),SUM(pota**2)
 !          energspin = energyFy
     energyfy = f1int(wrk1)+energyFy
 !          energspin = energyFy-energspin
@@ -802,10 +804,10 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
           d2rsigp    = d2spdenr(iz,ir,iq)
           d2rsigs    = d2spdenr(iz,ir,ic)+d2rsigp
         
-          pots(iz,ir,iq,2) = redpot*(  (-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
+          potS(iz,ir,iq,2) = redpot*(  (-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
               +2.0*(b6+b7*rspow+dglan-dglanp)*rsigs &   !  add extra g_0 "dglan" as "dglan*rsigs"
           -2.0*(b6p+b7p*rspow-2D0*dglanp)*rsigp -b8*d2rsigs + b8p*d2rsigp)  &
-              +potold*pots(iz,ir,iq,2)
+              +potold*potS(iz,ir,iq,2)
         
 !  calculate S_z
           sp = rotjz(iz,ir,iq)
@@ -815,10 +817,10 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
           d2zsigp    = d2spdenz(iz,ir,iq)
           d2zsigs    = d2spdenz(iz,ir,ic)+d2zsigp
           
-          pots(iz,ir,iq,1) = redpot*((-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
+          potS(iz,ir,iq,1) = redpot*((-b4)*ss - b4p*sp+ b5*taus-b5p*taup  &
               +2.0*(b6*zsigs+b7*rspow*zsigs)+dglan*zsigs  &
           -2.0*(b6p+b7p*rspow)*zsigp -b8*d2zsigs + b8p*d2zsigp)  &
-              +potold*pots(iz,ir,iq,1)
+              +potold*potS(iz,ir,iq,1)
         
 !  calculate C_r
         
@@ -839,8 +841,8 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
           rp = rotspden(iz,ir,iq)
           rs = rotspden(iz,ir,ic) + rp
         
-          pota(iz,ir,iq)=redpot*(-2*t1p2*cs + 2*t1m2*cp - b4*rs - b4p*rp)  &
-              + potold*pota(iz,ir,iq)
+          potA(iz,ir,iq)=redpot*(-2*t1p2*cs + 2*t1m2*cp - b4*rs - b4p*rp)  &
+              + potold*potA(iz,ir,iq)
         END IF        
 !END NEW ODD
 
@@ -881,7 +883,8 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
 !***************************************************************   
   !     compose mean-field potentials
 !***************************************************************   
-!  pot(0,0,:) =0D0
+!  pot(0,0,:) =
+!  WRITE(6,'(a,6(1pg13.5))') 'DRHOLS:',SUM(drhols**2),SUM(psip**2),SUM(psin**2)
   iq=1
   ic=3-iq
   DO  ir=0,nr
@@ -917,6 +920,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
 
   DEALLOCATE(psip,psin,workenerg)
 
+!  WRITE(6,'(a,6(1pg13.5))') 'POTLS:',SUM(potls**2)
 !  WRITE(6,*) 'end of FAYANS:',SUM(pot(:,:,1)),SUM(pot(:,:,2))
 END SUBROUTINE Fayans_potentials
 
@@ -1127,6 +1131,9 @@ INTEGER :: isort(nhwd)
 
 REAL(8) :: emin,ovlp,sum2,wnor
 INTEGER :: i,imin,in,in1,inw,is,isav,ist,jn,jnw,jst,n,npari,nparj,mythread
+
+IF(nhi==0) RETURN
+!WRITE(*,*) 'SCHMIT entered:',istadd,nhi,SUM(psiw**2)
 
 IF(tstab .AND. iford /= 1)  &
     STOP ' TSTAB=.TRUE. needs energy ordering in SCHMIT. set IFORD=1'
