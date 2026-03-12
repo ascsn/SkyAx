@@ -548,6 +548,10 @@ IF(eferm /= 0D0) THEN
 ELSE
   pairgw_uv(1:nmax) = 1D0
 END IF
+IF(nblock>0) THEN
+  pairgw_uv(nblock) = 1D0
+  pairgw_uv(ncblock) = 0D0
+END IF
 ! place pairing weight into correct field
 IF(tcutoff_uvspace) THEN
   pairgw_v2(1:nmax)=1D0
