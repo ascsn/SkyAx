@@ -539,6 +539,7 @@ DO ist=1,nstm
     IF(ABS(mpsi(ind)+0.5D0-angularmom(ind))>maxamomdiff) CYCLE   
 
     blist = blist +1                              ! counter for the blocking states
+    IF(blist>kblist) STOP 'too many blocked states found, enhance KBLIST'
     amblock(blist,iq) = mpsi(ind)    
     akblock(blist,iq) = 2*mpsi(ind)+1    !   2*K to store it as integer
     aisoblo(blist,iq) = icharg(ind)

@@ -324,12 +324,15 @@ FLUSH(6)
 
     CALL ini_files()
       
+    WRITE(7,*) 'before ITERATION_LOOP: ',blnprot,blnneut
     CALL  iteration_loop()    ! the static iteration
+    WRITE(7,*) 'after ITERATION_LOOP: ',blnprot,blnneut
 
     IF( (blnprot .OR. blnneut) .AND. SUM(istblo)==0) THEN
 
       CALL scan_block()
-      EXIT outer_loop   ! scan blocking not for series of constrained calculations
+      WRITE(7,*) 'after SCAN_BLOCK: istblo=',istblo
+      IF(SUM(istblo)>0) EXIT outer_loop   ! scan blocking not for series of constrained calculations
 
     END IF
 
