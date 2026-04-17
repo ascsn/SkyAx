@@ -531,11 +531,12 @@ eold   = energy
 !**********************************************************************
 !        only write full information every iprint iterations          *
 !**********************************************************************
-IF(iter == 0 .OR. iprint == 0 .OR. MOD(iter,iprint) /= 0) RETURN
+IF((iter == 0 .OR. iprint == 0 .OR. MOD(iter,iprint) /= 0) &
+   .AND. iter.NE.itmax) RETURN
 WRITE(7,25010) iter,energy,energy/MAX(atnum,smal),eshell,ecoul/2D0,ecolex,erearr,  &
     ezp,epot,ekin,etpair,equad,econ,symcondiso
-25010 FORMAT('1'/,' iteration no. = ',i10, /,' binding energy (mev) = ',  &
-    f10.3,' binding energy per nucleon (mev) = ',f10.3,/, '   eshell = ',f10.3,  &
+25010 FORMAT('1'/,' iteration no. = ',i10, /,' binding energy (MeV) = ',  &
+    f10.3,' binding energy per nucleon (MeV) = ',f10.3,/, '   eshell = ',f10.3,  &
     '   ecoul  = ',f10.3, '   ecolex = ',f10.3,/,  &
     '   erearr = ',f10.3, '   ezp    = ',f10.3,  &
     '   epot   = ',f10.3,/, '   ekin   = ',f10.3,  &
