@@ -227,15 +227,15 @@ IF(thfbfold) THEN
 ELSE
   DO jst=1,nst(1)+nst(2)
     iq     = icharg(jst)
-    IF(toddterms) THEN
-      IF(jst==istblo(iq) .OR. jst==istcblo(iq)) THEN
-        work=0D0
-      ELSE
+    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) THEN
+      work=0D0
+    ELSE
+      IF(toddterms) THEN
         work(:,:)=(psi(:,:,1,jst)*psi(:,:,2,itpartn(jst)) &
                    -psi(:,:,2,jst)*psi(:,:,1,itpartn(jst)))*pairpt(:,:,iq)
+      ELSE
+        work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
       END IF
-    ELSE
-      work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
     END IF
     deltaf(jst) = f1int(work)
     IF(mpsi(jst)<0D0) deltaf(jst)=-deltaf(jst)
