@@ -203,6 +203,12 @@ LOGICAL, PARAMETER :: testfolding=.FALSE.
 !         and the rearrangement energy                                *
 !**********************************************************************
 
+! repair possibly wrong signs between pairing conjugated states
+! here as an occasional safety measure
+IF(toddterms .AND. iter==iterbcs+1 .AND. iter==iterhfb+1)&
+  CALL testconj_all('in SINFO')
+
+
 ALLOCATE(work(0:nz,0:nr))
 IF(testfolding) ALLOCATE(paircrtest(0:nz,0:nr,kqm),pairpttest(0:nz,0:nr,kqm))
 !  constraint energy
@@ -627,6 +633,8 @@ DO  iq=1,2
     DO ist=1,nstm
       ine    = iokk(iq)+ist-1
       ind    = iorder(ine)+iokk(iq)-1
+!      WRITE(6,'(a,3i5,1pg13.5)') 'testconj:',ind,itpartn(ind),mpsi(ind), &
+!       testconj(psi(:,:,:,ind),psi(:,:,:,itpartn(ind)))*SIGN(1D0,mpsi(ind)+0.5D0)
       IF(tcutoff_uvspace) THEN
         WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,1pg12.4,0pf6.3,f8.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
@@ -2837,6 +2845,66 @@ RETURN
 END SUBROUTINE cpairpot
 !END NEW ODD
 
+
+SUBROUTINE testconj_all(commentin)
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: cpairpot
+!> @brief
+!!Accumulates pairing density in case of broken Cramer' degeneracy
+
+USE levels, ONLY: nst,mpsi,itpartn
+USE grid, ONLY: nz,nr
+USE wavefr, ONLY: psi
+
+
+IMPLICIT NONE
+
+CHARACTER(*),INTENT(IN) :: commentin
+
+INTEGER :: ist
+REAL(8) :: overconj,kval1,kval2
+
+DO ist=1,nst(1)+nst(2)
+  overconj = testconj(psi(:,:,:,ist),psi(:,:,:,itpartn(ist)))
+  kval1 = mpsi(ist)+0.5D0
+  kval2 = mpsi(itpartn(ist))+0.5D0
+  IF(kval1*overconj<0D0) THEN
+    WRITE(6,'(a,2i5,2f5.1,1pg13.5)') commentin//', sign CONJ repaired:',&
+      ist,itpartn(ist),kval1,kval2,overconj
+    psi(:,:,:,itpartn(ist)) = -psi(:,:,:,itpartn(ist))
+  END IF
+END DO
+
+RETURN
+END SUBROUTINE testconj_all
+
+REAL(8) FUNCTION testconj(psiw1,psiw2)
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: testconj
+!> @brief
+!!Tests the overlap between conjugates states
+
+USE grid, ONLY: nz,nr,f1int
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN) :: psiw1(0:nz,0:nr,2)
+REAL(8), INTENT(IN) :: psiw2(0:nz,0:nr,2)
+
+REAL(8), ALLOCATABLE :: rho1(:,:)
+
+ALLOCATE(rho1(0:nz,0:nr))
+
+  rho1(0:nz,0:nr) =  (psiw1(0:nz,0:nr,1)*psiw2(0:nz,0:nr,2)  &
+                      -psiw1(0:nz,0:nr,2)*psiw2(0:nz,0:nr,1)) 
+  testconj = f1int(rho1)
+
+DEALLOCATE(rho1)
+
+RETURN
+END FUNCTION testconj
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: zcmobs

@@ -24,7 +24,7 @@ USE steputil
 !$ use omp_lib
 
 IMPLICIT NONE
-INTEGER, PUBLIC :: inodiag=500    !< Number of iterations without diagonalizing the Hamiltonian matrix
+INTEGER, PUBLIC :: inodiag=99999    !< Number of iterations without diagonalizing the Hamiltonian matrix
 INTEGER, PUBLIC :: iterstat      !< to communicate actual iteration number
 REAL(8), PUBLIC :: devhh2              !< counter for variance (h*h)
 REAL(8), PUBLIC :: hdh                 !< counter for <hD h>
@@ -136,6 +136,7 @@ REAL(8), POINTER :: temp(:,:,:,:)
 REAL(8),ALLOCATABLE :: wrk1(:,:),wrk2(:,:),wrk4(:,:)
 REAL(8),ALLOCATABLE :: rhot(:,:,:), taut(:,:,:), drholst(:,:,:),rholsrt(:,:,:),rholszt(:,:,:)
 
+!CALL testconj_all('before STEP')
 
 ALLOCATE(wrk1(0:nz,0:nr),wrk2(0:nz,0:nr),wrk4(0:nz,0:nr))
 ALLOCATE(hmatr(1:npsi(2),1:npsi(2)))
@@ -344,6 +345,7 @@ DO  i=1,nom         ! loop over all blocks
 !      IF(tcstp) WRITE(*,*) 'QQ-test1:',qq2,qq3,qh2,qh3
       ! the key iteration step
         psi(0:nz,0:nr,1:nsd,jst) = psi(0:nz,0:nr,1:nsd,jst)-psip(0:nz,0:nr,1:nsd)
+!        IF(mpsi(jst).GE.0) CALL testconj_all('after DAMNUC')
 
        
 !        CALL hpsi(psi(0:nz,0:nr,1:2,jst),psin(0:nz,0:nr,1:2),jst)
@@ -431,6 +433,9 @@ DEALLOCATE(psip,psin)
 
 
 IF(thfb .AND. iter>0) psi=temp
+
+IF(tdiag) CALL testconj_all('after HDIAG')
+
 
 IF(1>2) WRITE(6,*) 'odd dens. after:'  &
   ,SQRT(SUM(rotjr(:,:,1:2)**2)/(nr+1)/(nz+1)) &

@@ -113,7 +113,7 @@ ELSE
     END IF
   END DO
 END IF
-!WRITE(6,*) 'PAIRCR:',SUM(paircr(0:nz,0:nr,1)**2),SUM(paircr(0:nz,0:nr,2)**2),wate
+!WRITE(6,*) 'PAIRCR:',SUM(paircr(0:nz,0:nr,1)**2),SUM(paircr(0:nz,0:nr,2)**2)!,wate
 !END NEW ODD
 
 
@@ -1666,6 +1666,7 @@ USE dynpar, ONLY: toddterms,istsym,thfb
 USE wavefr, ONLY: psi
 USE levels
 USE grid, ONLY: nz,nr,f1int
+USE observ, ONLY: testconj
 
 IMPLICIT NONE
 
@@ -1680,7 +1681,7 @@ REAL(8) :: supnorm,a
 LOGICAL :: tpartn
 
 LOGICAL, PARAMETER :: toverlap=.TRUE.  ! overlap or energy decision
-LOGICAL, PARAMETER :: ttestover=.FALSE.  ! activates tests
+LOGICAL, PARAMETER :: ttestover=.TRUE.  ! activates tests
 
 IF(istsym>0) THEN
   tpartn = SUM(itpartn)>0
