@@ -881,10 +881,10 @@ IF(istsym>0) THEN
   CALL findconjpart(1)
   CALL findconjpart(2)
 !  CALL comp_block()
-  CALL test_print(psi(0:nz,0:nr,1,36),0,5,0,5,'psi1 36')
-  CALL test_print(psi(0:nz,0:nr,2,36),0,5,0,5,'psi2 36')
-  CALL test_print(psi(0:nz,0:nr,1,57),0,5,0,5,'psi1 57')
-  CALL test_print(psi(0:nz,0:nr,2,57),0,5,0,5,'psi2 57')
+!  CALL test_print(psi(0:nz,0:nr,1,36),0,5,0,5,'psi1 36')
+!  CALL test_print(psi(0:nz,0:nr,2,36),0,5,0,5,'psi2 36')
+!  CALL test_print(psi(0:nz,0:nr,1,57),0,5,0,5,'psi1 57')
+!  CALL test_print(psi(0:nz,0:nr,2,57),0,5,0,5,'psi2 57')
 
 END IF
 !END NEW ODD
@@ -899,6 +899,8 @@ DO ist=1,LEN
   WRITE(7,'(i5,i4,f6.1,3i5,f6.3,2f5.1,f7.3,i5)')  &
       ist,icharg(ist),mpsi(ist)+0.5,npar(ist),nrpar(ist), nparz(1,ist),  &
       vsqf(ist),cmpn(1,ist),cmpn(2,ist),(spenrg(ist)+70.0)/hboma,itpartn(ist)
+!  WRITE(6,'(a,3i5,1pg13.5)') 'testconj0:',ist,itpartn(ist),mpsi(ist), &
+!       testconj(psi(:,:,:,ist),psi(:,:,:,itpartn(ist)))*SIGN(1D0,mpsi(ist)+0.5D0)
 END DO
 WRITE(7,'(a)') ' '
 WRITE(6,'(a)') 's.p. states initialized'
