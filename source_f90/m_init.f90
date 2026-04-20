@@ -28,18 +28,20 @@ USE observ, ONLY: tempac,tempmn,tempw,tempmx
 
 IMPLICIT NONE
 
+INTEGER :: len_title
+
   OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam)
   IF (itert==0 .AND. tempac == tempmn) THEN
     IF(ipair /= 4) THEN
-      WRITE(90,'(a)') '#'//title(4:80)
-      WRITE(90,1098) '#'//title(1:70),npart(1)+npart(2),npart(1),  &
+      len_title =LEN_TRIM(title)
+      WRITE(90,'(a)') '# '//title(1:len_title)
+      WRITE(90,1098) npart(1)+npart(2),npart(1),  &
           dz,dr,nz,nr, addrho,addpot,addocc,c0,qeps,  &
-          x0inv,e0inv
-      1098 FORMAT('# Plot potential energy surface for:',/,1X,a,/,  &
-          '# Nmass=',i5,', Ncharge=',i5,/,  &
-          '#  dz,dr: ',2F6.3,' nz,nr:',2I4,/,  &
+          x0inv,e0inv,istsym
+      1098 FORMAT('# Nmass=',i5,', Ncharge=',i5,/,  &
+          '# dz,dr: ',2F6.3,' nz,nr:',2I4,/,  &
           '# addrho,addpot,addocc: ',3F6.3,'  c0,qeps:',F6.3,1PG12.4/,  &
-          '# x0inv(fm),e0inv(mev): ',2(0PF7.2))
+          '# x0inv(fm),e0inv(mev): ',2(0PF7.2)/'# istsym=',i5)
       IF(SUM(istblo) > 0) WRITE(90,'(a,4i5)')  &
           '# blocking: kblock,mblock,isoblo,istblo=',  &
           kblock,mblock,isoblo,istblo

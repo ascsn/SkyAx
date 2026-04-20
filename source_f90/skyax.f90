@@ -429,8 +429,8 @@ SUBROUTINE write_headers()
       10X,'hcoul  =',f10.6,10X,'e2     =',f10.3,/,  &
       10X,'h2m    =',2F12.6,/,10X,'ifzpe  =',i5,15X,'ifex   =',i5)
   ELSE
-    WRITE(7,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm
-    WRITE(6,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm
+    WRITE(7,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm,istsym
+    WRITE(6,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm,istsym
     5002  FORMAT(/, 10X,'t0     =',f10.3,'  mev*fm^3',6X,/,  &
       10X,'t1     =',f10.3,'  mev*fm^5',6X,/,  &
       10X,'t2     =',f10.3,'  mev*fm^5',6X,/,  &
@@ -440,7 +440,7 @@ SUBROUTINE write_headers()
       10X,'x3     =',f10.6,/, 10X,'b4p    =',f10.6,/,  &
       10X,'power  =',f10.6,/, 10X,'e2     =',f10.3,/,  &
       10X,'h2m    =',2F10.3,/, 10X,'ifzpe  =',i5,/,  &
-      10X,'riftm  =',f10.3)
+      10X,'riftm  =',f10.3,/, 10X,'istsym =',i5,'   level of including spin terms')
   pcutact=pair_cutoff
   IF(tcutoff_WS) pcutact=-pcutact
   WRITE(7,5005) pairfc,rho0pr
@@ -572,12 +572,13 @@ SUBROUTINE write_headers()
   5009  FORMAT(/10X,'errenr  =',1pg12.4,'  error in energy convergence',//,  &
       10X,'errvar  =',1pg12.4,'  error in s.p. variance',//,  &
       10X,'erra    =',1pg13.4,'  error in particle number (pairing)')
-  WRITE(7,5010) itmax,iprint,ipri_fields,itest
+  WRITE(7,5010) itmax,iprint,ipri_fields,itest,inodiag
   5010  FORMAT(/,  &
       10X,'itmax      =',i10,'  maximum no. of static iterations',/,  &
       10X,'iprint     =',i10,'  iteration modulus for printing',/,  &
       10X,'ipri_fields=',i10,'  iteration modulus for 1D density plot'/,  &
-      10X,'itest      =',i10,'  level for testprints')
+      10X,'itest      =',i10,'  level for testprints'/,&
+      10X,'inodiag    =',i10,'  nr. steps without H-diagonalization')
   IF(ABS(dipin)>0D0) WRITE(7,'(/a,1pg12.4/)') &
     ' external isovector dipole field dipin=',dipin
   IF (ABS(swicon0)+ABS(swicon2)+ABS(swicon3)+ABS(swicon4) > 0.5D0) THEN
