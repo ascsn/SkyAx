@@ -1681,7 +1681,7 @@ REAL(8) :: supnorm,a
 LOGICAL :: tpartn
 
 LOGICAL, PARAMETER :: toverlap=.TRUE.  ! overlap or energy decision
-LOGICAL, PARAMETER :: ttestover=.TRUE.  ! activates tests
+LOGICAL, PARAMETER :: ttestover=.FALSE.  ! activates tests
 
 IF(istsym>0) THEN
   tpartn = SUM(itpartn)>0
