@@ -664,14 +664,15 @@ CALL Qvariance(DelQ2)
 rmsb = 0.929516003D0*atnum**0.333333333333D0
 WRITE(6,'(a,5(1pg13.5))') 'Delta Q^2:',DelQ2
 WRITE(7,'(a,5(1pg13.5))') 'Delta Q^2:',DelQ2
-WRITE(7,'(a,1pg13.5)') 'atnum=',atnum
+!WRITE(7,'(a,1pg13.5)') 'atnum=',atnum
 DelQ2 = DelQ2*(4D0*pi/MAX(5D0*rmsb*rmsb*atnum,smal))**2  ! convert to dimensionless
 DO ind=6,7
-  WRITE(ind,'(a,f7.3,5(1pg13.5))') 'Delta_beta^2:          ',beta2,DelQ2
-  WRITE(ind,'(a,f7.3,5(1pg13.5))') 'Delta_SQRT(beta^2):    ',beta2,SQRT(DelQ2)
-  WRITE(ind,'(a,f7.3,5(1pg13.5))') 'Delta_SQRT(sum_beta^2):',beta2,SQRT(SUM(DelQ2))
-  DelQ2(0) = DelQ2(0)+beta2**2
-  WRITE(ind,'(a,f7.3,5(1pg13.5))') 'Delta_SQRT(tot_beta^2):',beta2,SQRT(SUM(DelQ2))
+  WRITE(ind,'(a,f7.3,5(1pg13.5),5x,1pg13.5)') 'Delta_beta^2:  ',beta2,DelQ2,SUM(DelQ2)
+  qsq = SQRT(SUM(DelQ2)+beta2**2)
+  WRITE(ind,'(a,f7.3,5(1pg13.5),5x,2(1pg13.5))') 'SQRT(D_beta^2):',&
+     beta2,SQRT(DelQ2),SQRT(SUM(DelQ2)),qsq
+!  WRITE(ind,'(a,f7.3,6(1pg13.5))') 'Delta_SQRT(sum_beta^2):',beta2,SQRT(SUM(DelQ2)),qsq
+!  WRITE(ind,'(a,f7.3,5(1pg13.5))') 'Delta_SQRT(tot_beta^2):',beta2,SQRT(SUM(DelQ2))
 END DO
 
 
@@ -3163,20 +3164,22 @@ USE dynpar
 USE wavefr
 USE levels
 USE grid
+USE fields, ONLY: rho
 
 IMPLICIT NONE
 
 REAL(8), INTENT(OUT) :: DelQ2(-2:2)
 
-INTEGER,PARAMETER :: intest=0,itstpr=0
+INTEGER,PARAMETER :: itstpr=0
 REAL(8),PARAMETER :: fac20=SQRT(5D0/(16D0*pi))
 REAL(8),PARAMETER :: fac21=SQRT(15D0/(8D0*pi))
 REAL(8),PARAMETER :: fac22=SQRT(15D0/(32D0*pi))
+LOGICAL,PARAMETER :: tntest=.FALSE.
 
 REAL(8),ALLOCATABLE :: psi1(:,:,:),psin(:,:,:),psip(:,:,:)
 
 REAL(8) :: deltai,deltaj,edifi,edifj,eferm,equasi,equasj,pij,&
-          sumdir,tstovl,ui,uj,vi,vj,r2
+          sumdir,tstovl,ui,uj,vi,vj,r2,sumdir0
 INTEGER :: iz,ir,is,ist,jst,jstmax,jstmin,mist,mm,nparr,npist
 
 
@@ -3188,8 +3191,9 @@ ALLOCATE(psi1(0:nz,0:nr,nsd),psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
 psi1=0D0;psip=0D0;psin=0D0
 
 !     1. double loop to accumulate Q_20 width
-IF(intest == 1) WRITE(7,'(a)') ' Q_20:'
+IF(tntest) WRITE(7,'(a)') ' Q_20:'
 sumdir = zero
+sumdir0 = zero
 DO ist=1,nst(1)+nst(2)
   mist   = mpsi(ist)
   IF(ist <= nst(1)) THEN
@@ -3221,8 +3225,9 @@ DO ist=1,nst(1)+nst(2)
   equasi = SQRT(edifi*edifi+deltai*deltai)
 !                                       the overlaps
   tstovl = wfovlp(psip,psip)
-  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir  ! 4.0??
-  IF(intest == 1) WRITE(7,'(a,i3,1pg12.4)')  &
+  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir  
+  sumdir0 =  2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir0  
+  IF(itstpr /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
       ' test: ist, <sp|Q**2|sp>=',ist,tstovl
   DO jst=jstmin,jstmax
     IF(  npist == nparz(1,jst) .AND. mist == mpsi(jst) ) THEN
@@ -3232,14 +3237,11 @@ DO ist=1,nst(1)+nst(2)
       deltaj = deltaf(jst)*wtpair_uv(jst)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
-      IF(isTsym.LE.0 .AND. mist == 0 .AND. mpsi(jst) == 0) THEN
-        pij    = wfovoc(psi(0:nz,0:nr,1,jst),psin(0:nz,0:nr,2))  &
-            + wfovoc(psi(0:nz,0:nr,2,jst),psin(0:nz,0:nr,1))
-      ELSE 
-        pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
-      END IF
+      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(tntest .AND. vi*vj>0.5D0) &
+        WRITE(7,'(a,3i4,3(1pg13.5))') 'pij=',mist,ist,jst,vi,vj,pij**2
       sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
-      IF(intest == 1) WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+      IF(itstpr /= 0) WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
           ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
           ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij, pij*(vj*ui-uj*vi)
       IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
@@ -3251,12 +3253,15 @@ DO ist=1,nst(1)+nst(2)
     END IF
   END DO
 END DO
-IF(isTsym>0) sumdir=sumdir/2D0
+!IF(isTsym>0) sumdir=sumdir/2D0
 DelQ2(0) = sumdir/2.0
+IF(tntest) WRITE(7,'(a,1pg13.5)') 'diag.sum 20:',sumdir0/2D0
+
 
 !     2. loop to accumulate Q_21-variance
-IF(intest == 1) WRITE(7,'(a)') ' Q_21:'
+IF(tntest) WRITE(7,'(a)') ' Q_21:'
 sumdir = zero
+sumdir0 = zero
 DO ist=1,nst(1)+nst(2)
   mist   = mpsi(ist)
   IF(ist <= nst(1)) THEN
@@ -3288,9 +3293,10 @@ DO ist=1,nst(1)+nst(2)
   equasi = SQRT(edifi*edifi+deltai*deltai)
 !                                       the overlaps
   tstovl = wfovlp(psip,psip)
-  IF(intest /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
+  IF(itstpr /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
       ' test: ist, <Delta_zr**2>=',ist,tstovl
   sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
+  sumdir0 = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir0
   DO jst=jstmin,jstmax
     IF(npist == nparz(2,jst) .AND. mist+1 == mpsi(jst)) THEN
       vj    = sqrtb(vsqf(jst))
@@ -3300,7 +3306,7 @@ DO ist=1,nst(1)+nst(2)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
       pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
-      IF(intest == 1)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+      IF(itstpr /= 0)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
           ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
           ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
           (pij*(vj*ui-uj*vi))**2
@@ -3310,15 +3316,17 @@ DO ist=1,nst(1)+nst(2)
     END IF
   END DO
 END DO
-IF(isTsym>0) sumdir=sumdir/2D0
+!IF(isTsym>0) sumdir=sumdir/2D0
 DelQ2(1) = sumdir/2.0
 DelQ2(-1) = sumdir/2.0
+IF(tntest) WRITE(7,'(a,1pg13.5)') 'diag.sum 21:',sumdir0/2D0
 
 
 
 !     3. loop to accumulate Q_22-variance
-IF(intest == 1) WRITE(7,'(a)') ' Q_22:'
+IF(tntest) WRITE(7,'(a)') ' Q_22:'
 sumdir = zero
+sumdir0 = zero
 DO ist=1,nst(1)+nst(2)
   mist   = mpsi(ist)
   IF(ist <= nst(1)) THEN
@@ -3350,9 +3358,10 @@ DO ist=1,nst(1)+nst(2)
   equasi = SQRT(edifi*edifi+deltai*deltai)
 !                                       the overlaps
   tstovl = wfovlp(psip,psip)
-  IF(intest /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
+  IF(itstpr /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
       ' test: ist, <Delta_zr**2>=',ist,tstovl
   sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
+  sumdir0 = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir0
   DO jst=jstmin,jstmax
     IF(npist == nparz(1,jst) .AND. mist+2 == mpsi(jst)) THEN
       vj    = sqrtb(vsqf(jst))
@@ -3362,7 +3371,7 @@ DO ist=1,nst(1)+nst(2)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
       pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
-      IF(intest == 1)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+      IF(itstpr /= 0)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
           ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
           ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
           (pij*(vj*ui-uj*vi))**2
@@ -3372,11 +3381,23 @@ DO ist=1,nst(1)+nst(2)
     END IF
   END DO
 END DO
-IF(isTsym>0) sumdir=sumdir/2D0
+!IF(isTsym>0) sumdir=sumdir/2D0
 DelQ2(2) = sumdir/2.0
 DelQ2(-2) = sumdir/2.0
+IF(tntest) WRITE(7,'(a,1pg13.5)') 'diag.sum 22:',sumdir0/2D0
 
 
+! test versus r**4
+IF(tntest) THEN
+  DO ir=0,nr
+    r2     = (dr*(ir+sr))**2
+    DO iz=0,nz
+      psip(iz,ir,1) = (z(iz)**2+r2)**2*(rho(iz,ir,1)+rho(iz,ir,2))
+    END DO
+  END DO
+  WRITE(7,'(a,3(1pg13.5))') '<r^4>:',f1int(psip(:,:,1))/(4D0*pi) &
+     ,f1int(rho(:,:,1)),f1int(rho(:,:,2))
+END IF
 
 DEALLOCATE(psi1,psin,psip)
 
