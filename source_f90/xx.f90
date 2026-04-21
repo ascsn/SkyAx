@@ -1,194 +1,231 @@
 !---------------------------------------------------------------------------  
-! DESCRIPTION: init_Gaussfolding
+! DESCRIPTION: Qvariance
 !> @brief
-!! Initialization of matrices 'gaufolz' and 'gaufolr' for Gaussian folding.
-!> @details
-!! Input are the matrices for 2. derivatives for which the eigenstates
-!! on the grid are computed by diagonalization. The Gaussian folding
-!! matrices are composed from eigenstates and eigenvalues.
-!! Input and output are communicated through the header of the module.
+!! Variance of quadrupole momentum, presently only for istsym>0
 !--------------------------------------------------------------------------- 
-SUBROUTINE init_Gaussfolding()
-
-USE grid
-
-IMPLICIT NONE
-
-REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:)
-INTEGER,ALLOCATABLE:: iwork(:)
-
-!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
-!REAL(8)            :: b(0:2*imaxdrvrng)
-
-INTEGER            :: iparmax, ibuf,in, ndimact
-INTEGER            :: inx,k,nx,i,im,ix,j,jx
-INTEGER            :: lwork,liwork,info
-REAL(8)            :: buf,buf1,buf2
-
-
-ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
-
-!     ===============================================================
-!     initialize folding matrix in z direction
-!     ===============================================================
-ndimact=nz
-lwork=1+6*ndimact+2*ndimact**2
-liwork=3+5*ndimact
-ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
-
-eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-DO in=1,4
-  eigvec=derz2f(:,:,in)
-  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
-  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
-  DO i=1,ndimact; DO j=1,ndimact
-!   sum over "Bessel" eigenstates                                                                                                             
-    gaufolz(i,j,in)=0D0
-    DO k = 1, ndimact
-      gaufolz(i,j,in) = gaufolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
-    END DO
-  END DO; END DO
-END DO
-
-DEALLOCATE(eigvec,eigval,work,iwork)
-WRITE(6,*) ' Setup of Gaussian folding in z direction completed'
-
-!     ===============================================================
-!     initialize folding matrix in r direction
-!     ===============================================================
-ndimact=nr
-lwork=1+6*ndimact+2*ndimact**2
-liwork=3+5*ndimact
-ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
-
-DO in=1,2; DO im=0,kmpsi
-  
-  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-  eigvec=derr2af(:,:,im,in)
-  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
-  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
-  DO i=1,ndimact; DO j=1,ndimact
-!   sum over "Bessel" eigenstates                                                                                                              
-    gaufolr(i,j,im,in)=0D0
-    DO k = 1, ndimact
-      gaufolr(i,j,im,in) = gaufolr(i,j,im,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
-    END DO
-  END DO; END DO
-
-END DO; END DO
-DEALLOCATE(eigvec,eigval,work,iwork)
-
-WRITE(6,*) ' Setup of Gaussian folding in r direction completed'
-
-RETURN
-END SUBROUTINE init_Gaussfolding
-
-
-!---------------------------------------------------------------------------  
-! DESCRIPTION: Gaussfolding_spin
-!> @brief
-!! Calculate the action of the Gaussian folding on a spinor.
-!>
-!> @param[in] fldin
-!> REAL(8), array, takes the input field.
-!> @param[out] fldout
-!> REAL(8), array, returns the output field.
-!> @param[in] izpfld
-!> INTEGER, takes the z-parity of upper component (1 for positive, 2 for negative,
-!!1 and isym=0 for no good z-parity)
-!> @param[in] imfld
-!> INTEGER, takes the z-component of angular momentum m of the upper component.
-!> @param[in] ibpfld
-!> INTEGER, takes boundary parity. 1 for negative (zero-value), 2 for positive 
-!!(zero-derivative).
-!> @param[in] factor
-!> REAL(8), takes the weight factor.
-!--------------------------------------------------------------------------- 
-
-SUBROUTINE Gaussfolding_spin(fldin,fldout,izpfld,imfld,ibpfld,factor)
-
-USE grid
-
-IMPLICIT NONE
-
-REAL(8), INTENT(IN)        :: fldin(0:nz,0:nr,nsd)
-REAL(8), INTENT(OUT)       :: fldout(0:nz,0:nr,nsd)
-INTEGER, INTENT(IN)        :: izpfld
-INTEGER, INTENT(IN)        :: imfld
-INTEGER, INTENT(IN)        :: ibpfld
-REAL(8), INTENT(IN)        :: factor
-
-REAL(8), ALLOCATABLE :: work(:,:)
-
-INTEGER :: imact,izpact,ibpidx,is,izpidx
-
-ALLOCATE(work(0:nz,0:nr))
-DO is=1,nsd
-  imact  = ABS(imfld+is-1)
-  izpact = 3*(izpfld-1) - (2*izpfld-3)*is
-  izpidx = izpact*isym  + (1-isym)
-  ibpidx = izpidx + 2*ibpfld - 2
-  
-  CALL mulz(gaufolz(:,:,ibpidx),fldin(:,:,is),work,factor,0)
-  CALL mulr(gaufolr(:,:,imact,ibpfld),work,fldout(:,:,is),factor,0)
-
-END DO
-DEALLOCATE(work)
-
-RETURN
-END SUBROUTINE Gaussfolding_spin
-
-
-
-
-!---------------------------------------------------------------------------  
-! DESCRIPTION: spradius
-!> @brief
-!!This routine computes the single-particle radius for the given
-!!s.p. wavefunction. It serves for testing purposes. Printing is
-!!done inside the routine.
-!> @details
-!!The properties are evaluated as integrals.
-!>
-!> @param[in] psiin
-!> REAL(8), array, takes the input spinor wavefunction.
-!!computed.
-!--------------------------------------------------------------------------- 
-SUBROUTINE spradius(psiin)
+SUBROUTINE Qvariance(DelQ2)
 
 USE paramr
+USE dynpar
+USE wavefr
+USE levels
 USE grid
 
 IMPLICIT NONE
 
-REAL(8), INTENT(IN)                         :: psiin(0:nz,0:nr,1:2)
+REAL(8), INTENT(OUT) :: DelQ2(-2:2)
 
-REAL(8),ALLOCATABLE :: auxrho(:,:),auxz(:,:),auxr2(:,:)
+INTEGER,PARAMETER :: intest=0,itstpr=0
+REAL(8),PARAMETER :: fac20=SQRT(5D0/(16D0*pi))
+REAL(8),PARAMETER :: fac21=SQRT(5D0/(16D0*pi))
+REAL(8),PARAMETER :: fac22=SQRT(5D0/(16D0*pi))
 
-INTEGER :: ir,iz
-REAL(8) :: spnum,zcm,rms2
+REAL(8),ALLOCATABLE :: psi1(:,:,:),psin(:,:,:),psip(:,:,:)
 
-!Prepare helper fields if called for the first time
-  ALLOCATE(auxrho(0:nz,0:nr),auxz(0:nz,0:nr),auxr2(0:nz,0:nr))
- 
-  auxrho(:,:) = psiin(:,:,1)**2+psiin(:,:,2)**2
-  DO ir=0,nr; DO iz=0,nz
-    auxr2(iz,ir)=auxrho(iz,ir)*(r(ir)**2+z(iz)**2)
-    auxz(iz,ir)=auxrho(iz,ir)*z(iz)
-  END DO; END DO
+REAL(8) :: deltai,deltaj,edifi,edifj,eferm,equasi,equasj,pij,&
+          sumdir,tstovl,ui,uj,vi,vj,r2
+INTEGER :: iz,ir,is,ist,jst,jstmax,jstmin,mist,mm,nparr,npist
 
-  DEALLOCATE(auxrho,auxz,auxr2)
 
-!Execute integrals
-  spnum= f1int(auxrho(0:nz,0:nr))
-  IF(tsym) THEN
-    zcm=0D0
+IF(istsym.LE.0) THEN
+  DelQ2=0D0
+END IF
+
+ALLOCATE(psi1(0:nz,0:nr,nsd),psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+psi1=0D0;psip=0D0;psin=0D0
+
+!     1. double loop to accumulate Q_20 width
+IF(intest == 1) WRITE(7,'(a)') ' Q_20:'
+sumdir = zero
+DO ist=1,nst(1)+nst(2)
+  mist   = mpsi(ist)
+  IF(ist <= nst(1)) THEN
+    jstmax = nst(1)
+    jstmin = 1
+    eferm  = fer(1)
   ELSE
-    zcm  = f1int(auxz(0:nz,0:nr))/spnum
+    jstmax = nst(1)+nst(2)
+    jstmin = nst(1)+1
+    eferm  = fer(2)
   END IF
-  rms2 = f1int(auxr2(0:nz,0:nr))/spnum
-  rms2 = rms2-zcm**2
+  
+! apply Q_20
+  DO ir=0,nr
+    r2     = r(ir)*+2 !(dr*(ir+sr))**2
+    DO iz=0,nz
+!      z     = ((iz)+sz-icm)*dz
+      psip(iz,ir,:) = fac20*(2*z(iz)**2-r2)*psi(iz,ir,:,ist)
+    END DO
+  END DO
+  
+!                                       auxiliary variables
+  npist  = nparz(1,ist)
+  vi    = sqrtb(vsqf(ist))
+  ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
+  deltai = deltaf(ist)*wtpair_uv(ist)
+  edifi  = spenrg(ist)-eferm
+  equasi = SQRT(edifi*edifi+deltai*deltai)
+!                                       the overlaps
+  tstovl = wfovlp(psip,psip)
+  sumdir = 4.0*vi*vi*wfovlp(psin,psin)*wtpair_v2(ist) +sumdir
+  IF(intest == 1) WRITE(7,'(a,i3,1pg12.4)')  &
+      ' test: ist, <sp|Q**2|sp>=',ist,tstovl
+  DO jst=jstmin,jstmax
+    IF(  npist == nparz(1,jst) .AND. mist == mpsi(jst) ) THEN
+      vj    = sqrtb(vsqf(jst))
+      uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
+      deltaj = deltaf(jst)*wtpair_uv(jst)
+      edifj  = spenrg(jst)-eferm
+      equasj = SQRT(edifj*edifj+deltaj*deltaj)
+      IF(isTsym.LE.0 .AND. mist == 0 .AND. mpsi(jst) == 0) THEN
+        pij    = wfovoc(psi(0:nz,0:nr,1,jst),psin(0:nz,0:nr,2))  &
+            + wfovoc(psi(0:nz,0:nr,2,jst),psin(0:nz,0:nr,1))
+      ELSE 
+        pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      END IF
+      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
+      IF(intest == 1) WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
+          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij, pij*(vj*ui-uj*vi)
+      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
+          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+!               pij    = pij*(vj*ui-uj*vi)
+!               pij    = pij*pij
+!               sumexy = pij/(equasi+equasj) + sumexy
+!               sumwxy  = pij + sumwxy
+    END IF
+  END DO
+END DO
+IF(isTsym>0) sumdir=sumdir/2D0
+DelQ2(0) = sumdir/2.0
 
-  WRITE(6,'(a,3(1pg13.5)') 'SPRADIUS: norm,zcm,rms=',spnum,zcm,SQRT(rms2)
+!     2. loop to accumulate Q_21-variance
+IF(intest == 1) WRITE(7,'(a)') ' Q_21:'
+sumdir = zero
+DO ist=1,nst(1)+nst(2)
+  mist   = mpsi(ist)
+  IF(ist <= nst(1)) THEN
+    jstmax = nst(1)
+    jstmin = 1
+    eferm  = fer(1)
+  ELSE
+    jstmax = nst(1)+nst(2)
+    jstmin = nst(1)+1
+    eferm  = fer(2)
+  END IF
+  
+!  action of Q_21 operator
+  DO ir=0,nr
+!    r     = (dr*(ir+sr))
+    DO iz=0,nz
+!      z     = ((iz)+sz-icm)*dz
+      psip(iz,ir,:) = fac21*z(iz)*r(ir)*psi(iz,ir,:,ist)
+    END DO
+  END DO
+
+!                                       auxiliary variables
+  npist  = nparz(1,ist)
+  vi    = sqrtb(vsqf(ist))
+  ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
+  deltai = deltaf(ist)*wtpair_uv(ist)
+  edifi  = spenrg(ist)-eferm
+  equasi = SQRT(edifi*edifi+deltai*deltai)
+!                                       the overlaps
+  tstovl = wfovlp(psip,psip)
+  IF(intest /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
+      ' test: ist, <Delta_zr**2>=',ist,tstovl
+  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
+  DO jst=jstmin,jstmax
+    IF(npist == nparz(2,jst) .AND. mist+1 == mpsi(jst)) THEN
+      vj    = sqrtb(vsqf(jst))
+      uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
+      deltaj = deltaf(jst)*wtpair_uv(jst)
+      edifj  = spenrg(jst)-eferm
+      equasj = SQRT(edifj*edifj+deltaj*deltaj)
+      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(intest == 1)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
+          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
+          (pij*(vj*ui-uj*vi))**2
+      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
+          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
+    END IF
+  END DO
+END DO
+IF(isTsym>0) sumdir=sumdir/2D0
+DelQ2(1) = sumdir/2.0
+DelQ2(-1) = sumdir/2.0
+
+
+
+!     3. loop to accumulate Q_22-variance
+IF(intest == 1) WRITE(7,'(a)') ' Q_22:'
+sumdir = zero
+DO ist=1,nst(1)+nst(2)
+  mist   = mpsi(ist)
+  IF(ist <= nst(1)) THEN
+    jstmax = nst(1)
+    jstmin = 1
+    eferm  = fer(1)
+  ELSE
+    jstmax = nst(1)+nst(2)
+    jstmin = nst(1)+1
+    eferm  = fer(2)
+  END IF
+  
+!  action of Q_21 operator
+  DO ir=0,nr
+    r2     = r(ir)**2 !(dr*(ir+sr))**2
+    DO iz=0,nz
+!      z     = ((iz)+sz-icm)*dz
+      psip(iz,ir,:) = fac22*r2*psi(iz,ir,:,ist)
+    END DO
+  END DO
+
+!                                       auxiliary variables
+  npist  = nparz(1,ist)
+  vi    = sqrtb(vsqf(ist))
+  ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
+  deltai = deltaf(ist)*wtpair_uv(ist)
+  edifi  = spenrg(ist)-eferm
+  equasi = SQRT(edifi*edifi+deltai*deltai)
+!                                       the overlaps
+  tstovl = wfovlp(psip,psip)
+  IF(intest /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
+      ' test: ist, <Delta_zr**2>=',ist,tstovl
+  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
+  DO jst=jstmin,jstmax
+    IF(npist == nparz(2,jst) .AND. mist+2 == mpsi(jst)) THEN
+      vj    = sqrtb(vsqf(jst))
+      uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
+      deltaj = deltaf(jst)*wtpair_uv(jst)
+      edifj  = spenrg(jst)-eferm
+      equasj = SQRT(edifj*edifj+deltaj*deltaj)
+      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(intest == 1)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
+          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
+          (pij*(vj*ui-uj*vi))**2
+      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
+          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
+    END IF
+  END DO
+END DO
+IF(isTsym>0) sumdir=sumdir/2D0
+DelQ2(2) = sumdir/2.0
+DelQ2(-2) = sumdir/2.0
+
+
+
+DEALLOCATE(psi1,psin,psip)
+
 RETURN
-END SUBROUTINE spradius
+END SUBROUTINE Qvariance
