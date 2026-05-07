@@ -83,8 +83,6 @@ REAL(8),SAVE :: qc          !< auxiliary storage for actual deformation
 !    qq                  ! counter for <Q Q>  
 
 
-REAL(8),PRIVATE,ALLOCATABLE :: psin(:,:,:) !< temporal storage for wave functions
-REAL(8),PRIVATE,ALLOCATABLE :: psip(:,:,:) !< temporal storage for wave functions
 
 INTEGER, PRIVATE :: num_threads                !< number of OMP threads
 INTEGER, PRIVATE :: mythread                   !< OMP thread number of current thread
@@ -135,13 +133,13 @@ REAL(8), POINTER :: psipointer(:,:,:,:)
 REAL(8), POINTER :: temp(:,:,:,:)
 REAL(8),ALLOCATABLE :: wrk1(:,:),wrk2(:,:),wrk4(:,:)
 REAL(8),ALLOCATABLE :: rhot(:,:,:), taut(:,:,:), drholst(:,:,:),rholsrt(:,:,:),rholszt(:,:,:)
+REAL(8),ALLOCATABLE :: psin(:,:,:), psip(:,:,:)
 
 !CALL testconj_all('before STEP')
 
 ALLOCATE(wrk1(0:nz,0:nr),wrk2(0:nz,0:nr),wrk4(0:nz,0:nr))
 ALLOCATE(hmatr(1:npsi(2),1:npsi(2)))
-ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
-wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0;rhot=0D0;taut=0D0;drholst=0D0;rholsrt=0D0;rholszt=0D0
+wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0
 !psip=0D0;psin=0D0;
 !IF(ifqq==1 .AND. inodiag<itmax) &
 !  STOP "option IFQQ=1 incompatible with mean-field diagonalization"
@@ -290,11 +288,12 @@ IF(1>2) WRITE(6,*) 'odd dens. before:' &
 
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
-!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act) &
+!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act,psipointer) &
 !$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond, &
 !$OMP           rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)
 !!!$ mythread=OMP_GET_THREAD_NUM()
 ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
 DO  i=1,nom         ! loop over all blocks
 !$  mythread=OMP_GET_THREAD_NUM()
   im=load_m(mythread,i)
@@ -429,6 +428,7 @@ DO  i=1,nom         ! loop over all blocks
   !$ loadweight(im)=wtime2-wtime1
 END DO
 DEALLOCATE(psip,psin)
+DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 !$OMP END PARALLEL
 
 
@@ -513,8 +513,8 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
 !**********************************************************************
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(i,mythread,im,nhi,nlo,nadd,iq,is,jst,psin,width,fac,rhot,taut,drholst,rholsrt,rholszt) &
-!$OMP REDUCTION(+: rhosur,rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)  
-
+!$OMP REDUCTION(+: rhosur,rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)
+ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
 !$ mythread=OMP_GET_THREAD_NUM()
   DO  i=1,nom         ! loop over all blocks
     im=load_m(mythread,i)
@@ -561,8 +561,9 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
     drhols=drhols+drholst
     rholsr=rholsr+rholsrt
     rholsz=rholsz+rholszt
-    !$omp end critical 
+    !$omp end critical
   END DO
+DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 !$OMP END PARALLEL
 !IF(tcstp) THEN
 !  WRITE(*,*) ' RHOT:',f1int(rhot(0:nz,0:nr,1)),f1int(rhot(0:nz,0:nr,2))
@@ -635,7 +636,6 @@ CALL mfhmlt(iter)
 DEALLOCATE(hmatr)
 DEALLOCATE(temp)
 DEALLOCATE(wrk1,wrk2,wrk4)
-DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 
 RETURN
 END SUBROUTINE sstep

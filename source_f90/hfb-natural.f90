@@ -76,7 +76,7 @@ IF(iso==1) THEN
   efadd=feradd(1)
   efermiso=fer(1)
   istbloact=istblo(1)
-  istcbloact=itpartn(istbloact)
+  istcbloact=istcblo(1)
 ELSE IF(iso==2) THEN
   nmaxa=nst(2)
   isonpl=nst(1)

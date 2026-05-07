@@ -533,9 +533,8 @@ DO ist=1,nstm
   equasi=SQRT((spenrg(ind)-fer(iq))**2+deltaf(ind)**2)  
   IF(equasi < maxexenerg) THEN  
 
-    ! exclude a couple of unwanted cases
-    IF(( ((blnprot.AND.blnneut).AND.iq==1)  &
-        .OR.(.NOT.(blnprot.AND.blnneut))   ) .AND. mpsi(ind)<0 ) CYCLE
+    ! exclude a couple of unwanted cases: only positive-K states (avoid time-reverse duplicates)
+    IF(mpsi(ind)<0 ) CYCLE
     IF(ABS(mpsi(ind)+0.5D0-angularmom(ind))>maxamomdiff) CYCLE   
 
     blist = blist +1                              ! counter for the blocking states
