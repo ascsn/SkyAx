@@ -423,12 +423,12 @@ energmax = energmin+(energmax-energmin)/2D0
 !     now scan the states
 DO ip1=1,maxblist_total
 
-  IF(trestart) CALL read_com()          ! fetch the time-even configuration for re-cycling
-
   blist1 = ipoint(1,ip1)
   blist2 = ipoint(2,ip1)
   IF(total_energy(ip1)>energmax) EXIT
-  
+
+  IF(trestart) CALL read_com()          ! fetch the time-even configuration for re-cycling
+
   istblo = 0
   mblock(1) = amblock(blist1,1)
   kblock(1) = akblock(blist1,1)
