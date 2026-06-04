@@ -1,0 +1,28 @@
+&main outnam='FR0',title='test 120Sn',ipri_fields=4000,iprint=1000,itmax=10000,tpri_2d=F, itest=0, 
+ iterbcs=1000, iterhfb=2000,pairenhance=2D0,iternat=0,modnat=99999,tpri_conver=.TRUE.,
+ run_mode=1, mt_start=1, mt_end=-1
+/  
+&force  
+ name='none', tFayans=.TRUE., ipair=8, pairstab=-0.05D0, ex=1, zpe=1, HFBwidth=0.9D0, 
+ h2m(2)=20.72126, h2m(1)=20.74982,
+ avp=-9.608175465,h1vp=0.6227052220,h2vp=0.1726617465, 
+ avm=2.2427483150D+14,h1vm=-2.316454053,h2vm=5.2906966945D+14, 
+ asp=0.5483225953,hsp=0.0,hgradp=0.3511339663,c0nabj=0.1906406585,c1nabj=-3.3380056233E-02, 
+ fxi=-9.779935194,h1xi=9.812808587,hgradxi=7.047825506,delfxi=1.509409254,
+ delh1xi = -2.507950154,delhgradxi=-1.380876691, 
+ pair_cutoff=-15,tcutoff_uvspace=.TRUE.,
+ isovectormodel=3, isTsym=2
+/  
+&grids tsym=.T.,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0, 
+/  
+&static nprot=12,nneut=20,e0inv=100D0,x0inv=0.2D0,addrho=0.15D0,addocc=0.2D0,
+deocc(1)=3.1D0,deocc(2)=3.1D0,errenr=1D-11,errvar=0.05,colerr=1D-11,itpini=0,
+tvaryx0=F,inodiag=99999,irepc=100,maxexenerg=4.0D0, mmax=29,29,
+/  
+&constraint 
+/  
+&thermal  
+/  
+
+
+# Fy(IVP3) finite-range pairing, with standard iteration

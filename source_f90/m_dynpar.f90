@@ -38,6 +38,7 @@ LOGICAL :: tvaryx0=.FALSE.                   !< switch to variable szep size
 LOGICAL :: trestart=.TRUE. !< switch to restart blocjked calulations friem time-evene solution
 CHARACTER (LEN=4) :: outnam = "tstr"  !< 3-digit qualifier for output files
 CHARACTER (LEN=80) :: title=" "  !< Title for the actual run, printed in the header of output files.
+LOGICAL :: use_subdirs = .FALSE.  !< when .TRUE. (masstable/stableline) each output file type goes into its own subdirectory
 
 
 ! print switches
@@ -504,5 +505,21 @@ CONTAINS
 
   END SUBROUTINE read_force
 
+
+!===========================================================================
+!> Returns the directory prefix for file type \a ftype.
+!! When use_subdirs is .TRUE. (masstable/stableline mode) returns 'ftype/'.
+!! Otherwise returns '' so callers can always write fpath(x)//x//'.'//outnam.
+!===========================================================================
+PURE FUNCTION fpath(ftype) RESULT(dir)
+  IMPLICIT NONE
+  CHARACTER(LEN=*), INTENT(IN) :: ftype
+  CHARACTER(LEN=40) :: dir
+  IF (use_subdirs) THEN
+    dir = TRIM(ftype) // '/'
+  ELSE
+    dir = ''
+  END IF
+END FUNCTION fpath
 
 END MODULE dynpar

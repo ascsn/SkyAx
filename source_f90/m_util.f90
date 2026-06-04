@@ -69,14 +69,14 @@ INTEGER :: ir,iz
 INTEGER,SAVE :: cit=1
 
 IF(tfirst) THEN
-  OPEN(77,FILE='plot_2D.'//outnam)
+  OPEN(77,FILE=TRIM(fpath('plot_2D'))//'plot_2D.'//outnam)
   WRITE(77,'(a,a)')'# ',title(1:78)
   WRITE(77,'(a,2i5,a,f10.5)') '# Nr. proton/neutron=',npart, ' total Nr. Nucleons=',anumb
   WRITE(77,'(a,2i5)') '# Nr. of states=',nst
   WRITE(77,'(a,2(i5,X),2(f6.3,X),L5)') '# nr,nz,dr,dz,tsym= ',nr,nz,dr,dz,tsym
   tfirst = .false.
 ELSE
-  OPEN(77,FILE='plot_2D.'//outnam,POSITION='APPEND')
+  OPEN(77,FILE=TRIM(fpath('plot_2D'))//'plot_2D.'//outnam,POSITION='APPEND')
   WRITE(77,'(1x)')
 END IF
 WRITE(77,'(a,i5)')'# number ',cit

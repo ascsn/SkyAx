@@ -1,0 +1,14 @@
+&main outnam='mt', iprint=500, run_mode=1, mt_start=1, mt_end=-1
+/
+&force name="Fy(std)", ipair=5,
+/
+&grids tsym=T, nz=36, nr=24, dz=0.8, dr=0.8
+/
+&static nprot=50, nneut=70, e0inv=110D0, x0inv=0.3, tvaryx0=T,
+        mmax=29,29,
+        maxexenerg=4.0
+/
+&constraint
+/
+&thermal
+/

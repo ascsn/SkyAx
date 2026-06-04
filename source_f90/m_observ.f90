@@ -587,7 +587,7 @@ END IF
 IF(dipin.NE.0D0) THEN
   INQUIRE(49,OPENED=topened)
   IF(.NOT.topened) THEN
-    OPEN(49,STATUS='unknown',FORM='formatted',FILE='polariz.'//outnam)
+    OPEN(49,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('polariz'))//'polariz.'//outnam)
     WRITE(49,'(a)') 'nprot nneut beta_2 dipin   dipout    polarizability'
   END IF
   WRITE(49,'(2i5,f8.3,f9.5,2(1pg20.12))')  &
@@ -715,7 +715,7 @@ INTEGER, INTENT(IN) :: iter
 
 REAL(8) :: efree
 
-  OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam,  &
+  OPEN(90,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('ensurf'))//'ensurf.'//outnam,  &
           POSITION='APPEND')
   IF(ipair /= 4) THEN
     IF(.NOT.tsym) THEN
@@ -752,7 +752,7 @@ REAL(8) :: efree
 
 
   IF(tpri_radii)  THEN
-    OPEN(76,STATUS='unknown',FORM='formatted',FILE='radii.'//outnam,  &
+    OPEN(76,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('radii'))//'radii.'//outnam,  &
           POSITION='APPEND')
     WRITE(76,'(f8.4,f12.3,4f8.4)') beta2,energy,rmsc,rdmsc,surfc,r4c
     CLOSE(76)
@@ -1400,7 +1400,7 @@ SUBROUTINE occ_lz()
 USE grid
 USE paramr
 USE levels
-USE dynpar, ONLY: tpri_occup,outnam
+USE dynpar, ONLY: tpri_occup,outnam,fpath
 IMPLICIT NONE
 
 REAL(8) :: occuplz(0:kmpsi,2)
@@ -1416,10 +1416,10 @@ IF(tfirst) THEN
     IF(mpsi(ist)>lzmax(icharg(ist))) lzmax(icharg(ist))=mpsi(ist)
   END DO
   IF(tpri_occup) THEN
-    OPEN(171,FILE='occup_lz_p.'//outnam)
+    OPEN(171,FILE=TRIM(fpath('occup_lz_p'))//'occup_lz_p.'//outnam)
     WRITE(171,'(a)') '# occupation of l_z bands protons'
     WRITE(171,'(a,900i3)') '# beta2, m=',(im,im=0,lzmax(1))
-    OPEN(172,FILE='occup_lz_n.'//outnam)
+    OPEN(172,FILE=TRIM(fpath('occup_lz_n'))//'occup_lz_n.'//outnam)
     WRITE(172,'(a)') '# occupation of l_z bands neutrons'
     WRITE(172,'(a,900i3)') '# beta2, m=',(im,im=0,lzmax(2))
   END IF
@@ -2241,10 +2241,10 @@ DO iq=1,2
 !     output for 'plotmtv' of density
   
   IF(iq == 1) THEN
-    OPEN(iwunit,FILE='densip.'//tnum//'.'//outnam)
+    OPEN(iwunit,FILE=TRIM(fpath('densip'))//'densip.'//tnum//'.'//outnam)
     WRITE(iwunit,'(a)') '# plot density for protons:'
   ELSE
-    OPEN(iwunit,FILE='densin.'//tnum//'.'//outnam)
+    OPEN(iwunit,FILE=TRIM(fpath('densin'))//'densin.'//tnum//'.'//outnam)
     WRITE(iwunit,'(a)') '# plot density for neutrons:'
   END IF
   WRITE(iwunit,'(a,2i4,2f8.3)') '# nprot,nneut,beta2,beta3=',npart,beta2,beta3
@@ -2280,10 +2280,10 @@ DO iq=1,2
 !     prepare header for 'plotmtv' file
   
   IF(iq == 1) THEN
-    OPEN(iwunit,FILE='localp.'//tnum//'.'//outnam)
+    OPEN(iwunit,FILE=TRIM(fpath('localp'))//'localp.'//tnum//'.'//outnam)
     WRITE(iwunit,'(a)') '# plot localization for protons:'
   ELSE
-    OPEN(iwunit,FILE='localn.'//tnum//'.'//outnam)
+    OPEN(iwunit,FILE=TRIM(fpath('localn'))//'localn.'//tnum//'.'//outnam)
     WRITE(iwunit,'(a)') '# plot localization for neutrons:'
   END IF
   WRITE(iwunit,'(a,2i4,2f8.3)') '# nprot,nneut,beta2,beta3=',npart,beta2,beta3

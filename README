@@ -1,13 +1,13 @@
-Short explanations for the 'skyax' package: (status 9. January 2023)
+Short explanations for the 'skyax' package: (status 3. June 2026)
 --------------------------------------------------------------------
 
 The following instructions assume that you are on a Linux system.
 
 Create a working directory 'SkyAx' and change to it. Place the
-the package 'SkyAx.tgz' there and unpack it. This will generate 
+the package 'SkyAx.tgz' there and unpack it. This will generate
 the documentation file "Skyax.pdf" and the subdirectories:
 source_f90         contains all source files and a 'Makefile', the
-                   latter provides options for GNU Fortran and 
+                   latter provides options for GNU Fortran and
                    Intel Fortran;
 doc-doxygen        contains sources for 'doxygen' and its actual output
                    on 'SkyAx_doxygen.pdf' which delivers more detailed
@@ -29,7 +29,7 @@ A simple way to run the code is to choose one of the functionals
 provided in the file 'source_f90/forces.data'. Examples for input are
 given in the subdirectories of the directories 'test_cases_*' with name
 starting by 'for005'. All these test cases contains input files and
-corresponding output files to check the actual installation. 
+corresponding output files to check the actual installation.
 
 To specify an example:  take 'Cd118' where the input file is named
 'for005'. Go to a working directory of your choice, copy 'for005' from
@@ -42,8 +42,179 @@ the meaning of other output files see the documentation in 'SkyAx.pdf'.
 
 
 There is still one obnoxious feature. The results depend slightly on
-the compiler used. The worst case is Intel Fortran with OpenMP 
+the compiler used. The worst case is Intel Fortran with OpenMP
 (option 'make ifort_omp') which can fail badly in some cases. This
 indicates that there is probably some non-standard use of Fortran
 constructs which deserves further checking.
- 
+
+
+Large-scale calculations: mass table and stable-line (dripline) scan
+=====================================================================
+
+Three run modes are selected via 'run_mode' in the &main namelist.
+
+  run_mode=0  Single nucleus (default, original SkyAx behaviour)
+  run_mode=1  Mass table -- loop over a list of (Z, N, beta0) entries
+  run_mode=2  Stable-line scan -- follow isotopic/isotonic chains to the dripline
+
+
+Supporting files
+----------------
+
+  m_masstable.f90        Module that reads input, stores results, and writes
+                         the summary output file for modes 1 and 2.
+  skyax_MASSTABLE.dat    Input for run_mode=1: list of (Z, N, beta0) entries.
+  skyax_STABLELINE.dat   Input for run_mode=2: list of chain starting points.
+  test/masstable/        Sample input and output for run_mode=1.
+  test/stableline/       Sample input and output for run_mode=2.
+
+
+Output files
+------------
+
+Each nucleus computed in modes 1 and 2 is assigned a 4-digit sequential
+index (0001, 0002, ...) and gets its own set of output files:
+
+  out_details/out_details.0001
+  ensurf/ensurf.0001
+  conver/conver.0001
+  radii/radii.0001
+  ...
+
+These are the same files that single-nucleus mode writes, but named by
+index rather than by the 'outnam' qualifier.  All subdirectories are
+created automatically before the loop starts.
+
+At the end of the run a single summary file is written:
+
+  MassTableOut.dat     (run_mode=1)
+  StableLineOut.dat    (run_mode=2)
+
+Each row of the summary contains the index, Z, N, beta_in, and the
+converged observables (deformation, energy, pairing, Fermi energies,
+gaps, radii, bound nucleon numbers, energy variance, dE/diter).
+
+
+Controlling odd-A and odd-odd nuclei
+-------------------------------------
+
+Two logical flags in &main govern whether nuclei with odd Z or N are
+computed.  Both default to .TRUE. (all nuclei included).
+
+  mt_do_oddA   = .TRUE.   Include odd-A nuclei   (Z+N odd, exactly one is odd)
+  mt_do_oddodd = .TRUE.   Include odd-odd nuclei (both Z and N are odd)
+
+Set either flag to .FALSE. to skip those nuclei.  The blocking machinery
+(m_blocking.f90) handles odd-nucleon configurations automatically whenever
+a nucleus with odd Z or N is encountered.
+
+For run_mode=1 the flags act as a row filter: rows whose (Z, N) parity
+does not match are skipped with a log message and do not appear in
+MassTableOut.dat.
+
+For run_mode=2 the flags control whether the intermediate odd neighbor is
+computed between each pair of same-parity reference nuclei (see below).
+
+
+run_mode=0 -- Single nucleus
+------------------------------
+
+Standard usage; no additional input files are needed.
+
+  &main outnam='tst', itmax=10000, run_mode=0, ...
+  /
+
+Output files carry the 'outnam' qualifier (e.g. ensurf.tst, out_details.tst).
+
+
+run_mode=1 -- Mass table
+-------------------------
+
+Reads 'skyax_MASSTABLE.dat' from the working directory (see e.g. in test folder).
+
+File format (header line, total-row count, column-label line, then one row per nucleus):
+
+  SkyAx mass-table input file
+  24
+       Z     N    beta0
+       8     8     0.00
+       9    10     0.00
+      50    82     0.00
+      ...
+
+Each row specifies Z, N and the initial deformation beta0.  Odd-A and
+odd-odd nuclei are included by default (controlled by mt_do_oddA and
+mt_do_oddodd).
+
+Example namelist (&main block only; the rest of for005 is unchanged):
+
+  &main outnam='mt', iprint=500, itmax=10000,
+        run_mode=1,
+        mt_start=1, mt_end=-1,
+        mt_do_oddA=.TRUE.,
+        mt_do_oddodd=.TRUE.,
+  /
+
+mt_start / mt_end select a row range within the file (mt_end=-1 means all
+rows).  For SLURM array jobs set these so that each array element processes
+a disjoint range:
+
+  sbatch --array=1-10 run_masstable.sbatch
+
+The summary is written to 'MassTableOut.dat' when the run finishes.
+
+
+run_mode=2 -- Stable-line (dripline) scan
+------------------------------------------
+
+Reads 'skyax_STABLELINE.dat' from the working directory.
+
+File format (header line, chain count, column-label line, then one row per chain):
+
+  SkyAx stable-line (dripline scan) input file
+  2
+             Z           N   direction
+             8           8           1
+            50          50          -1
+
+direction=1  isotopic chain: fix Z, scan N upward
+direction=-1 isotonic chain: fix N, scan Z upward
+
+The code starts each chain at the given (Z, N) and steps by 2 (in N for
+isotopic, in Z for isotonic) until the 2-nucleon separation energy becomes
+negative:
+
+  S_2N = E(Z, N_prev) - E(Z, N_cur) < 0  =>  neutron dripline reached
+  S_2Z = E(Z_prev, N) - E(Z_cur, N) < 0  =>  proton  dripline reached
+
+Odd-nucleus interleaving (mt_do_oddA / mt_do_oddodd):
+
+When odd nuclei are enabled (the default), after each reference nucleus
+passes the dripline check the immediate odd neighbor is computed before
+advancing to the next reference nucleus:
+
+  Isotopic chain (fixed Z):
+    (Z, N) -> [S_2N check] -> (Z, N+1) -> advance to (Z, N+2) -> ...
+
+  Isotonic chain (fixed N):
+    (Z, N) -> [S_2N check] -> (Z+1, N) -> advance to (Z+2, N) -> ...
+
+The dripline check always compares consecutive same-parity reference nuclei,
+so odd-even staggering cannot cause a spurious early termination.
+
+Whether the intermediate neighbor is odd-A or odd-odd depends on the parity
+of the fixed leg (Z for isotopic, N for isotonic):
+
+  even fixed leg  =>  odd-A neighbor   => governed by mt_do_oddA
+  odd  fixed leg  =>  odd-odd neighbor => governed by mt_do_oddodd
+
+Example namelist:
+
+  &main outnam='FR0', title='dripline scan', itmax=10000,
+        iprint=1000, tpri_conver=.TRUE.,
+        run_mode=2,
+        mt_do_oddA=.TRUE.,
+        mt_do_oddodd=.TRUE.,
+  /
+
+The summary is written to 'StableLineOut.dat' when the run finishes. Examples are put in test folder. 

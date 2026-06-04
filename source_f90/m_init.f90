@@ -30,7 +30,7 @@ IMPLICIT NONE
 
 INTEGER :: len_title
 
-  OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam)
+  OPEN(90,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('ensurf'))//'ensurf.'//outnam)
   IF (itert==0 .AND. tempac == tempmn) THEN
     IF(ipair /= 4) THEN
       len_title =LEN_TRIM(title)
@@ -71,18 +71,18 @@ INTEGER :: len_title
     END IF
   END IF
   CLOSE(90)
-  IF(ipri_fields>0) OPEN(18,STATUS='unknown',FORM='formatted',FILE='fields.'//outnam)
+  IF(ipri_fields>0) OPEN(18,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('fields'))//'fields.'//outnam)
   IF(tpri_conver) THEN
-    OPEN(71,STATUS='unknown',FORM='formatted',FILE='conver.'//outnam)
+    OPEN(71,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('conver'))//'conver.'//outnam)
     WRITE(71,'(a,a)') '  Plot convergence properties for: ',title
   END IF
   IF(itest >= 1) THEN
-    OPEN(73,STATUS='unknown',FORM='formatted',FILE='constraint_damped_details'//outnam)
-    OPEN(74,STATUS='unknown',FORM='formatted',FILE='constraint_details'//outnam)
+    OPEN(73,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('constraint_damped_details'))//'constraint_damped_details'//outnam)
+    OPEN(74,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('constraint_details'))//'constraint_details'//outnam)
   END IF
   IF(tpri_radii)  THEN
     IF(itert==0) THEN
-      OPEN(76,STATUS='unknown',FORM='formatted',FILE='radii.'//outnam)
+      OPEN(76,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('radii'))//'radii.'//outnam)
       WRITE(76,'(a)') '# Print charge form  parameters:',&
         '#  beta_2    energy   r_rms    r_diffr  sigma   r_4'
       CLOSE(76)
@@ -91,7 +91,7 @@ INTEGER :: len_title
 
   IF(tpri_formf)  THEN
     IF(itert==0) THEN
-      OPEN(176,STATUS='unknown',FORM='formatted',FILE='formfactor.'//outnam)
+      OPEN(176,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('formfactor'))//'formfactor.'//outnam)
       WRITE(176,'(a)') '# Print charge formfactors and charge distribution:'
       !CLOSE(76)
     END IF

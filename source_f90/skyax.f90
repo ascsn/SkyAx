@@ -1,6 +1,7 @@
 !-----skyax -----------------------------------------------------------
 PROGRAM skyax
 
+USE masstable
 USE paramr
 USE constr
 USE dynpar
@@ -37,12 +38,21 @@ INTEGER :: ipairsav            ! saves initial setting of pairing model
 INTEGER :: iteract             ! saves actual iteration number
 INTEGER,SAVE :: itermcount=0      ! counts subsequent occurence of termination condition
 
+! Variables for masstable / stable-line loops
+INTEGER  :: imt_row               ! row index in mass table
+INTEGER  :: isl, sl_Z_cur, sl_N_cur  ! stable-line chain index and current position
+INTEGER  :: isl_count             ! running nucleus counter for stableline output files
+REAL(8)  :: energy_prev           ! previous nucleus energy (dripline check)
+CHARACTER(LEN=40) :: mt_outfile   ! output filename for the mass table results
+CHARACTER(LEN=4)  :: mt_outnam_setup  ! saves namelist outnam for setup log
+
 NAMELIST /main/ iprint,itmax,itest,&
                 iterbcs,iterhfb,pairenhance,modnat,iternat,tnobcs,&
                 v2limh,delmix,&
                 title,outnam,&
                 ipri_fields,tpri_occup,tpri_conver,tpri_bubble,tpri_2d,&
-                tpri_radii,tpri_formf
+                tpri_radii,tpri_formf,&
+                run_mode,mt_start,mt_end,mt_do_oddA,mt_do_oddodd
 NAMELIST /grids/ tsym,nr,nz,dr,dz,idrtyp
 NAMELIST /static/ nprot,nneut,betain,octini,deocc,mmax,&
                   dipin,e0inv,x0inv,addrho,addpot,addocc,&
@@ -70,14 +80,15 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 
   READ(5,main)
 
-  
+
   IF(tpri_bubble) THEN
-    OPEN(173,FILE='bubbleness.'//outnam)
+    OPEN(173,FILE=TRIM(fpath('bubbleness'))//'bubbleness.'//outnam)
     WRITE(173,'(a)') '# protocol of central density',  &
         '# beta2   energy   rho_p(0,0)  rho_n(0,0)  bubbleness (total,prot,neuut)'
   END IF
-  
-  OPEN(7,STATUS='unknown',FORM='formatted',FILE='out_details.'//outnam)
+
+  mt_outnam_setup = outnam
+  OPEN(7,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('out_details'))//'out_details.'//outnam)
 !  OPEN(7,STATUS='unknown',FORM='formatted',FILE=outnam)
 
   CALL write_skyax_header
@@ -112,10 +123,10 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   END IF
   IF(riftm1 == 0D0) riftm1 = riftm  !new
   IF(itest>0) WRITE(6,*) 'ipair,v0prot,v0neut,pairstab,rho0pr=',&
-    ipair,pairfc,pairstab,rho0pr  
+    ipair,pairfc,pairstab,rho0pr
 
 
-  
+
 !**********************************************************************
 !                                                                     *
 !     read namelist grid                                              *
@@ -130,7 +141,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
     sym=zero
     isym=0
   END IF
-  
+
   IF(itest>0) WRITE(6,*)  'Grids: ',tsym,sym,nr,nz,dr,dz,idrtyp
 FLUSH(6)
 
@@ -139,12 +150,12 @@ FLUSH(6)
 !     read namelist static                                            *
 !                                                                     *
 !**********************************************************************
-  READ(5,static) 
+  READ(5,static)
   nmass  = nprot+nneut
   nchg   = nprot
   npart(1) = nchg
   npart(2) = nmass-nchg
-  anumb  = npart(1)+npart(2) 
+  anumb  = npart(1)+npart(2)
   IF(tvaryx0) x0invmin=x0inv
   IF(tvaryx0) x0inv=x0inv*2.0
   blnneut = (MOD(npart(2),2)==1)
@@ -156,18 +167,45 @@ FLUSH(6)
 !                                                                     *
 !**********************************************************************
 
-  READ(5,constraint)                         
+  READ(5,constraint)
 
 !**********************************************************************
 !                                                                     *
 !     read namelist thermal                                           *
 !                                                                     *
-!**********************************************************************      
+!**********************************************************************
 
   READ(5,thermal)
 
+!**********************************************************************
+!                                                                     *
+!     read large-scale calculation data files if requested           *
+!                                                                     *
+!**********************************************************************
 
-!  kblock = 0                               
+  IF (run_mode == 1) THEN
+    CALL read_skyax_MassTable
+    CALL alloc_mt_output(mt_end - mt_start + 1)
+    WRITE(7,'(a,i6,a,i6,a,i6)') &
+      ' MassTable mode: ', mt_nRows, ' entries; processing rows ', mt_start, ' to ', mt_end
+  ELSE IF (run_mode == 2) THEN
+    CALL read_skyax_StableLine
+    CALL alloc_mt_output(sl_nRows * 200)
+    WRITE(7,'(a,i6,a)') ' StableLine mode: ', sl_nRows, ' chains to scan'
+  END IF
+
+  IF (run_mode == 1 .OR. run_mode == 2) THEN
+    use_subdirs = .TRUE.
+    CALL EXECUTE_COMMAND_LINE( &
+      'mkdir -p out_details ensurf radii formfactor conver fields ' // &
+      'rhocharge plot_2D bubbleness refields ' // &
+      'reconstr rederivs reinterpr reforces repairpr recurren ' // &
+      'recoulom relevels renucsys rebufcom reobserv rewavefr ' // &
+      'occup_lz_p occup_lz_n densip densin localp localn polariz ' // &
+      'constraint_damped_details constraint_details', WAIT=.TRUE.)
+  END IF
+
+!  kblock = 0
 
   IF(MAX(mmax(1),mmax(2)) > kmpsi+1)  &
       STOP ' MMAX too large. enhance KPSI in PARAMR.INC!'
@@ -175,10 +213,10 @@ FLUSH(6)
 
                                ! force parameters
   IF(b4p == zero) b4p = t4*oh
-  
+
   CALL prep_qsoll(nmass*1D0) !Also sets grid size
   CALL alloc_fields()
-  
+
 !     check consistency of input
 
   IF(tswicon3) THEN
@@ -195,7 +233,7 @@ FLUSH(6)
 !                                                                     *
 !**********************************************************************
 
-  CALL write_headers()  
+  CALL write_headers()
 
 !**********************************************************************
 !                                                                     *
@@ -227,21 +265,309 @@ FLUSH(6)
   CALL idanuc               ! nucleon damping
   CALL idames               ! coulomb damping
 
-  IF(.NOT.tfresh) THEN
-    CALL ssetup                     ! the wavefunctions
-    IF(ipair>0) CALL inipai(nmass)
+  IF(run_mode == 0) THEN
+    ! Single-nucleus mode: initialise WF from the namelist parameters
+    IF(.NOT.tfresh) THEN
+      CALL ssetup                     ! the wavefunctions
+      IF(ipair>0) CALL inipai(nmass)
+    END IF
   END IF
   IF(thfbfold) CALL init_Gaussfolding()
   IF(tcoulfold) CALL init_protonfolding()
 
 !**********************************************************************
 !                                                                     *
-!     loop over deformations                                          *
+!     run calculations                                                *
 !                                                                     *
 !**********************************************************************
-  
+
+  IF (run_mode == 0) THEN
+    !------------------------------------------------------------------
+    ! Single nucleus: run the deformation scan once
+    !------------------------------------------------------------------
+    CALL run_deformation_scan()
+
+  ELSE IF (run_mode == 1) THEN
+    !------------------------------------------------------------------
+    ! Mass table: iterate over all rows in the table, each row defines
+    ! a nucleus (Z, N) and an initial deformation (betain).
+    ! Includes odd-Z, odd-N, and odd-odd nuclei via the existing
+    ! blocking infrastructure.
+    ! For parallel (SLURM) runs set mt_start and mt_end in &main so
+    ! that each job-array task processes a different subset of rows.
+    !------------------------------------------------------------------
+    DO imt_row = mt_start, mt_end
+      ! Skip odd-A or odd-odd rows if the corresponding flag is disabled
+      IF (.NOT. mt_do_oddA .AND. &
+          MOD(mt_Z(imt_row)+mt_N(imt_row), 2) == 1) THEN
+        WRITE(*, '(a,i6,a,2i5,a)') ' MassTable row ', imt_row, ': Z,N=', &
+          mt_Z(imt_row), mt_N(imt_row), '  SKIPPED (odd-A, mt_do_oddA=F)'
+        CYCLE
+      END IF
+      IF (.NOT. mt_do_oddodd .AND. &
+          MOD(mt_Z(imt_row),2)==1 .AND. MOD(mt_N(imt_row),2)==1) THEN
+        WRITE(*, '(a,i6,a,2i5,a)') ' MassTable row ', imt_row, ': Z,N=', &
+          mt_Z(imt_row), mt_N(imt_row), '  SKIPPED (odd-odd, mt_do_oddodd=F)'
+        CYCLE
+      END IF
+      WRITE(*, '(a,i6,a,2i5,a,f8.4)') &
+        ' MassTable row ', imt_row, ': Z,N=', &
+        mt_Z(imt_row), mt_N(imt_row), '  betain=', mt_beta(imt_row)
+      ! Per-nucleus output files: out_details.0001, ensurf.0001, etc.
+      WRITE(outnam, '(i4.4)') imt_row
+      CLOSE(7)
+      OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam)
+      WRITE(7, '(a,i6,a,2i5,a,f8.4)') &
+        ' MassTable row ', imt_row, ': Z,N=', &
+        mt_Z(imt_row), mt_N(imt_row), '  betain=', mt_beta(imt_row)
+      CALL set_nucleus_zn(mt_Z(imt_row), mt_N(imt_row), mt_beta(imt_row))
+      CALL run_deformation_scan()
+      CALL fill_mt_output(npart(1), npart(2), betain, &
+          beta2, beta2p, beta2n, beta4, beta4p, beta4n, &
+          energy, epair(1), epair(2), fer(1), fer(2), gap(1), gap(2), &
+          itert, kblock(1)*0.5D0, kblock(2)*0.5D0, angblock(1), angblock(2), &
+          rmsc, rms, rmsp, rmsn, &
+          boundnum(1), boundnum(2), devh2, econ)
+      CLOSE(7)
+    END DO
+    ! Restore outnam to the setup name for any post-loop output
+    outnam = mt_outnam_setup
+    OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam, POSITION='APPEND')
+
+  ELSE IF (run_mode == 2) THEN
+    !------------------------------------------------------------------
+    ! Stable-line (dripline) scan: for each starting nucleus on the
+    ! valley of stability, follow the isotopic (direction=+1) or
+    ! isotonic (direction=-1) chain, adding two nucleons at a time,
+    ! until the 2-nucleon separation energy (S_2N or S_2Z) becomes
+    ! negative.  The dripline check always compares consecutive
+    ! same-parity (reference) nuclei so that odd-even staggering does
+    ! not trigger a spurious dripline.  If mt_do_oddA / mt_do_oddodd
+    ! are enabled the intermediate odd neighbor is computed after the
+    ! check passes, before advancing to the next reference nucleus.
+    ! Each nucleus gets its own numbered output files (0001, 0002, ...)
+    ! mirroring the masstable behavior. A summary StableLineOut.dat is
+    ! written at the end.
+    !------------------------------------------------------------------
+    isl_count = 0
+    DO isl = 1, sl_nRows
+      sl_Z_cur = sl_Z(isl)
+      sl_N_cur = sl_N(isl)
+      energy_prev = 1.0D20   ! large sentinel: first nucleus is always "bound"
+      IF (sl_dir(isl) == 1) THEN
+        WRITE(*, '(a,i5,a)') ' StableLine: isotopic chain  Z=', sl_Z_cur, ' scanning N...'
+      ELSE
+        WRITE(*, '(a,i5,a)') ' StableLine: isotonic chain  N=', sl_N_cur, ' scanning Z...'
+      END IF
+      chain_loop: DO
+        ! ---- reference nucleus (same parity as start: drives dripline) ----
+        isl_count = isl_count + 1
+        WRITE(outnam, '(i4.4)') isl_count
+        CLOSE(7)
+        OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam)
+        WRITE(7, '(a,2i5)') ' StableLine nucleus Z,N=', sl_Z_cur, sl_N_cur
+        CALL set_nucleus_zn(sl_Z_cur, sl_N_cur, 0.0D0)
+        CALL run_deformation_scan()
+        CALL fill_mt_output(npart(1), npart(2), betain, &
+            beta2, beta2p, beta2n, beta4, beta4p, beta4n, &
+            energy, epair(1), epair(2), fer(1), fer(2), gap(1), gap(2), &
+            itert, kblock(1)*0.5D0, kblock(2)*0.5D0, angblock(1), angblock(2), &
+            rmsc, rms, rmsp, rmsn, &
+            boundnum(1), boundnum(2), devh2, econ)
+        CLOSE(7)
+
+        ! S_2N (or S_2Z): compare with previous same-parity nucleus
+        IF (energy_prev - energy < 0.0D0) THEN
+          WRITE(*, '(a,2i5)') ' Dripline reached at Z,N=', sl_Z_cur, sl_N_cur
+          EXIT chain_loop
+        END IF
+        energy_prev = energy
+
+        ! ---- optional: intermediate odd neighbor ----
+        ! For an isotopic chain (fixed Z) the neighbor is (Z, N+1).
+        ! For an isotonic chain (fixed N) the neighbor is (Z+1, N).
+        ! Whether it is odd-A or odd-odd depends on the parity of the
+        ! fixed leg: even fixed leg → odd-A; odd fixed leg → odd-odd.
+        IF (sl_dir(isl) == 1) THEN   ! isotopic: fixed Z, neighbor at N+1
+          IF (MOD(sl_Z_cur,2) == 0) THEN  ! Z even → odd-A neighbor
+            IF (mt_do_oddA) THEN
+              isl_count = isl_count + 1
+              WRITE(outnam, '(i4.4)') isl_count
+              CLOSE(7)
+              OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam)
+              WRITE(7, '(a,2i5)') ' StableLine nucleus Z,N=', sl_Z_cur, sl_N_cur+1
+              CALL set_nucleus_zn(sl_Z_cur, sl_N_cur+1, 0.0D0)
+              CALL run_deformation_scan()
+              CALL fill_mt_output(npart(1), npart(2), betain, &
+                  beta2, beta2p, beta2n, beta4, beta4p, beta4n, &
+                  energy, epair(1), epair(2), fer(1), fer(2), gap(1), gap(2), &
+                  itert, kblock(1)*0.5D0, kblock(2)*0.5D0, angblock(1), angblock(2), &
+                  rmsc, rms, rmsp, rmsn, &
+                  boundnum(1), boundnum(2), devh2, econ)
+              CLOSE(7)
+            END IF
+          ELSE                             ! Z odd  → odd-odd neighbor
+            IF (mt_do_oddodd) THEN
+              isl_count = isl_count + 1
+              WRITE(outnam, '(i4.4)') isl_count
+              CLOSE(7)
+              OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam)
+              WRITE(7, '(a,2i5)') ' StableLine nucleus Z,N=', sl_Z_cur, sl_N_cur+1
+              CALL set_nucleus_zn(sl_Z_cur, sl_N_cur+1, 0.0D0)
+              CALL run_deformation_scan()
+              CALL fill_mt_output(npart(1), npart(2), betain, &
+                  beta2, beta2p, beta2n, beta4, beta4p, beta4n, &
+                  energy, epair(1), epair(2), fer(1), fer(2), gap(1), gap(2), &
+                  itert, kblock(1)*0.5D0, kblock(2)*0.5D0, angblock(1), angblock(2), &
+                  rmsc, rms, rmsp, rmsn, &
+                  boundnum(1), boundnum(2), devh2, econ)
+              CLOSE(7)
+            END IF
+          END IF
+          sl_N_cur = sl_N_cur + 2
+          IF (sl_N_cur > 310) EXIT chain_loop
+        ELSE                         ! isotonic: fixed N, neighbor at Z+1
+          IF (MOD(sl_N_cur,2) == 0) THEN  ! N even → odd-A neighbor
+            IF (mt_do_oddA) THEN
+              isl_count = isl_count + 1
+              WRITE(outnam, '(i4.4)') isl_count
+              CLOSE(7)
+              OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam)
+              WRITE(7, '(a,2i5)') ' StableLine nucleus Z,N=', sl_Z_cur+1, sl_N_cur
+              CALL set_nucleus_zn(sl_Z_cur+1, sl_N_cur, 0.0D0)
+              CALL run_deformation_scan()
+              CALL fill_mt_output(npart(1), npart(2), betain, &
+                  beta2, beta2p, beta2n, beta4, beta4p, beta4n, &
+                  energy, epair(1), epair(2), fer(1), fer(2), gap(1), gap(2), &
+                  itert, kblock(1)*0.5D0, kblock(2)*0.5D0, angblock(1), angblock(2), &
+                  rmsc, rms, rmsp, rmsn, &
+                  boundnum(1), boundnum(2), devh2, econ)
+              CLOSE(7)
+            END IF
+          ELSE                             ! N odd  → odd-odd neighbor
+            IF (mt_do_oddodd) THEN
+              isl_count = isl_count + 1
+              WRITE(outnam, '(i4.4)') isl_count
+              CLOSE(7)
+              OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam)
+              WRITE(7, '(a,2i5)') ' StableLine nucleus Z,N=', sl_Z_cur+1, sl_N_cur
+              CALL set_nucleus_zn(sl_Z_cur+1, sl_N_cur, 0.0D0)
+              CALL run_deformation_scan()
+              CALL fill_mt_output(npart(1), npart(2), betain, &
+                  beta2, beta2p, beta2n, beta4, beta4p, beta4n, &
+                  energy, epair(1), epair(2), fer(1), fer(2), gap(1), gap(2), &
+                  itert, kblock(1)*0.5D0, kblock(2)*0.5D0, angblock(1), angblock(2), &
+                  rmsc, rms, rmsp, rmsn, &
+                  boundnum(1), boundnum(2), devh2, econ)
+              CLOSE(7)
+            END IF
+          END IF
+          sl_Z_cur = sl_Z_cur + 2
+          IF (sl_Z_cur > 120) EXIT chain_loop
+        END IF
+      END DO chain_loop
+    END DO
+    ! Restore outnam and reopen unit 7 for any post-loop output
+    outnam = mt_outnam_setup
+    OPEN(7, STATUS='unknown', FORM='formatted', FILE=TRIM(fpath('out_details'))//'out_details.'//outnam, POSITION='APPEND')
+
+  END IF
+
+  CALL clean_com()
+
+  IF (run_mode == 1) THEN
+    CALL print_mass_table('MassTableOut.dat')
+  ELSE IF (run_mode == 2) THEN
+    CALL print_mass_table('StableLineOut.dat')
+  END IF
+
+  CALL user_interface_2()  ! user defined post processing
+
+STOP 'normal termination '
+
+
+CONTAINS
+
+!---------------------------------------------------------------------------
+! DESCRIPTION: set_nucleus_zn
+!> @brief
+!! Re-initialises SkyAx for a new nucleus (Z, N) with initial deformation
+!! beta0. Called at the start of each mass-table or stable-line entry.
+!> @details
+!! Updates all global variables that depend on particle number or initial
+!! deformation: npart, anumb, nmass, nchg, betain, eocc, h2meff, h2mav,
+!! blnprot, blnneut, cfact2/3/4 (via prep_qsoll), wavefunctions (ssetup),
+!! and pairing (inipai). Does NOT reallocate field arrays since the grid
+!! is fixed for the entire run.
+!---------------------------------------------------------------------------
+SUBROUTINE set_nucleus_zn(Z, N, beta0)
+
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: Z, N
+  REAL(8), INTENT(IN) :: beta0
+
+  ! Reset blocking state for the new nucleus
+  istblo  = 0
+  istcblo = 0
+
+  ! Particle numbers
+  npart(1) = Z
+  npart(2) = N
+  anumb    = DBLE(Z + N)
+  nmass    = Z + N
+  nchg     = Z
+  betain   = beta0
+
+  ! Oscillator-shell occupancy cutoff (eocc) scales as ~N^(1/3)
+  eocc(1) = 1.5D0*npart(1)**edr + deocc(1)
+  eocc(2) = 1.5D0*npart(2)**edr + deocc(2)
+  IF (2*eocc(1) > mmax(1)+3.0D0) WRITE(7,'(a,2i5)') &
+    ' WARNING: mmax may be too small for Z,N=', Z, N
+  IF (2*eocc(2) > mmax(2)+3.0D0) WRITE(7,'(a,2i5)') &
+    ' WARNING: mmax may be too small for Z,N=', Z, N
+
+  ! Centre-of-mass corrected kinetic-energy coefficient
+  IF (ifzpe == 0) THEN
+    h2meff(1) = h2m(1) - h2m(1)/nmass
+    h2meff(2) = h2m(2) - h2m(2)/nmass
+  ELSE
+    h2meff(1) = h2m(1)
+    h2meff(2) = h2m(2)
+  END IF
+  h2mav = 0.5D0*(h2meff(1)+h2meff(2))
+
+  ! Odd-nucleon flags drive the blocking machinery
+  blnneut = (MOD(N,2)==1)
+  blnprot = (MOD(Z,2)==1)
+
+  ! Update constraint scale factors for the new mass
+  CALL prep_qsoll(anumb)
+
+  ! Refresh damping matrices for the new h2mav (h2mav changes with nmass)
+  CALL idanuc
+  CALL idames
+
+  ! Fresh WS initialisation for this nucleus
+  CALL ssetup
+  IF (ipair > 0) CALL inipai(nmass)
+
+END SUBROUTINE set_nucleus_zn
+
+
+!---------------------------------------------------------------------------
+! DESCRIPTION: run_deformation_scan
+!> @brief
+!! Runs the full deformation / temperature loop for the current nucleus.
+!! This is the inner loop of the mass-table / stable-line scan, and is
+!! identical to the original outer_loop in the single-nucleus code path.
+!---------------------------------------------------------------------------
+SUBROUTINE run_deformation_scan()
+
+  IMPLICIT NONE
+
   iqact0o=0;iqact2o=0;iqact3o=0;iqact4o=0;
-  itert  = 0                         ! set counter for total iterations
+  itert  = 0                         ! reset total iteration counter for this nucleus
+
   outer_loop : DO  iqact0=0,nqmax0; qact0=iqact0*qw0+qmin0
   DO  iqact2=0,nqmax2; qact2=iqact2*qw2+qmin2
   DO  iqact3=0,nqmax3; qact3=iqact3*qw3+qmin3
@@ -251,10 +577,10 @@ FLUSH(6)
     IF(tfresh .OR. ABS(iqact0-iqact0o)>1 .OR. ABS(iqact2-iqact2o)>1 &
        .OR. ABS(iqact3-iqact3o)>1 .OR. ABS(iqact4-iqact4o)>1) THEN
       IF(tswicon3) octini = qact3/cfact3
-      CALL ssetup                    
+      CALL ssetup
       CALL inipai(nmass)
       qlamb0=0D0;qlamb2=0D0;qlamb3=0D0;qlamb4=0D0
-      qlambi0=0D0;qlambi2=0D0;qlambi3=0D0;qlambi4=0D0 
+      qlambi0=0D0;qlambi2=0D0;qlambi3=0D0;qlambi4=0D0
     END IF
     iqact0o=iqact0;iqact2o=iqact2;iqact3o=iqact3;iqact4o=iqact4;
 
@@ -278,7 +604,7 @@ FLUSH(6)
     WRITE(*,*) 'qsoll:',iqact0,qact0,qsoll0,qlamb0
 !     initialisation of damping mass for coulomb solver and
 !     constraint potential
-    
+
     CALL inicms
     CALL init_constraint
     DO iwu=6,7
@@ -299,7 +625,7 @@ FLUSH(6)
           ' now running constraint: L,qsoll,beta=',4,qsoll4,qsoll4/cfact4
       END IF
     END DO
-    
+
 !     the loop over temperatures in case of IPAIR=4.
 !     take the loop parameters from TEMPMX,TEMPMN and TEMPW
     IF(ipair /= 4) THEN
@@ -323,7 +649,7 @@ FLUSH(6)
 !**********************************************************************
 
     CALL ini_files()
-      
+
     WRITE(7,*) 'before ITERATION_LOOP: ',blnprot,blnneut
     CALL  iteration_loop()    ! the static iteration
     WRITE(7,*) 'after ITERATION_LOOP: ',blnprot,blnneut
@@ -337,44 +663,31 @@ FLUSH(6)
     END IF
 
     END DO       ! temperature loop
-    
+
   END DO       ! L=4 loop
   END DO       ! L=3 loop
   END DO       ! L=2 loop
   END DO outer_loop      ! L=0 loop
 
-  CALL clean_com()
-  
-!**********************************************************************
-!                                                                     *
-!     end of loop over deformations                                   *
-!                                                                     *
-!**********************************************************************
-  
-  CALL user_interface_2()  ! user defined post processing
+END SUBROUTINE run_deformation_scan
 
 
-STOP 'normal termination '
-
-
-CONTAINS
-
-!---------------------------------------------------------------------------  
+!---------------------------------------------------------------------------
 ! DESCRIPTION: write_headers
 !> @brief
 !! Writes input parameters and conditions of actual run on unit 7
 !> @details
 !!
-!--------------------------------------------------------------------------- 
+!---------------------------------------------------------------------------
 SUBROUTINE write_headers()
 
   IMPLICIT NONE
   INTEGER,  EXTERNAL   :: omp_get_num_threads
-  
+
   !$OMP PARALLEL
   !$ number_threads=OMP_GET_NUM_THREADS()
   !$OMP END PARALLEL
-  
+
   WRITE(7,'(/,10X,a,i3,a)')'SkyAx runs with ',number_threads,' OMP threads.'
   WRITE(6,'(/,10X,a,i3,a)')'SkyAx runs with ',number_threads,' OMP threads.'
 
@@ -404,7 +717,7 @@ SUBROUTINE write_headers()
   ELSE
     STOP ' invalid "idrtyp"'
   END IF
-  IF(TRIM(name)=='') THEN 
+  IF(TRIM(name)=='') THEN
     WRITE(7,'(//,10X,a)') 'Using new force defined explicitly'
   ELSE
     WRITE(7,'(//,10X,a,a)') 'Using predefined force: ',TRIM(name)
@@ -459,7 +772,7 @@ SUBROUTINE write_headers()
     WRITE(7,'(10x,a)') 'cutoff in v**2 space'
     WRITE(6,'(10x,a)') 'cutoff in v**2 space'
   END IF
-  
+
   WRITE(7,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
   WRITE(6,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
   5017  FORMAT(//,10X,'laplace equation parameters',//,  &
@@ -477,7 +790,7 @@ SUBROUTINE write_headers()
     ndrun = 1
     norun = 1
   END IF
-  
+
   WRITE(7,5007) chg,chgx,e0inv,x0inv,addrho,addpot,addocc,tvaryX0
   WRITE(6,5007) chg,chgx,e0inv,x0inv,addrho,addpot,addocc,tvaryX0
   5007  FORMAT(/,  &
@@ -490,7 +803,7 @@ SUBROUTINE write_headers()
       10X,'addpot  =',g10.3,'  weight for accumulating potential',/,  &
       10X,'addocc  =',g10.3,'  weight for accumulating occ.numbers',/, &
       10X,'tvaryX0 =',L6,4x,'  dynamical tuning of step size x0inv',/)
- 
+
   WRITE(7,5004) ipair,npiter,itpini
   WRITE(6,5004) ipair,npiter,itpini
   5004 FORMAT(//,10X,'bcs pairing model parameters',//,  &
@@ -516,19 +829,19 @@ SUBROUTINE write_headers()
      'v2limh   =',v2limh, &
      'delmix   =',delmix, &
      'tnobcs   =',tnobcs
-  
+
   IF(nr > nrd-1) THEN
     WRITE(7,6001) nr,nrd
     6001     FORMAT(' insufficient r dimension - nr =',i5,' nrd = ',i5)
     STOP 'dimension in setup'
   END IF
-  
+
   IF(nz > nzd-1) THEN
     WRITE(7,6002) nz,nzd
     6002     FORMAT(' insufficient z dimension - nz =',i5,' nzd = ',i5)
     STOP 'dimension in setup'
   END IF
-  
+
   IF(ipair.GE.5 .AND. ipair.LE.8) THEN
     IF (pairstab > 0.0D0) THEN
       WRITE(7,6003) pairstab
@@ -550,7 +863,7 @@ SUBROUTINE write_headers()
     WRITE(6,'(a,f6.2,a)') &
       'Scan blocked configurations up to exc. energy',maxexenerg,' MeV'
   END IF
-  
+
 ! switch 'iflmb0' presently only for L=2
 !  IF(itcons2 >= 0) THEN
 !    iflmb0 = 0
@@ -558,16 +871,26 @@ SUBROUTINE write_headers()
 !    iflmb0 = 1
 !  END IF
   itcons2 = ABS(itcons2)
-  
-  WRITE(7,5008) nmass,nchg,deocc,betain
-  5008  FORMAT(///,10X,'static input parameters',//,  &
-      10X,'nmass   =',i10,'  atomic mass number',/,  &
-      10X,'nchg    =',i10,'  atomic charge number',/,  &
-      10X,'deocc(1)=',f10.3,'  additional no. of quanta for proton ',  &
-      '  shell ',/,  &
-      10X,'deocc(2)=',f10.3,'  additional no. of quanta for neutron',  &
-      '  shell ',/, &
-      10X,'betain  =',f10.3,'  initialization deformation parameter ')
+
+  IF (run_mode == 1) THEN
+    WRITE(7,'(/10x,a,i6,a,i6,a,i6/)') &
+      'MassTable mode: ', mt_nRows, ' total rows; this task rows ', mt_start, ' to ', mt_end
+    WRITE(6,'(/10x,a,i6,a,i6,a,i6/)') &
+      'MassTable mode: ', mt_nRows, ' total rows; this task rows ', mt_start, ' to ', mt_end
+  ELSE IF (run_mode == 2) THEN
+    WRITE(7,'(/10x,a,i6,a/)') 'StableLine mode: ', sl_nRows, ' chains'
+    WRITE(6,'(/10x,a,i6,a/)') 'StableLine mode: ', sl_nRows, ' chains'
+  ELSE
+    WRITE(7,5008) nmass,nchg,deocc,betain
+    5008  FORMAT(///,10X,'static input parameters',//,  &
+        10X,'nmass   =',i10,'  atomic mass number',/,  &
+        10X,'nchg    =',i10,'  atomic charge number',/,  &
+        10X,'deocc(1)=',f10.3,'  additional no. of quanta for proton ',  &
+        '  shell ',/,  &
+        10X,'deocc(2)=',f10.3,'  additional no. of quanta for neutron',  &
+        '  shell ',/, &
+        10X,'betain  =',f10.3,'  initialization deformation parameter ')
+  END IF
   WRITE(7,5009) ERRenr,errvar,erra
   5009  FORMAT(/10X,'errenr  =',1pg12.4,'  error in energy convergence',//,  &
       10X,'errvar  =',1pg12.4,'  error in s.p. variance',//,  &
@@ -598,7 +921,7 @@ SUBROUTINE write_headers()
         10X,'d0      =',f10.5,'  parameter d0 for constraint calc  '/,  &
         10X,'qeps    =',f10.5,'  stepsize qlambdacorrection ')
     ELSE
-      WRITE(7,'(10x,a)') 'using augmented Lagrangian method' 
+      WRITE(7,'(10x,a)') 'using augmented Lagrangian method'
     END IF
     IF(ABS(swicon0)>0.5D0) &
     WRITE(7,5013)  'L=0 constraint:',betmin0,betmax0,betaw0,itcons0

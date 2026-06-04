@@ -286,7 +286,7 @@ IF(1>2) WRITE(6,*) 'odd dens. before:' &
 !          wfovlp(psifold(:,:,:,itpartn(jst)),psifold(:,:,:,itpartn(jst)))
 !  END DO
 
-IF(.NOT.ALLOCATED(load_m)) CALL init_load()
+IF(.NOT.ALLOCATED(load_m) .OR. SIZE(load_m,2)/=nom) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act,psipointer) &
 !$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond, &
@@ -1204,6 +1204,8 @@ num_threads=1
 !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(mythread)
 !$ num_threads=OMP_GET_NUM_THREADS()
 !$OMP END PARALLEL
+IF(ALLOCATED(load_m))    DEALLOCATE(load_m)
+IF(ALLOCATED(loadweight)) DEALLOCATE(loadweight)
 ALLOCATE(load_m(0:num_threads-1,nom),loadweight(nom))
 load_m=0
 loadweight=-1.0d0

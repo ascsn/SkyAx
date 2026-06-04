@@ -1,0 +1,13 @@
+ SkyAx stable-line (dripline scan) input file
+ 10
+           Z           N   direction
+           8           8           1
+          20          20           1
+          28          28           1
+          50          50           1
+          82          82           1
+           8           8          -1
+          20          20          -1
+          28          28          -1
+          50          50          -1
+          82          82          -1

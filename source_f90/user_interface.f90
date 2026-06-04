@@ -6,7 +6,7 @@ SUBROUTINE user_interface_1()
 USE paramr, ONLY: pi
 USE grid, ONLY: nr,nz,z,r,icm,dr,dz,f1int
 USE fields, ONLY: rho
-USE dynpar, ONLY: outnam
+USE dynpar, ONLY: outnam, fpath
 USE observ, ONLY: cmwid,zcmobs
 
 IMPLICIT NONE
@@ -132,7 +132,7 @@ REAL(8) :: r2p,r2c,r4p,r4c,zcm
   END DO; END DO
   r4c=(f1int(rhoform)/facnorm)**0.25D0
 
-  OPEN(307,FILE='rhocharge.'//outnam)
+  OPEN(307,FILE=TRIM(fpath('rhocharge'))//'rhocharge.'//outnam)
   WRITE(307,'(a,4(1pg13.5))') '# radii: r_2C,r_2p,r_4C,r_4p=',r2c,r2p,r4c,r4p
   WRITE(307,'(a)') '# 2D print of charge density',&
           '#   z     r   rho_charge  rho_proton  difference'

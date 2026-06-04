@@ -103,6 +103,7 @@ MODULES        =  m_paramr.o m_dynpar.o m_levels.o m_grid.o m_wavefr.o \
                   m_fields.o m_constr.o m_observ.o m_coulomb.o \
                   m_staticstep.o m_pairing.o m_util.o m_init.o \
 	 	  m_hdiag.o m_steputil.o user_interface.o \
+                  m_masstable.o \
                   skyax.o m_fyfunc_2D.o hfb-natural.o m_blocking.o
 
 #
@@ -160,9 +161,12 @@ m_init.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o m_grid.o \
 
 user_interface.o : Makefile
 
+m_masstable.o : Makefile
+
 skyax.o : m_constr.o m_coulomb.o m_dynpar.o m_fields.o \
           m_grid.o m_init.f90 m_levels.o m_observ.o m_paramr.o \
-          m_wavefr.o m_staticstep.o m_util.o m_blocking.o Makefile
+          m_wavefr.o m_staticstep.o m_util.o m_blocking.o \
+          m_masstable.o Makefile
 
 # executables
 ../$(EXEC_SKYAX): $(MODULES)

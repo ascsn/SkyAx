@@ -342,7 +342,7 @@ DO  blist = 1,maxblist(iq)
       mblock kblock isoblock istblo',  &
       mblock(iq),kblock(iq),isoblo,istblo(iq),istcblo(iq),edifblo(blist,iq)
   CALL flush(7)
-  OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam,  &
+  OPEN(90,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('ensurf'))//'ensurf.'//outnam,  &
           POSITION='APPEND')
   WRITE(90,'(a,4i5,f8.3)') 'Blocking  isoblo,mblock,kblock,istblo,equasi=',&
     isoblo,mblock(iq),kblock(iq),istblo(iq),edifblo(blist,iq)
@@ -454,7 +454,7 @@ DO ip1=1,maxblist_total
     WRITE(*,*) 'before iteration loop in BLOCK2'
     WRITE(7,*) 'before iteration loop in BLOCK2'
   END IF
-  OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam,  &
+  OPEN(90,STATUS='unknown',FORM='formatted',FILE=TRIM(fpath('ensurf'))//'ensurf.'//outnam,  &
           POSITION='APPEND')
   WRITE(90,'(a,6i5,2f8.3)') 'Double blocking mblock,kblock,istblo,equasi=',&
     mblock,kblock,istblo,edifblo(blist1,1),edifblo(blist2,2)
@@ -677,7 +677,7 @@ INTEGER :: npsid
 
 npsid=npsi(2)
 
-OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
+OPEN(101,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reconstr'))//'reconstr.'//outnam)
 IF(tswicon) WRITE(101,*) distsf(0:nz,0:nr),  &
     qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nz,0:nr)
 IF(tswicon0) WRITE(101,*) qcfac0(0:nz,0:nr), qfac0(0:nz,0:nr)
@@ -695,7 +695,7 @@ CLOSE(101)
 !     &                  cbgmom(0:KANGMOL),
 !     &                  cfldbuf(0:nz,0:nr),
 !     &                  cdmpmas(0:nz,0:nr)
-OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
+OPEN(103,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rederivs'))//'rederivs.'//outnam)
 WRITE(103,*) derz1(0:nz,0:nz,1:4),  &
     derz2(0:nz,0:nz,1:4), derr1(0:nr,0:nr,1:4),  &
     derr2a(0:nr,0:nr,0:kmpsi,1:2), derz2f(0:nz,0:nz,1:4),  &
@@ -707,7 +707,7 @@ WRITE(103,*) derz1(0:nz,0:nz,1:4),  &
     iband_derr, iband_derz
 CLOSE(103)
 
-OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
+OPEN(104,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reinterpr'))//'reinterpr.'//outnam)
 WRITE(104,*) cmono,cquad,chex,cdip,coct,  &
     cmssqr,colerr,dmsfac, errenr,errvar,irepc,itpfix, itert
 CLOSE(104)
@@ -721,18 +721,18 @@ CLOSE(104)
 !WRITE(106,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
 !CLOSE(106)
 
-OPEN(107,STATUS='unknown',FORM='formatted', FILE='reforces.'//outnam)
+OPEN(107,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reforces'))//'reforces.'//outnam)
 WRITE(107,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
 CLOSE(107)
 
 
-OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
+OPEN(108,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('repairpr'))//'repairpr.'//outnam)
 WRITE(108,*) itpartn(1:npsid),fer(1:2)
 !    gap(1:2),epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
 !    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini
 CLOSE(108)
 
-OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
+OPEN(109,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('refields'))//'refields.'//outnam)
 WRITE(109,*) pot(0:nz,0:nr,1:kqm),  &
     coulpt(0:nz,1:nr), bmass(0:nz,0:nr,1:kqm),  &
     potls(0:nz,0:nr,1:kqm,1:2),  &
@@ -741,7 +741,7 @@ WRITE(109,*) pot(0:nz,0:nr,1:kqm),  &
     pairpt(0:nz,0:nr,1:kqm),potdamp(0:nz,0:nr)
 CLOSE(109)
 
-OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
+OPEN(110,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('recurren'))//'recurren.'//outnam)
 WRITE(110,*) rho(0:nz,0:nr,1:kqm),  &
     crho(0:nz,0:nr), tau(0:nz,0:nr,1:kqm),  &
     drhols(0:nz,0:nr,1:kqm), rholsr(0:nz,0:nr,1:kqm),  &
@@ -749,7 +749,7 @@ WRITE(110,*) rho(0:nz,0:nr,1:kqm),  &
     rhoti(0:nz,0:nr,1:kqm), paircr(0:nz,0:nr,1:kqm)
 CLOSE(110)
 
-OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
+OPEN(111,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('recoulom'))//'recoulom.'//outnam)
 !WRITE(111,*) crhom(0:nz,0:nr,0:kangmo),  &
 !    coulm(0:nz,0:nr,0:kangmo), crhoq(0:nz,0:nr,0:kangmo),  &
 !    coulq(0:nz,0:nr,0:kangmo), crhoh(0:nz,0:nr,0:kangmo),  &
@@ -766,7 +766,7 @@ CLOSE(111)
 !!      ,locc(1:10)
 !CLOSE(112)
 
-OPEN(113,STATUS='unknown',FORM='formatted', FILE='relevels.'//outnam)
+OPEN(113,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('relevels'))//'relevels.'//outnam)
 WRITE(113,*) wate(1:npsid)  ,spn(1:npsid)     ,  &
     spenrg(1:npsid), spevar(1:npsid),speold(1:npsid),  &
     oc(1:npsid),  &
@@ -780,17 +780,17 @@ WRITE(113,*) wate(1:npsid)  ,spn(1:npsid)     ,  &
     aisoblo(1:kblist,1:2), aistblo(1:kblist,1:2)
 CLOSE(113)
 
-OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
+OPEN(114,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('renucsys'))//'renucsys.'//outnam)
 WRITE(114,*) anumb,  &
     nst(1:2),npart(1:2),iokk(1:2),numsta(1:2)
 CLOSE(114)
 
-OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
+OPEN(115,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rebufcom'))//'rebufcom.'//outnam)
 WRITE(115,*) nom,mhi(1:mxd),  &
     mlo(1:mxd),miq(1:mxd),mim(1:mxd)
 CLOSE(115)
 
-OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
+OPEN(116,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reobserv'))//'reobserv.'//outnam)
 WRITE(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
     beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
     beta3,beta3p,beta3n,beta4,beta4p,beta4n, zcm,rdmsc,surfc
@@ -810,7 +810,7 @@ CLOSE(116)
 !    ireg(1:2)
 !CLOSE(118)
 
-OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
+OPEN(119,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rewavefr'))//'rewavefr.'//outnam)
 WRITE(119,*) psi(0:nz,0:nr,1:nsd,1:npsid)
 CLOSE(119)
 
@@ -854,7 +854,7 @@ INTEGER :: npsid
 npsid=npsi(2)
 
 
-OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
+OPEN(101,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reconstr'))//'reconstr.'//outnam)
 IF(tswicon) READ(101,*) distsf(0:nz,0:nr),  &
     qcst, c0,d0,qeps,dalp,dgam,swifac, itcons, lrho(0:nz,0:nr)
 IF(tswicon0) READ(101,*) qcfac0(0:nz,0:nr), qfac0(0:nz,0:nr)
@@ -865,7 +865,7 @@ CLOSE(101)
 
 !      WRITE(7,'(a,3i4)') 'READ_COM 2:',nst,itpartn(73)
 
-OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
+OPEN(103,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rederivs'))//'rederivs.'//outnam)
 READ(103,*) derz1(0:nz,0:nz,1:4),  &
     derz2(0:nz,0:nz,1:4), derr1(0:nr,0:nr,1:4),  &
     derr2a(0:nr,0:nr,0:kmpsi,1:2), derz2f(0:nz,0:nz,1:4),  &
@@ -879,7 +879,7 @@ CLOSE(103)
 
 !      WRITE(7,'(a,3i4)') 'READ_COM 3:',nst,itpartn(73)
 
-OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
+OPEN(104,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reinterpr'))//'reinterpr.'//outnam)
 READ(104,*) cmono,cquad,chex,cdip,coct,  &
     cmssqr,colerr,dmsfac, errenr,errvar,irepc,itpfix, itert
 !WRITE(7,'(a,3i4)') 'READ_COM 4:',nst,itpartn(73)
@@ -896,17 +896,17 @@ CLOSE(104)
 !WRITE(7,'(a,3i4)') 'READ_COM 6:',nst,itpartn(73)
 !CLOSE(106)
 
-OPEN(107,STATUS='unknown',FORM='formatted', FILE='reforces.'//outnam)
+OPEN(107,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reforces'))//'reforces.'//outnam)
 READ(107,*) x0inv,e0inv,addrho,addpot,addocc,adyrho,adypot,mpmax
 CLOSE(107)
 
-OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
+OPEN(108,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('repairpr'))//'repairpr.'//outnam)
 READ(108,*) itpartn(1:npsid),fer(1:2)
 !    gap(1:2),epair(1:2),fer2(1:2),pairfc(1:2),feradd(1:2),pairstab,  &
 !    rho0pr,erra, stwid,stslop,rhocut,npiter,ipair,itpini,
 CLOSE(108)
 
-OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
+OPEN(109,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('refields'))//'refields.'//outnam)
 READ(109,*) pot(0:nz,0:nr,1:kqm),  &
     coulpt(0:nz,1:nr), bmass(0:nz,0:nr,1:kqm),  &
     potls(0:nz,0:nr,1:kqm,1:2),  &
@@ -915,7 +915,7 @@ READ(109,*) pot(0:nz,0:nr,1:kqm),  &
     pairpt(0:nz,0:nr,1:kqm),potdamp(0:nz,0:nr)
 CLOSE(109)
 
-OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
+OPEN(110,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('recurren'))//'recurren.'//outnam)
 READ(110,*) rho(0:nz,0:nr,1:kqm),  &
     crho(0:nz,0:nr), tau(0:nz,0:nr,1:kqm),  &
     drhols(0:nz,0:nr,1:kqm), rholsr(0:nz,0:nr,1:kqm),  &
@@ -923,7 +923,7 @@ READ(110,*) rho(0:nz,0:nr,1:kqm),  &
     rhoti(0:nz,0:nr,1:kqm), paircr(0:nz,0:nr,1:kqm)
 CLOSE(110)
 
-OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
+OPEN(111,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('recoulom'))//'recoulom.'//outnam)
 !READ(111,*) crhom(0:nz,0:nr,0:kangmo),  &
 !    coulm(0:nz,0:nr,0:kangmo), crhoq(0:nz,0:nr,0:kangmo),  &
 !    coulq(0:nz,0:nr,0:kangmo), crhoh(0:nz,0:nr,0:kangmo),  &
@@ -942,7 +942,7 @@ CLOSE(111)
 
 WRITE(7,'(a,2i4/200i4)')  &
     'conj. in READ a:',nst,itpartn(nst(1)+1:nst(1)+nst(2))
-OPEN(113,STATUS='unknown',FORM='formatted', FILE='relevels.'//outnam)
+OPEN(113,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('relevels'))//'relevels.'//outnam)
 READ(113,*) wate(1:npsid)  ,spn(1:npsid)     ,  &
     spenrg(1:npsid), spevar(1:npsid),speold(1:npsid),  &
     oc(1:npsid),  &
@@ -961,19 +961,19 @@ WRITE(7,'(a,2i4/200i4)')  &
 
 
 
-OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
+OPEN(114,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('renucsys'))//'renucsys.'//outnam)
 READ(114,*) anumb,  &
     nst(1:2),npart(1:2),iokk(1:2),numsta(1:2)
 CLOSE(114)
 WRITE(7,'(a,2i4/200i4)')  &
     'conj. in READ c:',nst,itpartn(nst(1)+1:nst(1)+nst(2))
 
-OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
+OPEN(115,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rebufcom'))//'rebufcom.'//outnam)
 READ(115,*) nom,mhi(mxd),  &
     mlo(mxd),miq(mxd),mim(mxd)
 CLOSE(115)
 
-OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
+OPEN(116,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reobserv'))//'reobserv.'//outnam)
 READ(116,*) atnum,apnum,annum,rms,rmsp,rmsn,q,qp,qn,h,hp,hn,  &
     beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
     beta3,beta3p,beta3n,beta4,beta4p,beta4n, zcm,rdmsc,surfc
@@ -994,7 +994,7 @@ CLOSE(116)
 !CLOSE(118)
 
 
-OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
+OPEN(119,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rewavefr'))//'rewavefr.'//outnam)
 READ(119,*) psi(0:nz,0:nr,1:nsd,1:npsid)
 CLOSE(119)
 
@@ -1037,15 +1037,15 @@ INTEGER :: npsid
 npsid=npsi(2)
 
 
-OPEN(101,STATUS='unknown',FORM='formatted', FILE='reconstr.'//outnam)
+OPEN(101,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reconstr'))//'reconstr.'//outnam)
 CLOSE(101,STATUS='DELETE')
 
 
-OPEN(103,STATUS='unknown',FORM='formatted', FILE='rederivs.'//outnam)
+OPEN(103,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rederivs'))//'rederivs.'//outnam)
 CLOSE(103,STATUS='DELETE')
 
 
-OPEN(104,STATUS='unknown',FORM='formatted', FILE='reinterpr.'//outnam)
+OPEN(104,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reinterpr'))//'reinterpr.'//outnam)
 CLOSE(104,STATUS='DELETE')
 
 !OPEN(105,STATUS='unknown',FORM='formatted', FILE='regridpr.'//outnam)
@@ -1055,19 +1055,19 @@ CLOSE(104,STATUS='DELETE')
 !OPEN(106,STATUS='unknown',FORM='formatted', FILE='redampar.'//outnam)
 !CLOSE(106,STATUS='DELETE')
 
-OPEN(107,STATUS='unknown',FORM='formatted', FILE='reforces.'//outnam)
+OPEN(107,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reforces'))//'reforces.'//outnam)
 CLOSE(107,STATUS='DELETE')
 
-OPEN(108,STATUS='unknown',FORM='formatted', FILE='repairpr.'//outnam)
+OPEN(108,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('repairpr'))//'repairpr.'//outnam)
 CLOSE(108,STATUS='DELETE')
 
-OPEN(109,STATUS='unknown',FORM='formatted', FILE='refields.'//outnam)
+OPEN(109,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('refields'))//'refields.'//outnam)
 CLOSE(109,STATUS='DELETE')
 
-OPEN(110,STATUS='unknown',FORM='formatted', FILE='recurren.'//outnam)
+OPEN(110,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('recurren'))//'recurren.'//outnam)
 CLOSE(110,STATUS='DELETE')
 
-OPEN(111,STATUS='unknown',FORM='formatted', FILE='recoulom.'//outnam)
+OPEN(111,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('recoulom'))//'recoulom.'//outnam)
 CLOSE(111,STATUS='DELETE')
 
 !OPEN(112,STATUS='unknown',FORM='formatted', FILE='reinipar.'//outnam)
@@ -1076,18 +1076,18 @@ CLOSE(111,STATUS='DELETE')
 !!      ,locc(1:10)
 !CLOSE(112,STATUS='DELETE')
 
-OPEN(113,STATUS='unknown',FORM='formatted', FILE='relevels.'//outnam)
+OPEN(113,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('relevels'))//'relevels.'//outnam)
 CLOSE(113,STATUS='DELETE')
 
 
-OPEN(114,STATUS='unknown',FORM='formatted', FILE='renucsys.'//outnam)
+OPEN(114,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('renucsys'))//'renucsys.'//outnam)
 CLOSE(114,STATUS='DELETE')
 
 
-OPEN(115,STATUS='unknown',FORM='formatted', FILE='rebufcom.'//outnam)
+OPEN(115,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rebufcom'))//'rebufcom.'//outnam)
 CLOSE(115,STATUS='DELETE')
 
-OPEN(116,STATUS='unknown',FORM='formatted', FILE='reobserv.'//outnam)
+OPEN(116,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('reobserv'))//'reobserv.'//outnam)
 CLOSE(116,STATUS='DELETE')
 
 !OPEN(117,STATUS='unknown',FORM='formatted', FILE='recntrlv.'//outnam)
@@ -1096,7 +1096,7 @@ CLOSE(116,STATUS='DELETE')
 !OPEN(118,STATUS='unknown',FORM='formatted', FILE='reord.'//outnam)
 !CLOSE(118,STATUS='DELETE')
 
-OPEN(119,STATUS='unknown',FORM='formatted', FILE='rewavefr.'//outnam)
+OPEN(119,STATUS='unknown',FORM='formatted', FILE=TRIM(fpath('rewavefr'))//'rewavefr.'//outnam)
 CLOSE(119,STATUS='DELETE')
 
 
