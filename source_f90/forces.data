@@ -199,7 +199,7 @@
        -9.495922200,0.6271055591,0.1452333929,                       & !avp,h1vp,h2vp,
        12.47411800,-1.387537460,19.37945593,                         & !avm,h1vm,h2vm,
        0.5241614600,9.9219923571D-02,0.1896399200,2.4966800000D-02,  & !asp,hgradp,c0nabj,c1nabj,
-       -1.636126500,1.136298300,1.3020834000D-02,0D0,                & !fxi,h1xi,hgradxi,delfxi,
+       -1.636126500,1.136298300,1.3020834000D-02,0D0,0D0,0D0,        & !fxi,h1xi,hgradxi,delfxi,...
        -15D0,-0.3,                                                   & !pair_cutoff,pairstab
        0D0,0D0,-2D3,0D0,0D0,0D0,0D0,      & !hsp,asm,hsm,hgradm,c0tau,c1tau,hcoul
        2,.TRUE.), & ! isovectormodel,tcutoff_uvspace
@@ -208,8 +208,8 @@
        -9.542893800,0.6323225100,0.1343785900,           & !avp,h1vp,h2vp,
         4.182187600,0.2537761900,1.215015200,            & !avm,h1vm,h2vm,
        0.6047266200,0.6656268400,0.1878661600,-2.2723712000E-02, & !asp,hgradp,c0nabj,c1nabj,
-       -4.521180800,4.267943400,3.671126100,0D0,                & !fxi,h1xi,hgradxi,delfxi
-       -15D0,-0.3,                                                   & !pair_cutoff,pairstab
+       -4.521180800,4.267943400,3.671126100,0D0,0D0,0D0,     & !fxi,h1xi,hgradxi,delfxi,delh1xi,delhgradxi
+       -15D0,-0.3,                                           & !pair_cutoff,pairstab
        0D0,0D0,-2D3,0D0,0D0,0D0,0D0,                     & !hsp,asm,hsm,hgradm,c0tau,c1tau,hcoul
        2,.TRUE.)     &          ! isovectormodel,tcutoff_uvspace
        /)

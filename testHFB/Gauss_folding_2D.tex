@@ -1,0 +1,432 @@
+\documentclass[12pt]{article}
+%\documentstyle{article}
+\usepackage[latin2]{inputenc}
+\usepackage{amsmath}
+\usepackage{bm}
+
+\textwidth 14.2cm
+\textheight 22.5cm
+\topmargin  -0.5cm
+\oddsidemargin 0.5cm
+\evensidemargin 0.5cm
+\pagestyle{empty}
+
+%\partopsep -33pt
+%\parsep 0pt
+%\topskip -33pt
+\parskip 0pt
+\parindent 0pt
+\setlength{\topsep}{0pt}
+\setlength{\partopsep}{0pt}
+\setlength{\itemsep}{-30pt}
+\setlength{\parsep}{-30pt}
+
+\makeatletter
+   \def\@listi{\itemsep0pt\parsep0pt}
+\makeatother
+
+
+
+
+%\renewcommand{\baselinestretch}{0.9}
+\renewcommand{\topfraction}{0.8}
+\renewcommand{\textfraction}{0.2}
+\renewcommand{\floatpagefraction}{0.8}
+
+%\settowidth{\leftmargin}{CC}
+%\addtolength{\leftmargin}{-30pt}
+%\setlength{\leftmargin}{5pt}
+
+\newcounter{denselistcounter}
+\newenvironment{denselist}[1]
+{ \begin{list}
+  {#1{denselistcounter})}{\usecounter{denselistcounter}
+  \setlength{\topsep}{-0pt}
+  \setlength{\partopsep}{-0pt}
+  \setlength{\itemsep}{-0pt}
+  \setlength{\parsep}{-0pt}
+  \setlength{\labelwidth}{6pt}
+  \setlength{\labelsep}{4pt}
+  \setlength{\leftmargin}{20pt}
+  \setlength{\rightmargin}{20pt}
+  }
+}
+{\end{list}}
+
+\setlength{\unitlength}{0.1cm}
+\begin{document}
+
+
+\title{Gaussian folding in 2D}
+\author{Discussion file: MSU -- FAU}
+\date{Started: 6. September 2024; last update: 10. September 2024}
+\maketitle
+
+The aim is to express Gaussian folding 
+\begin{equation}
+  \psi(\mathbf{r})
+  =
+  \int d^3r'\, e^{-\lambda(\mathbf{r}-\mathbf{r}')^2}
+  \varphi(\mathbf{r}')
+\end{equation}
+in cylindrical coordinates $(x,y,z)\longrightarrow(r,\phi,z)$.
+One way is to perform the transformation in coordinate space, i.e.,
+\begin{equation}
+  (\bm{r} - \bm{r}')^2 = r^2 + r'^2 - 2rr'\cos({\phi -\phi'}) + (z-z')^2
+\end{equation}
+This reads
+\begin{equation}
+  \psi(r,\phi,z)
+  =
+  \int dz'\,d\phi'\,dr'\,r'\,e^{-\lambda(z-z')^2}
+  e^{-\lambda[(r-r')^2+2rr'(1-\cos(\phi-\phi'))]}
+  \varphi(r',\phi',z')
+  \;.
+\end{equation}
+The fields $\psi$ and $\varphi$ are usually given with a good azimuthal
+angular momentum $m$, i.e.
+\begin{equation}
+  \varphi(r',\phi',z')
+  =
+  \varphi_m(r',z')e^{-\mathrm{i}m\phi'}
+\end{equation}
+and similarly for $\psi$. This reduces the transformation to
+\begin{subequations}
+\begin{eqnarray}
+  \psi_m(r,z)
+  &=&
+  \int dz'\,dr'\,r'\,e^{-\lambda(z-z')^2} e^{-\lambda[(r-r')^2-2rr']}
+  \varphi_m(r',z')\int d\eta e^{2\lambda rr'\cos(\eta)-\mathrm{i}m\eta}
+  \;,
+\\
+  \eta&=&\phi-\phi'
+  \;.
+\end{eqnarray}
+\end{subequations}
+We recall the definition of the Bessel functions
+\begin{equation}
+  J_n(x)
+  =
+  \frac{\mathrm{i}^{-n}}{2\pi}
+  \int_{-\pi}^\pi d\theta\,e^{\mathrm{i}x\cos(\theta)+\mathrm{i}n\theta}
+  =
+  \frac{\mathrm{i}^{n}}{2\pi}
+  \int_{-\pi}^\pi d\theta\,e^{\mathrm{i}x\cos(\theta)-\mathrm{i}n\theta}
+\end{equation}
+which means that we are actually looking for the modified Bessel 
+function
+\begin{eqnarray}
+  \int d\eta e^{2\lambda rr'\cos(\eta)-\mathrm{i}m\eta}
+  &=&
+  \int_{-\pi}^\pi d\eta\,e^{\mathrm{i}(-2\mathrm{i}\lambda rr')\cos(\eta)-\mathrm{i}m\eta}
+\nonumber\\
+  &=&
+  2\pi\mathrm{i}^{-n} J_{|m|}(-2\mathrm{i}\lambda rr')
+  =
+  2\pi I_m(-2\lambda rr')
+\end{eqnarray}
+where $I_n=(\mathrm{i})^{-n}J_n(ix)$ are the modified Bessel functions. After all, we come to
+\footnote{All steps to here need yet checking.}
+\begin{equation}
+  \psi_m(r,z)
+  =
+  2\pi\int dz'\,dr'\,r'\,e^{-\lambda(z-z')^2} e^{\lambda[(r-r')^2-2rr']}I_m(-2\lambda rr')  \varphi_m(r',z')
+  \;.
+\end{equation}
+The direct application of this closed expression on a finite grid will
+violate boundary conditions. One may ignore that if the fields are
+well localized within the grid and if the folding width is not too
+large. 
+
+\section{Expansion in Laplacean eigenstates on the grid}
+
+A better adjustment to the grid is achieved by the operator
+representation as we used it in the 1D code. Starting point is
+the 3D expression
+\begin{equation}
+  \psi(\mathbf{r})
+  =
+  \exp\left(\frac{\hat{\Delta}}{4\lambda}\right)
+  \varphi(\mathbf{r})
+\end{equation}
+where $\hat{\Delta}$ is the Laplacean operator.
+The Laplacean reads in cylindrical coordinates when acting
+onto an eigenfunction of azimuthal angular momentum (see above)
+\begin{equation}
+  \hat{\Delta}
+  =
+  \hat{\Delta}_r-\frac{m^2}{r^2}+\partial_z^2
+  \;,\;
+  \hat{\Delta}_r
+  =
+  \partial_r^2
+  +
+  \frac{1}{r}\partial_r
+  \;.
+\end{equation}
+Thus we are searching for a representation of
+\begin{equation}
+  \psi(\mathbf{r})
+  =
+  \exp\left(\frac{\hat{\Delta}_r-\frac{m^2}{r^2}+\partial_z^2}{4\lambda}\right)
+  \varphi(\mathbf{r})
+\label{eq:folding_axial}
+\end{equation}
+This raises a problem: $\hat{\Delta}_r$ is not immediately Hermitian.
+This may look surprising at first glance. It becomes plausible at a
+second thought. One has to take into account the volume element. To
+that end, look at a typical axial matrix element
+\begin{subequations}
+\begin{equation}
+  \langle\psi_m|\hat{\Delta}_r|\varphi_m\rangle
+  =
+  \int dr\,r\,\psi_m\left(\partial_r^2+\frac{1}{r}\partial_r\right)
+  \varphi_m
+  \;.
+\end{equation}
+One can show by partial integration that this is equivalent to
+\begin{equation}
+  \langle\psi_m|\hat{\Delta}_r|\varphi_m\rangle
+  =
+  \int dr\,r\,
+  \left[\left(\partial_r^2+\frac{1}{r}\partial_r\right)\psi_m\right]
+  \varphi_m
+  \;.
+\end{equation}
+\end{subequations}
+One can get formally rid of the volume element by considering the
+scaled wavefunctions
+\begin{equation}
+  \tilde{\psi}_m=\sqrt{r}\,\psi_m
+  \;,\;
+  \tilde{\varphi}_m=\sqrt{r}\,\varphi_m
+  \;.
+\end{equation}
+This changes the matrix element to
+\begin{eqnarray}
+  \langle\psi_m|\hat{\Delta}_r|\varphi_m\rangle
+  &=&
+  \int dr\,\tilde{\psi}_m\sqrt{r}\left(\partial_r^2+\frac{1}{r}\partial_r\right)
+  \frac{1}{\sqrt{r}}\tilde{\varphi}_m
+\nonumber\\
+  &=&
+  \int dr\,\tilde{\psi}_m\left(\partial_r^2+\frac{1}{4r^2}\right)
+  \tilde{\varphi}_m
+  \;.
+\end{eqnarray}
+The kernel $\partial_r^2+1/(4r^2)$ 
+\begin{equation}
+  \tilde{\Delta}_r
+  =
+  \sqrt{r}\left(\partial_r^2+\frac{1}{r}\partial_r\right)
+  \frac{1}{\sqrt{r}}
+  =
+  \partial_r^2+\frac{1}{4r^2}
+\end{equation}
+is obviously Hermitian.
+
+The aim is evaluate a matrix representation of the axial part of the
+Gaussian folding operator in eq. (\ref{eq:folding_axial}). We call it
+for compact notation
+\begin{equation}
+  \hat{\mathcal{G}}_r
+  =
+  \exp\left(\frac{\hat{\Delta}_r-\frac{m^2}{r^2}}{4\lambda}\right)
+  \;.
+\end{equation}
+We introduce the scaled folding operator
+\begin{equation}
+  \tilde{\mathcal{G}}_r
+  =
+  \sqrt{r}\hat{\mathcal{G}}_r\frac{1}{\sqrt{r}}
+  \;.
+\end{equation}
+We remark that
+\begin{equation*}
+  \tilde{\Delta}_r^n
+  =
+  \left(\sqrt{r}\hat{\Delta}_r\frac{1}{\sqrt{r}}\right)^n
+  =
+  \sqrt{r}\hat{\Delta}_r^n\frac{1}{\sqrt{r}}
+  \;.
+\end{equation*}
+Using this auxiliary result, we can show via the Taylor expansion that
+\begin{equation}
+  \tilde{\mathcal{G}}_r
+  =
+  \exp\left(\frac{\tilde{\Delta}_r-\frac{m^2}{r^2}}{4\lambda}\right)
+  \;.
+\end{equation}
+We first construct the matrix representation of
+$\tilde{\mathcal{G}}_r$ through the eigenstates of $\tilde{\Delta}_r$
+on the grid. This proceeds as
+\begin{eqnarray*}
+  -k_i^2\tilde{J}_m(k_ir)
+  &=&
+  \left(\tilde{\Delta}_r-\frac{m^2}{r^2}\right)\tilde{J}_m(k_ir)
+  \;,
+\\
+  \tilde{\mathcal{G}}_r(r,r')
+  &=&
+  \sum_i\tilde{J}_m(k_ir)\exp\left(-\frac{k_i^2}{4\lambda}\right)
+  \tilde{J}_m(k_ir')
+\end{eqnarray*}
+where $\tilde{J}_m(k_ir)=\sqrt{r}{J}_m(k_ir)$ represents the Bessel
+functions on the grid.
+The folding operator kernel is finally 
+\begin{equation}
+  {\mathcal{G}}_r(r,r')
+  =
+  \frac{1}{\sqrt{r}}\tilde{\mathcal{G}}_r(r,r')\sqrt{r}
+  \;.
+\end{equation}
+\centerline{\em ... boundary $r\rightarrow 0$, $r\rightarrow
+  R_\mathrm{box}$ yet to be discussed ...}
+
+\section{Expansion in Bessel functions}
+
+We come back to the idea of using the analytically given eigenstates 
+of the axial Laplacean, namely the Bessel function $J_m(x)$,
+directly. The Bessel functions are given as solution of
+\begin{equation}
+  \left(\hat{\Delta}_r-\frac{m^2}{r^2}\right)J_m(kr)
+  =
+  \left(
+  \partial_r^2
+  +
+  \frac{1}{r}\partial_r
+  -
+  \frac{m^2}{r^2}
+  \right)J_m(kr)
+  =
+  -k^2J_m(kr)
+\end{equation}
+where $J_{-m}=J_m$, i.e. the sign of $m$ plays no role.
+The Bessel functions to different $k_n$ are orthogonal to each other.
+But they are not normalized. To use them as expansion basis, one has 
+first to normalize the $J_m$.
+
+Not all $k$ are possible in a finite numerical box with radius
+$R_\mathrm{box}$. Two kind of boundary conditions are used
+\begin{subequations}
+\begin{eqnarray}
+  J_m(k_nR_\mathrm{box})
+  &=&
+  0
+  \;,
+\\
+  J'_m(k'_nR_\mathrm{box})
+  &=&
+  0
+  \;.
+\end{eqnarray}
+\end{subequations}
+Both yield a series of discrete values $k_n$, or $k'_n$ respectively.
+The series is terminated from above due to finite resolution on the
+grid by spatial discretization. 
+After all, we obtain two expansions sets $\left\{J_m(k_nr)\right\}$ and
+$\left\{J_m(k'_nr)\right\}$ depending on the wanted boundary conditions.
+
+\section{Testing through simple expectation values}
+
+For a test, we take up the analytical formula from the case of
+spherical 1D (see the discussion file \texttt{doc/test\_folding.pdf}
+in the 1D repository). Given a s.p. function in spherical representation
+\begin{subequations}
+\begin{equation}
+  \varphi(r_\mathrm{sph},\vartheta,\phi)
+  =
+  r_\mathrm{sph}^{l}Y_{ll}(\Omega)
+  \exp\left(-\frac{r_\mathrm{sph}^2}{\delta r_\mathrm{sph}^2}\right)
+\end{equation}
+yields the folded function
+\begin{equation}
+  \tilde{\varphi}(r_\mathrm{sph},\vartheta,\phi)
+  =
+  (-)^l\left(\frac{\delta r_\mathrm{sph}^2}{\Delta r^2+\delta r^2}\right)^{l+3/2}
+  r_\mathrm{sph}^{l}Y_{ll}(\Omega)
+  \exp\left(-\frac{r_\mathrm{sph}^2}{\Delta r^2+\delta r^2}\right)
+  \;.
+\end{equation}
+\end{subequations}
+This relation will now be reshaped into axial coordinates
+$(r,\Phi,z)$. The spherical harmonics $Y_{ll}$ is independent of $z$
+Thus the relation becomes
+\begin{subequations}
+\begin{eqnarray}
+  \varphi(r,\phi,z)
+  &=&
+  r_\mathrm{sph}^{l}e^{\mathrm{i}m\phi}
+  \exp\left(-\frac{r_\mathrm{sph}^2+z^2}{\delta r^2}\right)
+  \;,
+\\
+  \tilde{\varphi}(r,\phi,z)
+  &=&
+  (-)^l\left(\frac{\delta r_\mathrm{sph}^2}{\Delta r^2+\delta r^2}\right)^{l+3/2}
+  r_\mathrm{sph}^{l}e^{\mathrm{i}m\phi}
+  \exp\left(-\frac{r_\mathrm{sph}^2+z^2}{\Delta r^2+\delta r^2}\right)
+  \;.
+\end{eqnarray}
+\end{subequations}
+To test folding in $z$ direction, we consider the $z^2$ expectation
+value which is
+\begin{subequations}
+\begin{equation}
+  \langle z^2\rangle_\varphi
+  =
+  \frac{\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)z^2}
+       {\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)}
+  =
+  \frac{\delta r^2}{2}
+\end{equation}
+and for the folded test function
+\begin{equation}
+  \langle z^2\rangle{\tilde\varphi}
+  =
+  \frac{\delta r^2+\Delta r^2}{2}
+  \;.
+\end{equation}
+\end{subequations}
+The change through $z$-folding is thus  $\Delta r^2/2$.
+
+For the $r$ direction, we consider the expectation value
+\begin{equation}
+  \langle r^2\rangle_\varphi
+  =
+  \frac{\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)r^2}
+       {\int dz d\phi dr\,r\,e^{-\mathrm{i}m\phi}\varphi(r,\phi,z)}
+  \;.
+\end{equation}
+Using the integrals
+\begin{eqnarray*}
+  \int_0^\infty dx\,x^{2k}\,e^{-\lambda x^2}
+  &=&
+  \frac{1}{2}\,\sqrt{\frac{\pi}{\lambda}}\,\frac{(2k-1)!!}{2^k\lambda^k}
+\\
+  \int_0^\infty dx\,x^{2k+1}\,e^{-\lambda x^2}
+  &=&
+  \frac{1}{2}\,\frac{k!}{\lambda^{k+1}}
+\end{eqnarray*}
+we derive
+\begin{equation}
+  \langle r^2\rangle_\varphi
+  =
+  \frac{l+2}{2}\delta r^2
+  \;,\;
+  \langle r^2\rangle_{\tilde\varphi}
+  =
+  \frac{l+2}{2}(\delta r^2+\Delta r^2)
+  \;.
+\end{equation}
+These are the tests used in subroutine \texttt{test\_Gaussfolding} in
+the file \texttt{m\_grid.f90}.
+
+
+\end{document}
+
+\begin{equation}
+\end{equation}
+\begin{equation}
+\end{equation}
+\begin{equation}
+\end{equation}

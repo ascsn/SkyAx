@@ -40,12 +40,12 @@ CONTAINS
 !! \c ipair is used here to indicate the switch to surface pairing: 5,6: 
 !! volume pairing; 7,8: surface pairing.
 !--------------------------------------------------------------------------- 
-SUBROUTINE hfbpot()
+SUBROUTINE hfbpot(iter)
 
 USE paramr
 USE dynpar
 USE fields
-USE observ, ONLY: sdenti
+USE observ, ONLY: sdenti,spradius
 USE wavefr
 USE levels
 USE grid
@@ -53,30 +53,59 @@ USE fyfunc, ONLY: fy_hfbpot
 
 IMPLICIT NONE
 
+INTEGER, INTENT(IN) :: iter
+
 REAL(8) :: smallp = 0.000001d0
 
 REAL(8) ::  ecrit,npower
 REAL(8) ::  epairtestp,epairtestn,epairtest
-REAL(8) ::  buff(2)
+REAL(8) ::  buff(2),geff,rhofac
 
 REAL(8), ALLOCATABLE :: work(:,:)
+REAL(8), ALLOCATABLE :: paircrtest(:,:,:),pairpttest(:,:,:)
 
-INTEGER :: i,iq,jst
+INTEGER :: i,iq,jst,iz,ir
 REAL(8) :: uv,v0prot,v0neut,v2
+REAL(8) :: densint0,densintfold,densintdiff,epairtestnfold
+LOGICAL, PARAMETER :: testfolding=.FALSE.
 
 ALLOCATE(work(0:nz,0:nr))
+IF(testfolding) ALLOCATE(paircrtest(0:nz,0:nr,kqm),pairpttest(0:nz,0:nr,kqm))
 work=0D0
 
 !     zero field before accumulation
-paircr(:,:,:) = zero
+paircr(:,:,:) = 0D0
+IF(testfolding) paircrtest(:,:,:) = 0D0
+
+! reset rearrangement potential
+IF(tregpair) regpairadd=1D0
 
 !     accumulate new pair-density
-DO jst=1,nst(1)+nst(2)
-  iq    = icharg(jst)
-  v2    = vsqf(jst)
-  uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
-  CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-END DO
+IF(thfbfold) THEN
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
+    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
+    CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+!    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+!    IF(testfolding) CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+!    WRITE(6,'(a,3i4)') 'SPRADIUS before for jst,parity,m=',jst,nparz(1,jst),mpsi(jst)
+!    CALL spradius(psi(0:nz,0:nr,1:2,jst))
+!    WRITE(6,'(a,i4)') 'SPRADIUS after for jst=',jst
+!    CALL spradius(psifold(0:nz,0:nr,1:2,jst))
+!    WRITE(6,'(1x)')
+  END DO
+ELSE
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,smallp))*0.5
+    CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+  END DO
+END IF
+
 
 !     now multiply with strength to obtain local pair-potential
 IF(tFayans) THEN
@@ -86,11 +115,42 @@ ELSE
   v0neut = -pairfc(2)
 
   IF(ipair <= 6 .OR. ipair == 9) THEN
-    pairpt(0:nz,0:nr,1)  = v0prot * paircr(0:nz,0:nr,1)
-    pairpt(0:nz,0:nr,2)  = v0neut * paircr(0:nz,0:nr,2)
+    IF(tregpair .AND. iter>50) THEN
+      DO ir=0,nr; DO iz=0,nz
+        geff = geff_regpair(fer(1),pair_cutoff,pot(iz,ir,1),bmass(iz,ir,1),v0prot) 
+        pairpt(iz,ir,1)  = paircr(iz,ir,1) * geff
+        regpairadd(iz,ir,1) = 1D0 !(geff/v0prot)**2   ???
+        geff = geff_regpair(fer(2),pair_cutoff,pot(iz,ir,2),bmass(iz,ir,2),v0neut) 
+        pairpt(iz,ir,2)  = paircr(iz,ir,2) * geff
+        regpairadd(iz,ir,2) = 1D0 !(geff/v0neut)**2   ???
+      END DO; END DO
+    ELSE
+      pairpt(0:nz,0:nr,1)  = v0prot * paircr(0:nz,0:nr,1)
+      pairpt(0:nz,0:nr,2)  = v0neut * paircr(0:nz,0:nr,2)
+      IF(testfolding) THEN
+        pairpttest(:,:,1)  = v0prot * paircrtest(:,:,1)
+        pairpttest(:,:,2)  = v0neut * paircrtest(:,:,2)
+      END IF
+    END IF
   ELSE
-    pairpt(:,:,1)  = v0prot * (one-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,1)
-    pairpt(:,:,2)  = v0neut * (one-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,2)
+    IF(tregpair .AND. iter>50) THEN
+      DO ir=0,nr; DO iz=0,nz
+        rhofac = (1D0-(rho(iz,ir,1)+rho(iz,ir,2))/rho0pr)
+        geff = geff_regpair(fer(1),pair_cutoff,pot(iz,ir,1),bmass(iz,ir,1),v0prot*rhofac) 
+        pairpt(iz,ir,1)  = paircr(iz,ir,1) * geff
+        regpairadd(iz,ir,1) = (geff/(v0prot*rhofac))**2
+        geff = geff_regpair(fer(2),pair_cutoff,pot(iz,ir,2),bmass(iz,ir,2),v0neut) 
+        pairpt(iz,ir,2)  = paircr(iz,ir,2) * geff
+        regpairadd(iz,ir,2) = (geff/(v0neut*rhofac))**2
+      END DO; END DO
+    ELSE
+      pairpt(:,:,1)  = v0prot * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,1)
+      pairpt(:,:,2)  = v0neut * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircr(:,:,2)
+      IF(testfolding) THEN
+        pairpttest(:,:,1)  = v0prot * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircrtest(:,:,1)
+        pairpttest(:,:,2)  = v0neut * (1D0-(rho(:,:,1)+rho(:,:,2))/rho0pr) * paircrtest(:,:,2)
+      END IF
+    END IF
   END IF
 END IF
 
@@ -101,14 +161,56 @@ epairtestp=f1int(work)
 work(:,:)=paircr(:,:,2)*pairpt(:,:,2)
 epairtestn = f1int(work)  
 epairtest= epairtestp+ epairtestn
+!   communicate to calling routine
+epair(1)=epairtestp
+epair(2)=epairtestn
+
+IF(testfolding) THEN
+  densint0 = f1int(paircrtest(:,:,2))
+  densintfold = f1int(paircr(:,:,2))
+  work(:,:)=paircrtest(:,:,2)*pairpttest(:,:,2)
+  epairtestnfold = f1int(work)  
+  pairpttest = (pairpt-pairpttest)**2
+  paircrtest = (paircr-paircrtest)**2
+  densintdiff = SQRT(f1int(paircrtest(:,:,2)))
+  WRITE(6,'(a,8(1pg15.7))') 'COMPARE densities:', &
+     densint0,densintfold,densintdiff,densint0-densintfold, &
+     epairtestn,epairtestnfold,epairtestn-epairtestnfold, &
+     f1int(pairpttest(:,:,2))
+  OPEN(317,file='pairpttest_obs')
+    DO ir=0,nr
+      DO iz=0,nz
+        WRITE(317,'(2i3,2(1pg13.5))') iz,ir,pairpttest(iz,ir,2),paircrtest(iz,ir,2)
+      END DO
+      WRITE(317,'(1x)')
+    END DO
+  CLOSE(317)
+  DEALLOCATE(paircrtest,pairpttest)
+ELSE
+  densint0 = f1int(paircr(:,:,2))
+  work(:,:)=paircr(:,:,2)*pairpt(:,:,2)
+  epairtestnfold = f1int(work)  
+!  WRITE(6,'(a,8(1pg15.7))') 'TEST densities:', &
+!     densint0,epairtestn,epairtestnfold,epairtestn-epairtestnfold
+END IF
+
+
 
 ! finally compute the actual gaps as s.p. expectation values with
 ! the pair potential
-DO jst=1,nst(1)+nst(2)
-  iq     = icharg(jst)
-  work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
-  deltaf(jst) = f1int(work)
-END DO
+IF(thfbfold) THEN
+  DO jst=1,nst(1)+nst(2)
+    iq     = icharg(jst)
+    work(:,:)=(psifold(:,:,1,jst)**2+psifold(:,:,2,jst)**2)*pairpt(:,:,iq)
+    deltaf(jst) = f1int(work)
+  END DO
+ELSE
+  DO jst=1,nst(1)+nst(2)
+    iq     = icharg(jst)
+    work(:,:)=(psi(:,:,1,jst)**2+psi(:,:,2,jst)**2)*pairpt(:,:,iq)
+    deltaf(jst) = f1int(work)
+  END DO
+END IF
 
 IF(itest > 0) THEN
   WRITE(6,'(a)') ' dynamics gaps for protons, directly:'
@@ -118,22 +220,157 @@ IF(itest > 0) THEN
 END IF
 
 !     stabilized pairing gap
-ecrit=1.0D0
-npower=2.0D0
-
-buff(1)=ABS(ecrit/epairtestp)
-buff(2)=ABS(ecrit/epairtestn)
-
-
-DO jst=1,nst(1)+nst(2)
-  iq     = icharg(jst)
-  deltaf(jst)=deltaf(jst)*(1.0D0 - (npower-1.0D0)*pairstab*buff(iq)**npower)
-END DO
+IF(pairstab.NE.0D0) THEN
+  IF(tFayans) THEN
+    buff(1)=ABS(pairstab/epairtestp)
+    buff(2)=ABS(pairstab/epairtestn)
+    DO jst=1,nst(1)+nst(2)
+      iq     = icharg(jst)
+      deltaf(jst)=deltaf(jst)*(1.0D0 + buff(iq)**2)
+    END DO
+  ELSE
+    ecrit=1.0D0
+    npower=2.0D0
+    buff(1)=ABS(ecrit/epairtestp)
+    buff(2)=ABS(ecrit/epairtestn)
+    DO jst=1,nst(1)+nst(2)
+      iq     = icharg(jst)
+      deltaf(jst)=deltaf(jst)*(1.0D0 - (npower-1.0D0)*pairstab*buff(iq)**npower)
+    END DO
+  END IF
+END IF
 
 DEALLOCATE(work)
 
 RETURN
 END SUBROUTINE hfbpot
+
+
+REAL(8) FUNCTION geff_regpair(efermi_a,ecut_a,pot_a,bmas_a,g_pair)
+!
+!  Computes the regularization kernel g_eff for
+!  regularized pairing.
+!  
+IMPLICIT NONE
+REAL(8),INTENT(IN) :: efermi_a     ! Fermi energy
+REAL(8),INTENT(IN) :: ecut_a       ! Cutoff energy
+REAL(8),INTENT(IN) :: pot_a        ! local potential U(r)
+REAL(8),INTENT(IN) :: bmas_a       ! local inverse effective mass B*(r)=hbar**2/(2M*)
+REAL(8),INTENT(IN) :: g_pair       ! local pairing strength from pairing model
+
+  geff_regpair = g_pair/(1-g_pair*Keff_regpair())
+!  geff_regpair = g_pair/(1-g_pair*Keff_regpair2())
+
+  RETURN
+
+CONTAINS
+
+REAL(8) FUNCTION Keff_regpair()
+!
+!  Computes the regularization kernel K_eff for
+!  regularized pairing.
+!  
+
+REAL(8),PARAMETER :: fourpi=12.56637061D0   ! 4*pi
+REAL(8),PARAMETER :: fourpi2=39.4784176D0   ! 4*pi**2
+REAL(8) :: kf2                     ! square of Fermi momentum
+REAL(8) :: kf                      ! absolute value of Fermi momentum
+REAL(8) :: kcut                    ! cutoff momentum, deduced from ecut_a
+REAL(8) :: ecut_eff                ! cutoff energy relatice to cont. threshold
+
+kf2= (efermi_a-pot_a)/bmas_a
+kf = SQRT(ABS(kf2))
+ecut_eff = ecut_a  !+efermi_a
+kcut = (ecut_eff+efermi_a-pot_a)/bmas_a
+IF(kcut<0D0) THEN
+  WRITE(6,'(a,3(1pg13.5))') ' e_cut,e_fermi,pot=',ecut_a,efermi_a,pot_a
+  STOP "'kcut' is imaginary"
+END IF
+kcut=SQRT(kcut)
+
+IF(kf2.GE.0D0) THEN
+  Keff_regpair = (kcut/(fourpi2*bmas_a)) * &
+                 (1D0 - (kf/(kcut+kcut))*LOG((kcut+kf)/(kcut-kf))  )
+ELSE
+  Keff_regpair = (kcut/(fourpi2*bmas_a)) * &
+                 (1D0 + (kf/(kcut))*ATAN((kf/(kcut)))  )
+END IF
+
+RETURN
+
+END FUNCTION Keff_regpair
+
+
+REAL(8) FUNCTION Keff_regpair2()
+!
+!  Computes the regularization kernel K_eff for
+!  regularized pairing.
+!  
+
+REAL(8),PARAMETER :: fourpi=12.56637061D0   ! 4*pi
+REAL(8),PARAMETER :: fourpi2=39.4784176D0   ! 4*pi**2
+!REAL(8) :: kf2                     ! square of Fermi momentum
+REAL(8) :: kf                      ! absolute value of Fermi momentum
+REAL(8) :: kcut                    ! cutoff momentum, deduced from ecut_a
+REAL(8) :: lcut                    ! lower cutoff momentum, deduced from ecut_a
+REAL(8) :: ecut_eff                ! cutoff energy relatice to cont. threshold
+
+REAL(8) :: a,b                     ! auxiliary
+
+ecut_eff = ecut_a  !+efermi_a
+
+IF ( pot_a + ecut_eff - efermi_a < 0D0 ) THEN
+   !
+   kf = SQRT( ( efermi_a - pot_a ) / bmas_a )
+   kcut = SQRT( ( efermi_a + ecut_eff - pot_a ) / bmas_a )
+   lcut = SQRT( ( efermi_a - ecut_eff - pot_a ) / bmas_a )
+   a = kcut / fourpi2 / bmas_a &
+      * ( 1 - kf / 2 / kcut * log( ( kcut + kf ) / ( kcut - kf ) ) )
+   b = lcut / fourpi2 / bmas_a &
+      * ( 1 - kf / 2 / lcut * log( ( lcut + kf ) / ( kf - lcut ) ) )
+!         rega(p,it) = a
+!         regb(p,it) = b
+   !........................ geff(p,it) = 1 / ( 1 / g - a - b )
+ELSE
+   IF ( pot_a - efermi_a < 0D0 ) THEN
+      !
+      kf = SQRT( ( efermi_a - pot_a ) / bmas_a )
+      kcut = SQRT( ( efermi_a + ecut_eff - pot_a ) / bmas_a )
+      a = kcut / fourpi2 / bmas_a * &
+         ( 1 - kf / 2 / kcut * log( ( kcut + kf ) / ( kcut - kf ) ) )
+      b = 0D0
+!            rega(p,it) = a
+!            regb(p,it) = 0D0
+      !..................... geff(p,it) = 1 / ( 1 / g - a )
+   ELSE
+      IF ( pot_a - ecut_eff - efermi_a < 0D0 ) THEN
+         !
+         kf = SQRT( - ( efermi_a - pot_a ) / bmas_a )
+         kcut = SQRT( ( efermi_a + ecut_eff - pot_a ) / bmas_a )
+         a = kcut / fourpi2 / bmas_a &
+            * ( 1 + kf / kcut * atan( kf / kcut ) )
+         b = 0D0
+!               rega(p,it) = a
+!               regb(p,it) = 0D0
+         !.................. geff(p,it) = 1 / ( 1 / g - a )
+      ELSE
+         !
+         a = 0D0
+         b = 0D0
+!               rega(p,it) = 0D0
+!               regb(p,it) = 0D0
+         !.................. geff(p,it) = g
+      END IF
+   END IF
+END IF
+Keff_regpair2 = a+b
+
+RETURN
+
+END FUNCTION Keff_regpair2
+
+END FUNCTION geff_regpair
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: pairdn
@@ -256,6 +493,7 @@ END IF
 IF(eferm /= zero) THEN
   IF(tcutoff_WS) THEN
     efadd  = pair_cutoff
+    deltac = efadd*0.1D0
     DO i=1,nmax
       arg    = (e(i)-(eferm+efadd))/deltac
       IF(arg > fifty) THEN

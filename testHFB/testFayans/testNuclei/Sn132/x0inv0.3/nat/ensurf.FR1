@@ -1,0 +1,9 @@
+#t Sn132                                                                      
+# Plot potential energy surface for:
+ #test Sn132                                                            
+# Nmass=  132, Ncharge=   50
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.200  c0,qeps: 0.800******
+# x0inv(fm),e0inv(mev):    0.30 100.00
+# bet2   bet2p  bet2n  bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn 
+ -0.000 -0.000 -0.000  0.000  0.000  0.000 -1099.17261241671   -0.1   -0.1 -12.61  -5.68   -0.147   -0.139 20000  4.71868  4.7644  4.6653  4.8238  49.999533  81.995430   7.004165

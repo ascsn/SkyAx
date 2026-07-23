@@ -16,6 +16,7 @@ USE grid, ONLY: nz,nr,int_weight,init_int_weight,f2int
 IMPLICIT NONE
  
 REAL(8),POINTER :: psi(:,:,:,:)                  !< The main storage for all s.p. states.
+REAL(8),POINTER :: psifold(:,:,:,:)              !< Storage for all folded s.p. states.
 
 CONTAINS
 !---------------------------------------------------------------------------  
@@ -27,10 +28,15 @@ CONTAINS
 !> INTEGER, takes the total number of wave function.
 !--------------------------------------------------------------------------- 
 SUBROUTINE alloc_wf(npsi)
+  USE dynpar, ONLY: thfbfold
   IMPLICIT NONE
   INTEGER,INTENT(IN) ::npsi
   ALLOCATE(psi(0:nz,0:nr,nsd,npsi))
   psi=0.0d0
+  IF(thfbfold) THEN
+    ALLOCATE(psifold(0:nz,0:nr,nsd,npsi))
+    psifold=0D0
+  END IF
 END SUBROUTINE alloc_wf
 
 !---------------------------------------------------------------------------  

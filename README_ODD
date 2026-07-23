@@ -1,0 +1,38 @@
+To install the interface between the F90 SkyAx abd the F77 SkyAx_odd:
+---------------------------------------------------------------------
+
+The wrapper routine resides in the 'source_f90' of the 'SkyAx'
+directory, presently in the branch 'PGdevelop'.
+To install it go to the subdirectory 'source_f90' and issue
+'./complink_wrapper'. As a result you obtain the executable 'wrapper.exe'
+at the directory one level before 'source_f90'.
+
+Go to the subdirectory 'source_odd' and issue 'make skyifc' if you have
+an Intel compiler or 'make skyf77' if you prefer the GNU compiler. 
+The result is an executable 'skyax_odd.exe' one level before 'source'.
+
+Now define a working directory for your runs use inputs from the input directory 
+into that working directory. This delivers a couple of input files
+with obvious names. Then you need to link 'skyax_odd.exe' to that
+working directory. It is also convenient to link 'wrapper.exe' to
+the working directory. Then you are ready to go.
+
+A run with the F77 code is performed by './wrapper.exe < for005.2D.....'
+where .... means your chosen functional. Before that you edit the input 
+file before that it runs the nuclear you want (entries 'nprot' and 
+'nneut') and you can associate a 3-digit qualifier as usual. The output
+comes on 'out_details.*' and 'ensurf.*'. 
+
+I emphasize that this is an alpha-version which needs yet to be
+tested. For even-even nuclei, we can counter-check by running the
+SkyAx code with the same input and also by comparing with the 1D code
+for spherical nuclei. I did that and found satisfying agreement for the 
+Skrme functionals. The Fayans functionals have still to be scrutinized.
+
+Moreover, the UNEDF2 functional raises a subtle problem. My 1D input
+indicates that UNEDF2 uses tensor spin-orbit terms. These are not
+installed in neither 2D code. WE have to discuss how to deal with that.
+
+
+
+

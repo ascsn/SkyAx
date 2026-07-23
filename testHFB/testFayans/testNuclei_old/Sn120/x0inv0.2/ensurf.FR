@@ -1,0 +1,9 @@
+#t 120Sn                                                                      
+# Plot potential energy surface for:
+ #test 120Sn                                                            
+# Nmass=  120, Ncharge=   50
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.200  c0,qeps: 0.800******
+# x0inv(fm),e0inv(mev):    0.20 100.00
+# bet2   bet2p  bet2n  bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn 
+  0.002  0.002  0.002 -0.001 -0.001 -0.001 -1013.93719938792   -0.1  -11.5  -7.87  -7.76   -0.157   -1.442 20001  4.66077  4.6505  4.5973  4.6882  49.999680  69.653330   6.568568

@@ -1,0 +1,8 @@
+deocc(1,2)= 18.D0
+cutoff=-100,hfbwidth=0.0d0,pair.strength=300
+deocc(1,2)= 18.D0
+cutoff=-100,hfbwidth=0.0d0,pair.strength=300
+deocc(1,2)= 18.D0
+cutoff=-10,hfbwidth=0.0d0,pair.strength=300
+deocc(1,2)= 16.D0
+cutoff=-10,hfbwidth=0.0d0,pair.strength=300

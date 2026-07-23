@@ -1,0 +1,22 @@
+&main outnam='udh', ipri_fields=0, iprint=1000, itmax=8000,iterbcs=300,iterhfb=600,
+      pairenhance=1.0D0,iternat=0,modnat=99999,itest=0,
+/
+&force 
+ t0=-2078.328,t1=239.401,t2=1574.243,t3=14263.646,t4=76.736, 
+ x0=0.54304371E-01,x1=-5.0781477,x2=-1.3665705,x3=-0.16116885,b4p=71.31652,
+ power=0.270018,h2m=20.73553,20.73553,
+ chg=1D0,ex=1,riftm=0D0,zpe=-2,
+ ipair=8,v0prot=967.427,v0neut=884.339,rho0pr=0.16,
+ pair_cutoff=-5D0,HFBwidth=0.00000D0,tregpair=F
+/
+&grids tsym=T,nz=25,nr=25,dz=0.7,dr=0.7
+/
+&static nprot=50,nneut=70,e0inv=100D0,x0inv=0.3,tvaryx0=F,addocc=0.3,addrho=0.15,
+deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-12,errvar=0.01,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999,betain=0.0/
+/
+&constraint
+/
+&thermal
+/
+

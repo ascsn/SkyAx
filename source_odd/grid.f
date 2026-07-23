@@ -1,0 +1,1891 @@
+c***********************************************************************
+c
+c  file        : grid.f
+c  description : grid operations
+c
+c  functions   :
+c
+c     ini_grid()           initialize of the grid operations routines
+c
+c     ini_derive()         initialize the derivative matrices
+c     ini_damp_nucleon()   initialize the nucleon damping matrices
+c     ini_damp_meson()     initialize the meson damping matrices
+c
+c     nablaz_scalar()      components of the gradient for scalar 
+c     nablar_scalar()        functions
+c     nablap_scalar()
+c  
+c     nablaz_spin()        components of the gradient for spinor
+c     nablar_spin()          functions
+c     nablap_spin()      
+c     
+c     laplace_scalar()     action of laplace on a scalar function
+c     laplacer_scalar()    action of radial laplace on a sc. funct.
+c
+c     laplace_spin()       action of laplace on a spinor function
+c      
+c     rotr_vector()        component of the rotation of a vector field
+c     rotz_vector()
+c     rotp_vector()
+c
+c     div_vector()         divergency of a vector field
+c
+c     damp_nucleon()       damping of kinetic energy
+c     damp_meson()         
+c
+c
+c       z-parity of spinor-function: (izpfld,is)   ->   izpact
+c       ------------------------------------------------------
+c            (1,1)      ->     1        (1,2)      ->     2
+c            (2,1)      ->     2        (2,2)      ->     1
+c
+c       m-component of spinor-function:     (m,is) -> imact
+c       ------------------------------------------------------
+c            (m,1)      ->     m        (m,2)      ->    m-1
+c
+c       z-parity index               (izpact,isym) -> izpidx
+c       ------------------------------------------------------
+c            (1,1)      ->     1        (2,1)      ->    2
+c            (1,0)      ->     1        (2,0)      ->    1
+c
+c       total index                (ibpfld,izpidx) -> ibpidx
+c       ------------------------------------------------------
+c            (1,1)      ->     1        (2,1)      ->    3
+c            (1,2)      ->     2        (2,2)      ->    4
+c
+c***********************************************************************
+
+c======================================================================
+c
+c     ini_grid()
+c
+c=======================================================================
+      subroutine ini_grid(iderpntr,iderpntz)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd,kmpsi
+      include 'derivs.inc' ! derivative matrices, iband_derz,iband_derr
+      include 'dynpar.inc' ! isym,dr,nr,sr,nz,dz
+c
+c     ------------------------------------------------------------------
+c
+      double precision r,msq
+      integer          iderpntz,iderpntr
+      integer          im
+      integer          ir,jr
+      integer          irpar,irpar2
+c
+c     ------------------------------------------------------------------
+c
+c     store kind of derivatives (finite, fourier, bandwith of d.-matr.)     
+c     ------------------------------------------------------------------
+      if (iderpntz.eq.-1) then
+         iband_derz = -1
+         write(7,'(a)') '    z - derivatives : FOURIER'
+      elseif ((mod(iderpntz,2).eq.1).and.(iderpntz.ge.2)) then
+         iband_derz = (iderpntz-1)/2
+         write(7,'(a,i2,a)') 
+     &           '    z - derivatives : FINITE (',iderpntz,' points)'
+      else
+         write(7,'(a)')
+     &           ' type of derivatives must be -1 for fourier or'//
+     &           ' 2n+1 for finite differences'
+         write(6,'(a)')
+     &           ' type of derivatives must be -1 for fourier or'//
+     &           ' 2n+1 for finite differences'
+         stop 'unsupported derivative type in INI_GRID'
+      endif
+c
+      if (iderpntr.eq.-1) then
+         iband_derr = -1
+         write(7,'(a)') '    r - derivatives : FOURIER'
+      elseif ((mod(iderpntr,2).eq.1).and.(iderpntr.ge.2)) then
+         iband_derr = (iderpntr-1)/2
+         write(7,'(a,i2,a)') 
+     &           '    r - derivatives : FINITE (',iderpntr,' points)'
+      else
+         write(7,'(a)')
+     &           ' type of derivatives must be -1 for fourier or'//
+     &           ' 2n+1 for finite differences'
+         write(6,'(a)')
+     &           ' type of derivatives must be -1 for fourier or'//
+     &           ' 2n+1 for finite differences'
+         stop 'unsupported derivative type in INI_GRID'
+      endif
+c
+c     initialize derivatives in z-direction
+c     ------------------------------------------------------------------
+      call ini_derive(derz1  ,1,iband_derz,isym,dz,nz,nzd)
+      call ini_derive(derz2  ,2,iband_derz,isym,dz,nz,nzd)
+      call ini_derive(derz2f ,2,-1        ,isym,dz,nz,nzd)
+c
+c     initialize radial derivatives 
+c     ------------------------------------------------------------------
+      call ini_derive(derr1  ,1,iband_derr,   1,dr,nr,nrd)
+      call ini_derive(derr1f ,1,-1        ,   1,dr,nr,nrd)
+      call ini_derive(derr2a ,0,iband_derr,   1,dr,nr,nrd)
+      call ini_derive(derr2af,0,-1        ,   1,dr,nr,nrd)  
+c
+c     initialize 1/r and 1/r^2      
+c     ------------------------------------------------------------------
+      r1inv(0,0)=0.0D0
+      r2inv(0,0)=0.0D0
+      do ir=1,nr
+         r1inv(ir,ir)=1.0D0/((ir+sr)*dr)
+      enddo
+      do ir=1,nr
+         r2inv(ir,ir)=r1inv(ir,ir)*r1inv(ir,ir)
+      enddo
+c      r1inv(nr,nr)=0.0D0
+c      r2inv(nr,nr)=0.0D0
+c
+c     ------------------------------------------------------------------
+c
+c     call tst_grid_oper()
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c======================================================================
+c
+c     nablaz_scalar(fldin,fldout,izpfld,ibpfld,factor)
+c
+c     calculate the z-component of the gradient d/dz of a scalar 
+c     function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       izpfld :  z-parity of field 
+c                 (1 for positive, 2 for negative
+c                  1 and isym=0 for no good z-parity)
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))  
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine nablaz_scalar(fldin,fldout,izpfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd
+      include 'dynpar.inc' ! isym
+      include 'derivs.inc' ! derz1,iband_derz
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      double precision factor
+      integer          izpfld
+      integer          ibpfld
+c
+      integer          izpidx,ibpidx
+c
+c     ------------------------------------------------------------------
+c
+      izpidx = izpfld*isym + (1-isym)
+      ibpidx = izpidx + 2*ibpfld - 2
+c
+      call mulz(derz1(0,0,ibpidx),
+     &          fldin(0,0),fldout(0,0),factor,0,iband_derz)
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     nablar_scalar(fldin,fldout,imfld,ibpfld,factor)
+c
+c     calculate the r-component of the gradient d/dr of a scalar 
+c     function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       imfld  :  m-component of field 
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))  
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine nablar_scalar(fldin,fldout,imfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd
+      include 'derivs.inc' ! derr1,iband_derr
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      double precision factor
+      integer          imfld
+      integer          ibpfld
+c
+      integer          irpidx,ibpidx
+c
+c     ------------------------------------------------------------------
+c
+      irpidx = 1+mod(abs(imfld),2) 
+      ibpidx = irpidx + 2*ibpfld - 2  
+c
+      call mulr(derr1(0,0,ibpidx),
+     &          fldin(0,0),fldout(0,0),factor,0,iband_derr)
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     nablap_scalar(fldin,fldout,imfld,ibpfld,factor)
+c
+c     calculate the phi-component of the gradient 1/r d/dp of a scalar 
+c     function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       imfld  :  m-component of field 
+c       ippfld :  p-parity of field (cos(m*phi)=+1, sin(m*phi)=-1)
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))  
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine nablap_scalar(fldin,fldout,imfld,ippfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd
+      include 'derivs.inc' ! derr1,iband_derr
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      double precision factor
+      integer          imfld
+      integer          ippfld
+      integer          ibpfld
+c
+      integer          irpidx,ibpidx
+c
+c     ------------------------------------------------------------------
+c
+      irpidx = 1+mod(abs(imfld),2) 
+      ibpidx = irpidx + 2*ibpfld - 2   
+c
+      call mulr(r1inv(0,0),
+     &          fldin(0,0),fldout(0,0),
+     &          -factor*imfld*ippfld,0,0)
+      if (imfld.eq.1.or.imfld.eq.-1) then
+         call mulr0(derr1(0,0,ibpidx),
+     &              fldin(0,0),fldout(0,0),
+     &              -factor*imfld*ippfld,0,iband_derr)
+      endif
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     nablaz_spin(fldin,fldout,izpfld,ibpfld,factor)
+c
+c     calculate the z-component of the gradient d/dz of a spinor 
+c     function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       izpfld :  z-parity of upper spinor 
+c                 (1 for positive, 2 for negative, 
+c                  1 and isym=0 for no good z-parity)
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))  
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine nablaz_spin(fldin,fldout,izpfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc'  ! nzd,nrd,nsd
+      include 'dynpar.inc'  ! isym
+      include 'derivs.inc'  ! derz1,iband_derz
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd,nsd)
+      double precision fldout(0:nzd,0:nrd,nsd)
+      double precision factor
+      integer          izpfld
+      integer          ibpfld
+c
+      integer          is,izpact,izpidx,ibpidx
+c
+c     ------------------------------------------------------------------
+c
+      do is=1,nsd
+         izpact = 3*(izpfld-1) - (2*izpfld-3)*is
+         izpidx = izpact*isym  + (1-isym)
+         ibpidx = izpidx + 2*ibpfld - 2
+c
+         call mulz(derz1(0,0,ibpidx),
+     &             fldin(0,0,is),fldout(0,0,is),factor,0,iband_derz)
+      enddo
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     nablar_spin(fldin,fldout,imfld,ibpfld,factor)
+c
+c     calculate the r-component of the gradient d/dr of a spinor 
+c     function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       imfld  :  m-component of upper spinor
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))  
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine nablar_spin(fldin,fldout,imfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd,nsd
+      include 'derivs.inc' ! derr1,iband_derr
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd,nsd)
+      double precision fldout(0:nzd,0:nrd,nsd)
+      double precision factor
+      integer          imfld
+      integer          ibpfld
+c
+      integer          imact,irpidx,ibpidx,is
+c
+c     ------------------------------------------------------------------
+c
+      do is=1,nsd
+        imact     = imfld+is-1
+        irpidx    = 1+abs(mod(imact,2))
+        ibpidx    = irpidx + 2*ibpfld - 2
+c
+        call mulr(derr1(0,0,ibpidx),
+     &            fldin(0,0,is),fldout(0,0,is),factor,0,iband_derr)
+      enddo
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     nablap_spin(fldin,fldout,imfld,ibpfld,factor)
+c
+c     calculate the phi-component of the gradient 1/r d/dp of a spinor 
+c     function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       imfld  :  m-component of upper spinor
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))  
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine nablap_spin(fldin,fldout,imfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd,nsd
+      include 'derivs.inc' ! derr1,iband_derr
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd,nsd)
+      double precision fldout(0:nzd,0:nrd,nsd)
+      double precision factor
+      integer          imfld
+      integer          ibpfld
+c
+      integer          imact,irpidx,ibpidx,is
+c
+c     ------------------------------------------------------------------
+c
+      do is=1,nsd
+        imact     = imfld+is-1
+        irpidx    = 1+abs(mod(imact,2))
+        ibpidx    = irpidx + 2*ibpfld - 2
+c
+        call mulr(r1inv(0,0),
+     &            fldin(0,0,is),fldout(0,0,is),factor*imact,0,0)
+        if (imact.eq.1.or.imact.eq.-1) then
+           call mulr0(derr1(0,0,ibpidx),
+     &                fldin(0,0,is),fldout(0,0,is),
+     &                factor*imact,0,iband_derr)
+        endif
+      enddo
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     laplace_scalar(fldin,fldout,izpfld,imfld,ibpfld,factor)
+c
+c     calculate the action of the laplace operator
+c
+c       factor*[(d/dr)^2 + 1/r (d/dr) - m^2/r^2 + (d/dz)^2]
+c     
+c     on a scalar function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       izpfld :  z-parity of field
+c                 (1 for positive, 2 for negative, 
+c                  1 and isym=0 for no good z-parity)
+c       imfld  :  z-component of angular momentum of field
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine laplace_scalar(fldin,fldout,izpfld,imfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nrd, nzd
+      include 'derivs.inc' ! derr2a, derz2,iband_derr,iband_derz
+      include 'dynpar.inc' ! isym
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      double precision factor
+      integer          imfld
+      integer          izpfld
+      integer          ibpfld
+c
+      integer          izpidx, ibpidx
+c
+c     ------------------------------------------------------------------
+c
+      izpidx = izpfld*isym + (1-isym)
+      ibpidx = izpidx + 2*ibpfld - 2
+c
+      call mulr(derr2a(0,0,imfld,ibpfld),
+     &          fldin(0,0),fldout(0,0),factor,0,iband_derr)
+      call mulz(derz2(0,0,ibpidx),
+     &          fldin(0,0),fldout(0,0),factor,1,iband_derz)
+c      call mulz(derz2f(0,0,izpidx),
+c     &          fldin(0,0),fldout(0,0),factor,0,-1)
+c      call mulr(derr2af(0,0,imfld,1),
+c     &          fldin(0,0),fldout(0,0),factor,1,-1)
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     laplace_spin(fldin,fldout,izpfld,imfld,ibpfld,factor)
+c
+c     calculate the action of the laplace operator
+c
+c       factor*[(d/dr)^2 + 1/r (d/dr) - m^2/r^2 + (d/dz)^2]
+c     
+c     on a spinor function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       izpfld :  z-parity of upper spinor 
+c                 (1 for positive, 2 for negative, 
+c                  1 and isym=0 for no good z-parity)
+c       imfld  :  z-component of angular momentum m of upper spinor
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine laplace_spin(fldin,fldout,izpfld,imfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nrd,nzd,nsd
+      include 'derivs.inc' ! derr2a, derz2, iband_derz, iband_derr
+      include 'dynpar.inc' ! isym
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd,nsd)
+      double precision fldout(0:nzd,0:nrd,nsd)
+      double precision factor
+      integer          imfld
+      integer          izpfld
+      integer          ibpfld
+
+      integer          imact,izpact,ibpidx,is
+c
+c     ------------------------------------------------------------------
+c
+      do is=1,nsd
+        imact  = abs(imfld+is-1)
+        izpact = 3*(izpfld-1) - (2*izpfld-3)*is
+        izpidx = izpact*isym  + (1-isym)
+        ibpidx = izpidx + 2*ibpfld - 2
+c
+        call mulz(derz2(0,0,ibpidx),
+     &            fldin(0,0,is),fldout(0,0,is),factor,0,iband_derz)
+        call mulr(derr2a(0,0,imact,ibpfld),
+     &            fldin(0,0,is),fldout(0,0,is),factor,1,iband_derr)
+c        call mulz(derz2f(0,0,izpact),
+c     &            fldin(0,0,is),fldout(0,0,is),factor,0,-1)
+c        call mulr(derr2af(0,0,imact,1),
+c     &            fldin(0,0,is),fldout(0,0,is),factor,1,-1)
+      enddo
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+c=======================================================================
+c
+c     laplacer_scalar(fldin,fldout,imfld,ibpfld,factor)
+c
+c     calculate the action of the radial part of the laplace operator
+c
+c       factor*[(d/dr)^2 + 1/r (d/dr) - m^2/r^2]
+c     
+c     on a scalar function.
+c
+c       fldin  :  input field 
+c       fldout :  output field 
+c
+c       imfld  :  m-component of field
+c       ibpfld :  boundary parity 
+c                 (1 for negative (zero-value), 
+c                  2 for positive (zero-derivative))
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine laplacer_scalar(fldin,fldout,imfld,ibpfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nrd, nzd
+      include 'derivs.inc' ! derr2a,iband_derr
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      double precision factor
+      integer          imfld
+      integer          ibpfld
+c
+c     ------------------------------------------------------------------
+c
+      call mulr(derr2a(0,0,imfld,ibpfld),
+     &          fldin(0,0),fldout(0,0),factor,0,iband_derr)
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     rotr_vector(fldinp,fldinz,fldout,
+c                 izpfld,imfld,ippfld,
+c                 izerop,izeroz,factor)
+c
+c     calculate the r-component of the rotation of a vector 
+c     field.
+c
+c       fldinp :  phi-component of input field 
+c       fldinz :  z-component of input field
+c       fldout :  output field (r-component of rotation)
+c
+c       izpfld :  z-parity of field
+c                 (1 for positive, 2 for negative)
+c       ippfld :  switch, +1: r,z=cos(m*phi)-type   phi=sin(m*phi)-type
+c                         -1: r,z=sin(m*phi)-type   phi=cos(m*phi)-type
+c       imfld  :  m-component of field
+c
+c       izerop :  switch, 1 if phi-component is zero
+c       izeroz :  switch, 1 if z-component is zero
+c 
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine rotr_vector(fldinp,fldinz,fldout,
+     &                       izpfld,imfld,ippfld,
+     &                       izerop,izeroz,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd
+      include 'derivs.inc' ! derr1,derz1,iband_derr,iband_derz
+      include 'dynpar.inc' ! isym
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldinp(0:nzd,0:nrd)
+      double precision fldinz(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      integer          izpfld,imfld,ippfld
+      integer          izeror,izerop
+      double precision factor
+c
+      integer          irpfld
+
+      integer          irpidx,izpidx
+      integer          iaccuswp,iaccuswz
+c
+c     ------------------------------------------------------------------
+c
+      ! derive r-parity from z-component m
+      irpidx   = 1+mod(abs(imfld),2) 
+      izpidx   = izpfld*isym + (1-isym)
+c
+c     determin accumulation switches
+      if(izeroz.ne.0) then
+         if (izerop.ne.0) then
+c
+            do ir=0,nr
+               do iz=0,nz
+                  fldout(iz,ir) = 0.0D0
+               enddo
+            enddo
+c     
+         else
+            iaccuswp=0
+         endif
+      else
+         iaccuswp=0
+         iaccuswz=1
+      endif
+c
+c
+c     if phi-component != 0 --> -nabla_z * A_phi
+      if (izerop.eq.0) then
+         call mulz(derz1(0,0,izpidx),
+     &             fldinp(0,0),fldout(0,0),
+     &             -factor,iaccuswp,iband_derz)
+      endif
+c
+c
+c     if z-component != 0 --> nabla_phi * A_z
+      if (izeroz.eq.0) then   
+         call mulr(r1inv(0,0),
+     &             fldinz(0,0),fldout(0,0),
+     &             -factor*imfld*ippfld,iaccuswz,0)
+         if (imfld.eq.1) then
+            call mulr0(derr1(0,0,irpidx),
+     &                 fldinz(0,0),fldout(0,0),
+     &                 -factor*imfld*ippfld,1,iband_derr)
+         endif        
+      endif
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     rotz_vector(fldinr,fldinp,fldout,
+c                 izpfld,imfld,ippfld,
+c                 izeror,izerop,factor)
+c
+c     calculate the z-component of the rotation of a vector 
+c     field.
+c
+c       fldinr :  r-component of input field 
+c       fldinp :  phi-component of input field
+c       fldout :  output field (z-component of rotation)
+c
+c       izpfld :  z-parity of field
+c                 (1 for positive, 2 for negative)
+c       ippfld :  switch, +1: r,z=cos(m*phi)-type   phi=sin(m*phi)-type
+c                         -1: r,z=sin(m*phi)-type   phi=cos(m*phi)-type
+c       imfld  :  m-component of field
+c
+c       izeror :  switch, 1 if phi-component is zero
+c       izerop :  switch, 1 if z-component is zero
+c 
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine rotz_vector(fldinr,fldinp,fldout,
+     &                       izpfld,imfld,ippfld,
+     &                       izeror,izerop,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd
+      include 'derivs.inc' ! derr1,derz1,iband_derr,iband_derz
+      include 'dynpar.inc' ! isym
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldinp(0:nzd,0:nrd)
+      double precision fldinr(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      integer          izpfld,imfld,ippfld
+      integer          izeror,izerop
+      double precision factor
+c
+      integer          irpfld
+
+      integer          irpidx,izpidx
+      integer          iaccuswp,iaccuswr
+c
+c     ------------------------------------------------------------------
+c
+      ! derive r-parity from z-component m
+      irpidx   = 1+mod(abs(imfld),2) 
+      izpidx   = izpfld*isym + (1-isym)
+c
+c     determin accumulation switches
+      if(izeror.ne.0) then
+         if (izerop.ne.0) then
+c
+            do ir=0,nr
+               do iz=0,nz
+                  fldout(iz,ir) = 0.0D0
+               enddo
+            enddo
+c     
+         else
+            iaccuswp=0
+         endif
+      else
+         iaccuswp=0
+         iaccuswr=1
+      endif
+c
+c
+c     if z-component != 0 --> nabla_r * A_phi
+      if (izerop.eq.0) then   
+         call mulr(derr1(0,0,3-irpidx),
+     &             fldinp(0,0),fldout(0,0),
+     &             factor,iaccuswp,iband_derr)
+         call mulr(r1inv(0,0),
+     &             fldinp(0,0),fldout(0,0),
+     &             factor,1,0)
+c         if (imfld.eq.0.or.imfld.eq.1) then
+            call mulr0(derr1(0,0,3-irpidx),
+     &                 fldinp(0,0),fldout(0,0),
+     &                 factor,1,iband_derr)
+c         else
+c            call mulr0(r1inv(0,0),
+c     &                 fldinp(0,0),fldout(0,0),
+c     &                 0.0D0,0,0)
+c         endif
+      endif
+c
+c
+c     if phi-component != 0 --> -nabla_phi * A_r
+      if (izeror.eq.0) then
+         call mulr(r1inv(0,0),
+     &             fldinr(0,0),fldout(0,0),
+     &             factor*imfld*ippfld,iaccuswr,0)
+c       if (imfld.eq.0.or.imfld.eq.1) then
+            call mulr0(derr1(0,0,3-irpidx),
+     &                 fldinr(0,0),fldout(0,0),
+     &                 factor*imfld*ippfld,1,iband_derr)
+c         endif      
+      endif
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     rotp_vector(fldinz,fldinr,fldout,
+c                 izpfld,imfld,ippfld,
+c                 izeroz,izeror,factor)
+c
+c     calculate the p-component of the rotation of a vector 
+c     field.
+c
+c       fldinz :  z-component of input field 
+c       fldinr :  r-component of input field
+c       fldout :  output field (phi-component of rotation)
+c
+c       izpfld :  z-parity of field
+c                 (1 for positive, 2 for negative)
+c       ippfld :  switch, +1: r,z=cos(m*phi)-type   phi=sin(m*phi)-type
+c                         -1: r,z=sin(m*phi)-type   phi=cos(m*phi)-type
+c       imfld  :  m-component of field
+c
+c       izeroz :  switch, 1 if z-component is zero
+c       izeror :  switch, 1 if r-component is zero
+c 
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine rotp_vector(fldinz,fldinr,fldout,
+     &                       izpfld,imfld,ippfld,
+     &                       izeroz,izeror,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd
+      include 'derivs.inc' ! derr1,derz1,iband_derr,iband_derz
+      include 'dynpar.inc' ! isym
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldinz(0:nzd,0:nrd)
+      double precision fldinr(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      integer          izpfld,imfld,ippfld
+      integer          izeroz,izeror
+      double precision factor
+c
+      integer          irpfld
+
+      integer          irpidx,izpidx
+      integer          iaccuswz,iaccuswr
+c
+c     ------------------------------------------------------------------
+c
+      ! derive r-parity from z-component m
+      irpidx   = 1+mod(abs(imfld),2) 
+      izpidx   = izpfld*isym + (1-isym)
+c
+c     determin accumulation switches
+      if(izeroz.ne.0) then
+         if (izeror.ne.0) then
+c
+            do ir=0,nr
+               do iz=0,nz
+                  fldout(iz,ir) = 0.0D0
+               enddo
+            enddo
+c     
+         else
+            iaccuswr=0
+         endif
+      else
+         iaccuswr=0
+         iaccuswz=1
+      endif
+c
+c
+c     if r-component != 0 --> nabla_z * A_r
+      if (izeror.eq.0) then
+         call mulz(derz1(0,0,izpidx),
+     &             fldinr(0,0),fldout(0,0),
+     &             factor,iaccuswr,iband_derz)
+      endif
+c
+c
+c     if z-component != 0 --> -nabla_r * A_z
+      if (izeroz.eq.0) then
+         call mulr(derr1(0,0,irpidx),
+     &             fldinz(0,0),fldout(0,0),
+     &             -factor,iaccuswz,iband_derr)
+      endif
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     div_vector(fldinr,fldinp,fldinz,fldout,izpfld,imfld,
+c                 itype,izeror,izerop,izeroz,factor)
+c
+c     calculate the divergency of a vector field.
+c
+c       fldinr :  r-component   of input field 
+c       fldinp :  phi-component of input field
+c       fldinz :  z-component   of input field
+c       fldout :  output field 
+c
+c       izpfld :  z-parity of field
+c                 (1 for positive, 2 for negative, 0 for no good parity)
+c       ippfld :  +1: r,z=cos(m*phi)-type   phi=sin(m*phi)-type
+c                 -1: r,z=sin(m*phi)-type   phi=cos(m*phi)-type
+c       imfld  :  m-component of field
+c
+c       izeror :  switch, 1 if r-component is zero
+c       izerop :  switch, 1 if phi-component is zero
+c       izeroz :  switch, 1 if z-component is zero
+c 
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine div_vector(fldinr,fldinp,fldinz,fldout,
+     &                      izpfld,imfld,ippfld,
+     &                      izeror,izerop,izeroz,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc' ! nzd,nrd
+      include 'derivs.inc' ! derz1,derr1
+      include 'dynpar.inc'
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldinr(0:nzd,0:nrd)
+      double precision fldinp(0:nzd,0:nrd)
+      double precision fldinz(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      double precision factor
+      integer          irpfld
+      integer          izpfld,izpact
+      integer          ippfld
+      integer          imfld
+      integer          izeror,iaccuswr
+      integer          izerop,iaccuswp
+      integer          izeroz,iaccuswz
+c
+c     ------------------------------------------------------------------
+c
+c     derive r-parity from z-component m
+      irpfld = 1+mod(abs(imfld),2)
+      izpact = izpfld*isym + (1-isym)
+c
+c     determin accumulation switches
+      if(izeror.ne.0) then
+         if (izerop.ne.0) then
+            if (izeroz.ne.0) then
+c
+               do ir=0,nrd
+                  do iz=0,nzd
+                     fldout(iz,ir) = 0.0D0
+                  enddo
+               enddo
+               return
+c
+            else
+               iaccuswz=0
+            endif
+         else
+            iaccuswp=0
+            iaccuswz=1
+         endif
+      else
+         iaccuswr=0
+         iaccuswp=1
+         iaccuswz=1
+      endif         
+c
+c
+c     if r-component != 0 --> nabla_r * A_r
+      if (izeror.eq.0) then
+c
+         call mulr(derr1(0,0,3-irpfld),
+     &             fldinr(0,0),fldout(0,0),
+     &             factor,iaccuswr,iband_derr)
+         call mulr(r1inv(0,0),
+     &                fldinr(0,0),fldout(0,0),
+     &                factor,1,0)
+         call mulr0(derr1(0,0,3-irpfld),
+     &              fldinr(0,0),fldout(0,0),
+     &              factor,1,iband_derr)
+c
+      endif
+c
+c
+c     if phi-component != 0 --> nabla_p * A_p
+      if (izerop.eq.0) then
+c
+         call mulr(r1inv(0,0),
+     &             fldinp(0,0),fldout(0,0),
+     &             factor*imfld*ippfld,iaccuswp,0)
+         call mulr0(derr1(0,0,3-irpfld),
+     &              fldinp(0,0),fldout(0,0),
+     &              factor*imfld*ippfld,1,iband_derr)
+           
+c
+      endif
+c
+c
+c     if z-component != 0 --> nabla_z * A_z
+      if (izeroz.eq.0) then
+c
+         call mulz(derz1(0,0,3-izpact),
+     &             fldinz(0,0),fldout(0,0),
+     &             factor,iaccuswz,iband_derz)
+c
+      endif
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     damp_meson(fldin,fldout,factor)
+c
+c     calculate action of the meson-damping operator
+c
+c               1                   1                    1
+c            -------   *    ----------------- *  -----------------
+c            dams**2        1-delta_r/dams**2    1-delta_z/dams**2
+c     
+c     on a scalar function (see function idames).
+c
+c       fldin  :  input field (the function f)        
+c       fldout :  output field (weighted bessel operators action on f)
+c
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine damp_meson(fldin,fldout,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc'
+      include 'derivs.inc' ! zdmes,rdmes,fldbuf
+      include 'dynpar.inc'
+c
+c     ------------------------------------------------------------------
+c
+      double precision fldin(0:nzd,0:nrd)
+      double precision fldout(0:nzd,0:nrd)
+      double precision factor
+      integer          imfld
+      integer          imact
+      integer          izpfld
+      integer          izpact
+c
+c     ------------------------------------------------------------------
+c
+      call mulz(zdmes(0,0,1),
+     &          fldin(0,0),fldbuf(0,0),one,0,-1)
+      call mulr(rdmes(0,0,1),
+     &          fldbuf(0,0),fldout(0,0),factor,0,-1)
+      
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+c=======================================================================
+c
+c     damp_ncleon(fldin,fldout,izpfld,imfld,factor)
+c
+c     calculate action of the nucleon-damping operator
+c
+c
+c                              1              1
+c            x0inv/e0inv -------------    ------------
+c                         1+t_r/e0inv   1+t_z/e0inv
+c     
+c     on a spinor function (see function idanuc).
+c
+c       fldin  :  input field (the function f)        
+c       fldout :  output field (weighted bessel operators action on f)
+c
+c       izpfld :  z-parity of upper spinor
+c       imfld  :  z-component of angular momentum m of upper spinor
+c       factor :  weight factor
+c
+c=======================================================================
+      subroutine damp_nucleon(dampr,dampz,
+     &                        fldin,fldout,izpfld,imfld,factor)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc'
+      include 'derivs.inc'
+      include 'dynpar.inc'
+c
+c     ------------------------------------------------------------------
+c
+      double precision dampr(0:NRD,0:NRD,0:KMPSI)
+      double precision dampz(0:NZD,0:NZD,2)
+      double precision fldin(0:nzd,0:nrd,nsd)
+      double precision fldout(0:nzd,0:nrd,nsd)
+      double precision factor
+      integer          imfld
+      integer          imact
+      integer          izpfld
+      integer          izpact
+      integer          is
+      integer          isigma
+c
+c     ------------------------------------------------------------------
+c
+!      WRITE(6,'(a,4(1pg13.5))') 'DAMP_NUCLEON:',
+!     &     SUM(dampz(0:nz,0:nz,izpfld)),SUM(dampr(0:nr,0:nr,imfld))
+      do is=1,nsd
+c
+        ! lower spin component has m-component imact+1
+        imact  = abs(imfld+is-1)
+c
+        ! lower spin component has opposite z-parity if isym=1
+        ! if isym=0 izpact should be always +1
+        isigma = 3-2*is
+        izpact = (3*(1-isigma)/2+izpfld*isigma)*isym + (1-isym)
+c
+        call mulr(dampr(0,0,imact),
+     &            fldin(0,0,is),fldbuf(0,0),one,0,-1)
+        call mulz(dampz(0,0,izpact),
+     &            fldbuf(0,0),fldout(0,0,is),factor,0,-1)
+!        WRITE(6,'(a,3i4,4(1pg13.5))') 'DAMP_NUCLEON:',is,imact,izpact,
+!     &     SUM(dampz(0:nz,0:nz,izpact)),SUM(dampr(0:nr,0:nr,imact)),
+!     &     SUM(fldin(0:nz,0:nr,is)),SUM(fldout(0:nz,0:nr,is))
+      enddo
+c
+c     ------------------------------------------------------------------
+c
+      return
+      end
+
+
+
+c=======================================================================
+c
+c     initialization of the derivative matrices 
+c     
+c       D      :  array to store the derivative matrix
+c
+c       itype  :  0: bessel operator
+c                 1: 1st derivative
+c                 2: 2nd derivative
+c
+c       ipnt   :  number of points into each direction from central point
+c                 or -1 for fourier derivatives
+c
+c       isym   :  good parity for reflection at lower boundary?
+c
+c       dx     :  spacing of gridpoints
+c       ngrid  :  number of gridpoints
+c       mgrid  :  total dimension of array used to store derivatives
+c        
+c
+c=======================================================================
+c
+      subroutine ini_derive(D,itype,ipnt,isym,
+     &                       dx,ngrid,mgrid)
+c
+c     ------------------------------------------------------------------
+c
+      include 'paramr.inc'
+c
+c     ------------------------------------------------------------------
+c
+      integer    imaxdrvrng
+      integer    inxd
+      parameter (imaxdrvrng=21)           ! maximum range of derivatives
+      parameter (inxd=2*NMX+2)
+
+      integer          mgrid,ngrid,inx,k,nx
+
+      double precision dx,buf1,buf2,buf3
+
+c      double precision der(0:inxd,0:inxd)
+      double precision der1(0:inxd,0:inxd,2)
+      double precision der2(0:inxd,0:inxd,2)
+      double precision D1(0:mgrid,0:mgrid,4)
+      double precision D2(0:mgrid,0:mgrid,4)
+      double precision D(0:mgrid,0:mgrid,1:2*kmpsi+2)
+      double precision Db(0:mgrid,0:mgrid,0:kmpsi,2)
+
+
+      double precision sbase(0:2,0:inxd,0:inxd)
+      double precision cbase(0:2,0:inxd,0:inxd)
+      double precision volx(0:inxd), kval(0:inxd)
+
+      double precision A(0:2*imaxdrvrng,0:2*imaxdrvrng)
+      double precision b(0:2*imaxdrvrng)
+
+      integer          iparmax,isym,ibuf,ibuf2,in
+      double precision pfac,kfac,tfac,sfac,cfac
+c
+      in=2
+c
+      if (isym.eq.0) then
+         inx=ngrid+1
+      else
+         inx=2*ngrid+2
+      endif
+c
+c     ------------------------------------------------------------------
+c     check consistency of input parameters
+c     ------------------------------------------------------------------
+      if ((ipnt.ne.-1).and.(ipnt.lt.(in+1)/2)) then   
+         write(6,'(i2,a,i2,a)') 
+     &        in,'. order derivative needs at least ',(in+1)+1,' points'
+         stop 'error in ini_derive'
+      endif
+c
+      if ((2*ipnt+1).gt.inx-2) then   
+         write(6,'(i2,a,i2,a)') 
+     &        (2*ipnt+1),' formula needs at least ',
+     &        (2*ipnt+3),' gridpoints'
+         stop 'error in ini_derive'
+      endif
+c     
+      if ((ipnt.lt.-1).or.(ipnt.gt.imaxdrvrng).or.(ipnt.eq.0)) then
+         write(6,'(a,i2)') 
+     &        'number of points must be -1,1,2,...,',imaxdrvrng
+         stop 'error in ini_derive'
+      endif
+c
+      if (dx.le.0.0) then
+         write(6,'(a)') 
+     &        'spacing of gridpoints must be >0'
+         stop 'error in ini_derive'
+      endif            
+c
+      if (inx.gt.inxd) then
+         write(6,'(a)') 
+     &        'size of matrix exceeded maximum dimension'
+         write(6,'(a,i3,a,i3,a)')
+     &        '(size: ',inx,', allowed: ', inxd,')' 
+         stop 'error in ini_derive'
+      endif 
+c
+c     ------------------------------------------------------------------
+c     FOURIER derivatives
+c     ------------------------------------------------------------------
+      if (ipnt.eq.-1) then   
+c        ---------------------------------------------------------------
+c        initialize cos and sin-base                 
+c        ---------------------------------------------------------------
+         do k=0,inx
+c
+            kval(k) = k*pi/(inx*dx)
+c
+            buf1 = sqrt(2.0D0/(inx*dx))
+            if (k.eq.0 .or. k.eq.inx) then
+               buf2 = sqrt(1.0D0/(inx*dx))
+               buf1 = 0.0D0
+            else
+               buf2 = buf1
+            endif
+c
+            do i=1,inx-1
+               sbase(0,k,i) =  buf1 *  sin(k*i*pi/inx)
+               cbase(0,k,i) =  buf2 *  cos(k*i*pi/inx)
+               sbase(1,k,i) =  kval(k)    * cbase(0,k,i)
+               cbase(1,k,i) = -kval(k)    * sbase(0,k,i)
+               sbase(2,k,i) = -kval(k)**2 * sbase(0,k,i)
+               cbase(2,k,i) = -kval(k)**2 * cbase(0,k,i)
+            enddo
+c
+            sbase(0,k,0)    =  0.0D0
+            cbase(0,k,0)    =  buf2 
+            sbase(1,k,0)    =  kval(k)    * buf2
+            cbase(1,k,0)    =  0.0D0
+            sbase(2,k,0)    =  0.0D0
+            cbase(2,k,0)    = -kval(k)**2 * buf2
+            sbase(0,k,inx)  =  0.0D0
+            cbase(0,k,inx)  =  buf2 *(-1)**k
+            sbase(1,k,inx)  =  kval(k)    * buf2 *(-1)**k
+            cbase(1,k,inx)  =  0.0D0
+            sbase(2,k,inx)  =  0.0D0
+            cbase(2,k,inx)  = -kval(k)**2 * buf2 *(-1)**k
+c
+         enddo
+c
+c        ---------------------------------------------------------------
+c        initialize volume element (carthesean)
+c        ---------------------------------------------------------------
+         do i=1,inx-1
+            volx(i) =  1.0D0*dx
+         enddo
+         volx(0)    =  0.5D0*dx
+         volx(inx)  =  0.5D0*dx
+c
+c        ---------------------------------------------------------------
+c        initialize 1st and 2nd fourier-derivative
+c        ---------------------------------------------------------------
+         do i=0,inx
+            do j=0,inx
+               der1(i,j,1)=0.0D0
+               der1(i,j,2)=0.0D0
+               der2(i,j,1)=0.0D0
+               der2(i,j,2)=0.0D0
+            enddo
+         enddo
+c
+c         do k=1,inx-1          ! highest and lowest fou. comp. neglected
+         do k=0,inx            ! this is the full spectral summation
+            do i=0,inx
+               do j=0,inx
+                  der1(j,i,1) = der1(j,i,1) + 
+     &                          sbase(1,k,i)*sbase(0,k,j)*volx(j)
+                  der2(j,i,1) = der2(j,i,1) + 
+     &                          sbase(2,k,i)*sbase(0,k,j)*volx(j)
+                  der1(j,i,2) = der1(j,i,2) + 
+     &                          cbase(1,k,i)*cbase(0,k,j)*volx(j)
+                  der2(j,i,2) = der2(j,i,2) + 
+     &                          cbase(2,k,i)*cbase(0,k,j)*volx(j)
+               enddo
+            enddo
+         enddo
+c
+c     ------------------------------------------------------------------
+c     FINITE derivatives                        
+c     ------------------------------------------------------------------
+      else
+c
+         do iparmax=-1,+1,2
+         do in=1,2
+c        ---------------------------------------------------------------
+c        determin weights for the n-th finite derivative using p points 
+c        into each direction from the central point ((2*p+1)-formula).
+c        ---------------------------------------------------------------
+c 
+c           setup the linear equation system which defines the weights
+            do j=0,2*ipnt
+               do i=-ipnt,ipnt
+                  A(j,i+ipnt) = i**j
+               enddo
+               if (j.eq.in) then
+                  b(j)=1.0 
+               else 
+                  b(j)=0.0
+               endif
+            enddo
+c     
+c           forward gauss elimination
+            do i=0,2*ipnt
+               do j=i+1,2*ipnt
+                  buf = A(j,i) / A(i,i)
+                  do k=i+1,2*ipnt
+                     A(j,k) = A(j,k) - A(i,k) * buf
+                  enddo
+                  b(j) = b(j) - b(i) * buf
+               enddo
+            enddo
+c     
+c           backward substitution
+            do i=2*ipnt,0,-1
+               buf = 0.0
+               do j=i+1,2*ipnt
+                  buf = buf + A(i,j) * b(j)
+               enddo
+               b(i) = (b(i) - buf) / A(i,i)
+            enddo
+c     
+c           calculate faculty of order n
+            buf=1.0
+            do i=1,in 
+               buf = 1.0/dx * buf * i
+            enddo
+c
+c           compose the weights for the finite differences
+            do i=0,2*ipnt
+               b(i) = buf * b(i)
+            enddo
+c     
+c           setup 1st finite derivative matrix
+            if (in.eq.1) then 
+c
+               if (iparmax.eq.-1) then 
+                  k=1 
+               else
+                  k=2
+               endif
+c
+               do i=0,inx
+                  do j=0,inx
+                     der1(i,j,k)=0.0
+                  enddo
+               enddo
+c
+               if (isym.eq.0) then
+               do i=1,inx
+                  do j=-ipnt,ipnt
+                     ! straight forward mid region
+                     if (((i+j).gt.0).and.((i+j).le.inx)) then
+                        der1(i+j,i,k)   
+     &                   = der1(i+j,i,k)   +         b(j+ipnt)
+                     ! take respect of parity at lower boundary
+                     elseif ((i+j).lt.0) then
+                        der1(-(i+j),i,k) 
+     &                   = der1(-(i+j),i,k)+ iparmax*b(j+ipnt)
+                     ! take respect of parity at upper boundary
+                     elseif ((i+j).gt.inx) then
+                        der1(2*inx-(i+j),i,k) 
+     &                   = der1(2*inx-(i+j),i,k) + iparmax*b(j+ipnt)
+                     endif
+                  enddo
+               enddo
+               else
+               do i=0,inx
+                  do j=-ipnt,ipnt
+                     ! straight forward mid region
+                     if (((i+j).ge.0).and.((i+j).le.inx)) then
+                        der1(i+j,i,k)   
+     &                   = der1(i+j,i,k)   +         b(j+ipnt)
+                     ! take respect of parity at lower boundary
+                     elseif ((i+j).lt.0) then
+                        der1(-(i+j),i,k) 
+     &                   = der1(-(i+j),i,k)+ iparmax*b(j+ipnt)
+                     ! take respect of parity at upper boundary
+                     elseif ((i+j).gt.inx) then
+                        der1(2*inx-(i+j),i,k) 
+     &                   = der1(2*inx-(i+j),i,k) + iparmax*b(j+ipnt)
+                     endif
+                  enddo
+               enddo
+               endif
+c
+c           setup 2nd finite derivative matrix
+            else
+c
+               if (iparmax.eq.-1) then 
+                  k=1 
+               else 
+                  k=2
+               endif
+c     
+               do i=0,inx
+                  do j=0,inx
+                     der2(i,j,k)=0.0
+                  enddo
+               enddo
+c
+               if (isym.eq.0) then
+               do i=1,inx
+                  do j=-ipnt,ipnt
+                     ! straight forward mid region
+                     if (((i+j).gt.0).and.((i+j).le.inx)) then
+                        der2(i+j,i,k)   
+     &                   = der2(i+j,i,k)   +         b(j+ipnt)
+                     ! take respect of parity at lower boundary
+                     elseif ((i+j).lt.0) then
+                        der2(-(i+j),i,k) 
+     &                   = der2(-(i+j),i,k)+ iparmax*b(j+ipnt)
+                     ! take respect of parity at upper boundary
+                     elseif ((i+j).gt.inx) then
+                        der2(2*inx-(i+j),i,k) 
+     &                   = der2(2*inx-(i+j),i,k) + iparmax*b(j+ipnt)
+                     endif
+                  enddo
+               enddo
+               else
+               do i=0,inx
+                  do j=-ipnt,ipnt
+                     ! straight forward mid region
+                     if (((i+j).ge.0).and.((i+j).le.inx)) then
+                        der2(i+j,i,k)   
+     &                   = der2(i+j,i,k)   +         b(j+ipnt)
+                     ! take respect of parity at lower boundary
+                     elseif ((i+j).lt.0) then
+                        der2(-(i+j),i,k) 
+     &                   = der2(-(i+j),i,k)+ iparmax*b(j+ipnt)
+                     ! take respect of parity at upper boundary
+                     elseif ((i+j).gt.inx) then
+                        der2(2*inx-(i+j),i,k) 
+     &                   = der2(2*inx-(i+j),i,k) + iparmax*b(j+ipnt)
+                     endif
+                  enddo
+               enddo
+               endif
+c
+            endif
+c
+         enddo
+         enddo
+c     
+      endif  ! end of finite definition of derivatives
+c
+c     ===============================================================
+c     reduce to grid with/without symmetry at x=0
+c     ===============================================================
+      if (isym.ne.0) then
+         do i=inx/2,inx
+            do j=inx/2,inx
+               D1(i-inx/2,j-inx/2,1)=der1(i,j,1) + der1(inx-i,j,1)
+               D1(i-inx/2,j-inx/2,2)=der1(i,j,1) - der1(inx-i,j,1)
+               D1(i-inx/2,j-inx/2,3)=der1(i,j,2) + der1(inx-i,j,2)
+               D1(i-inx/2,j-inx/2,4)=der1(i,j,2) - der1(inx-i,j,2)
+               
+               D2(i-inx/2,j-inx/2,1)=der2(i,j,1) + der2(inx-i,j,1)
+               D2(i-inx/2,j-inx/2,2)=der2(i,j,1) - der2(inx-i,j,1)
+               D2(i-inx/2,j-inx/2,3)=der2(i,j,2) + der2(inx-i,j,2)
+               D2(i-inx/2,j-inx/2,4)=der2(i,j,2) - der2(inx-i,j,2)
+            enddo
+         enddo
+c     
+         do i=0,inx/2
+            D1(0,i,1)=0.5D0*D1(0,i,1)
+            D1(0,i,2)=0.5D0*D1(0,i,2)
+            D1(0,i,3)=0.5D0*D1(0,i,3)
+            D1(0,i,4)=0.5D0*D1(0,i,4)
+            D2(0,i,1)=0.5D0*D2(0,i,1)
+            D2(0,i,2)=0.5D0*D2(0,i,2)
+            D2(0,i,3)=0.5D0*D2(0,i,3)
+            D2(0,i,4)=0.5D0*D2(0,i,4)
+         enddo
+c     
+         do i=0,inx/2
+            D1(i,0,1)=0.0D0
+            D1(i,0,3)=0.0D0
+            D2(i,0,2)=0.0D0
+            D2(i,0,4)=0.0D0
+         enddo
+c     
+      else
+         do i=0,inx
+            do j=0,inx
+               D1(i,j,1)=der1(i,j,1)
+               D1(i,j,3)=der1(i,j,2)
+               
+               D2(i,j,1)=der2(i,j,1)
+               D2(i,j,3)=der2(i,j,2)
+            enddo
+         enddo
+      endif
+c
+c      do i=0,inx
+c         write(6,'(30(1pg12.2))') (der2(j,i,1),j=0,inx)
+c      enddo
+c      write(6,*) ''   
+c
+c      do k=1,4
+c      do i=0,inx/2
+c         write(6,'(30(1pg12.2))') (D2(j,i,k),j=0,inx/2)
+c      enddo
+c      write(6,*) ''  
+c      enddo
+c
+c
+c     ===============================================================
+c     initialize bessel operator
+c     ===============================================================
+      do im=0,kmpsi
+c
+         do i=0,inx/2
+            if(i.ne.0) then
+               kval(i)=1.0D0/(i*dx)
+            else
+               kval(i)=0.D0
+            endif
+            do j=0,inx/2
+               Db(j,i,im,1) = 0.0D0
+               Db(j,i,im,2) = 0.0D0
+            enddo
+         enddo
+c
+c         kval(0)    =0.0D0
+c         kval(inx/2)=0.0D0
+ 
+         if (mod(im,2).eq.0) then
+c
+            do i=0,inx/2
+               do j=0,inx/2
+                  Db(j,i,im,1) = Db(j,i,im,1) +
+     &                   kval(i)*D1(j,i,1)    +
+     &                           D2(j,i,1)   
+                  Db(j,i,im,2) = Db(j,i,im,2) +
+     &                   kval(i)*D1(j,i,3)    +
+     &                           D2(j,i,3)   
+               enddo
+            enddo
+c
+            if (im.eq.0) then
+               do j=0,inx/2
+                  Db(j,0,im,1) = 2.0D0*D2(j,0,1)
+                  Db(j,0,im,2) = 2.0D0*D2(j,0,3)
+               enddo
+            else
+               do j=0,inx/2
+                  Db(j,0,im,1) = 0.0D0
+                  Db(j,0,im,2) = 0.0D0
+               enddo
+c
+               do j=0,inx/2
+                  Db(j,j,im,1) = Db(j,j,im,1) - im*im*kval(j)*kval(j)
+                  Db(j,j,im,2) = Db(j,j,im,2) - im*im*kval(j)*kval(j)
+               enddo
+            endif
+c     
+         else
+c
+            do i=0,inx/2
+               do j=0,inx/2
+                  Db(j,i,im,1) = Db(j,i,im,1) +
+     &                   kval(i)*D1(j,i,2)    +
+     &                           D2(j,i,2)   
+                  Db(j,i,im,2) = Db(j,i,im,2) +
+     &                   kval(i)*D1(j,i,4)    +
+     &                           D2(j,i,4)   
+               enddo
+            enddo
+c
+            do j=0,inx/2
+               Db(j,0,im,1) = 0.0D0
+               Db(j,0,im,2) = 0.0D0
+            enddo 
+c
+            do j=0,inx/2
+               Db(j,j,im,1) = Db(j,j,im,1) - im*im*kval(j)*kval(j)
+               Db(j,j,im,2) = Db(j,j,im,2) - im*im*kval(j)*kval(j)
+            enddo
+c
+         endif
+c     
+      enddo
+c
+c      do k=1,2
+c      do i=0,inx/2
+c         write(6,'(30(1pg12.2))') (Db(j,i,0,k),j=0,inx/2)
+c      enddo
+c      write(6,*) ''  
+c      enddo
+c
+c     ---------------------------------------------------------------
+c     return derivative matrix
+c     ---------------------------------------------------------------
+      if (isym.eq.0) then
+         nx = inx/2
+      else
+         nx = inx
+      endif
+      
+      if (itype.eq.1) then
+c
+         do jx=0,ngrid
+            do ix=0,ngrid
+               D(ix,jx,1)=D1(jx,ix,1)
+               D(ix,jx,2)=D1(jx,ix,2)
+               D(ix,jx,3)=D1(jx,ix,3)
+               D(ix,jx,4)=D1(jx,ix,4)
+            enddo
+         enddo
+c
+      elseif (itype.eq.2) then
+         do jx=0,ngrid
+            do ix=0,ngrid
+               D(ix,jx,1)=D2(jx,ix,1)
+               D(ix,jx,2)=D2(jx,ix,2)
+               D(ix,jx,3)=D2(jx,ix,3)
+               D(ix,jx,4)=D2(jx,ix,4)
+            enddo
+         enddo
+c
+      elseif (itype.eq.0) then
+         do im=0,kmpsi
+            ibuf = im+1
+            do jx=0,ngrid 
+               do ix=0,ngrid
+                  D(ix,jx,ibuf        )=Db(jx,ix,im,1)
+                  D(ix,jx,ibuf+kmpsi+1)=Db(jx,ix,im,2)
+               enddo
+            enddo
+         enddo
+c
+      endif
+c
+c      do ix=0,ngrid
+c         write(6,'(30g12.4)') (D(ix,iy,1),iy=0,ngrid)
+c      enddo
+c      write(6,*)
+c
+      return
+      end
+
+
+      subroutine tst_grid_oper
+
+      include 'paramr.inc'
+      include 'dynpar.inc'
+
+      real*8  f(0:nzd,0:nrd),g(0:nzd,0:nrd)
+      real*8  Ar(0:nzd,0:nrd),Ap(0:nzd,0:nrd),Az(0:nzd,0:nrd)
+      real*8  Br(0:nzd,0:nrd),Bp(0:nzd,0:nrd),Bz(0:nzd,0:nrd)
+      real*8  alpha,r,z,rsq
+      integer ir,iz,im
+
+      alpha= 0.1D0
+      im   = 0
+
+      do ir=0,nr
+         r=(ir+sr)*dr
+         do iz=0,nz
+            z   = (iz+sz-icm)*dz
+            rsq = r*r + z*z
+            f(iz,ir) = r**(im) *  exp(-alpha*rsq)*(1-rsq)
+            g(iz,ir) = r**(im) * (exp(-alpha*rsq)*(1-rsq)**2 + 
+     &                            1.0D0/alpha)
+         enddo
+      enddo
+
+      call nablar_scalar(f(0,0),Ar(0,0),im   ,1,1.0D0)
+      call nablap_scalar(f(0,0),Ap(0,0),im,+1,1,1.0D0)
+      call nablaz_scalar(f(0,0),Az(0,0), 1   ,1,1.0D0)
+      call nablar_scalar(g,Br,im,   2,1.0D0)
+      call nablap_scalar(g,Bp,im,+1,2,1.0D0)
+      call nablaz_scalar(g,Bz, 1,   2,1.0D0)
+
+
+      write(6,*) '' 
+      write(6,*) '' 
+
+      do ir=0,nr
+         r=(ir+sr)*dr
+         do iz=0,nz
+            z=(iz+sz-icm)*dz
+            write(6,'(10(f8.4))') r,z,f(iz,ir),g(iz,ir),
+     &                           Ar(iz,ir),Ap(iz,ir),Az(iz,ir),
+     &                           Br(iz,ir),Bp(iz,ir),Bz(iz,ir)
+         enddo
+         write(6,*) ''  
+      enddo
+      
+      stop '# tst_grid_oper'
+      
+
+      return
+      end
+
+
+
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+c
+c      all subroutines below this line should be removed or revised
+c      for the new version of skyax. They are recently not used in
+c      any part of the code but appear in some commented lines.
+c
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+
+c=======================================================================
+c
+c     pronuc(psiin,psiout,ist)
+c
+c     projection of high fourier components on the wavefunctions
+c     ?? note: ---> presently not well working !
+c
+c=======================================================================
+      subroutine pronuc(psiin,psiout,ist)
+*
+*     projection of high fourier components on the wavefunctions
+*     ?? note: ---> presently not well working !
+*
+      include 'paramr.inc'
+      include 'derivs.inc'
+      include 'levels.inc'
+      include 'dynpar.inc'
+*
+      dimension psiin(0:nzd,0:nrd,nsd),psiout(0:nzd,0:nrd,nsd)
+*
+c
+      write(6,'(a)') 
+     &   ' warning: the routine PRONUC may be dangerous'
+      write(7,'(a)') 
+     &   ' warning: the routine PRONUC may be dangerous'
+c
+       do 20 is=1,2
+       mm     = mpsi(ist)+is-1
+       nparr  = 1-2*mod(mm,2)
+       if (is.le.2) then
+        iang      = mpsi(ist)+is-1
+       else
+        iang      = mpsi(ist)+is-3
+       endif
+      if (nparz(is,ist).eq.1.and.nparr.eq.1) then
+       call mulr(rpro,psiin(0,0,is),
+     &            psiout(0,0,is),one,0)
+
+       do ir=0,nr
+       do iz=0,nz
+          psiin(iz,ir,is) = psiout(iz,ir,is)
+       enddo
+       enddo
+
+       call mulz(zpro,psiin(0,0,is),
+     &            psiout(0,0,is),one,0)
+      else if (nparz(is,ist).eq.1) then
+       call mulz(zpro,psiin(0,0,is),
+     &            psiout(0,0,is),one,0)
+      else if (nparr.eq.1) then
+       call mulr(rpro,psiin(0,0,is),
+     &            psiout(0,0,is),one,0)
+      endif
+c
+      if (nparz(is,ist).eq.2) then
+        do ir=0,nr
+          psiout(0,ir,is)  =  zero
+        enddo
+      endif
+      if (iang.gt.0) then
+        do iz=0,nz
+          psiout(iz,0,is)  =  zero
+        enddo
+      endif
+c
+         if (ist.eq.2899) then
+          write(7,'(/20x,a/)') ' in der projektion: psi'
+          write(7,'(/3(a,i2))') ' comp: ',is,
+     &                          ' ist=',ist,' m=',mpsi(ist)
+          call testpr(psiout(0,0,is),0,nzo,0,nro,' psiout')
+c
+         endif
+  20  continue
+c
+      return
+      end

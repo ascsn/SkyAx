@@ -1,0 +1,9 @@
+#t 158Yb                                                                      
+# Plot potential energy surface for:
+ #test 158Yb                                                            
+# Nmass=  158, Ncharge=   70
+#  dz,dr:  0.700 0.700 nz,nr:  25  25
+# addrho,addpot,addocc:  0.150 1.000 0.200  c0,qeps: 0.800******
+# x0inv(fm),e0inv(mev):    0.30 100.00
+# bet2   bet2p  bet2n  bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn 
+  0.190  0.195  0.185  0.066  0.062  0.069 -1266.11768405635  -14.2   -2.3  -2.49  -9.10   -1.543   -0.675 20001  5.15119  5.0981  5.0961  5.0996  69.501252  87.964629   6.261992

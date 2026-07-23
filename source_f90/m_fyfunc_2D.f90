@@ -71,6 +71,13 @@ ELSE IF(isovectormodel==2) THEN
   fxin=fxi-delfxi
   h1xin=h1xi
   hgradxin=hgradxi
+ELSE IF(isovectormodel==3) THEN
+  fxip=fxi+delfxi
+  h1xip=h1xi+delh1xi
+  hgradxip=hgradxi+delhgradxi
+  fxin=fxi-delfxi
+  h1xin=h1xi-delh1xi
+  hgradxin=hgradxi-delhgradxi
 ELSE IF(isovectormodel==1) THEN
   xipfac=(fxi+delfxi)/fxi
   fxip=fxi*xipfac
@@ -231,7 +238,7 @@ IF(chgx /= 0D0) THEN
   xplus=MAX(xplus,1D-90)
   excfac = 1.4179979
   hxpsigmac = hcoul*xplus**sigmacoul
-  add0 = -excfac*rc**0.333333333333D0
+  add0 = -excfac*MAX(rc,1D-99)**0.333333333333D0
   add = add0*(1D0-hxpsigmac)
   energd = 0.75D0*add*rc + energd
   potp = add - 0.75D0*sigmacoul*add0*hxpsigmac*rc*rho0inv/xplus + potp
@@ -413,7 +420,7 @@ IF(ttest) THEN
   paircr(:,:,1)  = rho(:,:,1)
   paircr(:,:,2)  = rho(:,:,1)
   pairpt = 0D0
-  WRITE(6,*) 'FY_HFBPOT'
+!  WRITE(6,*) 'FY_HFBPOT'
 END IF
 !        r0fy = (0.375D0/(pi*rho0fy))**(1D0/3D0)
 !        r0fy2 = r0fy*r0fy

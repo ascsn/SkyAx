@@ -1,0 +1,3 @@
+deocc(1,2)= 12.D0
+cutoff=-40,hfbwidth=1.0d0,pair.strength=160
+Nmass: 120, Ncharge: 50 energy: -1015.53416614990 epairp: -0.0 epairn: -0.0 rmsc: 4.6515 proton gap: -9.6611E-05 neutron gap: -1.9747E-03

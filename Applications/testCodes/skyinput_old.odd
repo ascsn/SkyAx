@@ -1,0 +1,38 @@
+ 100000          ITMXT   max. total iterations
+'odd: odd code '
+  20  20  nprot,nneut
+   0.00000000000       0.00000000000       0.00000000000       0.00000000000     t0,t1,t2,t3
+   0.00000000000       0.00000000000       0.00000000000       0.00000000000      x0,x1,x2,x3
+   0.00000000000       0.00000000000      1.797693134862+308   20.7498110000       20.7212490000    ,,, b4,b4p,alpha,amfc,dglan
+  1 0.0000000  1  1.0  0.0 13  1 -1 if:ex,ls,cm,CHG,optsk,fold
+  -9.80951986600      0.617452751900      0.214273668500     avp,h1vp,h2vp
+   23.4188632200     -0.286124525300       22.8090940000     avm,h1vm,h2vm
+  0.333333333333      8.000000000000E-02 sigmavol,rho0fy
+  0.565484130000       0.00000000000      0.457958720000     asp,hsp,hgradp 
+   0.00000000000       22.8090940000       0.00000000000     asm,hsm,hgradm 
+   0.00000000000      0.333333333333     hcoul,sigmacoul
+  -4.45564450000       4.24398280000       3.11263390000      0.666666686535      0.160000000000     fxi,h1xi,hgradxi,gammaxi,rho0xi
+   0.00000000000      0.300000000000      -15.0000000000     delfxi,ecstab,cutfac
+   0.00000000000       0.00000000000     c0tau,c1tau 
+  0.198333850000      4.400834700000E-02   0.00000000000       0.00000000000     c0nabj,c1nabj,c0tens,c1tens
+   8   0.00000000       0.00000000      0.300000000      0.159999996      -15.0000000      ipair,pairfp,pairfn
+ 1.0  25  25  0.70  0.70  0    0  0 0 0 0  
+  0.000  0.000  3.200  3.200  19  19   0,,, init: BETAIN, OCTINI,  DEOCC(2),MMAX(2),ispins
+  0.0 0.0 0.0  0.025   2  0 0,,, CHF: swicon,betmin,betmax,betaw,lqcon,ifresh
+  0.0  0.0  1.0,,,,,   thermal: tempmn,tempmx,tempw
+  1000 99999  8000     0,,  print opt.: IPRINT,IPLOT,ITMAX,ITEST
+ 110.000   0.300   0.150   1.000   0.150  step iter:E0INV,X0INV,ADDrho,adpot,ADDOCC 
+  1.00000E-12  1.00000E-02 limit iter:ERRENR,ERRVAR,
+ 9999, 1,1.5,  extra step: IVS,ITSUB,X0FAC 
+1D-9,1D-9,3D3,3D3,  100    0, pair iter:ERRF,ERRA,FERMIP,FERMIN,NPITER,ITPINI
+0.5,1.0, -2.1,      pair iter:ADDPAR,EPSPAR,WFAC
+1,1,1,1,   Coul.BC:  ndrun,NQRUN,norun,NHRUN
+1D-9,100,6D-1,   Coul.Iter:COLERR,IREPC,CMSsQR
+1D-7 ,-50.0,  20,  1.0, Yukawa Iter:YUKERR,SNL,IREPM,DMSFAC
+ 0.1E-3, 0.8, 0.0,  0.3,  999, 1,  CHF iter:QERR,C0,D0,QEPS,ITCONS(999),idampc
+ 0,  10.0,  15.0,  0.03,   stab.CHF:ifstab,stwid,stslop,rhocut
+ 3.5,0.30,    0,   0.05,   damp.CHF:DALP,DGAM,IFLIN,SWIFAC,
+ 0,  IPARAM = switch type force  
+ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ireg(2),kblock(2),mblock(2),isoblo,istblo(2)
+ -1,,,,,,,,,,,,,,, occup.selection:  LOCC(15)  (inactive)  
+-1, to terminate

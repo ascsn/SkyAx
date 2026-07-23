@@ -15,17 +15,25 @@ USE paramr, ONLY : xxxl,ixxxl,oh,one
 IMPLICIT NONE
 
 ! numerical parameters for iteration etc
-REAL(8) :: x0inv=0.3D0   !<Overall factor in front of the damping operator.
-REAL(8) :: e0inv=120D0   !<Witdh of the damping operator.
-REAL(8) :: addrho=0.2D0  !<Fraction of new density to be added to the old, used to compute 'adyrho'.
-REAL(8) :: addpot=1D0    !<Fraction of new potential to be added to the old.
-REAL(8) :: addocc=0.3D0  !<Fraction of new occupation numbers 'VSQF' to be added to the old.
-REAL(8) :: errenr=1D-9   !<Termination criterion for energy change.
-REAL(8) :: errvar=1D-1   !<Termination criterion for energy variance.
-REAL(8) :: adyrho        !<Dynamical fraction of new density.
-REAL(8) :: adypot        !<Dynamical  fraction of new potential.
-INTEGER :: mpmax         !<Max no. of z component of angular momentum.
-INTEGER :: itert         !<Overall total number of iterations.
+REAL(8) :: x0inv=0.3D0     !<Overall factor in front of the damping operator.
+REAL(8) :: e0inv=120D0     !<Witdh of the damping operator.
+REAL(8) :: addrho=0.2D0    !<Fraction of new density to be added to the old, used to compute 'adyrho'.
+REAL(8) :: addpot=1D0      !<Fraction of new potential to be added to the old.
+REAL(8) :: addocc=0.3D0    !<Fraction of new occupation numbers 'VSQF' to be added to the old.
+REAL(8) :: errenr=1D-9     !<Termination criterion for energy change.
+REAL(8) :: errvar=1D-1     !<Termination criterion for energy variance.
+REAL(8) :: adyrho          !<Dynamical fraction of new density.
+REAL(8) :: adypot          !<Dynamical  fraction of new potential.
+INTEGER :: mpmax           !<Max no. of z component of angular momentum.
+INTEGER :: itert           !<Overall total number of iterations.
+INTEGER :: iterbcs=300     !<iteration nr. from which on HFB is active
+INTEGER :: iterhfb=600     !<nr. of iterations with enhanced pairing
+INTEGER :: iternat=0       !<nr. of iterations in configuration space (not yet installed)
+INTEGER :: modnat=9999999  !<modulus of switching to iterations in configuration space
+REAL(8) :: pairenhance=2D0 !<initial enhancement of pairing strength
+REAL(8) :: v2limh=1D-6,delmix=0.8D0  !< damping switches for HFB step
+!REAL(8) :: v2limh=1D0,delmix=0D0   !< damping switches for HFB step
+LOGICAL :: tnobcs=.TRUE.   !<suppresses initial BCS phase after first run along a deformation path
 CHARACTER (LEN=3) :: outnam = "tst"  !< 3-digit qualifier for output files
 CHARACTER (LEN=80) :: title=" "  !< Title for the actual run, printed in the header of output files.
 
@@ -37,7 +45,7 @@ LOGICAL :: tpri_conver=.FALSE.  !< switches printing of convergence protocol on 
 LOGICAL :: tpri_bubble=.FALSE.  !< switches printing of central depresion on 'bubble.*'
 LOGICAL :: tpri_2d=.FALSE.      !< switches printing of 2D plots in 'plot\_2D.***' for converged calculations.
 LOGICAL :: tpri_radii=.TRUE.      !< switches printing of charge radii and surface thickness
-LOGICAL :: tpri_formf=.FALSE.      !< switches printing of formfactors and charge distribution
+LOGICAL :: tpri_formf=.TRUE.      !< switches printing of formfactors and charge distribution
 
 
 
@@ -78,6 +86,8 @@ REAL(8) :: fxi=xxxl   !< Fayans parameter
 REAL(8) :: h1xi=xxxl   !< Fayans parameter
 REAL(8) :: hgradxi=xxxl   !< Fayans parameter
 REAL(8) :: delfxi=xxxl    !< Fayans parameter
+REAL(8) :: delh1xi=xxxl    !< Fayans parameter
+REAL(8) :: delhgradxi=xxxl    !< Fayans parameter
 REAL(8) :: c0tau=0D0   !< Fayans parameter
 REAL(8) :: c1tau=0D0   !< Fayans parameter
 REAL(8) :: c0nabj=xxxl   !< Fayans parameter
@@ -113,9 +123,10 @@ INTEGER,PRIVATE:: zpe=ixxxl                 !<If 0, m-m/A recipe for c.m. correc
 REAL(8) :: h2mav                            !<Average mass paramter
 REAL(8) :: riftm1                           !<Parameter for contribution of t1 and t2 term for spin-orbit.
 INTEGER :: ifls                             !<Switch for contribution from t1,t2 to spin-orbit force.
-INTEGER :: ifzpe                            !<If 0, m-m/A recipe for c.m. correction, if 1 no c.m. correction.
+INTEGER :: ifzpe                            !<If 0, m-m/A recipe for c.m. correction, if -1 no c.m. correction.
 INTEGER :: ifex                             !<Some forces are fitted excluding the Coulombexchange term. 
 !!For <tt> ex=1 </tt> it is included (this is the normal case), for <tt> ex=0 </tt> not.
+LOGICAL :: tcoulfold=.FALSE.                !< switch to proton folding in Coulomb
 
 
 LOGICAL :: tpair                            !<Switch for density-dependent pairing.
@@ -124,9 +135,12 @@ REAL(8) :: pairfc(2)=(/xxxl,xxxl/)          !<The strength of pairing for proton
 REAL(8) :: rho0pr=xxxl                      !<Density parameter for the density-dependent delta pairing.
 REAL(8) :: pairstab=0D0                     !<Parameter for pairing stabilization
 REAL(8) :: pair_cutoff=1.65D0               !<Parameter for soft cutoff of pairing space (<0 = WS profile, >0 = nr. of states)
+REAL(8) :: hfbwidth=0D0                     !<Parameter for Gaussian width in finite-range pairing
 REAL(8) :: erra=1D-9                        !<Termination criterion for error in particle number.
 LOGICAL :: tcutoff_uvspace=.TRUE.           !<Switch to pairing cutoff in u*v weight, else in v*v weight.
 LOGICAL :: tcutoff_WS                       !<Switch to pairing cutoff by Woods-Saxon profile
+LOGICAL :: thfbfold=.FALSE.                 !<Switch to finite-range pairing if 'foldwid>0D0'
+LOGICAL, PARAMETER :: thfbvariat=.FALSE.    !<Switch to variational cutoff -- placeholder, not yet fully coded
 
 INTEGER :: ipair=ixxxl                      !<Defines the pairing model.
 INTEGER :: npiter=100                       !<Maximum number of iterations for the solution of the gap equation.
@@ -144,6 +158,8 @@ REAL(8) :: stwid=10D0                       !<Width for stabilized boundary cond
 REAL(8) :: stslop=15D0                      !<Slope for stabilized boundary conditions for constraint calculations.
 REAL(8) :: rhocut=0.03D0                    !<Density from which stabilizing potential is added.
 LOGICAL :: tstab=.FALSE.                    !<Switch for stabilizing boundaries.
+LOGICAL :: thfb=.FALSE.                     !<Indicates thet HFB is active
+LOGICAL :: tregpair=.FALSE.                 !<Switches regularized pairing
 
   !> This contains the parameters for pairing:
   TYPE Pairing
@@ -182,7 +198,7 @@ LOGICAL :: tstab=.FALSE.                    !<Switch for stabilizing boundaries.
      REAL(8) :: h2m(2)            !<Value of \f$ \frac{\hbar^2}{2m} \f$, separately for neutrons and protons.
      !>@name frequently used Fayans parameters 
      !>@{
-     REAL(8) :: avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hgradp,c0nabj,c1nabj,fxi,h1xi,hgradxi,delfxi,pair_cutoff,pairstab
+     REAL(8) :: avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hgradp,c0nabj,c1nabj,fxi,h1xi,hgradxi,delfxi,delh1xi,delhgradxi,pair_cutoff,pairstab
      !>@}
      !>@name rarely used Fayans parameters 
      !>@{
@@ -254,11 +270,13 @@ CONTAINS
 
     NAMELIST /force/ name, &
          chg,ex,zpe,h2m,t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power, &
-         ipair,v0prot,v0neut,rho0pr,pairstab,pair_cutoff,riftm, &
-         tFayans, &
+         ipair,v0prot,v0neut,rho0pr,pairstab,pair_cutoff,riftm,hfbwidth, &
+         tFayans,tcoulfold, &
          avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
-         fxi,h1xi,hgradxi,delfxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
-         isovectormodel,tcutoff_uvspace
+         fxi,h1xi,hgradxi,delfxi,delh1xi,delhgradxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
+         isovectormodel,tcutoff_uvspace,tregpair
+
+WRITE(6,*) ' before reading force'
 
     READ(5,force)
     predefined=.FALSE.
@@ -289,6 +307,8 @@ CONTAINS
     ELSE
       tcutoff_WS = .FALSE.
     END IF
+
+    IF(hfbwidth>0D0) thfbfold=.TRUE.
 
 CONTAINS
 
@@ -332,7 +352,7 @@ CONTAINS
        IF(ipair==5 .OR. ipair==9) THEN 
          pairact=forcact%vdi
          v0prot=pairact%v0prot; v0neut=pairact%v0neut
-       ELSE IF(ipair==7 .OR. ipair==11) THEN
+       ELSE IF(ipair==7 .OR. ipair==8 .OR. ipair==11) THEN
          pairact=forcact%dddi
          v0prot=pairact%v0prot; v0neut=pairact%v0neut; rho0pr=pairact%rho0pr
        END IF

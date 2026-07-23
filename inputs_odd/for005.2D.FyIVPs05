@@ -1,0 +1,27 @@
+&main outnam='fiv',title='Fy(IVP,s05)',iprint=1000,itmax=6000,iterbcs=1000,iterhfb=2000,
+      pairenhance=2D0,iternat=10,modnat=1,itest=0,
+/
+&force
+ tFayans=.TRUE.,
+ name='none',pairstab=-0D0,HFBwidth=0.0d0,
+  avp=-9.744306796,h1vp=0.6164610864,h2vp=0.2103424521,
+  avm=40.51973521,h1vm=-0.5882145708,h2vm=51.73369965,
+  asp=0.5333352800,hsp=0.0,hgradp=0.3458154900,
+  asm=0.0,hsm=51.73369965,hgradm=0.0,
+  fxi=-4.599406100,h1xi=4.605883700,hgradxi=2.329780300,delfxi=-0.1685570700,
+  pairstab=-0.05,
+  c0nabj=0.1828568700,c1nabj=6.6576914000E-02,c0tau=0.0,c1tau=0.0,
+ h2m=20.749811,20.721249,
+  tcutoff_uvspace=.TRUE.,isovectormodel=2,
+ chg=1D0,ex=1,zpe=1,tcoulfold=.TRUE.,
+ ipair=8,pair_cutoff=-15D0,tregpair=F
+/
+&grids tsym=T,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+/
+&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.1D0,addrho=0.15D0,addocc=0.15D0,
+deocc(1)=3,deocc(2)=3,errenr=1D-10,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999/
+&constraint
+/
+&thermal /
+

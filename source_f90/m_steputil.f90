@@ -187,7 +187,8 @@ REAL(8) :: accn,accp,addpt,adparp,alpeff,d1pr,&
            d1pz,d1sr,d1sz,d2p,d2s,facne,facpr,parfac,potn,potold,&
            potp,r,r2,redpot,rlsrp,rlszp,rm,rnr,rp,rpr,rs,rsfac,rsfac2,&
            rsinv,rspow,rspow7,ssp,sss,tp,ts,z
-INTEGER :: ic,iq,ir,iterold,iz
+INTEGER :: ic,iq,ir,iz
+INTEGER, SAVE :: iterold
 
 REAL(8),ALLOCATABLE :: wrk1(:,:),wrk2(:,:)
 
@@ -238,6 +239,7 @@ END IF
   ELSE
     CALL Skyrme_potentials()  
   END IF
+!  WRITE(6,*) 'after Fayans:',SUM(pot(0:nz,0:nr,1))
 
 !***************************************************************   
 !     add Coulomb potential
@@ -253,6 +255,7 @@ END IF
     END DO
     ecoul  = f1int(wrk1(0:nz,0:nr))
     ecolex = f1int(wrk2(0:nz,0:nr))*excfac*0.75D0
+!    WRITE(6,*) 'ECOUL,ECOLEX=',ecoul,ecolex,SUM(pot(0:nz,0:nr,1))
     IF(MOD(iter,iprint) == 0 .AND. itest >= 1) THEN
       CALL test_print(coulpt(0,0),0,nz_testp,0,nr_testp,'coulpt')
     END IF
@@ -325,7 +328,8 @@ END IF
 !***************************************************************    
 !     prints and plots
 !***************************************************************  
-  IF (ipri_fields>0 .AND. MOD(iter,ipri_fields) == 0.AND.iter > 0) THEN
+  IF (ipri_fields>0) THEN
+  IF (MOD(iter,ipri_fields) == 0.AND.iter > 0) THEN
     WRITE(18,'(3(a,i3),a,f10.5,4(/a),a)')  &
         ' Z=',npart(1),' N=',npart(2),' ITER=',iter,' BETA2=',beta2,  &
         'X:z [fm]', 'Y:fields',  &
@@ -366,6 +370,7 @@ END IF
           potadd(iz,0,1),potadd(iz,0,2), iz=0,nz)
     END IF
   END IF
+  END IF
   
 !***************************************************************   
 !     prints at test level
@@ -384,6 +389,7 @@ END IF
     END IF
   END IF  
 
+!WRITE(6,*) 'POT:',SUM(pot(0:nz,0:nr,1)),SUM(pot(0:nz,0:nr,2))
 IF(MOD(iter,iprint) == 10000) THEN
   CALL test_print(pot(0:nz,0:nr,1),0,nz,0,nr,'potp')
   CALL test_print(bmass(0:nz,0:nr,1),0,nz,0,nr,'bmassp')
@@ -482,8 +488,13 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
         IF(tpair .AND. iq == 2) THEN
           adparp = redpot*(pairfc(1)*(paircr(iz,ir,1)*paircr(iz,ir,1))  &
               +pairfc(2)*(paircr(iz,ir,2)*paircr(iz,ir,2)))*parfac
-          pot(iz,ir,1) = adparp + pot(iz,ir,1)
-          pot(iz,ir,2) = adparp + pot(iz,ir,2)
+          IF(tregpair) THEN
+            pot(iz,ir,1) = adparp*regpairadd(iz,ir,1) + pot(iz,ir,1)
+            pot(iz,ir,2) = adparp*regpairadd(iz,ir,2) + pot(iz,ir,2)
+          ELSE
+            pot(iz,ir,1) = adparp + pot(iz,ir,1)
+            pot(iz,ir,2) = adparp + pot(iz,ir,2)
+          END IF
         END IF
         
 !***************************************************************   
@@ -539,9 +550,10 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
   CALL nablar_scalar(rho(0:nz,0:nr,2),psip(0:nz,0:nr,2), 0,1,one)
   
   IF(tpair) parfac = 1D0/rho0pr         ! factor on pairing potential
-  
+
+!  WRITE(6,*) 'before composing potentials:',SUM(d2rho(0:nz,0:nr,1)),SUM(d2rho(0:nz,0:nr,2))
 !***************************************************************   
-!     compose mean-field potentials
+  !     compose mean-field potentials
 !***************************************************************   
 !  pot(0,0,:) =0D0
   iq=1
@@ -559,6 +571,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
       ssp     = drhols(iz,ir,iq)
       sss     = drhols(iz,ir,ic)+ssp
       
+!WRITE(6,*) 'Fy-loop_',iz,ir,crho(iz,ir)
       CALL fyfunc_local(rho(iz,ir,1),rho(iz,ir,2),crho(iz,ir),  &
                 psip(iz,ir,1),psin(iz,ir,1),psip(iz,ir,2),psin(iz,ir,2),  &
                 d2rho(iz,ir,1),d2rho(iz,ir,2),  &
@@ -578,6 +591,7 @@ ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd),workenerg(0:nz,0:nr))
 
   DEALLOCATE(psip,psin,workenerg)
 
+!  WRITE(6,*) 'end of FAYANS:',SUM(pot(:,:,1)),SUM(pot(:,:,2))
 END SUBROUTINE Fayans_potentials
 
 END SUBROUTINE mfhmlt
@@ -772,6 +786,8 @@ USE dynpar
 USE levels
 USE grid
 USE wavefr, ONLY: wfovlp,wfproj,wfovpc
+!$ use omp_lib
+
 IMPLICIT NONE
 
 REAL(8), INTENT(IN OUT)     :: psiw(0:nz,0:nr,nsd,nhi)
@@ -784,7 +800,7 @@ REAL(8) :: eord(nhwd)
 INTEGER :: isort(nhwd)
 
 REAL(8) :: emin,ovlp,sum2,wnor
-INTEGER :: i,imin,in,in1,inw,is,isav,ist,jn,jnw,jst,n,npari,nparj
+INTEGER :: i,imin,in,in1,inw,is,isav,ist,jn,jnw,jst,n,npari,nparj,mythread
 
 IF(tstab .AND. iford /= 1)  &
     STOP ' TSTAB=.TRUE. needs energy ordering in SCHMIT. set IFORD=1'
@@ -794,6 +810,7 @@ IF(tstab .AND. iford /= 1)  &
 !     energy ordering on workspace 'eord' to pointer 'isort'          *
 !                                                                     *
 !**********************************************************************
+!  mythread=OMP_GET_THREAD_NUM()
 IF(nhi > nhwd) STOP ' in SCHMIT: #states "nhi" > supply "nhwd" '
 DO in=1,nhi
   eord(in)  = spenrg(in+istadd)
@@ -816,7 +833,7 @@ IF(iford == 1) THEN
     isort(n)     = isav
   END DO
 END IF
-
+!IF(thfb) WRITE(6,*) 'SCHMIT 1: mythread=',mythread
 !**********************************************************************
 !                                                                     *
 !     Perform Gram-Schmidt orthonormalization of ordered w.f.         *
@@ -827,6 +844,7 @@ DO  in=1,nhi
   inw = ist-istadd
   npari   = npar(ist)
   in1    = in-1
+!IF(thfb) WRITE(6,*) 'SCHMIT 2: mythread,ist=',mythread,ist,SUM(psiw(0:nz,0:nr,1:2,inw)**2)
   
   DO  jn=1,in1
     jst = isort(jn)
@@ -838,6 +856,7 @@ DO  in=1,nhi
     
 !     compute overlap
     ovlp   = wfovlp(psiw(0:nz,0:nr,1:2,inw),psiw(0:nz,0:nr,1:2,jnw))
+!IF(thfb) WRITE(6,*) 'SCHMIT 2: mythread,ist,jst=',mythread,ist,jst,ovlp
     
 !     extract psi(jn)-component in psi(in)
     psiw(0:nz,0:nr,1:2,inw)=psiw(0:nz,0:nr,1:2,inw) -ovlp*psiw(0:nz,0:nr,1:2,jnw)
@@ -846,6 +865,7 @@ DO  in=1,nhi
   
 !     normalise state psi(in), and add up partial norm.
   wnor   = wfovlp(psiw(0:nz,0:nr,1:2,inw),psiw(0:nz,0:nr,1:2,inw))
+!IF(thfb) WRITE(6,*) 'SCHMIT 2: mythread,wnor=',mythread,wnor
   IF(wnor < smal) THEN
     WRITE(7,'(a,4i5,g12.4)')  &
         ' SCHMIT: ist,inw,istadd,nhi,wnor=',ist,inw,istadd,nhi,wnor
@@ -1063,7 +1083,7 @@ REAL(8),ALLOCATABLE,SAVE  :: expmat(:,:),forward(:,:)
 INTEGER :: i1,i2,iz
 REAL(8) :: workz(0:nz),sh2
 REAL(8),SAVE :: shiftold=1D99
-LOGICAL,PARAMETER :: tunitary=.TRUE. ! switch between 1. order and 4. order unitary cm shift
+LOGICAL,PARAMETER :: tunitary=.FALSE. ! switch between 1. order and 4. order unitary cm shift
 ! External procedures defined in LAPACK
 EXTERNAL DGETRF
 EXTERNAL DGETRI

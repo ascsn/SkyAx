@@ -1,0 +1,31 @@
+&main outnam='wd0',title='test 120Sn',iprint=1000,itmax=6000,iterbcs=1000,iterhfb=2000,
+      pairenhance=4D0,iternat=10,modnat=1,itest=0,
+/
+&force
+ tFayans=.TRUE.,
+ name='none',pairstab=-0.3D0,HFBwidth=0.0d0,
+  avp=-9.83607919134,h1vp=0.616867867133,h2vp=0.219426189580,
+  avm=23.7133523672,h1vm=-0.294456682777,h2vm=23.2671270000,
+  asp=0.564427600000,hsp=0.0,hgradp=0.448923060000,
+  asm=0.0,hsm=23.2671270000,hgradm=0.0,hcoul=0.0,
+  fxi=-4.45430330000,h1xi=4.24374220000,hgradxi=3.07895230000,delfxi=0.0,
+  c0nabj=0.197210090000,c1nabj=5.319830200000E-02,c0tau=0.0,c1tau=0.0,
+ h2m=20.749811,20.721249,
+  tcutoff_uvspace=.TRUE.,isovectormodel=2,
+ chg=1D0,ex=1,zpe=1,tcoulfold=.TRUE.,
+ ipair=8,pair_cutoff=-15D0,tregpair=F
+/
+&grids tsym=T,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+/
+&static nprot=50,nneut=82,e0inv=110D0,x0inv=0.05D0,addrho=0.15D0,addocc=0.15D0,
+deocc(1)=4,deocc(2)=4,errenr=1D-10,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999/
+&constraint
+/
+&thermal /
+
+
+&grids tsym=T,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+
+&grids tsym=F,nz=51,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0,
+ name='none',pairstab=-0.3D0,HFBwidth=0.0d0,

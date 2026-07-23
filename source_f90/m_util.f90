@@ -32,6 +32,18 @@ WRITE(7,'(10x,a)')'|| SSSSSSS K     K    Y    A     A X     X ||'
 WRITE(7,'(10x,a)')'============================================='
 WRITE(7,'(10x,a)')'     the axial Skyrme-Hartree-Fock Code'
 WRITE(7,'(10x,a)')'            >>> version x.x.x <<<       '
+
+WRITE(6,'(10x,a)')'============================================='
+WRITE(6,'(10x,a)')'|| SSSSSSS K     K Y     Y    A    X     X ||'
+WRITE(6,'(10x,a)')'|| S       K   K    Y   Y    A A    X   X  ||'
+WRITE(6,'(10x,a)')'|| S       K K       Y Y    A   A    X X   ||'
+WRITE(6,'(10x,a)')'|| SSSSSSS K          Y    A     A    X    ||'
+WRITE(6,'(10x,a)')'||       S K K        Y    AAAAAAA   X X   ||'
+WRITE(6,'(10x,a)')'||       S K   K      Y    A     A  X   X  ||'
+WRITE(6,'(10x,a)')'|| SSSSSSS K     K    Y    A     A X     X ||'
+WRITE(6,'(10x,a)')'============================================='
+WRITE(6,'(10x,a)')'     the axial Skyrme-Hartree-Fock Code'
+WRITE(6,'(10x,a)')'            >>> version x.x.x <<<       '
 END SUBROUTINE
 
 !---------------------------------------------------------------------------  
@@ -179,25 +191,62 @@ IMPLICIT NONE
 REAL(8), INTENT(IN)                         :: rhoin(0:nz,0:nr)
 REAL(8), INTENT(OUT)                        :: rhofold(0:nz,0:nr)
 
-REAL(8), PARAMETER :: rcut1=0.55D0
-REAL(8), PARAMETER :: rcut2=rcut1*rcut1
+REAL(8), PARAMETER :: rcut1=0.8D0  !0.55D0
+REAL(8), PARAMETER :: rcut2=rcut1*rcut1/6D0
 
 REAL(8),ALLOCATABLE :: wrk1(:,:)
+LOGICAL,PARAMETER :: ttestnegative=.TRUE.
 
 ALLOCATE(wrk1(0:nz,0:nr))
 wrk1=0D0
 
 !     first folding term, stored temporarily on 'rhofold'
-CALL laplacer_scalar(rhoin(0:nz,0:nr),rhofold(0:nz,0:nr), 0, 1, rcut2)
+CALL laplace_scalar(rhoin(0:nz,0:nr),rhofold(0:nz,0:nr), 1, 0, 1, rcut2)
 
 !     second folding term, stored on 'wrk1'
-CALL laplacer_scalar(rhofold(0:nz,0:nr), wrk1(0:nz,0:nr), 0, 1, rcut2/2D0)
+CALL laplace_scalar(rhofold(0:nz,0:nr), wrk1(0:nz,0:nr), 1, 0, 1, rcut2/2D0)
 
 !     compose
 rhofold(0:nz,0:nr) = rhoin(0:nz,0:nr)+rhofold(0:nz,0:nr)+wrk1(0:nz,0:nr)
 DEALLOCATE(wrk1)
+
+IF(ttestnegative) WRITE(6,*) 'PROTFOLD negative density:',MINVAL(rhofold(0:nz,0:nr)),MAXVAL(rhofold(0:nz,0:nr))
+
 RETURN
 END SUBROUTINE protfold
+
+SUBROUTINE stimer(iaction,text)
+
+!     Initializes timer and retrieves CPU times                                                                                                                      
+!       iaction  = 1  for initial call                                                                                                                               
+!                  2  for subsequent call                                                                                                                            
+!     The relative time is taken between step 2 and 1.                                                                                                               
+
+!USE dynpar
+
+INTEGER, INTENT(IN) :: iaction
+CHARACTER(*), INTENT(IN) :: text
+
+INTEGER, SAVE :: itimeold=0,itimenew=0,itimeinit
+
+!-----------------------------------------------------------------                                                                                                   
+
+
+IF(iaction == 1) THEN
+  CALL system_clock(itimeold)
+  itimeinit = itimeold
+ELSE IF(iaction == 2) THEN
+  CALL system_clock(itimenew)
+  WRITE(6,'(a,2(1pg13.5))') text//' time=',&
+   (itimenew-itimeold)*1D-4,(itimenew-itimeinit)*1D-4
+  itimeold = itimenew
+ELSE
+  STOP 'SYS.TIMER: this IACTION is not valid'
+END IF
+
+RETURN
+END SUBROUTINE stimer
+
 
 END MODULE
 

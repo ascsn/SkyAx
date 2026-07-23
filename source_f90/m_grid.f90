@@ -43,6 +43,7 @@
 MODULE grid
 
 USE paramr
+USE dynpar, ONLY: tcoulfold
 
 IMPLICIT NONE
 
@@ -58,7 +59,7 @@ REAL(8) :: sz        !<First point in z-direction.
 REAL(8) :: dvol      !<Volume element for space integration.
 INTEGER :: nr_testp  !<Output length in r-direction for printing (test switch).
 INTEGER :: nz_testp  !<Output length in z-direction for printing (test switch).
-LOGICAL  :: tsym=.TRUE.  ! controls symmetry
+LOGICAL :: tsym=.TRUE.  ! controls symmetry
 INTEGER :: isym=1    !<Integer Variable for symmetry.
 INTEGER :: icm       !<Point on z-grid for Center of nucleus. If tsym=.FALSE.: 1, if tsym=.TRUE.: nz/2+1.
 
@@ -72,6 +73,10 @@ REAL(8),ALLOCATABLE :: derr2a(:,:,:,:)     !<Bessel operator  in r-direction.
 REAL(8),ALLOCATABLE :: derz2f(:,:,:)       !<Second derivative in z-direction (fourier definition).
 REAL(8),ALLOCATABLE :: derr1f(:,:,:)       !<First derivative in r-direction (fourier definition).
 REAL(8),ALLOCATABLE :: derr2af(:,:,:,:)    !<Bessel operator  in r-direction (fourier definition).
+REAL(8),ALLOCATABLE :: gaufolz(:,:,:)      !<Gaussian folding for HFB in z-direction.
+REAL(8),ALLOCATABLE :: gaufolr(:,:,:,:)    !<Gaussian folding for HFB in r-direction.
+REAL(8),ALLOCATABLE :: protfolz(:,:,:)     !<Gaussian folding for proton in z-direction.
+REAL(8),ALLOCATABLE :: protfolr(:,:,:,:)   !<Gaussian folding for proton in r-direction.
 REAL(8),ALLOCATABLE :: r1inv(:,:)          !<\f$ 1/r\f$.
 REAL(8),ALLOCATABLE :: r2inv(:,:)          !<\f$ 1/r^2\f$.
 REAL(8),ALLOCATABLE :: zdnuc(:,:,:)        !<Damping operator for the nucleons in z-direction.
@@ -100,6 +105,8 @@ CONTAINS
 
 SUBROUTINE init_grid()
 
+USE dynpar, ONLY: thfbfold
+
 IMPLICIT NONE
 
 INTEGER     :: iderpntr, iderpntz !-1 for Fourier and k for k-point derivative
@@ -110,6 +117,14 @@ ALLOCATE(derz1(0:nz,0:nz,4), derz2(0:nz,0:nz,4),         derr1(0:nr,0:nr,4),&
          derr2af(0:nr,0:nr,0:kmpsi,2), r1inv(0:nr,0:nr), r2inv(0:nr,0:nr),&
          zdnuc(0:nz,0:nz,4), rdnuc(0:nr,0:nr,0:kmpsi),   zdmes(0:nz,0:nz,1),&
          rdmes(0:nr,0:nr,1),r(0:nr),                     z(0:nz))
+IF(thfbfold) THEN
+  ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
+  gaufolz=0D0; gaufolr=0D0
+END IF
+IF(tcoulfold) THEN
+  ALLOCATE(protfolz(0:nz,0:nz,4),protfolr(0:nr,0:nr,0:0,2))
+  protfolz=0D0; protfolr=0D0
+END IF
          
 derz1=0D0;   derz2=0D0;  derr1=0D0
 derz2f=0D0;  derr2a=0D0; derr1f=0D0
@@ -658,6 +673,8 @@ END SUBROUTINE damp_nucleon
 !--------------------------------------------------------------------------- 
 SUBROUTINE init_derive(d,itype,ipnt,tsyma,dx,ngrid,mgrid)
 
+USE dynpar, ONLY: thfbfold
+
 IMPLICIT NONE
 
 REAL(8), INTENT(OUT)        :: d(0:mgrid,0:mgrid,*)
@@ -807,7 +824,7 @@ ELSE
   DO iparmax=-1,+1,2
     DO in=1,2
 !        ---------------------------------------------------------------
-!        determin weights for the n-th finite derivative using p points
+!        determine weights for the n-th finite derivative using p points
 !        into each direction from the central point ((2*p+1)-formula).
 !        ---------------------------------------------------------------         
 !           setup the linear equation system which defines the weights
@@ -987,6 +1004,7 @@ END IF
 !     ===============================================================
 !     initialize bessel operator
 !     ===============================================================
+!WRITE(6,*) 'INIT_DERIV:',tsyma,ngrid,inx,inx/2
 DO im=0,kmpsi
   
   DO i=0,inx/2
@@ -1020,6 +1038,35 @@ DO im=0,kmpsi
         db(j,j,im,2) = db(j,j,im,2) - im*im*kval(j)*kval(j)
       END DO
     END IF
+
+    IF(thfbfold) THEN
+      DO i=0,inx/2-1
+        DO j=0,inx/2-1
+          gaufolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,1)
+          gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,3)
+        END DO
+      END DO
+!      IF (im == 0) THEN
+!        db(0:inx/2,0,im,1) = d2(0:inx/2,0,1)
+!        db(0:inx/2,0,im,2) = d2(0:inx/2,0,3)
+!      END IF
+      DO j=0,inx/2-1
+        gaufolr(j,j,im,1) = gaufolr(j,j,im,1) + 0.25D0*kval(j)*kval(j)
+        gaufolr(j,j,im,2) = gaufolr(j,j,im,2) + 0.25D0*kval(j)*kval(j)
+      END DO
+    END IF
+    IF(tcoulfold .AND. im==0) THEN
+      DO i=0,inx/2-1
+        DO j=0,inx/2-1
+          protfolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,1)
+          protfolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,3)
+        END DO
+      END DO
+      DO j=0,inx/2-1
+        protfolr(j,j,im,1) = protfolr(j,j,im,1) + 0.25D0*kval(j)*kval(j)
+        protfolr(j,j,im,2) = protfolr(j,j,im,2) + 0.25D0*kval(j)*kval(j)
+      END DO
+    END IF
     
   ELSE
     
@@ -1037,8 +1084,18 @@ DO im=0,kmpsi
       db(j,j,im,1) = db(j,j,im,1) - im*im*kval(j)*kval(j)
       db(j,j,im,2) = db(j,j,im,2) - im*im*kval(j)*kval(j)
     END DO
+  
+    IF(thfbfold) THEN
+      DO i=0,inx/2-1
+        DO j=0,inx/2-1
+          gaufolr(j,i,im,1) = db(j,i,im,1) - kval(i)*d1(j,i,2)
+          gaufolr(j,i,im,2) = db(j,i,im,2) - kval(i)*d1(j,i,4)
+        END DO
+      END DO
+    END IF
     
   END IF
+
   
 END DO
 
@@ -1075,7 +1132,7 @@ ELSE IF (itype == 0) THEN
       END DO
     END DO
   END DO
-  
+
 END IF
 
 DEALLOCATE(db,der1,der2,sbase,cbase,volx,kval)
@@ -1102,7 +1159,7 @@ REAL(8), INTENT(IN)                         :: fua(0:nz,0:nr)
 REAL(8), INTENT(IN)                         :: fub(0:nz,0:nr)
 
   IF (.NOT.ALLOCATED(int_weight)) CALL init_int_weight
-  !f2int=SUM(int_weight*fua*fub)  
+!  f2int=SUM(int_weight*fua*fub)  
   f2int=DDOT((nz+1)*(nr+1),fua*fub,1,int_weight,1)
 RETURN
 END FUNCTION f2int
@@ -1323,7 +1380,7 @@ SUBROUTINE init_int_weight
 
   ALLOCATE (int_weight(0:nz,0:nr))
   int_weight = one
-  int_weight(:,0) = int_weight(:,0) * drezw
+  int_weight(:,0) = int_weight(:,0) * drezw   ! Euler-McLaurin correction
   int_weight(0,:) = int_weight(0,:) * oh
 
   r = sr
@@ -1393,5 +1450,1406 @@ WRITE(7,'(/a,g12.4,a,g12.4)') ' abs maximum value = ',fldmax,  &
 
 RETURN
 END SUBROUTINE test_print
+
+SUBROUTINE init_Gaussfolding()
+
+! Driver routine to swtich between two version of initialization for
+! Gaussian folding:
+!  init_Gaussfolding_eigenstates   compose folding from eigenstates of 
+!                                  Lapacian in 1D & axial 2D
+!  init_Gaussfolding_bessel        compose folding from eigenstates of 
+!                                  Lapacian in 1D, but using explicit
+!                                  expansion into Bessel functions for
+!                                  axial 2D
+! To switch uncomment wanted version, comment out the other.
+
+Call init_Gaussfolding_mixed
+!Call init_Gaussfolding_eigenstates
+!Call init_Gaussfolding_bessel
+
+END SUBROUTINE init_Gaussfolding
+
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: init_Gaussfolding
+!> @brief
+!! Initialization of matrices 'gaufolz' and 'gaufolr' for Gaussian folding.
+!> @details
+!! Input are the matrices for 2. derivatives for which the eigenstates
+!! on the grid are computed by diagonalization. The Gaussian folding
+!! matrices are composed from eigenstates and eigenvalues.
+!! Input and output are communicated through the header of the module.
+!--------------------------------------------------------------------------- 
+SUBROUTINE init_Gaussfolding_bessel()
+
+USE dynpar, ONLY: hfbwidth
+USE levels, ONLY: mpsi
+IMPLICIT NONE
+
+REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:),eigvali(:)
+INTEGER,ALLOCATABLE:: iwork(:)
+
+!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
+!REAL(8)            :: b(0:2*imaxdrvrng)
+
+INTEGER            :: iparmax, ibuf,in, ndimact
+INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
+INTEGER            :: lwork,liwork,info
+REAL(8)            :: buf,buf1,buf2,zeroold,zero
+
+LOGICAL,PARAMETER :: ttestgauss=.FALSE.
+
+!ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
+
+!     ===============================================================
+!     initialize folding matrix in z direction
+!     ===============================================================
+ndimact=nz
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+
+eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+DO in=1,4
+!  eigvec=derz1(:,:,in)
+!  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z:',eigval
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+  eigvec=derz2(1:nz,1:nz,in)
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'H-Matrix z:'
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') eigvec(i,1:nz)
+    END DO
+  END IF
+  CALL DSYEVD('V','L',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  lwork=(ndimact*(ndimact+1))/2
+!  call diag_real_symm(derz2(:,:,in), eigval, eigvec, ndimact, ndimact, lwork)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z**2:',eigval
+  IF(ttestgauss) THEN
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+  END IF
+  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL fold:',eigval
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                             
+    gaufolz(i,j,in)=0D0
+    DO k = 1, ndimact
+      gaufolz(i,j,in) = gaufolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
+    END DO
+  END DO; END DO
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'Folding z:'
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') gaufolz(i,1:nz,in)
+    END DO
+  END IF
+END DO
+
+DEALLOCATE(eigvec,eigval,work,iwork)
+WRITE(6,*) ' Setup of Gaussian folding in z direction completed'
+
+!     ===============================================================
+!     initialize folding matrix in r direction
+!     ===============================================================
+ndimact=nr+1
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+ALLOCATE(eigvali(ndimact))
+
+IF(kmpsi>25) STOP 'init. Gaussian folding not yet suited for KMPSI>25'
+gaufolr=0D0
+DO in=1,2; DO im=0,kmpsi
+  
+!  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+  IF(im==0) THEN
+    zeroold=0D0
+  ELSE
+    zeroold=eigval(1)*nr*dr
+  END IF
+  WRITE(6,'(a,i3)') '# zeroes of Bessel functions order=',im
+  DO i=1,ndimact
+    zero = besszero(im,zeroold+0.1D0*pi,zeroold+1D0*pi)  
+    eigval(i)=zero/(nr*dr)
+    WRITE(6,'(i4,1pg22.14)') i,zero
+    zeroold=zero
+  END DO
+
+  DO k = 1, ndimact
+    DO i=0,nr
+      eigvec(i,k) = bessel_jn(im,eigval(k)*r(i))
+    END DO
+    buf = SUM(eigvec(0:nr,k)**2*r(0:nr))
+    eigvec(0:nr,k) = eigvec(0:nr,k)/SQRT(buf)
+  END DO
+
+
+  WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,-eigval**2
+!  IF(ttestgauss) THEN
+  eigvali = EXP(-eigval**2*(0.5D0*hfbwidth)**2)
+  gaufolr(0:nr,0:nr,im,in)=0D0
+  DO i=0,nr; DO j=0,nr
+!   sum over "Bessel" eigenstates                                                                                                              
+!    gaufolr(i,j,im,in)=0D0
+!    lwork=ndimact-MIN(im,1)
+    DO k = 1, ndimact
+      gaufolr(i,j,im,in) = gaufolr(i,j,im,in) + &
+          eigvec(i,k)*eigvec(j,k)*eigvali(k)*r(j)
+    END DO
+!    gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in)*SQRT(r(j-1))/SQRT(r(i-1))
+!    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
+  END DO; END DO
+
+END DO; END DO
+DEALLOCATE(eigvec,eigval,work,iwork)
+DEALLOCATE(eigvali)
+
+WRITE(6,*) ' Setup of Gaussian folding in r direction completed'
+
+CALL test_Gaussfolding()
+
+RETURN
+END SUBROUTINE init_Gaussfolding_bessel
+
+REAL (8) FUNCTION besszero(norder,xlow,xup)
+
+!IMPLICIT REAL(8) (a-h,o-z)
+
+REAL(8),INTENT(IN) :: xlow,xup
+INTEGER,INTENT(IN) :: norder
+INTEGER, PARAMETER :: numiter=50
+REAL(8), PARAMETER :: precis=1D-14
+INTEGER :: iter
+REAL(8) :: f1,f2,f3,x1,x2,x3
+
+f1=bessel_jn(norder,xlow)
+f2=bessel_jn(norder,xup)
+x1=xlow
+x2=xup
+
+DO iter=1,numiter
+  x3=0.5D0*(x1+x2)
+  f3=bessel_jn(norder,x3)
+  IF(f3*f1<0D0) THEN
+    x2=x3
+    f2=f3
+  ELSE IF(f2*f1<0D0) THEN
+    x1=x3
+    f1=f3
+  ELSE IF(f3==0D0) THEN
+    EXIT
+  ELSE
+    IF(iter==1) THEN
+      x2=xup+0.628D0*(xup-xlow)
+      f2=bessel_jn(norder,x2)
+    ELSE
+      STOP 'case not allowed'
+    END IF
+  END IF  
+  IF(ABS(x2-x1)<precis) EXIT
+END DO
+
+besszero=x3
+
+END  FUNCTION besszero
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: init_Gaussfolding_eigenstates
+!> @brief
+!! Initialization of matrices 'gaufolz' and 'gaufolr' for Gaussian folding.
+!> @details
+!! Input are the matrices for 2. derivatives for which the eigenstates
+!! on the grid are computed by diagonalization. The Gaussian folding
+!! matrices are composed from eigenstates and eigenvalues.
+!! Input and output are communicated through the header of the module.
+!--------------------------------------------------------------------------- 
+SUBROUTINE init_Gaussfolding_eigenstates()
+
+USE dynpar, ONLY: hfbwidth
+USE levels, ONLY: mpsi
+IMPLICIT NONE
+
+REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:),eigvali(:)
+INTEGER,ALLOCATABLE:: iwork(:)
+
+!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
+!REAL(8)            :: b(0:2*imaxdrvrng)
+
+INTEGER            :: iparmax, ibuf,in, ndimact
+INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
+INTEGER            :: lwork,liwork,info,ndimksum
+REAL(8)            :: buf,buf1,buf2
+
+LOGICAL,PARAMETER :: ttestgauss=.FALSE.
+
+!ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
+
+!     ===============================================================
+!     initialize folding matrix in z direction
+!     ===============================================================
+ndimact=nz
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+
+eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+DO in=1,4
+!  eigvec=derz1(:,:,in)
+!  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z:',eigval
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+  eigvec=derz2(1:nz,1:nz,in)
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'H-Matrix z:'
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') eigvec(i,1:nz)
+    END DO
+  END IF
+  CALL DSYEVD('V','L',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  lwork=(ndimact*(ndimact+1))/2
+!  call diag_real_symm(derz2(:,:,in), eigval, eigvec, ndimact, ndimact, lwork)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z**2:',eigval
+  IF(ttestgauss) THEN
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+  END IF
+  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL fold:',eigval
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                             
+    gaufolz(i,j,in)=0D0
+    DO k = 1, ndimact
+      gaufolz(i,j,in) = gaufolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
+    END DO
+  END DO; END DO
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,i3)') 'Folding z: in=',in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') gaufolz(i,1:nz,in)
+    END DO
+  END IF
+END DO
+
+DEALLOCATE(eigvec,eigval,work,iwork)
+WRITE(6,*) ' Setup of Gaussian folding in z direction completed'
+
+!     ===============================================================
+!     initialize folding matrix in r direction
+!     ===============================================================
+ndimact=nr+1
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+ALLOCATE(eigvali(ndimact))
+
+!gaufolr=0D0
+DO in=1,2; DO im=0,kmpsi
+  
+  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+!  DO ir=1,nr
+!    eigvec(ir,1:nr)=derr2af(ir,1:nr,im,in)*r(ir)
+!  END DO
+   eigvec(1:ndimact,1:ndimact)=gaufolr(0:nr,0:nr,im,in)+0.25D0*r2inv(0:nr,0:nr)
+!   eigvec(1:ndimact,1:ndimact)=derr2a(0:nr,0:nr,im,in)
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'H-Matrix r:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(1:nr,i)
+    END DO
+  END IF
+  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  CALL DGEEV('N','V',ndimact,eigvec,ndimact,eigval,eigvali,eigvec,ndimact,eigvec,ndimact,work,lwork,iwork,liwork,info)
+  WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,eigval
+  IF(ttestgauss) THEN
+!  IF(im<3) THEN
+    WRITE(6,'(a)') 'eigenvectors:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(i,:)
+    END DO
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(1):',eigvec(:,1)
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(N):',eigvec(:,ndimact)
+!  ELSE
+!    STOP
+  END IF
+  IF(eigval(ndimact).GE.-1D-10) THEN     
+    ndimksum=ndimact-1               ! to avoid spurious eigenstates
+  ELSE
+    ndimksum=ndimact
+  END IF
+  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
+  gaufolr(0:nr,0:nr,im,in)=0D0
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                              
+!    gaufolr(i,j,im,in)=0D0
+    DO k = 1,ndimksum
+      gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in) + eigvec(i,k)*eigval(k)*eigvec(j,k)
+    END DO
+    gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in)*SQRT(r(j-1))/SQRT(r(i-1))
+!    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
+  END DO; END DO
+
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,2i3)') 'Folding r: im,in=',im,in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') gaufolr(i-1,0:nr,im,in)
+    END DO
+  END IF
+
+END DO; END DO
+DEALLOCATE(eigvec,eigval,work,iwork)
+DEALLOCATE(eigvali)
+
+WRITE(6,*) ' Setup of Gaussian folding in r direction completed'
+
+CALL test_Gaussfolding()
+
+RETURN
+END SUBROUTINE init_Gaussfolding_eigenstates
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: init_Gaussfolding_mixed
+!> @brief
+!! Initialization of matrices 'gaufolz' and 'gaufolr' for Gaussian folding.
+!> @details
+!! Folding in z-direction is coded explicitely by integrating over a Gaussian.
+!! Folding in r-direction is constructed from wigenstates of the 2. derivative.
+!! Input are the matrices for 2. derivatives for which the eigenstates
+!! on the grid are computed by diagonalization. The Gaussian folding
+!! matrices are composed from eigenstates and eigenvalues.
+!! Input and output are communicated through the header of the module.
+!--------------------------------------------------------------------------- 
+SUBROUTINE init_Gaussfolding_mixed()
+
+USE dynpar, ONLY: hfbwidth
+USE levels, ONLY: mpsi
+IMPLICIT NONE
+
+REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:),eigvali(:)
+INTEGER,ALLOCATABLE:: iwork(:)
+
+!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
+!REAL(8)            :: b(0:2*imaxdrvrng)
+
+INTEGER            :: iparmax, ibuf,in, ndimact,insig
+INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
+INTEGER            :: lwork,liwork,info,ndimksum,nGauss
+REAL(8)            :: buf,buf1,buf2
+
+LOGICAL,PARAMETER :: ttestgauss=.FALSE.
+REAL(8),PARAMETER :: epsil_Gauss=1D-5     ! cutoff for Gaussian
+!REAL(8),PARAMETER :: epsil_Gauss=1D-8     ! cutoff for Gaussian
+
+!ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
+
+!     ===============================================================
+!     initialize folding matrix in z direction
+!     ===============================================================
+
+nGauss = NINT(SQRT(-2D0*LOG(epsil_Gauss))*hfbwidth/dz)
+ALLOCATE(work(-nGauss:nGauss))
+
+DO i=-nGauss,nGauss
+  work(i) = EXP(-(i*dz/hfbwidth)**2)
+END DO
+buf=SUM(work)
+work(:) = work(:)/buf
+DO in=1,2
+  insig=2*MOD(in,2)-1
+  gaufolz(:,:,in)=0D0
+  DO i=0,nz; DO j=-nGauss,nGauss
+    IF(i-j.GE.0 .AND. i-j.LE.nz) gaufolz(i,i-j,in) = work(j)
+    IF(tsym .AND. i-j.LT.0 .AND. i-j.GE.-nz) &
+        gaufolz(i,ABS(i-j),in) = gaufolz(i,ABS(i-j),in) + insig*work(j)
+  END DO; END DO
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'Gauss folding z:'
+    DO i=0,nz
+      WRITE(6,'(a,i4,1pg13.5)') 'i=',i,SUM(gaufolz(i,1:nz,in))
+      WRITE(6,'(100(1pg13.5))') gaufolz(i,0:nz,in)
+    END DO
+  END IF
+END DO
+
+DEALLOCATE(work)
+
+WRITE(6,*) ' Setup of Gaussian folding in z direction completed'
+
+!     ===============================================================
+!     initialize folding matrix in r direction
+!     ===============================================================
+ndimact=nr+1
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+ALLOCATE(eigvali(ndimact))
+
+!gaufolr=0D0
+DO in=1,2; DO im=0,kmpsi
+  
+  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+!  DO ir=1,nr
+!    eigvec(ir,1:nr)=derr2af(ir,1:nr,im,in)*r(ir)
+!  END DO
+   eigvec(1:ndimact,1:ndimact)=gaufolr(0:nr,0:nr,im,in)+0.25D0*r2inv(0:nr,0:nr)
+!   eigvec(1:ndimact,1:ndimact)=derr2a(0:nr,0:nr,im,in)
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'H-Matrix r:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(1:nr,i)
+    END DO
+  END IF
+  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  CALL DGEEV('N','V',ndimact,eigvec,ndimact,eigval,eigvali,eigvec,ndimact,eigvec,ndimact,work,lwork,iwork,liwork,info)
+  WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,eigval
+  IF(ttestgauss) THEN
+!  IF(im<3) THEN
+    WRITE(6,'(a)') 'eigenvectors:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(i,:)
+    END DO
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(1):',eigvec(:,1)
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(N):',eigvec(:,ndimact)
+!  ELSE
+!    STOP
+  END IF
+  IF(eigval(ndimact).GE.-1D-10) THEN     
+    ndimksum=ndimact-1               ! to avoid spurious eigenstates
+  ELSE
+    ndimksum=ndimact
+  END IF
+  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
+  gaufolr(0:nr,0:nr,im,in)=0D0
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                              
+!    gaufolr(i,j,im,in)=0D0
+    DO k = 1,ndimksum
+      gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in) + eigvec(i,k)*eigval(k)*eigvec(j,k)
+    END DO
+    gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in)*SQRT(r(j-1))/SQRT(r(i-1))
+!    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
+  END DO; END DO
+
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,2i3)') 'Folding r: im,in=',im,in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') gaufolr(i-1,0:nr,im,in)
+    END DO
+  END IF
+
+END DO; END DO
+DEALLOCATE(eigvec,eigval,work,iwork)
+DEALLOCATE(eigvali)
+
+WRITE(6,*) ' Setup of Gaussian folding in r direction completed'
+
+CALL test_Gaussfolding()
+
+RETURN
+END SUBROUTINE init_Gaussfolding_mixed
+
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: Gaussfolding_spin
+!> @brief
+!! Calculate the action of the Gaussian folding on a spinor.
+!>
+!> @param[in] fldin
+!> REAL(8), array, takes the input field.
+!> @param[out] fldout
+!> REAL(8), array, returns the output field.
+!> @param[in] izpfld
+!> INTEGER, takes the z-parity of upper component (1 for positive, 2 for negative,
+!!1 and isym=0 for no good z-parity)
+!> @param[in] imfld
+!> INTEGER, takes the z-component of angular momentum m of the upper component.
+!> @param[in] ibpfld
+!> INTEGER, takes boundary parity. 1 for negative (zero-value), 2 for positive 
+!!(zero-derivative).
+!> @param[in] factor
+!> REAL(8), takes the weight factor.
+!--------------------------------------------------------------------------- 
+
+SUBROUTINE Gaussfolding_spin(fldin,fldout,izpfld,imfld,ibpfld)
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)        :: fldin(0:nz,0:nr,nsd)
+REAL(8), INTENT(OUT)       :: fldout(0:nz,0:nr,nsd)
+INTEGER, INTENT(IN)        :: izpfld
+INTEGER, INTENT(IN)        :: imfld
+INTEGER, INTENT(IN)        :: ibpfld
+
+REAL(8), ALLOCATABLE :: work(:,:)
+
+INTEGER :: imact,izpact,ibpidx,is,izpidx,iz
+
+ALLOCATE(work(0:nz,0:nr))
+DO is=1,nsd
+  imact  = ABS(imfld+is-1)
+  izpact = 3*(izpfld-1) - (2*izpfld-3)*is
+  izpidx = izpact*isym  + (1-isym)
+  ibpidx = izpidx + 2*ibpfld - 2
+  
+  CALL mulz(gaufolz(:,:,ibpidx),fldin(:,:,is),work,1D0,0)
+  CALL mulr(gaufolr(:,:,imact,ibpfld),work,fldout(:,:,is),1D0,0)
+
+  IF(imact==0) THEN
+    DO iz=0,nz
+      CALL extrapolate(fldout(iz,:,is),1)
+    END DO
+  ELSE
+    fldout(:,0,is)=0D0
+  END IF
+
+END DO
+DEALLOCATE(work)
+
+!IF(imfld==0) WRITE(6,'(a,4(1pg13.5))') ' Gausfolding-spin:',&
+IF(imfld==-1000) WRITE(6,'(a,4(1pg13.5))') ' Gausfolding-spin:',&
+    f1int(fldin(:,:,1)),f1int(fldout(:,:,1)), &
+    f2int(fldin(:,:,1),fldin(:,:,1)),f2int(fldout(:,:,1),fldout(:,:,1))
+
+RETURN
+END SUBROUTINE Gaussfolding_spin
+
+SUBROUTINE test_Gaussfolding()
+
+IMPLICIT NONE
+
+REAL(8), ALLOCATABLE :: work(:,:,:),work2(:,:,:),workf(:,:,:)
+REAL(8) :: rad2,tnorm1,r2exp1,tnorm2z,r2exp2z,tnorm2r,r2exp2r,tnorm2,r2exp2
+REAL(8) :: tnorm1z2,r2exp1z2,tnorm2z2,r2exp2z2,tnorm1a,tnorm2za,r2exp2za,r2exp1za,r2exp1a
+REAL(8),PARAMETER :: testwid=4D0
+INTEGER :: im,izpact,ibpidx,is,izpidx,ir,iz
+
+ALLOCATE(work(0:nz,0:nr,1:2),work2(0:nz,0:nr,1:2),workf(0:nz,0:nr,1:2))
+
+DO im=0,kmpsi
+
+
+  DO iz=0,nz; DO ir=0,nr
+    rad2 = r(ir)**2+z(iz)**2
+    work(iz,ir,1) = r(ir)**im*EXP(-rad2/testwid**2)
+    work(iz,ir,2) = 0D0
+    work2(iz,ir,1:2) = rad2*work(iz,ir,1:2)  !rad2*work(iz,ir,1:2)
+  END DO; END DO
+  tnorm1 = f1int(work(0:nz,0:nr,1))
+  r2exp1 = f1int(work2(0:nz,0:nr,1))/tnorm1
+
+
+  ibpidx = 1 !(-1)**im
+  DO is=1,nsd
+    CALL mulz(gaufolz(:,:,ibpidx),work(:,:,is),workf(:,:,is),1D0,0)
+  END DO
+  DO iz=0,nz; DO ir=0,nr
+    rad2 = r(ir)**2+z(iz)**2
+    work2(iz,ir,1:2) = rad2*workf(iz,ir,1:2)
+  END DO; END DO
+  tnorm2z = f1int(workf(0:nz,0:nr,1))
+  r2exp2z = f1int(work2(0:nz,0:nr,1))/tnorm2z
+
+  IF(im==0) THEN
+    WRITE(6,'(a)') 'RHO along z:'
+    WRITE(6,'(0pf6.2,1pg13.5,1pg13.5,1pg13.5)') &
+      (z(iz),work(iz,1,1),workf(iz,1,1),work(iz,1,1)-workf(iz,1,1),iz=0,nz)
+   !   test negative z-parity
+    DO iz=0,nz; DO ir=0,nr
+      rad2 = r(ir)**2+z(iz)**2
+      work2(iz,ir,1) = z(iz)*EXP(-rad2/testwid**2)
+      work2(iz,ir,2) = 0D0
+    END DO; END DO
+    DO is=1,nsd
+      CALL mulz(gaufolz(:,:,2),work2(:,:,is),workf(:,:,is),1D0,0)
+    END DO
+    IF(.NOT.tsym) work2=ABS(work2)
+    tnorm1a = f1int(work2(0:nz,0:nr,1))
+    WRITE(6,'(a)') 'RHO asy. along z:'
+    WRITE(6,'(0pf6.2,1pg13.5,1pg13.5,1pg13.5)') &
+      (z(iz),work2(iz,1,1),workf(iz,1,1),work2(iz,1,1)-workf(iz,1,1),iz=0,nz)
+    DO iz=0,nz; DO ir=0,nr
+      rad2 = r(ir)**2+z(iz)**2
+      work2(iz,ir,1:2) = rad2*work2(iz,ir,1:2)
+    END DO; END DO
+    r2exp1a=f1int(work2(0:nz,0:nr,1))/tnorm1a
+    DO iz=0,nz; DO ir=0,nr
+      rad2 = r(ir)**2+z(iz)**2
+      work2(iz,ir,1:2) = rad2*ABS(workf(iz,ir,1:2))
+    END DO; END DO
+    r2exp2za = f1int(work2(0:nz,0:nr,1))
+    IF(.NOT.tsym) workf=ABS(workf)
+    tnorm2za = f1int(workf(0:nz,0:nr,1))
+    r2exp2za = r2exp2za/tnorm2za
+    WRITE(6,'(a,i3,6(/a,1pg13.5,2(0pf10.3)))')  &
+     'TEST asy. folding:  norm rms rms**2;  for m=',im,  &
+     'before       ',tnorm1a,r2exp1a,0D0,     &
+      'after z      ',tnorm2za,r2exp2za,r2exp2za-r2exp1a
+  END IF
+
+  CALL mulr(gaufolr(:,:,im,1),work(:,:,1),workf(:,:,1),1D0,0)
+  CALL mulr(gaufolr(:,:,im,2),work(:,:,2),workf(:,:,2),1D0,0)   ! ??
+  workf(0:nz,0,1:2)=0D0
+  DO iz=0,nz; DO ir=0,nr
+    rad2 = r(ir)**2+z(iz)**2
+    work2(iz,ir,1:2) = rad2*workf(iz,ir,1:2)
+  END DO; END DO
+  tnorm2r = f1int(workf(0:nz,0:nr,1))
+  r2exp2r = f1int(work2(0:nz,0:nr,1))/tnorm2r
+
+  IF(im<0) THEN
+    WRITE(6,'(a)') 'RHO along r:'
+    WRITE(6,'(0pf6.2,1pg13.5,1pg13.5,1pg13.5)') &
+      (r(ir),work(icm,ir,1),workf(icm,ir,1),work(icm,ir,1)-workf(icm,ir,1),ir=0,nr)
+  END IF
+
+
+
+  IF(im==0) THEN
+
+    DO iz=0,nz; DO ir=0,nr
+      work(iz,ir,1:2) = z(iz)**2*work(iz,ir,1:2)
+    END DO; END DO
+    tnorm1z2 = f1int(work(0:nz,0:nr,1))
+    DO iz=0,nz; DO ir=0,nr
+      work2(iz,ir,1:2) = z(iz)**2*work(iz,ir,1:2)
+    END DO; END DO
+    r2exp1z2 = f1int(work2(0:nz,0:nr,1))/tnorm1z2
+
+
+    DO is=1,nsd
+      CALL mulz(gaufolz(:,:,ibpidx),work(:,:,is),workf(:,:,is),1D0,0)
+    END DO
+    DO iz=0,nz; DO ir=0,nr
+     work2(iz,ir,1:2) = z(iz)**2*workf(iz,ir,1:2)
+    END DO; END DO
+    tnorm2z2 = f1int(workf(0:nz,0:nr,1))
+    r2exp2z2 = f1int(work2(0:nz,0:nr,1))/tnorm2z2
+
+
+   WRITE(6,'(a,i3,6(/a,1pg13.5,2(0pf10.3)))')  &
+    'TEST folding:  norm rms rms**2;  for m=',im,  &
+    'before       ',tnorm1,r2exp1,0D0,     &
+     'after z      ',tnorm2z,r2exp2z,r2exp2z-r2exp1,   &
+    'after r      ',tnorm2r,r2exp2r,r2exp2r-r2exp1,   &
+     'before z**2  ',tnorm1z2,r2exp1z2,0D0,   &
+     'after z**2   ',tnorm2z2,r2exp2z2,r2exp2z2-r2exp1z2
+  
+  ELSE
+
+   WRITE(6,'(a,i3,6(/a,1pg13.5,2(0pf10.3)))')  &
+    'TEST folding:  norm rms rms**2;  for m=',im,  &
+    'before       ',tnorm1,r2exp1,0D0,     &
+     'after z      ',tnorm2z,r2exp2z,r2exp2z-r2exp1,   &
+    'after r      ',tnorm2r,r2exp2r,r2exp2r-r2exp1
+  
+  END IF
+
+END DO
+
+
+DEALLOCATE(work,work2,workf)
+
+RETURN
+END SUBROUTINE test_Gaussfolding
+
+SUBROUTINE extrapolate(field,iparit)                                                                                                                                 
+IMPLICIT NONE
+!   extrapolates the 'field' given at 'i'=2...ngrid  to its         
+!   value at 'i'=1 according to the 'parity'  
+
+REAL(8), INTENT(IN OUT) :: field(:)
+INTEGER, INTENT(IN) :: iparit
+
+!REAL(8), PARAMETER :: four,dthree/4D0,0.333333333333D0/
+REAL(8), PARAMETER :: trhalf=1.5D0,trfift=0.6D0,oneten=0.1D0
+
+IF(iparit>0) THEN
+!      five point quality        
+!      field(1) = (four*field(2)-field(3))*dthree 
+!      seven point quality    
+  field(1) = trhalf*field(2)-trfift*field(3)+oneten*field(4)
+ELSE
+  field(1) = 0D0
+END IF
+
+RETURN
+END SUBROUTINE extrapolate
+
+
+SUBROUTINE init_protonfolding()
+
+! Driver routine to switch between two version of initialization for
+! protonian folding:
+!  init_protonfolding_eigenstates   compose folding from eigenstates of 
+!                                  Lapacian in 1D & axial 2D
+!  init_protonfolding_bessel        compose folding from eigenstates of 
+!                                  Lapacian in 1D, but using explicit
+!                                  expansion into Bessel functions for
+!                                  axial 2D
+! To switch uncomment wanted version, comment out the other.
+
+!Call init_protonfolding_eigenstates
+!Call init_protonfolding_bessel
+Call init_protonfolding_mixed
+
+END SUBROUTINE init_protonfolding
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: init_protonfolding_mixed
+!> @brief
+!! Initialization of matrices 'protfolz' and 'protfolr' for proton folding.
+!> @details
+!! This version mixes analytical folding matrics in z-direction  with
+!! eigenstates from diagonalizing the derivative matrix in r-direction.
+!--------------------------------------------------------------------------- 
+SUBROUTINE init_protonfolding_mixed()
+
+
+USE levels, ONLY: mpsi
+USE paramr, ONLY: pi
+
+IMPLICIT NONE
+
+REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:),eigvali(:)
+INTEGER,ALLOCATABLE:: iwork(:)
+
+!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
+!REAL(8)            :: b(0:2*imaxdrvrng)
+
+REAL(8), PARAMETER :: protonwidth=0.8D0
+REAL(8), PARAMETER :: protonfactor=protonwidth**2/6D0
+REAL(8), PARAMETER :: epsil_Gauss=1D-5     ! cutoff for Gaussian
+
+INTEGER            :: iparmax, ibuf,in, ndimact, ndimksum
+INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir,insig
+INTEGER            :: nGauss                    ! number of popints for Gaussian
+INTEGER            :: lwork,liwork,info
+REAL(8)            :: buf,buf1,buf2,zeroold,zero
+
+
+LOGICAL,PARAMETER :: ttestgauss=.TRUE.
+
+!STOP 'Bessel initialization of proton folding not yet properly installed'
+WRITE(6,*) 'initialize proton folding with Bessel basis'
+
+!ALLOCATE(protfolz(0:nz,0:nz,4),protfolr(0:nr,0:nr,0:kmpsi,2))
+
+!     ===============================================================
+!     initialize folding matrix in z direction
+!     ===============================================================
+
+nGauss = NINT(SQRT(-2D0*LOG(epsil_Gauss))*protonwidth/dz)
+ALLOCATE(work(-nGauss:nGauss))
+
+DO i=-nGauss,nGauss
+  work(i) = EXP(-(i*dz/protonwidth)**2*1.5D0)
+END DO
+buf=SUM(work)
+work(:) = work(:)/buf
+DO in=1,2
+  insig=-1+2*MOD(in,2)
+  protfolz(:,:,in)=0D0
+  DO i=0,nz; DO j=-nGauss,nGauss
+    IF(i-j.GE.0 .AND. i-j.LE.nz) protfolz(i,i-j,in) = work(j)
+    IF(tsym .AND. i-j.LT.0 .AND. i-j.GE.-nz) &
+        protfolz(i,ABS(i-j),in) = protfolz(i,ABS(i-j),in) + insig*work(j)
+  END DO; END DO
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,i3)') 'Folding z, in:',in
+    DO i=0,nz
+      WRITE(6,'(a,i4,1pg13.5)') 'i=',i,SUM(protfolz(i,1:nz,in))
+      WRITE(6,'(100(1pg13.5))') protfolz(i,0:nz,in)
+    END DO
+  END IF
+END DO
+
+DEALLOCATE(work)
+WRITE(6,*) ' Setup of proton folding in z direction completed'
+
+!     ===============================================================
+!     initialize folding matrix in r direction
+!     ===============================================================
+ndimact=nr+1
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+ALLOCATE(eigvali(ndimact))
+
+!protfolr=0D0
+DO in=1,2
+  im=0
+  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+!  DO ir=1,nr
+!    eigvec(ir,1:nr)=derr2af(ir,1:nr,im,in)*r(ir)
+!  END DO
+   eigvec(1:ndimact,1:ndimact)=protfolr(0:nr,0:nr,im,in)+0.25D0*r2inv(0:nr,0:nr)
+!   eigvec(1:ndimact,1:ndimact)=derr2a(0:nr,0:nr,im,in)
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'H-Matrix r:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(1:nr,i)
+    END DO
+  END IF
+  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  CALL DGEEV('N','V',ndimact,eigvec,ndimact,eigval,eigvali,eigvec,ndimact,eigvec,ndimact,work,lwork,iwork,liwork,info)
+  WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,eigval
+  IF(ttestgauss) THEN
+!  IF(im<3) THEN
+    WRITE(6,'(a)') 'eigenvectors:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(i,:)
+    END DO
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(1):',eigvec(:,1)
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(N):',eigvec(:,ndimact)
+!  ELSE
+!    STOP
+  END IF
+  IF(eigval(ndimact).GE.-1D-10) THEN     
+    ndimksum=ndimact-1               ! to avoid spurious eigenstates
+  ELSE
+    ndimksum=ndimact
+  END IF
+  eigval = EXP(eigval*protonfactor)
+  protfolr(0:nr,0:nr,im,in)=0D0
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                              
+!    protfolr(i,j,im,in)=0D0
+    DO k = 1,ndimksum
+      protfolr(i-1,j-1,im,in) = protfolr(i-1,j-1,im,in) + eigvec(i,k)*eigval(k)*eigvec(j,k)
+    END DO
+    protfolr(i-1,j-1,im,in) = protfolr(i-1,j-1,im,in)*SQRT(MAX(r(j-1),1D-99))/SQRT(MAX(r(i-1),1D-99))
+!    protfolr(i,j,im,in) = protfolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
+  END DO; END DO
+
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,2i3)') 'Folding r: im,in=',im,in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') protfolr(i-1,0:nr,im,in)
+    END DO
+  END IF
+
+END DO
+DEALLOCATE(eigvec,eigval,work,iwork)
+DEALLOCATE(eigvali)
+
+
+WRITE(6,*) ' Setup of protonian folding in r direction completed'
+
+CALL test_protonfolding()
+
+RETURN
+END SUBROUTINE init_protonfolding_mixed
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: init_protonfolding
+!> @brief
+!! Initialization of matrices 'protfolz' and 'protfolr' for proton folding.
+!> @details
+!! Input are the matrices for 2. derivatives for which the eigenstates
+!! on the grid are computed by diagonalization. The protonian folding
+!! matrices are composed from eigenstates and eigenvalues.
+!! Input and output are communicated through the header of the module.
+!--------------------------------------------------------------------------- 
+SUBROUTINE init_protonfolding_bessel()
+
+
+USE levels, ONLY: mpsi
+USE paramr, ONLY: pi
+
+IMPLICIT NONE
+
+REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:),eigvali(:)
+INTEGER,ALLOCATABLE:: iwork(:)
+
+!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
+!REAL(8)            :: b(0:2*imaxdrvrng)
+
+REAL(8), PARAMETER :: protonwidth=0.8D0
+REAL(8), PARAMETER :: protonfactor=protonwidth**2/6D0
+
+INTEGER            :: iparmax, ibuf,in, ndimact
+INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
+INTEGER            :: lwork,liwork,info
+REAL(8)            :: buf,buf1,buf2,zeroold,zero
+
+LOGICAL,PARAMETER :: ttestgauss=.TRUE.
+
+!STOP 'Bessel initialization of proton folding not yet properly installed'
+WRITE(6,*) 'initialize proton folding with Bessel basis'
+
+!ALLOCATE(protfolz(0:nz,0:nz,4),protfolr(0:nr,0:nr,0:kmpsi,2))
+
+!     ===============================================================
+!     initialize folding matrix in z direction
+!     ===============================================================
+ndimact=nz
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+
+eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+!DO in=1,4
+  in=1     ! only symmetric, b.c. zero
+  IF(ttestgauss) WRITE(6,'(a,200f7.2)') 'z(*):',z(0:nz)
+  IF(tsym) THEN
+    DO i=1,ndimact
+      eigval(i) = pi*(0.5D0+i-1)/z(nz)
+      DO j=1,ndimact
+        eigvec(j,i) = COS(eigval(i)*z(j))
+      END DO
+      buf=SUM(eigvec(:,i)**2)-0.5D0*eigvec(1,i)**2
+      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(buf)
+    END DO
+  ELSE
+    DO i=1,ndimact
+      eigval(i) = pi*0.5D0*i/z(nz)
+      IF(MOD(i,2)>0) THEN
+        DO j=1,ndimact
+          eigvec(j,i) = COS(eigval(i)*z(j))
+        END DO
+      ELSE
+        DO j=1,ndimact
+          eigvec(j,i) = SIN(eigval(i)*z(j))
+        END DO
+      END IF
+      buf=SUM(eigvec(:,i)**2)-0.5D0*eigvec(1,i)**2
+      eigvec(1:ndimact,i)=eigvec(1:ndimact,i)/SQRT(buf)
+    END DO
+  END IF
+
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z**2:',-eigval**2
+  IF(ttestgauss) THEN
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(2):',eigvec(:,2)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(3):',eigvec(:,3)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(4):',eigvec(:,4)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(5):',eigvec(:,5)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+    WRITE(6,*) 'ortho-normality of z-basis:'
+    DO i=1,ndimact
+      WRITE(6,'(50(1pg13.5))') (SUM(eigvec(:,j)*eigvec(:,i))-0.5D0*eigvec(1,j)*eigvec(1,i),j=1,ndimact)
+    END DO
+  END IF
+  eigval = EXP(-eigval**2*protonfactor)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL fold:',eigval
+  protfolz(:,:,in)=0D0
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                             
+    DO k = 1, ndimact
+      protfolz(i-1,j-1,in) = protfolz(i-1,j-1,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
+    END DO
+  END DO; END DO
+  IF(tsym) THEN
+    protfolz(:,0,in)=protfolz(:,0,in)*0.5D0
+  END IF
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'Folding z:'
+    DO i=1,ndimact
+      WRITE(6,'(a,i4,1pg13.5)') 'i=',i,SUM(protfolz(i-1,1:nz,in))
+      WRITE(6,'(100(1pg13.5))') protfolz(i-1,0:nz,in)
+    END DO
+  END IF
+!END DO
+
+DEALLOCATE(eigvec,eigval,work,iwork)
+WRITE(6,*) ' Setup of protonian folding in z direction completed'
+
+!     ===============================================================
+!     initialize folding matrix in r direction
+!     ===============================================================
+ndimact=nr+1
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+ALLOCATE(eigvali(ndimact))
+
+protfolr=0D0
+DO in=1,2; DO im=0,0
+  
+!  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+  IF(im==0) THEN
+    zeroold=0D0
+  ELSE
+    zeroold=eigval(1)*nr*dr
+  END IF
+  WRITE(6,'(a,i3)') '# zeroes of Bessel functions order=',im
+  DO i=1,ndimact
+    zero = besszero(im,zeroold+0.1D0*pi,zeroold+1D0*pi)  
+    eigval(i)=zero/(nr*dr)
+    WRITE(6,'(i4,1pg22.14)') i,zero
+    zeroold=zero
+  END DO
+
+  DO k = 1, ndimact
+    DO i=0,nr
+      eigvec(i+1,k) = bessel_jn(im,eigval(k)*r(i))
+    END DO
+    buf = SUM(eigvec(1:nr+1,k)**2*r(0:nr))
+    eigvec(1:nr+1,k) = eigvec(1:nr+1,k)/SQRT(buf)
+  END DO
+
+
+  WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,-eigval**2
+!  IF(ttestgauss) THEN
+  eigvali = EXP(-eigval**2*protonfactor)
+  protfolr(0:nr,0:nr,im,in)=0D0
+  DO i=0,nr; DO j=0,nr
+!   sum over "Bessel" eigenstates                                                                                                              
+!    protfolr(i,j,im,in)=0D0
+!    lwork=ndimact-MIN(im,1)
+    DO k = 1, ndimact
+      protfolr(i,j,im,in) = protfolr(i,j,im,in) + &
+          eigvec(i+1,k)*eigvec(j+1,k)*eigvali(k)*r(j)
+    END DO
+    protfolr(i,j,im,in) = protfolr(i,j,im,in)*SQRT(MAX(r(j),1D-99))/SQRT(MAX(r(i),1D-99))
+!    protfolr(i-1,j-1,im,in) = protfolr(i-1,j-1,im,in)*SQRT(r(j-1))/SQRT(r(i-1))
+!    protfolr(i,j,im,in) = protfolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
+  END DO; END DO
+    WRITE(6,'(a,2i3)') 'Folding r: im,in=',im,in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') protfolr(i-1,0:nr,im,in)
+    END DO
+
+END DO; END DO
+DEALLOCATE(eigvec,eigval,work,iwork)
+DEALLOCATE(eigvali)
+
+WRITE(6,*) ' Setup of protonian folding in r direction completed'
+
+CALL test_protonfolding()
+
+RETURN
+END SUBROUTINE init_protonfolding_bessel
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: init_protonfolding_eigenstates
+!> @brief
+!! Initialization of matrices 'protfolz' and 'protfolr' for protonian folding.
+!> @details
+!! Input are the matrices for 2. derivatives for which the eigenstates
+!! on the grid are computed by diagonalization. The protonian folding
+!! matrices are composed from eigenstates and eigenvalues.
+!! Input and output are communicated through the header of the module.
+!--------------------------------------------------------------------------- 
+SUBROUTINE init_protonfolding_eigenstates()
+
+USE levels, ONLY: mpsi
+IMPLICIT NONE
+
+REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:),eigvali(:)
+INTEGER,ALLOCATABLE:: iwork(:)
+
+!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
+!REAL(8)            :: b(0:2*imaxdrvrng)
+REAL(8), PARAMETER :: protonwidth=0.8D0
+REAL(8), PARAMETER :: protonfactor=protonwidth**2/6D0
+
+INTEGER            :: iparmax, ibuf,in, ndimact
+INTEGER            :: inx,k,nx,i,im,ix,j,jx,ir
+INTEGER            :: lwork,liwork,info,ndimksum
+REAL(8)            :: buf,buf1,buf2
+
+LOGICAL,PARAMETER :: ttestgauss=.TRUE.
+
+!ALLOCATE(protfolz(0:nz,0:nz,4),protfolr(0:nr,0:nr,0:kmpsi,2))
+
+!     ===============================================================
+!     initialize folding matrix in z direction
+!     ===============================================================
+ndimact=nz
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+
+eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+DO in=1,4
+!  eigvec=derz1(:,:,in)
+!  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z:',eigval
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+!  WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+  eigvec=derz2(1:nz,1:nz,in)
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'H-Matrix z:'
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') eigvec(i,1:nz)
+    END DO
+  END IF
+  CALL DSYEVD('V','L',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  lwork=(ndimact*(ndimact+1))/2
+!  call diag_real_symm(derz2(:,:,in), eigval, eigvec, ndimact, ndimact, lwork)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL z**2:',eigval
+  IF(ttestgauss) THEN
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(1):',eigvec(:,1)
+    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC z(N):',eigvec(:,ndimact)
+  END IF
+  eigval = EXP(eigval*protonfactor)
+  WRITE(6,'(a/400(1pg13.5))') 'EIGVAL fold:',eigval
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                             
+    protfolz(i,j,in)=0D0
+    DO k = 1, ndimact
+      protfolz(i,j,in) = protfolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
+    END DO
+  END DO; END DO
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,i3)') 'Folding z: in=',in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') protfolz(i,1:nz,in)
+    END DO
+  END IF
+END DO
+
+DEALLOCATE(eigvec,eigval,work,iwork)
+WRITE(6,*) ' Setup of proton folding in z direction completed'
+
+!     ===============================================================
+!     initialize folding matrix in r direction
+!     ===============================================================
+ndimact=nr+1
+lwork=1+6*ndimact+2*ndimact**2
+liwork=3+5*ndimact
+ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
+ALLOCATE(eigvali(ndimact))
+
+!protfolr=0D0
+DO in=1,2
+  im=0
+  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
+!  DO ir=1,nr
+!    eigvec(ir,1:nr)=derr2af(ir,1:nr,im,in)*r(ir)
+!  END DO
+   eigvec(1:ndimact,1:ndimact)=protfolr(0:nr,0:nr,im,in)+0.25D0*r2inv(0:nr,0:nr)
+!   eigvec(1:ndimact,1:ndimact)=derr2a(0:nr,0:nr,im,in)
+  IF(ttestgauss) THEN
+    WRITE(6,'(a)') 'H-Matrix r:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(1:nr,i)
+    END DO
+  END IF
+  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
+!  CALL DGEEV('N','V',ndimact,eigvec,ndimact,eigval,eigvali,eigvec,ndimact,eigvec,ndimact,work,lwork,iwork,liwork,info)
+  WRITE(6,'(a,2i4/400(1pg13.5))') 'EIGVAL r:',in,im,eigval
+  IF(ttestgauss) THEN
+!  IF(im<3) THEN
+    WRITE(6,'(a)') 'eigenvectors:'
+    DO i=1,nr
+      WRITE(6,'(100(1pg13.5))') eigvec(i,:)
+    END DO
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(1):',eigvec(:,1)
+!    WRITE(6,'(a/400(1pg13.5))') 'EIGVEC r(N):',eigvec(:,ndimact)
+!  ELSE
+!    STOP
+  END IF
+  IF(eigval(ndimact).GE.-1D-10) THEN     
+    ndimksum=ndimact-1               ! to avoid spurious eigenstates
+  ELSE
+    ndimksum=ndimact
+  END IF
+  eigval = EXP(eigval*protonfactor)
+  protfolr(0:nr,0:nr,im,in)=0D0
+  DO i=1,ndimact; DO j=1,ndimact
+!   sum over "Bessel" eigenstates                                                                                                              
+!    protfolr(i,j,im,in)=0D0
+    DO k = 1,ndimksum
+      protfolr(i-1,j-1,im,in) = protfolr(i-1,j-1,im,in) + eigvec(i,k)*eigval(k)*eigvec(j,k)
+    END DO
+    protfolr(i-1,j-1,im,in) = protfolr(i-1,j-1,im,in)*SQRT(MAX(r(j-1),1D-99))/SQRT(MAX(r(i-1),1D-99))
+!    protfolr(i,j,im,in) = protfolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
+  END DO; END DO
+
+  IF(ttestgauss) THEN
+    WRITE(6,'(a,2i3)') 'Folding r: im,in=',im,in
+    DO i=1,ndimact
+      WRITE(6,'(100(1pg13.5))') protfolr(i-1,0:nr,im,in)
+    END DO
+  END IF
+
+END DO
+DEALLOCATE(eigvec,eigval,work,iwork)
+DEALLOCATE(eigvali)
+
+WRITE(6,*) ' Setup of proton folding in r direction completed'
+
+CALL test_protonfolding()
+
+RETURN
+END SUBROUTINE init_protonfolding_eigenstates
+
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: protonfolding
+!> @brief
+!! Calculate the action of the proton folding on a density field.
+!>
+!> @param[in] fldin
+!> REAL(8), array, takes the input field.
+!> @param[out] fldout
+!> REAL(8), array, returns the output field.
+!> INTEGER, takes boundary parity. 1 for negative (zero-value), 2 for positive 
+!!(zero-derivative).
+!> @param[in] factor
+!> REAL(8), takes the weight factor.
+!--------------------------------------------------------------------------- 
+
+SUBROUTINE protonfolding(fldin,fldout)
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)        :: fldin(0:nz,0:nr)
+REAL(8), INTENT(OUT)       :: fldout(0:nz,0:nr)
+
+REAL(8), ALLOCATABLE :: work(:,:)
+REAL(8) :: xnormin,xnormout
+
+INTEGER :: imact,izpact,ibpidx,is,izpidx,iz,ibpfld
+
+LOGICAL, PARAMETER :: ttestnorms=.FALSE.
+
+ALLOCATE(work(0:nz,0:nr))
+
+  izpact = 1
+  izpidx = izpact*isym  + (1-isym)
+  ibpfld=1
+  ibpidx = izpidx 
+  
+  CALL mulz(protfolz(:,:,ibpidx),fldin(:,:),work,1D0,0)
+!  work=fldin
+  CALL mulr(protfolr(:,:,0,ibpfld),work,fldout(:,:),1D0,0)
+
+  DO iz=0,nz
+    CALL extrapolate(fldout(iz,:),1)
+  END DO
+
+DEALLOCATE(work)
+
+xnormin=f1int(fldin)
+xnormout=f1int(fldout)
+IF(ttestnorms) WRITE(6,*) 'Prot.Fold. norms:',xnormin,xnormout
+
+fldout=fldout*xnormin/xnormout
+
+RETURN
+END SUBROUTINE protonfolding
+
+SUBROUTINE test_protonfolding()
+
+IMPLICIT NONE
+
+REAL(8), ALLOCATABLE :: work(:,:,:),work2(:,:,:),workf(:,:,:)
+REAL(8) :: rad2,tnorm1,r2exp1,tnorm2z,r2exp2z,tnorm2r,r2exp2r,tnorm2,r2exp2
+REAL(8) :: tnorm1z2,r2exp1z2,tnorm2z2,r2exp2z2
+REAL(8),PARAMETER :: testwid=4D0
+INTEGER :: im,izpact,ibpidx,is,izpidx,ir,iz
+
+ALLOCATE(work(0:nz,0:nr,1:2),work2(0:nz,0:nr,1:2),workf(0:nz,0:nr,1:2))
+
+WRITE(6,*) 'TEST proton folding:'
+
+DO im=0,0
+
+
+  DO iz=0,nz; DO ir=0,nr
+    rad2 = r(ir)**2+z(iz)**2
+    work(iz,ir,1) = r(ir)**im*EXP(-rad2/testwid**2)
+    work(iz,ir,2) = 0D0
+    work2(iz,ir,1:2) = rad2*work(iz,ir,1:2)  !rad2*work(iz,ir,1:2)
+  END DO; END DO
+  tnorm1 = f1int(work(0:nz,0:nr,1))
+  r2exp1 = f1int(work2(0:nz,0:nr,1))/tnorm1
+
+
+  ibpidx = 1 !(-1)**im
+  DO is=1,nsd
+    CALL mulz(protfolz(:,:,ibpidx),work(:,:,is),workf(:,:,is),1D0,0)
+  END DO
+  DO iz=0,nz; DO ir=0,nr
+    rad2 = r(ir)**2+z(iz)**2
+    work2(iz,ir,1:2) = rad2*workf(iz,ir,1:2)
+  END DO; END DO
+  tnorm2z = f1int(workf(0:nz,0:nr,1))
+  r2exp2z = f1int(work2(0:nz,0:nr,1))/tnorm2z
+
+  IF(im==0) THEN
+    WRITE(6,'(a)') 'proton folding RHO along z:'
+    WRITE(6,'(0pf6.2,1pg13.5,1pg13.5,1pg13.5)') &
+      (z(iz),work(iz,1,1),workf(iz,1,1),work(iz,1,1)-workf(iz,1,1),iz=0,nz)
+  END IF
+
+  CALL mulr(protfolr(:,:,im,1),work(:,:,1),workf(:,:,1),1D0,0)
+  CALL mulr(protfolr(:,:,im,2),work(:,:,2),workf(:,:,2),1D0,0)   ! ??
+  workf(0:nz,0,1:2)=0D0
+  DO iz=0,nz; DO ir=0,nr
+    rad2 = r(ir)**2+z(iz)**2
+    work2(iz,ir,1:2) = rad2*workf(iz,ir,1:2)
+  END DO; END DO
+  tnorm2r = f1int(workf(0:nz,0:nr,1))
+  r2exp2r = f1int(work2(0:nz,0:nr,1))/tnorm2r
+
+  IF(im<0) THEN
+    WRITE(6,'(a)') 'proton folding RHO along r:'
+    WRITE(6,'(0pf6.2,1pg13.5,1pg13.5,1pg13.5)') &
+      (r(ir),work(icm,ir,1),workf(icm,ir,1),work(icm,ir,1)-workf(icm,ir,1),ir=0,nr)
+  END IF
+
+
+
+  IF(im==0) THEN
+
+    DO iz=0,nz; DO ir=0,nr
+      work(iz,ir,1:2) = z(iz)**2*work(iz,ir,1:2)
+    END DO; END DO
+    tnorm1z2 = f1int(work(0:nz,0:nr,1))
+    DO iz=0,nz; DO ir=0,nr
+      work2(iz,ir,1:2) = z(iz)**2*work(iz,ir,1:2)
+    END DO; END DO
+    r2exp1z2 = f1int(work2(0:nz,0:nr,1))/tnorm1z2
+
+
+    DO is=1,nsd
+      CALL mulz(protfolz(:,:,ibpidx),work(:,:,is),workf(:,:,is),1D0,0)
+    END DO
+    DO iz=0,nz; DO ir=0,nr
+     work2(iz,ir,1:2) = z(iz)**2*workf(iz,ir,1:2)
+    END DO; END DO
+    tnorm2z2 = f1int(workf(0:nz,0:nr,1))
+    r2exp2z2 = f1int(work2(0:nz,0:nr,1))/tnorm2z2
+
+
+   WRITE(6,'(a,i3,6(/a,1pg13.5,2(0pf10.3)))')  &
+    'TEST proton folding:  norm rms rms**2;  for m=',im,  &
+    'before       ',tnorm1,r2exp1,0D0,     &
+     'after z      ',tnorm2z,r2exp2z,r2exp2z-r2exp1,   &
+    'after r      ',tnorm2r,r2exp2r,r2exp2r-r2exp1,   &
+     'before z**2  ',tnorm1z2,r2exp1z2,0D0,   &
+     'after z**2   ',tnorm2z2,r2exp2z2,r2exp2z2-r2exp1z2
+  
+  ELSE
+
+   WRITE(6,'(a,i3,6(/a,1pg13.5,2(0pf10.3)))')  &
+    'TEST proton folding:  norm rms rms**2;  for m=',im,  &
+    'before       ',tnorm1,r2exp1,0D0,     &
+     'after z      ',tnorm2z,r2exp2z,r2exp2z-r2exp1,   &
+    'after r      ',tnorm2r,r2exp2r,r2exp2r-r2exp1
+  
+  END IF
+
+END DO
+
+
+DEALLOCATE(work,work2,workf)
+
+RETURN
+END SUBROUTINE test_protonfolding
+
 
 END MODULE grid

@@ -1,0 +1,15 @@
+&main outnam='ud1', ipri_fields=0, iprint=2000, itmax=2000,
+/
+&force name="UNEDF1", ipair=5,
+/
+&grids tsym=T,nz=25,nr=25,dz=0.7,dr=0.7
+/
+&static nprot=50,nneut=51,e0inv=100D0,x0inv=0.3,tvaryx0=F,addocc=0.3,addrho=0.15,
+deocc(1)=2.1D0,deocc(2)=2.1D0,errenr=1D-10,errvar=0.01,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999,betain=0.0/
+/
+&constraint
+/
+&thermal
+/
+

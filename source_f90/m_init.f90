@@ -47,10 +47,10 @@ IMPLICIT NONE
         WRITE(90,'(3a)')  &
             '# bet1   bet1p  bet1n  bet2   bet2p  bet2n  bet3   bet3p  bet3n', &
             '  bet4   bet4p  bet4n   energy           epairp epairn ferp   fern', &
-            '  iter   rmsc    rms    rmsp    rmsn     N_boundp  N_boundn'
+            '  gapp   gapn   iter   rmsc    rms    rmsp    rmsn     N_boundp  N_boundn'
       ELSE
         WRITE(90,'(3a)') '# bet2   bet2p  bet2n  ',  &
-            'bet4   bet4p  bet4n     energy         epairp epairn ferp   fern  iter',  &
+            'bet4   bet4p  bet4n     energy         epairp epairn ferp   fern gapp   gapn  iter',  &
             '  rmsc    rms      rmsp    rmsn    N_boundp  N_boundn '
       END IF
     ELSE
@@ -131,10 +131,10 @@ IF(ipair.GE.0 .AND. ipair.LE.3) THEN
   CALL user_interface_3()          ! initializes user defined pairing 
 ELSE IF(ipair==4) THEN
   pairfc=0D0
-ELSE IF(ipair == 5 .OR. ipair == 9) THEN
+ELSE IF(ipair == 5 .OR.ipair == 6 .OR. ipair == 9) THEN
   IF(pairfc(1)==0D0) pairfc(1) = 300D0
   IF(pairfc(2)==0D0) pairfc(2) = 300D0
-ELSE IF(ipair == 7 .OR. ipair == 11) THEN
+ELSE IF(ipair == 7 .OR. ipair == 8 .OR. ipair == 11) THEN
   IF(pairfc(1)==0D0) pairfc(1) = 600D0
   IF(pairfc(2)==0D0) pairfc(2) = 600D0
 ELSE
@@ -770,6 +770,7 @@ DO  iq=1,2
                 miq(nom)=iqold
                 mim(nom)=kold
               END IF
+              nbuf(jst) = nom
             
             
 !**********************************************************************
@@ -845,6 +846,7 @@ DO ist=1,LEN
       vsqf(ist),cmpn(1,ist),cmpn(2,ist),(spenrg(ist)+70.0)/hboma
 END DO
 WRITE(7,'(a)') ' '
+WRITE(6,'(a)') 's.p. states initialized'
 
 !**********************************************************************
 !                                                                     *
@@ -879,7 +881,10 @@ END DO
 
 
 IF(itest>0) WRITE(7,'(a)') ' SSETUP finished'
+! WRITE(7,'(a)') ' SSETUP finished'
 DEALLOCATE(wrk1,wrk2)
+
+FLUSH (7)
 
 RETURN
 END SUBROUTINE ssetup

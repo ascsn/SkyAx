@@ -1,0 +1,22 @@
+&main outnam='bas',ipri_fields=6000, itmax=4000, iprint=4000, tpri_2d=F, itest=0,
+      iterbcs=500,iterhfb=1000,pairenhance=1D0,iternat=0,modnat=1,
+/
+&force t0=-1879.639,t1=313.749,t2=112.677,t3=12527.376,
+ x0=0.25854594,x1=-0.38168900,x2=-2.8236379,x3=0.12322898,
+ t4=124.634,b4p=34.11167,power=0.3,
+ h2m=20.749811,20.721249,
+ chg=1D0,ex=1,riftm=0D0,zpe=1,
+ ipair=8,v0prot=220.0,v0neut=200.0,rho0pr=0.20113,
+ pair_cutoff=-25D0,tregpair=T
+/
+&grids nz=25,nr=25,dz=0.7,dr=0.7,tsym=T
+/
+&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.2D0,addrho=0.15D0,addocc=0.3D0,
+deocc(1)=4.5D0,deocc(2)=4.5D0,errenr=1D-9,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=T,inodiag=9999999/
+/
+&constraint swicon2=0D0,betmin2=-0.0D0,betmax2=0.6D0,betaw2=0.05D0
+/
+&thermal
+/
+
