@@ -47,7 +47,7 @@ ifx_omp   : export EXEC_SKYAX = skyax.ifx.omp
 #gf gf_d gf_omp ifort ifort_omp ifort_dbg: export LIBS_SKYAX = -qmkl
 ifort ifort_omp ifort_dbg ifx ifx_omp: export LIBS_SKYAX = -qmkl
 #gf gf_d gf_omp: export LIBS_SKYAX = -mkl
-# gf gf_d ifort : export LIBS_SKYAX = -lblas -llapack 
+gf gf_d gf_omp: export LIBS_SKYAX = -lblas -llapack 
 #gf gf_d ifort : export LIBS_SKYAX = -L$(y/usr/lib) -lblas -L$(/usr/lib) -llapack 
 #
 # ----- restart make, clean or print info------------------------------------

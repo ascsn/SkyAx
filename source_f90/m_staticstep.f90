@@ -124,7 +124,7 @@ IMPLICIT NONE
 INTEGER, INTENT(IN)           :: iter
 
 REAL(8) :: aopt,fac,qh,redfac,width,rmsb,v2act,symcond
-INTEGER :: im,iq,is,kpsic,nadd
+INTEGER :: im,iq,is,kpsic,nadd,ir,iz
 INTEGER :: nlo,nhi,i
 !$ REAL(8) :: wtime1,wtime2
 LOGICAL :: topened
@@ -432,8 +432,12 @@ DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 !$OMP END PARALLEL
 
 
-IF(thfb .AND. iter>0) psi=temp
-
+!IF(thfb .AND. iter>0) psi=temp    ! <<-- this does not work do it explicitely
+IF(thfb .AND. iter>0) THEN
+  DO im=1,npsi(2); DO is=1,2; DO ir=0,nr; DO iz=0,nz
+    psi(iz,ir,is,im) = temp(iz,ir,is,im)
+  END DO; END DO; END DO; END DO
+END IF
 IF(tdiag) CALL testconj_all('after HDIAG')
 
 
