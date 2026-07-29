@@ -1931,7 +1931,7 @@ DO in=1,2; DO im=0,kmpsi
     DO k = 1,ndimksum
       gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in) + eigvec(i,k)*eigval(k)*eigvec(j,k)
     END DO
-    gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in)*SQRT(r(j-1))/SQRT(r(i-1))
+    gaufolr(i-1,j-1,im,in) = gaufolr(i-1,j-1,im,in)*SQRT(MAX(r(j-1),epsilon(1D0)))/SQRT(MAX(r(i-1),epsilon(1D0)))
 !    gaufolr(i,j,im,in) = gaufolr(i,j,im,in)*SQRT(r(i))/SQRT(r(j))
   END DO; END DO
 
@@ -2036,7 +2036,12 @@ DO im=0,kmpsi
 
   DO iz=0,nz; DO ir=0,nr
     rad2 = r(ir)**2+z(iz)**2
-    work(iz,ir,1) = r(ir)**im*EXP(-rad2/testwid**2)
+    IF(r(ir)==0D0) THEN
+      work(iz,ir,1) = 0D0
+    ELSE
+!      WRITE(*,*) 'r,im,rad2=',r(ir),im,rad2
+      work(iz,ir,1) = r(ir)**im*EXP(-rad2/testwid**2)
+    END IF
     work(iz,ir,2) = 0D0
     work2(iz,ir,1:2) = rad2*work(iz,ir,1:2)  !rad2*work(iz,ir,1:2)
   END DO; END DO

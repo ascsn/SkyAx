@@ -22,8 +22,8 @@ INTEGER,PARAMETER :: nsd=2               !<No. of spinor components.
 !INTEGER,PARAMETER :: nhwd=300            !<Maximum no. of oscillator quanta.
 INTEGER,PARAMETER :: nhwd=120            !<Maximum no. of oscillator quanta.
 INTEGER,PARAMETER :: kqm=  2             !<No. of isospins (standard: 2).
-INTEGER,PARAMETER :: kmpsi=400            !<Maximal number of mpsi for damping in r-direction.
-!INTEGER,PARAMETER :: kmpsi=50            !<Maximal number of mpsi for damping in r-direction.
+!INTEGER,PARAMETER :: kmpsi=400            !<Maximal number of mpsi for damping in r-direction.
+INTEGER,PARAMETER :: kmpsi=50            !<Maximal number of mpsi for damping in r-direction.
 INTEGER,PARAMETER :: klocal=0            !<Switch to print localization criterion.
 INTEGER,PARAMETER :: ifoccs=0            !<Switch to print occ.numbers.
 

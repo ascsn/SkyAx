@@ -1,231 +1,187 @@
-!---------------------------------------------------------------------------  
-! DESCRIPTION: Qvariance
-!> @brief
-!! Variance of quadrupole momentum, presently only for istsym>0
-!--------------------------------------------------------------------------- 
-SUBROUTINE Qvariance(DelQ2)
 
-USE paramr
-USE dynpar
-USE wavefr
-USE levels
-USE grid
+! Code converted using TO_F90 by Alan Miller
+! Date: 2026-07-16  Time: 09:56:38
+ 
+!-----crnkam-----------------------------------------------------------
 
-IMPLICIT NONE
+SUBROUTINE crnkam
 
-REAL(8), INTENT(OUT) :: DelQ2(-2:2)
+!     and computes Inglis cranking mass for angular momentum
 
-INTEGER,PARAMETER :: intest=0,itstpr=0
-REAL(8),PARAMETER :: fac20=SQRT(5D0/(16D0*pi))
-REAL(8),PARAMETER :: fac21=SQRT(5D0/(16D0*pi))
-REAL(8),PARAMETER :: fac22=SQRT(5D0/(16D0*pi))
+INCLUDE 'paramr.inc'
+INCLUDE 'constr.inc'
+INCLUDE 'observ.inc'
+INCLUDE 'dynpar.inc'
+INCLUDE 'fields.inc'
+INCLUDE 'levels.inc'
+INCLUDE 'wavefr.inc'
+INCLUDE 'derivs.inc'
 
-REAL(8),ALLOCATABLE :: psi1(:,:,:),psin(:,:,:),psip(:,:,:)
+DATA itstpr/0/            ! switch to testprints of Inglis Cranking
 
-REAL(8) :: deltai,deltaj,edifi,edifj,eferm,equasi,equasj,pij,&
-          sumdir,tstovl,ui,uj,vi,vj,r2
-INTEGER :: iz,ir,is,ist,jst,jstmax,jstmin,mist,mm,nparr,npist
+!     buffered SQRT as internal statement function
+
+sqrtb(x) = SQRT(MAX(x,smal))
+
+!-----------------------------------------------------------------------
 
 
-IF(istsym.LE.0) THEN
-  DelQ2=0D0
-END IF
+!     double loop to accumulate cranking mass for angular momentum
 
-ALLOCATE(psi1(0:nz,0:nr,nsd),psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
-psi1=0D0;psip=0D0;psin=0D0
-
-!     1. double loop to accumulate Q_20 width
-IF(intest == 1) WRITE(7,'(a)') ' Q_20:'
-sumdir = zero
+sumj2  = zero
+sumj2e = zero
+sumtst = 0.0
+ampnms = 0.0
 DO ist=1,nst(1)+nst(2)
   mist   = mpsi(ist)
   IF(ist <= nst(1)) THEN
     jstmax = nst(1)
     jstmin = 1
     eferm  = fer(1)
+!R            efermo = ferolp
   ELSE
     jstmax = nst(1)+nst(2)
     jstmin = nst(1)+1
     eferm  = fer(2)
+!R            efermo = feroln
   END IF
   
-! apply Q_20
-  DO ir=0,nr
-    r2     = r(ir)*+2 !(dr*(ir+sr))**2
-    DO iz=0,nz
-!      z     = ((iz)+sz-icm)*dz
-      psip(iz,ir,:) = fac20*(2*z(iz)**2-r2)*psi(iz,ir,:,ist)
+!     ang.mom. operator J+ on 'psip' and J- on 'psin'
+  
+!                                     first, the L+ and L-
+  CALL nablaz_spin(psi(0,0,1,ist),psi1,nparz(1,ist),1,one)
+  CALL nablar_spin(psi(0,0,1,ist),psi2,   mpsi(ist),1,one)
+  
+  DO is=1,nsd
+    mm        = mist+is-1
+    npist  = nparz(is,ist)
+    nparr     = 1+MOD(mm,2)
+!PK         call mulr(derr1(0,0,nparr),psi(0,0,is,ist),psi2(0,0,is),one,0)
+!PK         call mulz(derz1(0,0,npist),psi(0,0,is,ist),psi1(0,0,is),one,0)
+    ir = 0
+    IF(mm == 1) THEN
+      DO iz=0,nz
+        z     = (iz+sz-icm)*dz
+        psip(iz,ir,is) = 0.0
+!              psin(iz,ir,is) = (z+z)*psi2(iz,ir,is)
+        psin(iz,ir,is) = -(z+z)*psi2(iz,ir,is)
+      END DO
+    ELSE
+      DO iz=0,nz
+        z     = (iz+sz-icm)*dz
+!              psip(iz,ir,is) = zero
+        psip(iz,ir,is) = z*psi2(iz,ir,is)
+!              psin(iz,ir,is) = psip(iz,ir,is)
+        psin(iz,ir,is) = -psip(iz,ir,is)
+      END DO
+    END IF
+    DO ir=1,nr
+      r    = (ir+sr)*dr
+      rinv = mm/r
+      DO iz=0,nz
+        z     = (iz+sz-icm)*dz
+        psip(iz,ir,is) = z*(psi2(iz,ir,is)-rinv *psi(iz,ir,is,ist))  &
+            -r*psi1(iz,ir,is)
+!              psin(iz,ir,is) = z*(wrk2(iz,ir)+rinv*psi(iz,ir,is,ist))
+!     &                        -r*wrk4(iz,ir)
+        psin(iz,ir,is) = -z*(psi2(iz,ir,is)+rinv *psi(iz,ir,is,ist))  &
+            +r*psi1(iz,ir,is)
+      END DO
     END DO
   END DO
-  
+!                                          the S+ and S-
+  DO ir=0,nr
+    DO iz=0,nz
+      psip(iz,ir,1) = psip(iz,ir,1)+psi(iz,ir,2,ist)
+      psin(iz,ir,2) = psin(iz,ir,2)+psi(iz,ir,1,ist)
+    END DO
+  END DO
+!                                   test       the S+ and S-
+!t        do ir=0,nr
+!t        do iz=0,nz
+!t          psip(iz,ir,1) = -psi(iz,ir,2,ist)
+!t          psip(iz,ir,2) = 0.0
+!t          psin(iz,ir,1) = 0.0
+!t          psin(iz,ir,2) = psi(iz,ir,1,ist)
+!t        enddo
+!t        enddo
 !                                       auxiliary variables
   npist  = nparz(1,ist)
   vi    = sqrtb(vsqf(ist))
   ui    = sqrtb(one-vi*vi)
-  IF(mist<0) ui=-ui
-  deltai = deltaf(ist)*wtpair_uv(ist)
+  deltai = deltaf(ist)*wtpair(ist)
   edifi  = spenrg(ist)-eferm
   equasi = SQRT(edifi*edifi+deltai*deltai)
 !                                       the overlaps
   tstovl = wfovlp(psip,psip)
-  sumdir = 4.0*vi*vi*wfovlp(psin,psin)*wtpair_v2(ist) +sumdir
-  IF(intest == 1) WRITE(7,'(a,i3,1pg12.4)')  &
-      ' test: ist, <sp|Q**2|sp>=',ist,tstovl
+!test         write(7,'(a,i3,1pg12.4)') ' test: ist, <J**2>=',ist,tstovl
+  sumtst = tstovl*vi*vi + sumtst
   DO jst=jstmin,jstmax
-    IF(  npist == nparz(1,jst) .AND. mist == mpsi(jst) ) THEN
+    IF((npist == nparz(2,jst) .AND.  &
+          (mist+1 == mpsi(jst) .OR. mist-1 == mpsi(jst)) ) .OR.  &
+          (npist == nparz(1,jst) .AND.  &
+          (mist == 0 .AND. mpsi(jst) == 0))            ) THEN
       vj    = sqrtb(vsqf(jst))
       uj    = sqrtb(one-vj*vj)
-      IF(mpsi(jst)<0) uj=-uj
-      deltaj = deltaf(jst)*wtpair_uv(jst)
+      deltaj = deltaf(jst)*wtpair(jst)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
-      IF(isTsym.LE.0 .AND. mist == 0 .AND. mpsi(jst) == 0) THEN
-        pij    = wfovoc(psi(0:nz,0:nr,1,jst),psin(0:nz,0:nr,2))  &
-            + wfovoc(psi(0:nz,0:nr,2,jst),psin(0:nz,0:nr,1))
-      ELSE 
-        pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(mist == 0 .AND. mpsi(jst) == 0) THEN
+!test            if((ist.eq.2 .and. jst.eq.5) .or.
+!test     &         (ist.eq.5 .and. jst.eq.2))
+!test     &         write(7,'(a,2(2x,2(1pg12.4)))')
+!test     &        ' 2&5: upper,lower=',
+!test     &        wfovoc(psi(0,0,1,jst),psin(0,0,2)),
+!test     &        wfovoc(psi(0,0,2,jst),psin(0,0,1)),
+!test     &        wfovoc(psi(0,0,1,jst),psi(0,0,1,ist)),
+!test     &        wfovoc(psi(0,0,2,jst),psi(0,0,2,ist))
+!            do ir=0,nr
+!            do iz=0,nz
+!              wrk2(iz,ir)   = psin(iz,ir,1)
+!              psin(iz,ir,1) = psin(iz,ir,2)
+!              psin(iz,ir,2) = wrk2(iz,ir)
+!              psin(iz,ir,2) = -psav
+!            enddo
+!            enddo
+        pij    = +wfovoc(psi(0,0,2,jst),psin(0,0,1))  &
+            -wfovoc(psi(0,0,1,jst),psin(0,0,2))
+        pij    = pij*(vj*ui-uj*vi)
+!            write(7,'(a,3(2i2,1x),2(1pg12.4))')
+!     &     ' 0:ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',
+!     &       ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij,
+!     &       pij*(vj*ui-uj*vi)
+      ELSE IF(mist+1 == mpsi(jst)) THEN
+        pij    = wfovlp(psi(0,0,1,jst),psip)
+        pij    = pij*(vj*ui-uj*vi)
+!            write(7,'(a,3(2i2,1x),2(1pg12.4))')
+!     &     ' +:ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',
+!     &       ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij,
+!     &       pij*(vj*ui-uj*vi)
+      ELSE IF(mist-1 == mpsi(jst)) THEN
+        pij    = wfovlp(psi(0,0,1,jst),psin)
+        pij    = pij*(vj*ui-uj*vi)
+!            write(7,'(a,3(2i2,1x),2(1pg12.4))')
+!     &     ' -:ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',
+!     &       ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij,
+!     &       pij*(vj*ui-uj*vi)
       END IF
-      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
-      IF(intest == 1) WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
-          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
-          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij, pij*(vj*ui-uj*vi)
       IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
           ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
-!               pij    = pij*(vj*ui-uj*vi)
-!               pij    = pij*pij
-!               sumexy = pij/(equasi+equasj) + sumexy
-!               sumwxy  = pij + sumwxy
+!PK               pij    = pij*(vj*ui-uj*vi)
+      pij    = pij*pij
+      sumj2e = pij/(equasi+equasj) + sumj2e
+      sumj2  = pij + sumj2
+      ampnms = pij/(equasi+equasj)**2 *(ui*ui-vi*vi+uj*uj-vj*vj)  &
+          + ampnms
     END IF
   END DO
 END DO
-IF(isTsym>0) sumdir=sumdir/2D0
-DelQ2(0) = sumdir/2.0
-
-!     2. loop to accumulate Q_21-variance
-IF(intest == 1) WRITE(7,'(a)') ' Q_21:'
-sumdir = zero
-DO ist=1,nst(1)+nst(2)
-  mist   = mpsi(ist)
-  IF(ist <= nst(1)) THEN
-    jstmax = nst(1)
-    jstmin = 1
-    eferm  = fer(1)
-  ELSE
-    jstmax = nst(1)+nst(2)
-    jstmin = nst(1)+1
-    eferm  = fer(2)
-  END IF
-  
-!  action of Q_21 operator
-  DO ir=0,nr
-!    r     = (dr*(ir+sr))
-    DO iz=0,nz
-!      z     = ((iz)+sz-icm)*dz
-      psip(iz,ir,:) = fac21*z(iz)*r(ir)*psi(iz,ir,:,ist)
-    END DO
-  END DO
-
-!                                       auxiliary variables
-  npist  = nparz(1,ist)
-  vi    = sqrtb(vsqf(ist))
-  ui    = sqrtb(one-vi*vi)
-  IF(mist<0) ui=-ui
-  deltai = deltaf(ist)*wtpair_uv(ist)
-  edifi  = spenrg(ist)-eferm
-  equasi = SQRT(edifi*edifi+deltai*deltai)
-!                                       the overlaps
-  tstovl = wfovlp(psip,psip)
-  IF(intest /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
-      ' test: ist, <Delta_zr**2>=',ist,tstovl
-  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
-  DO jst=jstmin,jstmax
-    IF(npist == nparz(2,jst) .AND. mist+1 == mpsi(jst)) THEN
-      vj    = sqrtb(vsqf(jst))
-      uj    = sqrtb(one-vj*vj)
-      IF(mpsi(jst)<0) uj=-uj
-      deltaj = deltaf(jst)*wtpair_uv(jst)
-      edifj  = spenrg(jst)-eferm
-      equasj = SQRT(edifj*edifj+deltaj*deltaj)
-      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
-      IF(intest == 1)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
-          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
-          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
-          (pij*(vj*ui-uj*vi))**2
-      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
-          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
-      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
-    END IF
-  END DO
-END DO
-IF(isTsym>0) sumdir=sumdir/2D0
-DelQ2(1) = sumdir/2.0
-DelQ2(-1) = sumdir/2.0
-
-
-
-!     3. loop to accumulate Q_22-variance
-IF(intest == 1) WRITE(7,'(a)') ' Q_22:'
-sumdir = zero
-DO ist=1,nst(1)+nst(2)
-  mist   = mpsi(ist)
-  IF(ist <= nst(1)) THEN
-    jstmax = nst(1)
-    jstmin = 1
-    eferm  = fer(1)
-  ELSE
-    jstmax = nst(1)+nst(2)
-    jstmin = nst(1)+1
-    eferm  = fer(2)
-  END IF
-  
-!  action of Q_21 operator
-  DO ir=0,nr
-    r2     = r(ir)**2 !(dr*(ir+sr))**2
-    DO iz=0,nz
-!      z     = ((iz)+sz-icm)*dz
-      psip(iz,ir,:) = fac22*r2*psi(iz,ir,:,ist)
-    END DO
-  END DO
-
-!                                       auxiliary variables
-  npist  = nparz(1,ist)
-  vi    = sqrtb(vsqf(ist))
-  ui    = sqrtb(one-vi*vi)
-  IF(mist<0) ui=-ui
-  deltai = deltaf(ist)*wtpair_uv(ist)
-  edifi  = spenrg(ist)-eferm
-  equasi = SQRT(edifi*edifi+deltai*deltai)
-!                                       the overlaps
-  tstovl = wfovlp(psip,psip)
-  IF(intest /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
-      ' test: ist, <Delta_zr**2>=',ist,tstovl
-  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
-  DO jst=jstmin,jstmax
-    IF(npist == nparz(2,jst) .AND. mist+2 == mpsi(jst)) THEN
-      vj    = sqrtb(vsqf(jst))
-      uj    = sqrtb(one-vj*vj)
-      IF(mpsi(jst)<0) uj=-uj
-      deltaj = deltaf(jst)*wtpair_uv(jst)
-      edifj  = spenrg(jst)-eferm
-      equasj = SQRT(edifj*edifj+deltaj*deltaj)
-      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
-      IF(intest == 1)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
-          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
-          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
-          (pij*(vj*ui-uj*vi))**2
-      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
-          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
-      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
-    END IF
-  END DO
-END DO
-IF(isTsym>0) sumdir=sumdir/2D0
-DelQ2(2) = sumdir/2.0
-DelQ2(-2) = sumdir/2.0
-
-
-
-DEALLOCATE(psi1,psin,psip)
+ammass = sumj2e/2.0
+amwid  = sumj2/2.0
+ampnms = ampnms/2.0/ammass**2
+WRITE(7,'(a,1pg12.4)') ' test <J**2>=',sumtst
 
 RETURN
-END SUBROUTINE Qvariance
+END SUBROUTINE crnkam
+
+
