@@ -76,18 +76,20 @@ IF(tregpair) ALLOCATE(regpairadd(0:nz,0:nr,kqm))
          d2rho =0.0d0; rhoti  =0.0d0 ;paircr=0.0d0 
 
 !NEW ODD
+! Always allocate the odd-density arrays so that OMP REDUCTION clauses can
+! create private copies even when toddterms=.FALSE. (isTsym=0).
+ALLOCATE(&
+  rotjr(0:nz,0:nr,kqm),  rotjz(0:nz,0:nr,kqm),  rotspden(0:nz,0:nr,kqm),&
+  spdenr(0:nz,0:nr,kqm),  spdenz(0:nz,0:nr,kqm),  d2spdenr(0:nz,0:nr,kqm), &
+  d2spdenz(0:nz,0:nr,kqm), curphi(0:nz,0:nr,kqm),  spdenkr(0:nz,0:nr,kqm), spdenkz(0:nz,0:nr,kqm)&
+)
+rotjr=0D0;  rotjz=0D0;  rotspden=0D0;  spdenr=0D0;  spdenz=0D0
+d2spdenr=0D0;  d2spdenz=0D0;  curphi=0D0;  spdenkr=0D0;  spdenkz=0D0
 IF(toddterms) THEN
-  ALLOCATE(&
-    rotjr(0:nz,0:nr,kqm),  rotjz(0:nz,0:nr,kqm),  rotspden(0:nz,0:nr,kqm),&
-    spdenr(0:nz,0:nr,kqm),  spdenz(0:nz,0:nr,kqm),  d2spdenr(0:nz,0:nr,kqm), &
-    d2spdenz(0:nz,0:nr,kqm), curphi(0:nz,0:nr,kqm),  spdenkr(0:nz,0:nr,kqm), spdenkz(0:nz,0:nr,kqm)&
-  )
   ALLOCATE(&
     potS(0:nz,0:nr,kqm,2),  potC(0:nz,0:nr,kqm,2),  potA(0:nz,0:nr,kqm)&
   )
   potS=0D0;  potC=0D0;  potA=0D0
-  rotjr=0D0;  rotjz=0D0;  rotspden=0D0;  spdenr=0D0;  spdenz=0D0
-  d2spdenr=0D0;  d2spdenz=0D0;  curphi=0D0;  spdenkr=0D0;  spdenkz=0D0
 END IF
 !END NEW ODD
 
