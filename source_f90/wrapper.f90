@@ -140,11 +140,11 @@ IF(tFayans) THEN
   WRITE(31,'(3(1pg20.12),a)') asm,hsm,hgradm ," asm,hsm,hgradm "
   WRITE(31,'(2(1pg20.12),a)') hcoul,sigmacoul," hcoul,sigmacoul"
   WRITE(31,'(5(1pg20.12),a)') fxi,h1xi,hgradxi,gammaxi,rho0xi," fxi,h1xi,hgradxi,gammaxi,rho0xi"
-  WRITE(31,'(3(1pg20.12),a)') delfxi,ABS(pairstab),pair_cutoff," delfxi,ecstab,cutfac"
+  WRITE(31,'(3(1pg20.12),a)') delfxi,-ABS(pairstab),pair_cutoff," delfxi,ecstab,cutfac"
   WRITE(31,'(2(1pg20.12),a)') c0tau,c1tau ," c0tau,c1tau "
   WRITE(31,'(4(1pg20.12),a)') c0nabj,c1nabj,c0tens,c1tens," c0nabj,c1nabj,c0tens,c1tens"
 END IF
-WRITE(31,'(i4,5(1pg17.9),a)')  ipair,pairfc,ABS(pairstab),rho0pr,pair_cutoff,"  ipair,pairfp,pairfn"
+WRITE(31,'(i4,5(1pg17.9),a)')  ipair,pairfc,-ABS(pairstab),rho0pr,pair_cutoff,"  ipair,pairfp,pairfn"
 WRITE(31,'(f4.1,2i4,2f6.2,a)') sym,nr,nz,dr,dz,"  0    0  0 0 0 0  "
 WRITE(31,'(4f7.3,3i4,a)')  betain,octini,deocc,mmax,ispins,",,, init: BETAIN, OCTINI,  DEOCC(2),MMAX(2),ispins"
 IF(swicon2>0D0) THEN
