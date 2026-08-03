@@ -341,13 +341,7 @@ END FUNCTION charge_formfactor
 END SUBROUTINE user_interface_1
 
 SUBROUTINE user_interface_2()
-  use fields
-  use hdf5_skyax
-  
-  implicit none
-
-  call write_fields()
-
+! user defined post processing (called in 'skyax.f90')
   RETURN
 END SUBROUTINE user_interface_2
 

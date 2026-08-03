@@ -18,7 +18,3 @@ for005_*
 *.err
 *.out
 *.job
-
-# fortran compile files
-*.o
-*.mod
