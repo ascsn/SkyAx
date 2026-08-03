@@ -565,8 +565,25 @@ SUBROUTINE run_deformation_scan()
 
   IMPLICIT NONE
 
+  ! Snapshot of the lowest-energy point visited during the deformation
+  ! loop below. Restored into the live observables at the end so that
+  ! callers (fill_mt_output, the S_2N dripline check) see the actual
+  ! minimum of the scanned PES rather than its last point. With no
+  ! constraint active (nqmax*=0) the loop has exactly one point, so the
+  ! restore is a no-op and single-nucleus behavior is unchanged.
+  REAL(8) :: energy_min
+  REAL(8) :: beta2_min, beta2p_min, beta2n_min
+  REAL(8) :: beta4_min, beta4p_min, beta4n_min
+  REAL(8) :: epair_min(2), fer_min(2), gap_min(2)
+  INTEGER :: kblock_min(2)
+  REAL(8) :: angblock_min(2)
+  REAL(8) :: rmsc_min, rms_min, rmsp_min, rmsn_min
+  REAL(8) :: boundnum_min(2), devh2_min, econ_min
+  INTEGER :: itert_min
+
   iqact0o=0;iqact2o=0;iqact3o=0;iqact4o=0;
   itert  = 0                         ! reset total iteration counter for this nucleus
+  energy_min = 1.0D20                ! sentinel: first evaluated point always wins
 
   outer_loop : DO  iqact0=0,nqmax0; qact0=iqact0*qw0+qmin0
   DO  iqact2=0,nqmax2; qact2=iqact2*qw2+qmin2
@@ -654,6 +671,19 @@ SUBROUTINE run_deformation_scan()
     CALL  iteration_loop()    ! the static iteration
     WRITE(7,*) 'after ITERATION_LOOP: ',blnprot,blnneut
 
+    IF (energy < energy_min) THEN
+      energy_min   = energy
+      beta2_min    = beta2;    beta2p_min = beta2p;  beta2n_min = beta2n
+      beta4_min    = beta4;    beta4p_min = beta4p;  beta4n_min = beta4n
+      epair_min    = epair;    fer_min    = fer;     gap_min    = gap
+      kblock_min   = kblock;   angblock_min = angblock
+      rmsc_min     = rmsc;     rms_min    = rms
+      rmsp_min     = rmsp;     rmsn_min   = rmsn
+      boundnum_min = boundnum
+      devh2_min    = devh2;    econ_min   = econ
+      itert_min    = itert
+    END IF
+
     IF( (blnprot .OR. blnneut) .AND. SUM(istblo)==0) THEN
 
       CALL scan_block()
@@ -668,6 +698,18 @@ SUBROUTINE run_deformation_scan()
   END DO       ! L=3 loop
   END DO       ! L=2 loop
   END DO outer_loop      ! L=0 loop
+
+  ! Restore the minimum-energy point found across the scan.
+  energy   = energy_min
+  beta2    = beta2_min;    beta2p = beta2p_min;  beta2n = beta2n_min
+  beta4    = beta4_min;    beta4p = beta4p_min;  beta4n = beta4n_min
+  epair    = epair_min;    fer    = fer_min;     gap    = gap_min
+  kblock   = kblock_min;   angblock = angblock_min
+  rmsc     = rmsc_min;     rms    = rms_min
+  rmsp     = rmsp_min;     rmsn   = rmsn_min
+  boundnum = boundnum_min
+  devh2    = devh2_min;    econ   = econ_min
+  itert    = itert_min
 
 END SUBROUTINE run_deformation_scan
 
