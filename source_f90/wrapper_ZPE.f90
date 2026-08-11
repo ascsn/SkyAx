@@ -30,7 +30,7 @@ IMPLICIT NONE
 !INTEGER :: iqact0o,iqact2o,iqact3o,iqact4o    ! save previous values
 !INTEGER :: ipairsav            ! saves initial setting of pairing model
 
-INTEGER :: ispins=3    ! level of spin terms: 0 = degen, 1 = no spin terms, 2 = min Gal., 3 = full"
+INTEGER :: ispins=0    ! level of spin terms: 0 = degen, 1 = no spin terms, 2 = min Gal., 3 = full"
 INTEGER :: ioptsk=10   ! way of Sykrma-force input
 INTEGER :: iplot=99999 ! plot modulus -- obsolete
 INTEGER :: ifold=0 
@@ -117,7 +117,9 @@ IF(HFBwidth.NE.0D0) STOP 'wrapper not yte designed for finite pairing width'
 IF(isovectormodel.NE.2) STOP 'SkyAx_odd compiled only for isovectormodel=2'
 
 READ(5,static) 
-IF(MOD(nprot,2)==0 .AND. MOD(nneut,2)==0) ispins=0
+
+!IF(MOD(nprot,2)==0 .AND. MOD(nneut,2)==0) ispins=0
+IF(ispins.NE.0) STOP "evaluation of ZPE only for 'ispins==0'"
 
 READ(5,constraint)
 
