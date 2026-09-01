@@ -18,7 +18,7 @@ USE levels
 USE fields
 USE observ
 USE steputil, ONLY: hpsi, update_energy_order
-USE pairin, ONLY: pairdn
+USE pairin, ONLY: pairdn,combine_spenergies
 IMPLICIT NONE
 
 INTEGER, INTENT(IN)      :: iso
@@ -26,7 +26,7 @@ REAL(8), INTENT(IN OUT)  :: efermiso
 REAL(8), INTENT(IN)      :: partnumin
 
 
-INTEGER :: istbloact,is,iab,isonpl,ist,jst,istbuf,iter,m1  !,npsid
+INTEGER :: istbloact,istcbloact,is,iab,isonpl,ist,jst,istbuf,iter,m1  !,npsid
 INTEGER :: n1,n2,na,nb,nae,namax,nmaxa,nbe,nbhi,nbmax,nblo,np1,nq,nqi
 REAL(8) :: partnum,efadd,avsymcond,cahcb,cbhca,dampstep,delstep,fackincut
 REAL(8) :: hermg,hermh,hermhm,ovlaa,ovlab,spemax,spemin,symcondmax,v2avar
@@ -75,13 +75,15 @@ IF(iso==1) THEN
   isonpl=0
   efadd=feradd(1)
   efermiso=fer(1)
-  istbloact=istblo
+  istbloact=istblo(1)
+  istcbloact=istcblo(1)
 ELSE IF(iso==2) THEN
   nmaxa=nst(2)
   isonpl=nst(1)
   efadd=feradd(2)
   efermiso=fer(2)
-  istbloact=istblo-nst(1)
+  istbloact=istblo(2)-nst(1)
+  istcbloact=istcblo(2)-nst(1)
   WRITE(6,'(i4)') npart(2)
 ELSE
   STOP 'HFB: ISO must be 1 or 2'
@@ -177,9 +179,12 @@ IF(tnewv2) THEN
       CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epairstab,  &
       pairstab,nmaxa,nmaxa,iab,tcutoff_uvspace)
   IF(toccmix) gwa=v2a
-  CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
+!NEW ODD
+  CALL combine_spenergies(spenat,speold,nst(1)+nst(2))
+  CALL pairdn(speold,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
-      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)  
+      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,istcbloact,erra,itest-1)  
+!END NEW ODD
   IF(pairstab /= 0) epair(iso) = epairstab
   IF(toccmix) v2a=addocc*v2a+conocc*gwa
   IF(tprint0) WRITE(6,'(a,6(1pg13.5))') 'after PAIRDN:',  &
@@ -206,10 +211,12 @@ IF(tprint) THEN
   WRITE(6,'(a,3(1pg13.5),2i4)') 'test hermiticity:',  &
       SQRT(hermh/nmaxa**2),SQRT(hermg/nmaxa**2),hermhm,namax+isonpl, nbmax+isonpl
 END IF
+uva(:)=SQRT(MAX((1D0-v2a(:))*v2a(:),xsmall))
 IF(tcutoff_uvspace) THEN                             ! check that!
-  uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)      
-ELSE
-  uva(:)=SQRT((1D0-v2a(:))*v2a(:))
+!  uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)      
+  uva(:)=uva(:)*paircut_uv(:)      
+!ELSE
+!  uva(:)=SQRT((1D0-v2a(:))*v2a(:))
 END IF
 
 avsymcond=0D0
@@ -498,14 +505,19 @@ IF(ttimer) CALL stimer(1,'pairdn')
   IF(pairstab /= 0)  &
       CALL pair_stab(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,epair(iso),  &
       pairstab,nmaxa,nmaxa,iab,tcutoff_uvspace)
-  CALL pairdn(spenat,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
+!NEW ODD
+  CALL combine_spenergies(spenat,speold,nst(1)+nst(2))                   
+  CALL pairdn(speold,gapnat,v2a,wate(isonpl+1),paircut_uv,paircut_v2,partnum,  &
       efermiso,epair(iso),gap(iso),efadd,  &
-      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,erra,itest-1)
+      nst(iso),nst(iso),npiter,ipair,isonpl,istbloact,istcbloact,erra,itest-1)
+!END NEW ODD
 IF(ttimer) CALL stimer(2,'pairdn')
-  IF(tcutoff_uvspace) THEN                               ! check
-    uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)
-  ELSE
-    uva(:)=SQRT((1D0-v2a(:))*v2a(:))
+  uva(:)=SQRT(MAX((1D0-v2a(:))*v2a(:),xsmall))
+  IF(tcutoff_uvspace) THEN                             ! check that!
+!    uva(:)=SQRT((1D0-v2a(:))*v2a(:))*paircut_uv(:)      
+    uva(:)=uva(:)*paircut_uv(:)      
+!  ELSE
+!    uva(:)=SQRT((1D0-v2a(:))*v2a(:))
   END IF
 IF(ttimer) CALL stimer(1,'symcond2')
   avsymcond=0D0

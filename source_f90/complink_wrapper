@@ -1,2 +1,3 @@
-ifx -qopenmp -o ../wrapper.exe  m_paramr.f90 m_dynpar.f90 m_levels.f90 m_grid.f90 m_fields.f90 m_wavefr.f90 m_constr.f90 m_hdiag.f90 m_observ.f90 m_coulomb.f90 m_fyfunc_2D.f90 m_steputil.f90 m_util.f90 m_pairing.f90 hfb-natural.f90 m_init.f90 m_staticstep.f90 user_interface.f90 wrapper.f90  -qmkl=parallel
+#ifx -o ../wrapper.exe  m_paramr.f90 m_dynpar.f90 m_levels.f90 m_grid.f90 m_fields.f90 m_wavefr.f90 m_constr.f90 m_hdiag.f90 m_observ.f90 m_coulomb.f90 m_fyfunc_2D.f90 m_steputil.f90 m_util.f90 m_pairing.f90 hfb-natural.f90 m_init.f90 m_staticstep.f90 user_interface.f90 wrapper.f90  -qmkl
+ifort -o ../wrapper.exe  m_paramr.f90 m_dynpar.f90 m_levels.f90 m_grid.f90 m_fields.f90 m_wavefr.f90 m_constr.f90 m_hdiag.f90 m_observ.f90 m_coulomb.f90 m_fyfunc_2D.f90 m_steputil.f90 m_util.f90 m_pairing.f90 hfb-natural.f90 m_init.f90 m_staticstep.f90 user_interface.f90 wrapper.f90 -qmkl
 rm *.mod

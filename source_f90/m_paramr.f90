@@ -12,17 +12,18 @@ MODULE paramr
 
 IMPLICIT NONE
 
+LOGICAL,PARAMETER :: tfindconj=.FALSE.   !<Switch to activate repeated search for pairing conjugate states 
 LOGICAL,PARAMETER :: tpairon=.true.      !<Switch for using DDDI contrib. to mean field (strongly recommended).
 LOGICAL,PARAMETER :: tadsic=.false.      !<Remove self-interaction in Coulomb term
 REAL(8),PARAMETER :: einitbubble=0.0D0   !<Tries to drive bubble by adding a -m**2 potential for a few initial iterations.
 INTEGER,PARAMETER :: nzd= 200            !<Max. no. of mesh points in z direction.
 INTEGER,PARAMETER :: nrd= 100            !<Max. no. of mesh points in r direction.
 INTEGER,PARAMETER :: nsd=2               !<No. of spinor components.
-INTEGER,PARAMETER :: nhwd=300            !<Maximum no. of oscillator quanta.
-!INTEGER,PARAMETER :: nhwd=120            !<Maximum no. of oscillator quanta.
+!INTEGER,PARAMETER :: nhwd=300            !<Maximum no. of oscillator quanta.
+INTEGER,PARAMETER :: nhwd=120            !<Maximum no. of oscillator quanta.
 INTEGER,PARAMETER :: kqm=  2             !<No. of isospins (standard: 2).
-INTEGER,PARAMETER :: kmpsi=400            !<Maximal number of mpsi for damping in r-direction.
-!INTEGER,PARAMETER :: kmpsi=50            !<Maximal number of mpsi for damping in r-direction.
+!INTEGER,PARAMETER :: kmpsi=400            !<Maximal number of mpsi for damping in r-direction.
+INTEGER,PARAMETER :: kmpsi=50            !<Maximal number of mpsi for damping in r-direction.
 INTEGER,PARAMETER :: klocal=0            !<Switch to print localization criterion.
 INTEGER,PARAMETER :: ifoccs=0            !<Switch to print occ.numbers.
 
@@ -40,7 +41,7 @@ REAL(8),PARAMETER :: zero=0D0            !<0.0
 REAL(8),PARAMETER :: one=1D0             !<1.0
 REAL(8),PARAMETER :: two=2D0             !<2.0
 REAL(8),PARAMETER :: xxxl=HUGE(1D0)      !<Largest REAL(8).
-REAL(8),PARAMETER :: xsmall=1D-30        ! some small value
+REAL(8),PARAMETER :: xsmall=1D-20 !30        ! some small value
 REAL(8),PARAMETER :: pi=4.0d0*atan(1.0d0)!<The constant \f$ \pi \f$.
 REAL(8),PARAMETER :: edr=1.0d0/3.0d0     !<1/3
 REAL(8),PARAMETER :: oh=0.5D0            !<1/2
