@@ -15,13 +15,13 @@ USE paramr, ONLY : xxxl,ixxxl,oh,one
 IMPLICIT NONE
 
 ! numerical parameters for iteration etc
-REAL(8) :: x0inv=0.3D0     !<Overall factor in front of the damping operator.
-REAL(8) :: e0inv=120D0     !<Witdh of the damping operator.
-REAL(8) :: addrho=0.2D0    !<Fraction of new density to be added to the old, used to compute 'adyrho'.
+REAL(8) :: x0inv=0.1D0     !<Overall factor in front of the damping operator.
+REAL(8) :: e0inv=110D0     !<Witdh of the damping operator.
+REAL(8) :: addrho=0.15D0   !<Fraction of new density to be added to the old, used to compute 'adyrho'.
 REAL(8) :: addpot=1D0      !<Fraction of new potential to be added to the old.
-REAL(8) :: addocc=0.3D0    !<Fraction of new occupation numbers 'VSQF' to be added to the old.
+REAL(8) :: addocc=0.2D0    !<Fraction of new occupation numbers 'VSQF' to be added to the old.
 REAL(8) :: errenr=1D-9     !<Termination criterion for energy change.
-REAL(8) :: errvar=1D-1     !<Termination criterion for energy variance.
+REAL(8) :: errvar=1D-2     !<Termination criterion for energy variance.
 REAL(8) :: adyrho          !<Dynamical fraction of new density.
 REAL(8) :: adypot          !<Dynamical  fraction of new potential.
 INTEGER :: mpmax           !<Max no. of z component of angular momentum.
@@ -34,7 +34,9 @@ REAL(8) :: pairenhance=2D0 !<initial enhancement of pairing strength
 REAL(8) :: v2limh=1D-6,delmix=0.8D0  !< damping switches for HFB step
 !REAL(8) :: v2limh=1D0,delmix=0D0   !< damping switches for HFB step
 LOGICAL :: tnobcs=.TRUE.   !<suppresses initial BCS phase after first run along a deformation path
-CHARACTER (LEN=3) :: outnam = "tst"  !< 3-digit qualifier for output files
+LOGICAL :: tvaryx0=.FALSE.                   !< switch to variable szep size
+LOGICAL :: trestart=.TRUE. !< switch to restart blocjked calulations friem time-evene solution
+CHARACTER (LEN=4) :: outnam = "tstr"  !< 3-digit qualifier for output files
 CHARACTER (LEN=80) :: title=" "  !< Title for the actual run, printed in the header of output files.
 
 
@@ -54,6 +56,7 @@ CHARACTER(8) :: name=''
 !>@{
 REAL(8),PUBLIC :: t0=xxxl,t1=xxxl,t2=xxxl,t3=xxxl,t4=xxxl
 REAL(8),PUBLIC :: power=xxxl                !<Power of density dependence in 't3'.
+REAL(8),PUBLIC :: dglan=0D0,dglanp=0D0      !<Landau parameters g an g', not yet active
 !>@}
 !>@name Skyrme exchange parameters.
 !>@{
@@ -63,7 +66,8 @@ REAL(8),PUBLIC :: x0=xxxl,x1=xxxl,x2=xxxl,x3=xxxl,b4p=xxxl
 !>@{
 REAL(8),PUBLIC :: b0,b0p,b3,b3p,t3a,t3b,b1,b1p,b2,b2p,b4,excfac,&
                   t0a,t0b,t3as,t3bs,t1p2,t1m2,t13p2,t13m2,t1m20,t1p2x,&
-                  t7b,t7a,b7a,b7pa,b7pb
+                  t7b,t7a,b7a,b7pa,b7pb, &
+                  b8,b8p,b6,b6p                   !NEW ODD
 !>@}
 
 !>@name Fayans parameters, obligatory input preset to 'xxxl'.
@@ -127,7 +131,15 @@ INTEGER :: ifzpe                            !<If 0, m-m/A recipe for c.m. correc
 INTEGER :: ifex                             !<Some forces are fitted excluding the Coulombexchange term. 
 !!For <tt> ex=1 </tt> it is included (this is the normal case), for <tt> ex=0 </tt> not.
 LOGICAL :: tcoulfold=.FALSE.                !< switch to proton folding in Coulomb
-
+!NEW ODD
+INTEGER :: isTsym=0                         !< level of handling spin terms
+!!For <t> isTsym=0 </tt> use Cramer's degeneracy
+!!For <t> isTsym=1 </tt> angualar momentum up-down separately, but no time-odd terms
+!!For <t> isTsym=2 </tt> minimal Galilean invariant terms
+!!For <t> isTsym=3 </tt> volume spin terms in Skyrme functional
+!!For <t> isTsym=4 </tt> volume+surface spin terms in Skyrme functional
+LOGICAL :: toddterms                        !< switch to activate time-odd terms
+!END NEW ODD
 
 LOGICAL :: tpair                            !<Switch for density-dependent pairing.
 
@@ -274,7 +286,8 @@ CONTAINS
          tFayans,tcoulfold, &
          avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
          fxi,h1xi,hgradxi,delfxi,delh1xi,delhgradxi,c0tau,c1tau,c0nabj,c1nabj,hcoul, &
-         isovectormodel,tcutoff_uvspace,tregpair
+         isovectormodel,tcutoff_uvspace,tregpair,&
+         isTsym                                         !NEW ODD
 
 WRITE(6,*) ' before reading force'
 
@@ -309,6 +322,7 @@ WRITE(6,*) ' before reading force'
     END IF
 
     IF(hfbwidth>0D0) thfbfold=.TRUE.
+    toddterms = isTsym>1                 !NEW ODD
 
 CONTAINS
 
@@ -364,31 +378,31 @@ CONTAINS
         STOP 'DDDI-Pairing: undefined RHO0PR'
     pairfc(1)=v0prot; pairfc(2)=v0neut
     
-    b0     = t0*(one+oh*x0)
-    b0p    = t0*(oh+x0)
-    b3     = t3*(one+oh*x3)/4.0
-    b3p    = t3*(oh+x3)/4.0
-    t3a    = t3*(one+oh*x3)/6.0
-    t3b    = t3*(oh+x3)/6.0
-    b1     = 0.25*(t1+t1*x1*0.5+t2+t2*x2*0.5)
-    b1p    = 0.25*(0.5*t1+t1*x1-0.5*t2-t2*x2)
-    b2     = 0.125*(3.0*t1+t1*x1*1.5-t2-t2*x2*0.5)
-    b2p    = 0.125*(1.5*t1+t1*x1*3.0+0.5*t2+t2*x2)
-    b4     = oh*t4
+    b0     = t0*(1D0+0.5D0*x0)
+    b0p    = t0*(0.5D0+x0)
+    b3     = t3*(1D0+0.5D0*x3)/4.0
+    b3p    = t3*(0.5D0+x3)/4.0
+    t3a    = t3*(1D0+0.5D0*x3)/6.0
+    t3b    = t3*(0.5D0+x3)/6.0
+    b1     = 0.25D0*(t1+t1*x1*0.5+t2+t2*x2*0.5)
+    b1p    = 0.25D0*(0.5*t1+t1*x1-0.5*t2-t2*x2)
+    b2     = 0.125D0*(3.0*t1+t1*x1*1.5-t2-t2*x2*0.5)
+    b2p    = 0.125D0*(1.5*t1+t1*x1*3.0+0.5*t2+t2*x2)
+    b4     = 0.5D0*t4
     excfac = -1.418033*chgx               ! coulomb exchange in Slater appr.
     
-    t0a    = t0*(one+oh*x0)
-    t0b    = t0*(oh+x0)
-    t3as   = oh*power*t3a
-    t3bs   = oh*power*t3b
-    t1p2   = 0.25*(t1+t1*x1*0.5+t2+t2*x2*0.5)
-    t1m2   = 0.25*(0.5*t1+t1*x1-0.5*t2-t2*x2)
-    t13p2  = 0.125*(1.5*t1+t1*x1*3.0+0.5*t2+t2*x2)
-    t13m2  = 0.125*(3.0*t1+t1*x1*1.5-t2-t2*x2*0.5)
+    t0a    = t0*(1D0+0.5D0*x0)
+    t0b    = t0*(0.5D0+x0)
+    t3as   = 0.5D0*power*t3a
+    t3bs   = 0.5D0*power*t3b
+    t1p2   = 0.25D0*(t1+t1*x1*0.5+t2+t2*x2*0.5)
+    t1m2   = 0.25D0*(0.5*t1+t1*x1-0.5*t2-t2*x2)
+    t13p2  = 0.125D0*(1.5*t1+t1*x1*3.0+0.5*t2+t2*x2)
+    t13m2  = 0.125D0*(3.0*t1+t1*x1*1.5-t2-t2*x2*0.5)
 
     IF(riftm /= 0D0) THEN
-      t1m20  = (t1-t2)/8.0 * riftm1
-      t1p2x  = (x1*t1+x2*t2)/8.0 * riftm
+      t1m20  = (t1-t2)/8D0 * riftm1
+      t1p2x  = (x1*t1+x2*t2)/8D0 * riftm
     ELSE
       t1m20  = 0.0D0
       t1p2x  = 0.0D0
@@ -399,6 +413,31 @@ CONTAINS
     b7a  = t7a*(pow7+2.0D0)*0.5D0
     b7pa = t7b
     b7pb = t7b*pow7*0.5D0
+
+!NEW ODD
+    b6     = 0.25D0*t0*x0
+    b6p    = 0.25D0*t0
+    b7     = 0.5D0*0.5D0*0.5D0*t3*x3/3
+    b7p    = 0.5D0*0.5D0*0.5D0*t3/3
+    b8     = 0.5D0*0.5D0*0.5D0*0.5D0*(3*t1*x1-t2*x2)
+    b8p    = 0.5D0*0.5D0*0.5D0*0.5D0*(3*t1+t2)
+
+    if(isTSym.le.2) then
+      b6  = 0D0
+      b6p = 0D0
+      b7  = 0D0
+      b7p = 0D0
+      b8  = 0D0
+      b8p = 0D0
+    elseif(isTSym.eq.3) then
+      b8  = 0D0
+      b8p = 0D0
+    endif
+
+!END NEW ODD
+
+
+
 
   END SUBROUTINE prepare_Skyrme
 

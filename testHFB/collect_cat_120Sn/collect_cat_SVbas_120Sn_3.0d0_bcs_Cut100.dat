@@ -1,172 +1,258 @@
-cutoff=-15,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1017.61279895113 epairp: -0.0 epairn: -1.9 rmsc: 4.6451 proton gap: -1.0095E-06 neutron gap: -0.4351
-cutoff=-16,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1017.69516981215 epairp: -0.0 epairn: -5.5 rmsc: 4.6432 proton gap: -1.1903E-06 neutron gap: -0.8668
-cutoff=-17,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1017.82946616431 epairp: -0.0 epairn: -9.6 rmsc: 4.6412 proton gap: -1.4055E-06 neutron gap: -1.239
-cutoff=-18,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1017.94406740787 epairp: -0.0 epairn: -12.2 rmsc: 4.6399 proton gap: -1.6117E-06 neutron gap: -1.441
-cutoff=-19,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.04813771218 epairp: -0.0 epairn: -14.0 rmsc: 4.6388 proton gap: -1.7878E-06 neutron gap: -1.572
-cutoff=-20,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.10989809491 epairp: -0.0 epairn: -15.0 rmsc: 4.6382 proton gap: -1.9136E-06 neutron gap: -1.642
-cutoff=-21,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.16213873774 epairp: -0.0 epairn: -15.8 rmsc: 4.6378 proton gap: -2.0098E-06 neutron gap: -1.694
-cutoff=-22,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.19468669780 epairp: -0.0 epairn: -16.3 rmsc: 4.6375 proton gap: -2.0726E-06 neutron gap: -1.726
-cutoff=-23,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.22230254618 epairp: -0.0 epairn: -16.7 rmsc: 4.6373 proton gap: -2.1186E-06 neutron gap: -1.751
-cutoff=-24,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.22504435875 epairp: -0.0 epairn: -16.8 rmsc: 4.6374 proton gap: -2.1540E-06 neutron gap: -1.759
-cutoff=-25,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.24218508682 epairp: -0.0 epairn: -17.0 rmsc: 4.6372 proton gap: -2.1788E-06 neutron gap: -1.774
-cutoff=-26,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.25449677842 epairp: -0.0 epairn: -17.2 rmsc: 4.6371 proton gap: -2.1959E-06 neutron gap: -1.784
-cutoff=-27,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.26529930139 epairp: -0.0 epairn: -17.3 rmsc: 4.6370 proton gap: -2.2095E-06 neutron gap: -1.794
-cutoff=-28,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.27383108814 epairp: -0.0 epairn: -17.4 rmsc: 4.6370 proton gap: -2.2202E-06 neutron gap: -1.801
-cutoff=-29,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.27409638898 epairp: -0.0 epairn: -17.4 rmsc: 4.6369 proton gap: -2.2202E-06 neutron gap: -1.802
-cutoff=-30,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.27868945944 epairp: -0.0 epairn: -17.5 rmsc: 4.6369 proton gap: -2.2265E-06 neutron gap: -1.806
-cutoff=-31,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.28386586632 epairp: -0.0 epairn: -17.6 rmsc: 4.6369 proton gap: -2.2312E-06 neutron gap: -1.810
-cutoff=-32,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.28806189024 epairp: -0.0 epairn: -17.6 rmsc: 4.6368 proton gap: -2.2349E-06 neutron gap: -1.814
-cutoff=-33,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.29214236627 epairp: -0.0 epairn: -17.7 rmsc: 4.6368 proton gap: -2.2390E-06 neutron gap: -1.817
-cutoff=-34,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.29521062229 epairp: -0.0 epairn: -17.7 rmsc: 4.6368 proton gap: -2.2413E-06 neutron gap: -1.819
-cutoff=-35,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.29784222643 epairp: -0.0 epairn: -17.7 rmsc: 4.6368 proton gap: -2.2440E-06 neutron gap: -1.821
-cutoff=-36,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30012859110 epairp: -0.0 epairn: -17.8 rmsc: 4.6367 proton gap: -2.2446E-06 neutron gap: -1.823
-cutoff=-37,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30212260564 epairp: -0.0 epairn: -17.8 rmsc: 4.6367 proton gap: -2.2470E-06 neutron gap: -1.825
-cutoff=-38,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30387359405 epairp: -0.0 epairn: -17.8 rmsc: 4.6367 proton gap: -2.2475E-06 neutron gap: -1.826
-cutoff=-39,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30507386918 epairp: -0.0 epairn: -17.8 rmsc: 4.6367 proton gap: -2.2489E-06 neutron gap: -1.827
-cutoff=-40,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30644480167 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2502E-06 neutron gap: -1.828
-cutoff=-41,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30766671177 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2509E-06 neutron gap: -1.829
-cutoff=-42,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30876052672 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2507E-06 neutron gap: -1.830
-cutoff=-43,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.30974366259 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2521E-06 neutron gap: -1.831
-cutoff=-44,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31063274075 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2534E-06 neutron gap: -1.832
-cutoff=-45,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31144818027 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2534E-06 neutron gap: -1.832
-cutoff=-46,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31217794551 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2537E-06 neutron gap: -1.833
-cutoff=-47,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31284308333 epairp: -0.0 epairn: -17.9 rmsc: 4.6367 proton gap: -2.2540E-06 neutron gap: -1.834
-cutoff=-48,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31345113859 epairp: -0.0 epairn: -17.9 rmsc: 4.6366 proton gap: -2.2545E-06 neutron gap: -1.834
-cutoff=-49,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31400858846 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2553E-06 neutron gap: -1.835
-cutoff=-50,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31453310349 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2557E-06 neutron gap: -1.835
-cutoff=-51,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31500535171 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2559E-06 neutron gap: -1.835
-cutoff=-52,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31544161074 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2561E-06 neutron gap: -1.836
-cutoff=-53,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31584554768 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2562E-06 neutron gap: -1.836
-cutoff=-54,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31622036951 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2552E-06 neutron gap: -1.836
-cutoff=-55,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31656889376 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2554E-06 neutron gap: -1.837
-cutoff=-56,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31689360242 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2555E-06 neutron gap: -1.837
-cutoff=-57,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31719669120 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2565E-06 neutron gap: -1.837
-cutoff=-58,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31748010493 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2566E-06 neutron gap: -1.837
-cutoff=-59,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31774557317 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2566E-06 neutron gap: -1.837
-cutoff=-60,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31799709296 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2567E-06 neutron gap: -1.838
-cutoff=-61,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31823113169 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2568E-06 neutron gap: -1.838
-cutoff=-62,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31861528550 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2579E-06 neutron gap: -1.838
-cutoff=-63,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31882288127 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.838
-cutoff=-64,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31901879108 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.838
-cutoff=-65,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31920637226 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2579E-06 neutron gap: -1.839
-cutoff=-66,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31938160910 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2579E-06 neutron gap: -1.839
-cutoff=-67,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31954752934 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2573E-06 neutron gap: -1.839
-cutoff=-68,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31970488573 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2574E-06 neutron gap: -1.839
-cutoff=-69,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31985578939 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2574E-06 neutron gap: -1.839
-cutoff=-70,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31999485642 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2575E-06 neutron gap: -1.839
-cutoff=-71,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32012996432 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2575E-06 neutron gap: -1.839
-cutoff=-72,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32025864170 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2575E-06 neutron gap: -1.839
-cutoff=-73,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32038131268 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2576E-06 neutron gap: -1.840
-cutoff=-74,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32049836615 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2576E-06 neutron gap: -1.840
-cutoff=-75,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32061015946 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2576E-06 neutron gap: -1.840
-cutoff=-76,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32071702145 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2576E-06 neutron gap: -1.840
-cutoff=-77,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32081925603 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2577E-06 neutron gap: -1.840
-cutoff=-78,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32091714055 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2577E-06 neutron gap: -1.840
-cutoff=-79,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32101093431 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2577E-06 neutron gap: -1.840
-cutoff=-80,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32110087616 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2577E-06 neutron gap: -1.840
-cutoff=-81,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32118718740 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.840
-cutoff=-82,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31979329890 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2563E-06 neutron gap: -1.839
-cutoff=-83,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31987285449 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2563E-06 neutron gap: -1.839
-cutoff=-84,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.31994935617 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2563E-06 neutron gap: -1.839
-cutoff=-85,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32002296862 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2563E-06 neutron gap: -1.839
-cutoff=-86,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32009384519 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2563E-06 neutron gap: -1.839
-cutoff=-87,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32016212902 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-88,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32022795368 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-89,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32029144409 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-90,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32035271696 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-91,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32041167994 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-92,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32046883910 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-93,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32052408891 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-94,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32057751955 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2564E-06 neutron gap: -1.840
-cutoff=-95,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32062921596 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2565E-06 neutron gap: -1.840
-cutoff=-96,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32067925793 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2565E-06 neutron gap: -1.840
-cutoff=-97,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32072772058 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.840
-cutoff=-98,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32077467471 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.840
-cutoff=-99,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32082018704 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.840
-cutoff=-100,hfbwidth=3.0d0,pair.strength=41820
-Nmass: 120, Ncharge: 50 energy: -1018.32086432056 epairp: -0.0 epairn: -18.0 rmsc: 4.6366 proton gap: -2.2578E-06 neutron gap: -1.840
+deocc(1,2)= 6.D0
+cutoff=-15,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.53398004968 epairp: -0.0 epairn: -0.0 rmsc: 4.6514 beta2: 0.001 proton gap: -9.7584E-07 neutron gap: -4.5706E-02
+deocc(1,2)= 6.D0
+cutoff=-16,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.53725360409 epairp: -0.0 epairn: -0.2 rmsc: 4.6512 beta2: 0.001 proton gap: -1.0983E-06 neutron gap: -0.1218
+deocc(1,2)= 6.D0
+cutoff=-17,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.55389737407 epairp: -0.0 epairn: -1.1 rmsc: 4.6505 beta2: 0.002 proton gap: -1.2934E-06 neutron gap: -0.2965
+deocc(1,2)= 6.D0
+cutoff=-18,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.59531119459 epairp: -0.0 epairn: -3.1 rmsc: 4.6492 beta2: 0.004 proton gap: -1.5625E-06 neutron gap: -0.5473
+deocc(1,2)= 6.D0
+cutoff=-19,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.66247663778 epairp: -0.0 epairn: -5.8 rmsc: 4.6478 beta2: 0.007 proton gap: -1.9397E-06 neutron gap: -0.7965
+deocc(1,2)= 6.D0
+cutoff=-20,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.74513939396 epairp: -0.0 epairn: -8.4 rmsc: 4.6465 beta2: 0.010 proton gap: -2.3388E-06 neutron gap: -0.9895
+deocc(1,2)= 6.D0
+cutoff=-21,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.82729184619 epairp: -0.0 epairn: -10.5 rmsc: 4.6455 beta2: 0.013 proton gap: -2.7554E-06 neutron gap: -1.124
+deocc(1,2)= 6.D0
+cutoff=-22,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.90085700293 epairp: -0.0 epairn: -12.0 rmsc: 4.6447 beta2: 0.015 proton gap: -3.1346E-06 neutron gap: -1.217
+deocc(1,2)= 6.D0
+cutoff=-23,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1015.96257259629 epairp: -0.0 epairn: -13.2 rmsc: 4.6441 beta2: 0.016 proton gap: -3.4718E-06 neutron gap: -1.283
+deocc(1,2)= 6.D0
+cutoff=-24,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.01229061402 epairp: -0.0 epairn: -14.1 rmsc: 4.6437 beta2: 0.017 proton gap: -3.7504E-06 neutron gap: -1.330
+deocc(1,2)= 6.D0
+cutoff=-25,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.05182392781 epairp: -0.0 epairn: -14.8 rmsc: 4.6434 beta2: 0.018 proton gap: -3.9779E-06 neutron gap: -1.365
+deocc(1,2)= 6.D0
+cutoff=-26,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.08221750583 epairp: -0.0 epairn: -15.3 rmsc: 4.6431 beta2: 0.019 proton gap: -4.1668E-06 neutron gap: -1.390
+deocc(1,2)= 6.D0
+cutoff=-27,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.10566216855 epairp: -0.0 epairn: -15.7 rmsc: 4.6429 beta2: 0.019 proton gap: -4.3038E-06 neutron gap: -1.409
+deocc(1,2)= 6.D0
+cutoff=-28,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.12339837387 epairp: -0.0 epairn: -16.0 rmsc: 4.6428 beta2: 0.020 proton gap: -4.4153E-06 neutron gap: -1.423
+deocc(1,2)= 6.D0
+cutoff=-29,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.13821162761 epairp: -0.0 epairn: -16.2 rmsc: 4.6427 beta2: 0.020 proton gap: -4.4873E-06 neutron gap: -1.434
+deocc(1,2)= 6.D0
+cutoff=-30,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.15005419486 epairp: -0.0 epairn: -16.4 rmsc: 4.6426 beta2: 0.020 proton gap: -4.5565E-06 neutron gap: -1.443
+deocc(1,2)= 6.D0
+cutoff=-31,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.15937341022 epairp: -0.0 epairn: -16.5 rmsc: 4.6425 beta2: 0.021 proton gap: -4.6066E-06 neutron gap: -1.450
+deocc(1,2)= 6.D0
+cutoff=-32,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.16696989909 epairp: -0.0 epairn: -16.6 rmsc: 4.6425 beta2: 0.021 proton gap: -4.6517E-06 neutron gap: -1.455
+deocc(1,2)= 6.D0
+cutoff=-33,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.17314523457 epairp: -0.0 epairn: -16.7 rmsc: 4.6424 beta2: 0.021 proton gap: -4.6809E-06 neutron gap: -1.460
+deocc(1,2)= 6.D0
+cutoff=-34,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.17816177123 epairp: -0.0 epairn: -16.8 rmsc: 4.6424 beta2: 0.021 proton gap: -4.7065E-06 neutron gap: -1.463
+deocc(1,2)= 6.D0
+cutoff=-35,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.18307274463 epairp: -0.0 epairn: -16.9 rmsc: 4.6423 beta2: 0.021 proton gap: -4.7281E-06 neutron gap: -1.467
+deocc(1,2)= 6.D0
+cutoff=-36,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.18633116349 epairp: -0.0 epairn: -16.9 rmsc: 4.6423 beta2: 0.021 proton gap: -4.7422E-06 neutron gap: -1.469
+deocc(1,2)= 6.D0
+cutoff=-37,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.18990158159 epairp: -0.0 epairn: -17.0 rmsc: 4.6423 beta2: 0.021 proton gap: -4.7566E-06 neutron gap: -1.472
+deocc(1,2)= 6.D0
+cutoff=-38,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.19297900604 epairp: -0.0 epairn: -17.0 rmsc: 4.6423 beta2: 0.021 proton gap: -4.7675E-06 neutron gap: -1.474
+deocc(1,2)= 6.D0
+cutoff=-39,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.19488577275 epairp: -0.0 epairn: -17.1 rmsc: 4.6423 beta2: 0.021 proton gap: -4.7781E-06 neutron gap: -1.475
+deocc(1,2)= 6.D0
+cutoff=-40,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.19716705732 epairp: -0.0 epairn: -17.1 rmsc: 4.6422 beta2: 0.021 proton gap: -4.7821E-06 neutron gap: -1.477
+deocc(1,2)= 6.D0
+cutoff=-41,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.19920934359 epairp: -0.0 epairn: -17.1 rmsc: 4.6422 beta2: 0.021 proton gap: -4.7896E-06 neutron gap: -1.478
+deocc(1,2)= 6.D0
+cutoff=-42,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.19970233348 epairp: -0.0 epairn: -17.1 rmsc: 4.6422 beta2: 0.021 proton gap: -4.7969E-06 neutron gap: -1.479
+deocc(1,2)= 6.D0
+cutoff=-43,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20129728110 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8030E-06 neutron gap: -1.480
+deocc(1,2)= 6.D0
+cutoff=-44,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20315777512 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8025E-06 neutron gap: -1.481
+deocc(1,2)= 6.D0
+cutoff=-45,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20442821222 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8087E-06 neutron gap: -1.482
+deocc(1,2)= 6.D0
+cutoff=-46,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20556872954 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8085E-06 neutron gap: -1.483
+deocc(1,2)= 6.D0
+cutoff=-47,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20537958875 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8139E-06 neutron gap: -1.483
+deocc(1,2)= 6.D0
+cutoff=-48,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20630862117 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8163E-06 neutron gap: -1.483
+deocc(1,2)= 6.D0
+cutoff=-49,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20721160302 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8176E-06 neutron gap: -1.484
+deocc(1,2)= 6.D0
+cutoff=-50,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20797677412 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8218E-06 neutron gap: -1.484
+deocc(1,2)= 6.D0
+cutoff=-51,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20695775069 epairp: -0.0 epairn: -17.2 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8218E-06 neutron gap: -1.484
+deocc(1,2)= 6.D0
+cutoff=-52,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20759876532 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8223E-06 neutron gap: -1.484
+deocc(1,2)= 6.D0
+cutoff=-53,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20818723227 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8271E-06 neutron gap: -1.485
+deocc(1,2)= 6.D0
+cutoff=-54,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20872918350 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8253E-06 neutron gap: -1.485
+deocc(1,2)= 6.D0
+cutoff=-55,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20922926854 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8259E-06 neutron gap: -1.485
+deocc(1,2)= 6.D0
+cutoff=-56,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.20969189299 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8287E-06 neutron gap: -1.486
+deocc(1,2)= 6.D0
+cutoff=-57,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21012062631 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.021 proton gap: -4.8272E-06 neutron gap: -1.486
+deocc(1,2)= 6.D0
+cutoff=-58,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21051900812 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.022 proton gap: -4.8261E-06 neutron gap: -1.486
+deocc(1,2)= 6.D0
+cutoff=-59,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21088981505 epairp: -0.0 epairn: -17.3 rmsc: 4.6422 beta2: 0.022 proton gap: -4.8272E-06 neutron gap: -1.486
+deocc(1,2)= 6.D0
+cutoff=-60,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21123538743 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8306E-06 neutron gap: -1.487
+deocc(1,2)= 6.D0
+cutoff=-61,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21155843692 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8280E-06 neutron gap: -1.487
+deocc(1,2)= 6.D0
+cutoff=-62,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21186084035 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8312E-06 neutron gap: -1.487
+deocc(1,2)= 6.D0
+cutoff=-63,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21214426154 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8311E-06 neutron gap: -1.487
+deocc(1,2)= 6.D0
+cutoff=-64,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21241032402 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8318E-06 neutron gap: -1.488
+deocc(1,2)= 6.D0
+cutoff=-65,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21266054703 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8327E-06 neutron gap: -1.488
+deocc(1,2)= 6.D0
+cutoff=-66,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21289604627 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8319E-06 neutron gap: -1.488
+deocc(1,2)= 6.D0
+cutoff=-67,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21311817261 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8358E-06 neutron gap: -1.488
+deocc(1,2)= 6.D0
+cutoff=-68,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21332784323 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8327E-06 neutron gap: -1.488
+deocc(1,2)= 6.D0
+cutoff=-69,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21352612531 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8334E-06 neutron gap: -1.488
+deocc(1,2)= 6.D0
+cutoff=-70,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21371380464 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8368E-06 neutron gap: -1.488
+deocc(1,2)= 6.D0
+cutoff=-71,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21389166234 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8341E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-72,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21415255190 epairp: -0.0 epairn: -17.3 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8335E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-73,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21431277191 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8334E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-74,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21446500621 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8351E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-75,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21461004050 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8318E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-76,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21474820790 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8378E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-77,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21488008701 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8313E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-78,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21500588868 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8350E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-79,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21512601300 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8329E-06 neutron gap: -1.489
+deocc(1,2)= 6.D0
+cutoff=-80,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21524084984 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8363E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-81,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21535074367 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8345E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-82,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21545598022 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8372E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-83,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21555670798 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8332E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-84,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21565343362 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8355E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-85,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21574639395 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8358E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-86,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21583555311 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8398E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-87,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21592124157 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8344E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-88,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21600364835 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8368E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-89,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21608294950 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8370E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-90,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21615930907 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8371E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-91,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21623288018 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8364E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-92,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21630380586 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8348E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-93,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21637216121 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8384E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-94,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21643818859 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8380E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-95,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21650194663 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8379E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-96,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21656354527 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8348E-06 neutron gap: -1.490
+deocc(1,2)= 6.D0
+cutoff=-97,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21662308765 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8364E-06 neutron gap: -1.491
+deocc(1,2)= 6.D0
+cutoff=-98,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21668067071 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8387E-06 neutron gap: -1.491
+deocc(1,2)= 6.D0
+cutoff=-99,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21673638554 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8374E-06 neutron gap: -1.491
+deocc(1,2)= 6.D0
+cutoff=-100,hfbwidth=3.0d0,pair.strength=36100
+Nmass: 120, Ncharge: 50 energy: -1016.21679031780 epairp: -0.0 epairn: -17.4 rmsc: 4.6421 beta2: 0.022 proton gap: -4.8389E-06 neutron gap: -1.491

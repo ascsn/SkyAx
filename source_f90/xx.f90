@@ -1,194 +1,187 @@
-!---------------------------------------------------------------------------  
-! DESCRIPTION: init_Gaussfolding
-!> @brief
-!! Initialization of matrices 'gaufolz' and 'gaufolr' for Gaussian folding.
-!> @details
-!! Input are the matrices for 2. derivatives for which the eigenstates
-!! on the grid are computed by diagonalization. The Gaussian folding
-!! matrices are composed from eigenstates and eigenvalues.
-!! Input and output are communicated through the header of the module.
-!--------------------------------------------------------------------------- 
-SUBROUTINE init_Gaussfolding()
 
-USE grid
-
-IMPLICIT NONE
-
-REAL(8),ALLOCATABLE:: eigvec(:,:),eigval(:),work(:)
-INTEGER,ALLOCATABLE:: iwork(:)
-
-!REAL(8)            :: a(0:2*imaxdrvrng,0:2*imaxdrvrng)
-!REAL(8)            :: b(0:2*imaxdrvrng)
-
-INTEGER            :: iparmax, ibuf,in, ndimact
-INTEGER            :: inx,k,nx,i,im,ix,j,jx
-INTEGER            :: lwork,liwork,info
-REAL(8)            :: buf,buf1,buf2
-
-
-ALLOCATE(gaufolz(0:nz,0:nz,4),gaufolr(0:nr,0:nr,0:kmpsi,2))
-
-!     ===============================================================
-!     initialize folding matrix in z direction
-!     ===============================================================
-ndimact=nz
-lwork=1+6*ndimact+2*ndimact**2
-liwork=3+5*ndimact
-ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
-
-eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-DO in=1,4
-  eigvec=derz2f(:,:,in)
-  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
-  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
-  DO i=1,ndimact; DO j=1,ndimact
-!   sum over "Bessel" eigenstates                                                                                                             
-    gaufolz(i,j,in)=0D0
-    DO k = 1, ndimact
-      gaufolz(i,j,in) = gaufolz(i,j,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
-    END DO
-  END DO; END DO
-END DO
-
-DEALLOCATE(eigvec,eigval,work,iwork)
-WRITE(6,*) ' Setup of Gaussian folding in z direction completed'
-
-!     ===============================================================
-!     initialize folding matrix in r direction
-!     ===============================================================
-ndimact=nr
-lwork=1+6*ndimact+2*ndimact**2
-liwork=3+5*ndimact
-ALLOCATE(eigvec(ndimact,ndimact),eigval(ndimact),work(lwork),iwork(liwork))
-
-DO in=1,2; DO im=0,kmpsi
-  
-  eigvec=0D0;eigval=0D0;work=0D0;iwork=0;j=0
-  eigvec=derr2af(:,:,im,in)
-  CALL DSYEVD('V','U',ndimact,eigvec,ndimact,eigval,work,lwork,iwork,liwork,info)
-  eigval = EXP(eigval*(0.5D0*hfbwidth)**2)
-  DO i=1,ndimact; DO j=1,ndimact
-!   sum over "Bessel" eigenstates                                                                                                              
-    gaufolr(i,j,im,in)=0D0
-    DO k = 1, ndimact
-      gaufolr(i,j,im,in) = gaufolr(i,j,im,in) + eigvec(i,k)*eigval(k)*eigvec (j,k)
-    END DO
-  END DO; END DO
-
-END DO; END DO
-DEALLOCATE(eigvec,eigval,work,iwork)
-
-WRITE(6,*) ' Setup of Gaussian folding in r direction completed'
-
-RETURN
-END SUBROUTINE init_Gaussfolding
-
-
-!---------------------------------------------------------------------------  
-! DESCRIPTION: Gaussfolding_spin
-!> @brief
-!! Calculate the action of the Gaussian folding on a spinor.
-!>
-!> @param[in] fldin
-!> REAL(8), array, takes the input field.
-!> @param[out] fldout
-!> REAL(8), array, returns the output field.
-!> @param[in] izpfld
-!> INTEGER, takes the z-parity of upper component (1 for positive, 2 for negative,
-!!1 and isym=0 for no good z-parity)
-!> @param[in] imfld
-!> INTEGER, takes the z-component of angular momentum m of the upper component.
-!> @param[in] ibpfld
-!> INTEGER, takes boundary parity. 1 for negative (zero-value), 2 for positive 
-!!(zero-derivative).
-!> @param[in] factor
-!> REAL(8), takes the weight factor.
-!--------------------------------------------------------------------------- 
-
-SUBROUTINE Gaussfolding_spin(fldin,fldout,izpfld,imfld,ibpfld,factor)
-
-USE grid
-
-IMPLICIT NONE
-
-REAL(8), INTENT(IN)        :: fldin(0:nz,0:nr,nsd)
-REAL(8), INTENT(OUT)       :: fldout(0:nz,0:nr,nsd)
-INTEGER, INTENT(IN)        :: izpfld
-INTEGER, INTENT(IN)        :: imfld
-INTEGER, INTENT(IN)        :: ibpfld
-REAL(8), INTENT(IN)        :: factor
-
-REAL(8), ALLOCATABLE :: work(:,:)
-
-INTEGER :: imact,izpact,ibpidx,is,izpidx
-
-ALLOCATE(work(0:nz,0:nr))
-DO is=1,nsd
-  imact  = ABS(imfld+is-1)
-  izpact = 3*(izpfld-1) - (2*izpfld-3)*is
-  izpidx = izpact*isym  + (1-isym)
-  ibpidx = izpidx + 2*ibpfld - 2
-  
-  CALL mulz(gaufolz(:,:,ibpidx),fldin(:,:,is),work,factor,0)
-  CALL mulr(gaufolr(:,:,imact,ibpfld),work,fldout(:,:,is),factor,0)
-
-END DO
-DEALLOCATE(work)
-
-RETURN
-END SUBROUTINE Gaussfolding_spin
-
-
-
-
-!---------------------------------------------------------------------------  
-! DESCRIPTION: spradius
-!> @brief
-!!This routine computes the single-particle radius for the given
-!!s.p. wavefunction. It serves for testing purposes. Printing is
-!!done inside the routine.
-!> @details
-!!The properties are evaluated as integrals.
-!>
-!> @param[in] psiin
-!> REAL(8), array, takes the input spinor wavefunction.
-!!computed.
-!--------------------------------------------------------------------------- 
-SUBROUTINE spradius(psiin)
-
-USE paramr
-USE grid
-
-IMPLICIT NONE
-
-REAL(8), INTENT(IN)                         :: psiin(0:nz,0:nr,1:2)
-
-REAL(8),ALLOCATABLE :: auxrho(:,:),auxz(:,:),auxr2(:,:)
-
-INTEGER :: ir,iz
-REAL(8) :: spnum,zcm,rms2
-
-!Prepare helper fields if called for the first time
-  ALLOCATE(auxrho(0:nz,0:nr),auxz(0:nz,0:nr),auxr2(0:nz,0:nr))
+! Code converted using TO_F90 by Alan Miller
+! Date: 2026-07-16  Time: 09:56:38
  
-  auxrho(:,:) = psiin(:,:,1)**2+psiin(:,:,2)**2
-  DO ir=0,nr; DO iz=0,nz
-    auxr2(iz,ir)=auxrho(iz,ir)*(r(ir)**2+z(iz)**2)
-    auxz(iz,ir)=auxrho(iz,ir)*z(iz)
-  END DO; END DO
+!-----crnkam-----------------------------------------------------------
 
-  DEALLOCATE(auxrho,auxz,auxr2)
+SUBROUTINE crnkam
 
-!Execute integrals
-  spnum= f1int(auxrho(0:nz,0:nr))
-  IF(tsym) THEN
-    zcm=0D0
+!     and computes Inglis cranking mass for angular momentum
+
+INCLUDE 'paramr.inc'
+INCLUDE 'constr.inc'
+INCLUDE 'observ.inc'
+INCLUDE 'dynpar.inc'
+INCLUDE 'fields.inc'
+INCLUDE 'levels.inc'
+INCLUDE 'wavefr.inc'
+INCLUDE 'derivs.inc'
+
+DATA itstpr/0/            ! switch to testprints of Inglis Cranking
+
+!     buffered SQRT as internal statement function
+
+sqrtb(x) = SQRT(MAX(x,smal))
+
+!-----------------------------------------------------------------------
+
+
+!     double loop to accumulate cranking mass for angular momentum
+
+sumj2  = zero
+sumj2e = zero
+sumtst = 0.0
+ampnms = 0.0
+DO ist=1,nst(1)+nst(2)
+  mist   = mpsi(ist)
+  IF(ist <= nst(1)) THEN
+    jstmax = nst(1)
+    jstmin = 1
+    eferm  = fer(1)
+!R            efermo = ferolp
   ELSE
-    zcm  = f1int(auxz(0:nz,0:nr))/spnum
+    jstmax = nst(1)+nst(2)
+    jstmin = nst(1)+1
+    eferm  = fer(2)
+!R            efermo = feroln
   END IF
-  rms2 = f1int(auxr2(0:nz,0:nr))/spnum
-  rms2 = rms2-zcm**2
+  
+!     ang.mom. operator J+ on 'psip' and J- on 'psin'
+  
+!                                     first, the L+ and L-
+  CALL nablaz_spin(psi(0,0,1,ist),psi1,nparz(1,ist),1,one)
+  CALL nablar_spin(psi(0,0,1,ist),psi2,   mpsi(ist),1,one)
+  
+  DO is=1,nsd
+    mm        = mist+is-1
+    npist  = nparz(is,ist)
+    nparr     = 1+MOD(mm,2)
+!PK         call mulr(derr1(0,0,nparr),psi(0,0,is,ist),psi2(0,0,is),one,0)
+!PK         call mulz(derz1(0,0,npist),psi(0,0,is,ist),psi1(0,0,is),one,0)
+    ir = 0
+    IF(mm == 1) THEN
+      DO iz=0,nz
+        z     = (iz+sz-icm)*dz
+        psip(iz,ir,is) = 0.0
+!              psin(iz,ir,is) = (z+z)*psi2(iz,ir,is)
+        psin(iz,ir,is) = -(z+z)*psi2(iz,ir,is)
+      END DO
+    ELSE
+      DO iz=0,nz
+        z     = (iz+sz-icm)*dz
+!              psip(iz,ir,is) = zero
+        psip(iz,ir,is) = z*psi2(iz,ir,is)
+!              psin(iz,ir,is) = psip(iz,ir,is)
+        psin(iz,ir,is) = -psip(iz,ir,is)
+      END DO
+    END IF
+    DO ir=1,nr
+      r    = (ir+sr)*dr
+      rinv = mm/r
+      DO iz=0,nz
+        z     = (iz+sz-icm)*dz
+        psip(iz,ir,is) = z*(psi2(iz,ir,is)-rinv *psi(iz,ir,is,ist))  &
+            -r*psi1(iz,ir,is)
+!              psin(iz,ir,is) = z*(wrk2(iz,ir)+rinv*psi(iz,ir,is,ist))
+!     &                        -r*wrk4(iz,ir)
+        psin(iz,ir,is) = -z*(psi2(iz,ir,is)+rinv *psi(iz,ir,is,ist))  &
+            +r*psi1(iz,ir,is)
+      END DO
+    END DO
+  END DO
+!                                          the S+ and S-
+  DO ir=0,nr
+    DO iz=0,nz
+      psip(iz,ir,1) = psip(iz,ir,1)+psi(iz,ir,2,ist)
+      psin(iz,ir,2) = psin(iz,ir,2)+psi(iz,ir,1,ist)
+    END DO
+  END DO
+!                                   test       the S+ and S-
+!t        do ir=0,nr
+!t        do iz=0,nz
+!t          psip(iz,ir,1) = -psi(iz,ir,2,ist)
+!t          psip(iz,ir,2) = 0.0
+!t          psin(iz,ir,1) = 0.0
+!t          psin(iz,ir,2) = psi(iz,ir,1,ist)
+!t        enddo
+!t        enddo
+!                                       auxiliary variables
+  npist  = nparz(1,ist)
+  vi    = sqrtb(vsqf(ist))
+  ui    = sqrtb(one-vi*vi)
+  deltai = deltaf(ist)*wtpair(ist)
+  edifi  = spenrg(ist)-eferm
+  equasi = SQRT(edifi*edifi+deltai*deltai)
+!                                       the overlaps
+  tstovl = wfovlp(psip,psip)
+!test         write(7,'(a,i3,1pg12.4)') ' test: ist, <J**2>=',ist,tstovl
+  sumtst = tstovl*vi*vi + sumtst
+  DO jst=jstmin,jstmax
+    IF((npist == nparz(2,jst) .AND.  &
+          (mist+1 == mpsi(jst) .OR. mist-1 == mpsi(jst)) ) .OR.  &
+          (npist == nparz(1,jst) .AND.  &
+          (mist == 0 .AND. mpsi(jst) == 0))            ) THEN
+      vj    = sqrtb(vsqf(jst))
+      uj    = sqrtb(one-vj*vj)
+      deltaj = deltaf(jst)*wtpair(jst)
+      edifj  = spenrg(jst)-eferm
+      equasj = SQRT(edifj*edifj+deltaj*deltaj)
+      IF(mist == 0 .AND. mpsi(jst) == 0) THEN
+!test            if((ist.eq.2 .and. jst.eq.5) .or.
+!test     &         (ist.eq.5 .and. jst.eq.2))
+!test     &         write(7,'(a,2(2x,2(1pg12.4)))')
+!test     &        ' 2&5: upper,lower=',
+!test     &        wfovoc(psi(0,0,1,jst),psin(0,0,2)),
+!test     &        wfovoc(psi(0,0,2,jst),psin(0,0,1)),
+!test     &        wfovoc(psi(0,0,1,jst),psi(0,0,1,ist)),
+!test     &        wfovoc(psi(0,0,2,jst),psi(0,0,2,ist))
+!            do ir=0,nr
+!            do iz=0,nz
+!              wrk2(iz,ir)   = psin(iz,ir,1)
+!              psin(iz,ir,1) = psin(iz,ir,2)
+!              psin(iz,ir,2) = wrk2(iz,ir)
+!              psin(iz,ir,2) = -psav
+!            enddo
+!            enddo
+        pij    = +wfovoc(psi(0,0,2,jst),psin(0,0,1))  &
+            -wfovoc(psi(0,0,1,jst),psin(0,0,2))
+        pij    = pij*(vj*ui-uj*vi)
+!            write(7,'(a,3(2i2,1x),2(1pg12.4))')
+!     &     ' 0:ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',
+!     &       ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij,
+!     &       pij*(vj*ui-uj*vi)
+      ELSE IF(mist+1 == mpsi(jst)) THEN
+        pij    = wfovlp(psi(0,0,1,jst),psip)
+        pij    = pij*(vj*ui-uj*vi)
+!            write(7,'(a,3(2i2,1x),2(1pg12.4))')
+!     &     ' +:ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',
+!     &       ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij,
+!     &       pij*(vj*ui-uj*vi)
+      ELSE IF(mist-1 == mpsi(jst)) THEN
+        pij    = wfovlp(psi(0,0,1,jst),psin)
+        pij    = pij*(vj*ui-uj*vi)
+!            write(7,'(a,3(2i2,1x),2(1pg12.4))')
+!     &     ' -:ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',
+!     &       ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij,
+!     &       pij*(vj*ui-uj*vi)
+      END IF
+      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
+          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+!PK               pij    = pij*(vj*ui-uj*vi)
+      pij    = pij*pij
+      sumj2e = pij/(equasi+equasj) + sumj2e
+      sumj2  = pij + sumj2
+      ampnms = pij/(equasi+equasj)**2 *(ui*ui-vi*vi+uj*uj-vj*vj)  &
+          + ampnms
+    END IF
+  END DO
+END DO
+ammass = sumj2e/2.0
+amwid  = sumj2/2.0
+ampnms = ampnms/2.0/ammass**2
+WRITE(7,'(a,1pg12.4)') ' test <J**2>=',sumtst
 
-  WRITE(6,'(a,3(1pg13.5)') 'SPRADIUS: norm,zcm,rms=',spnum,zcm,SQRT(rms2)
 RETURN
-END SUBROUTINE spradius
+END SUBROUTINE crnkam
+
+

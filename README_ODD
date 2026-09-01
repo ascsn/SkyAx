@@ -1,8 +1,8 @@
-To install the interface between the F90 SkyAx abd the F77 SkyAx_odd:
+To install the interface between the F90 SkyAx and the F77 SkyAx_odd:
 ---------------------------------------------------------------------
 
 The wrapper routine resides in the 'source_f90' of the 'SkyAx'
-directory, presently in the branch 'PGdevelop'.
+directory.
 To install it go to the subdirectory 'source_f90' and issue
 './complink_wrapper'. As a result you obtain the executable 'wrapper.exe'
 at the directory one level before 'source_f90'.
@@ -27,7 +27,7 @@ I emphasize that this is an alpha-version which needs yet to be
 tested. For even-even nuclei, we can counter-check by running the
 SkyAx code with the same input and also by comparing with the 1D code
 for spherical nuclei. I did that and found satisfying agreement for the 
-Skrme functionals. The Fayans functionals have still to be scrutinized.
+Skyrme functionals. The Fayans functionals have still to be scrutinized.
 
 Moreover, the UNEDF2 functional raises a subtle problem. My 1D input
 indicates that UNEDF2 uses tensor spin-orbit terms. These are not
@@ -35,4 +35,73 @@ installed in neither 2D code. WE have to discuss how to deal with that.
 
 
 
+Update 9. February 2026:
+------------------------
+
+An automatic search and scan for blocking configurations has been coded.
+The tools for that are collected in 'm_blocking.f90'. The routine
+'search_block' looks for all s.p. states whose quasi-particle energy is
+below a given threshold 'absdiff' and stores them in a book-keeping
+array. The 'absdiff' is communicated through namelist 'static' and has a 
+default value of 2 MeV. The entries in the book-keeping fields are then
+worked up in the order of increasing quasiparticle energies.
+
+
+
+
+Update 11. February 2026:
+------------------------
+
+The energy window for selecting blocked configuration has been renamed
+from 'absdiff' to 'maxexenerg'. 
+
+A routine for computing the total angular momentum of a given s.p. state
+has been implemented.
+
+A further selector for blocked configuration has been introduced- It is
+'maxamomdiff' which confines the configuration to blocked  s.p. states
+whose difference between azimuthal angular momentum K and total angular
+momentum J is smaller then 'maxamomdiff'. A small value of 'maxamomdiff'
+is useful for nearly spherical odd-even or even-odd nuclei.
+
+
+
+Update 30, July 2026:
+---------------------
+
+The wrapper has been extended to run also quadrupole constrained 
+calculations. The additional input is the same as in SkyAx, namely
+through the namelist 'constraint'. However, only a quadrupole
+constraint is accepted. New output files are: 
+'crankn.<name>'  = vibrational and rotational masses and widths,
+'zpecor.<name>'  = vibrational and rotational ZPE and widths,
+'colpar*.<name>' = the same information in a different layout 
+                   (not used in the following).
+The new wrapper resides in the subdirectory 'source_f90' of
+the base directory of 'SkyAx' presently on the branch 'odd_develop'
+of the GIT repository of 'SkyAx'.
+
+The new wrapper program has also a built-in computation of the
+zero-point energy (ZPE) corrections with topological GOA (topGOA).
+The version in the full 5D triaxial collective dynamics of 
+summarized in eq. (5) in EPJA 37 (2008) 343. The older version 
+in reduced axial topology is summarized in eqs. (3.16-3.20) in 
+PRC 60 (1999) 014316. The analyzing routine provides both results.
+It reads information from '<crank.<name>' and writes to a new file
+'zpetop.<name>'. This files comes along with a header explaining 
+the output.
+
+Installation and usage proceeds as follows:
+The wrapper routine is called now 'wrapper_ZPE.f90'. It resides in
+the subdirectory of the 'SkyAx' base directory. 
+It is compiled and linked in the subdirectory 'source_f90' with 
+the shell command './complink_wrapper_ZPE'. The executable
+'wrapper_ZPE.exe' is then found in the 'SkyAx' base.
+The wrapper can be run in any directory of your choice. First,
+you have to linked the old SkyAx code to 'skyax.exe' in your
+working directory. Then you can issue
+'.../wrapper_ZPE.exe < for005' where "..." stands for the path
+to your 'SkyAx' base and 'for005' can be an input file of your
+choice, of course, in the namelist format of the new 'SkyAx'
+code.
 
