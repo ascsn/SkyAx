@@ -2,7 +2,7 @@ q/SHELL 	       = /bin/bash
 #
 # ----- targets--------------------------------------------------------------
 #
-.PHONY : all info params gf gf_d ifort params info gf_omp ifx ifx_omp
+.PHONY : all info params gf gf_d ifort params info gf_omp ifx ifx_omp clean clean-exec doc
 #
 # ----- define the compiler being used---------------------------------------
 #
@@ -57,12 +57,16 @@ gf gf_d gf_omp: export LIBS_SKYAX = -lblas -llapack
 all: 	info params
 
 # clean all objects and temporary files
-clean:  
+clean:
 	@rm -f *.o
 	@rm -f *.mod
+	@$(MAKE) -C ../doc-doxygen clean
 #
 clean-exec: clean
 	@rm -fr ../skyax.*.*
+#
+doc:
+	@$(MAKE) -C ../doc-doxygen
 #
 info: 
 	@echo "------------------------------------------------------"
@@ -82,7 +86,8 @@ params:
 	@echo
 	@echo "     make clean       remove objects and temporary files"
 	@echo "     make clean-exec  remove objects and temporary files and executables"
-	@echo 
+	@echo "     make doc         build the doxygen documentation"
+	@echo
 	@echo "     make all      print version information and this help screen"
 	@echo 
 
