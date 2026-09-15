@@ -16,6 +16,7 @@ USE grid, ONLY: nz,nr,int_weight,init_int_weight,f2int
 IMPLICIT NONE
  
 REAL(8),POINTER :: psi(:,:,:,:)                  !< The main storage for all s.p. states.
+REAL(8),POINTER :: psifold(:,:,:,:)              !< Storage for all folded s.p. states.
 
 CONTAINS
 !---------------------------------------------------------------------------  
@@ -27,10 +28,15 @@ CONTAINS
 !> INTEGER, takes the total number of wave function.
 !--------------------------------------------------------------------------- 
 SUBROUTINE alloc_wf(npsi)
+  USE dynpar, ONLY: thfbfold
   IMPLICIT NONE
   INTEGER,INTENT(IN) ::npsi
   ALLOCATE(psi(0:nz,0:nr,nsd,npsi))
   psi=0.0d0
+  IF(thfbfold) THEN
+    ALLOCATE(psifold(0:nz,0:nr,nsd,npsi))
+    psifold=0D0
+  END IF
 END SUBROUTINE alloc_wf
 
 !---------------------------------------------------------------------------  
@@ -65,6 +71,30 @@ REAL(8) FUNCTION wfovlp(psia,psib)
   RETURN
   
 END FUNCTION wfovlp
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: conjg_wfovlp
+!> @brief
+!!Computes the overlap between a wave function and a the time-conjugated
+!!other wavefauntion.
+!>
+!> @param[in] psia
+!> REAL(8), array, takes the first wave function.
+!> @param[in] psib
+!> REAL(8), array, takes the second, time-conjugated  wave function.
+!--------------------------------------------------------------------------- 
+REAL(8) FUNCTION conjg_wfovlp(psia,psib)
+
+  IMPLICIT NONE
+  
+  REAL(8), INTENT(IN)         :: psia(0:nz,0:nr,nsd)
+  REAL(8), INTENT(IN)         :: psib(0:nz,0:nr,nsd)
+
+  conjg_wfovlp=-f2int(psia(0:nz,0:nr,1),psib(0:nz,0:nr,2))+f2int(psia(0:nz,0:nr,2),psib(0:nz,0:nr,1))
+
+  RETURN
+  
+END FUNCTION conjg_wfovlp
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: time_reversal

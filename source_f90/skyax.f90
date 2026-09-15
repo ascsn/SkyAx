@@ -14,24 +14,33 @@ USE staticstep
 USE init
 USE fyfunc
 USE util, ONLY :plot_2d,write_skyax_header
+USE pairin, ONLY: findconjpart
+USE blocking, ONLY: comp_block,blnprot,blnneut,scan_block,maxexenerg,iteration_loop,maxamomdiff,clean_com
 
 IMPLICIT NONE
 
 !CHARACTER (LEN=20) :: set
 
-LOGICAL,PARAMETER :: tafter=.true.           ! switch to "afterburn"
 
-LOGICAL ::           tvaryx0=.FALSE.
+LOGICAL :: thfbsav                           ! global switch to HFB (dep. on ipair)
+LOGICAL :: tfirst                            ! signals first run along a deformation path
 
 REAL(8) :: devh2s,dnewoct,econs,oldoct,&
            qact0,qact2,qact3,qact4,qconsav,&
-           devh2prev=100,econprev=100,x0invmin
+           devh2prev=100,econprev=100,x0invmin,pcutact
+!REAL(8) :: pairfacact                        ! actual pairing enhancement factor
 INTEGER :: iplold,ipold,iter,itesto,&
            itmaxact,iwu,nchg,nmass,number_threads=1
 INTEGER :: iqact0,iqact2,iqact3,iqact4,itemp,ntempmax
 INTEGER :: iqact0o,iqact2o,iqact3o,iqact4o    ! save previous values
+INTEGER :: ipairsav            ! saves initial setting of pairing model
+INTEGER :: iteract             ! saves actual iteration number
+INTEGER,SAVE :: itermcount=0      ! counts subsequent occurence of termination condition
 
-NAMELIST /main/ iprint,itmax,itest,title,outnam,&
+NAMELIST /main/ iprint,itmax,itest,&
+                iterbcs,iterhfb,pairenhance,modnat,iternat,tnobcs,&
+                v2limh,delmix,&
+                title,outnam,&
                 ipri_fields,tpri_occup,tpri_conver,tpri_bubble,tpri_2d,&
                 tpri_radii,tpri_formf
 NAMELIST /grids/ tsym,nr,nz,dr,dz,idrtyp
@@ -39,7 +48,8 @@ NAMELIST /static/ nprot,nneut,betain,octini,deocc,mmax,&
                   dipin,e0inv,x0inv,addrho,addpot,addocc,&
                   errenr,errvar,erra,npiter,itpini,&
                   ndrun,nqrun,norun,nhrun,&
-                  colerr,irepc,cmssqr,itpfix,inodiag,tvaryx0
+                  colerr,irepc,cmssqr,itpfix,inodiag,tvaryx0, &
+                  istblo,maxexenerg,maxamomdiff,trestart
 NAMELIST /constraint/ swicon0,betmin0,betmax0,betaw0,&
                       swicon2,betmin2,betmax2,betaw2,&
                       swicon3,betmin3,betmax3,betaw3,&
@@ -55,7 +65,11 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 !     read namelist main                                              *
 !                                                                     *
 !**********************************************************************
+  istblo = 0
+
+
   READ(5,main)
+
   
   IF(tpri_bubble) THEN
     OPEN(173,FILE='bubbleness.'//outnam)
@@ -64,6 +78,8 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   END IF
   
   OPEN(7,STATUS='unknown',FORM='formatted',FILE='out_details.'//outnam)
+!  OPEN(7,STATUS='unknown',FORM='formatted',FILE=outnam)
+
   CALL write_skyax_header
   IF(ifoccs == 1) THEN
     WRITE(7,'(a)') ' WARNING: running IFOCCS=1 is a test version !'
@@ -75,6 +91,9 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 !                                                                     *
 !**********************************************************************
   CALL read_force
+
+  WRITE(*,*) 'ipair input=',ipair
+
   IF(tFayans) THEN
     CALL ini_fyfunc()
     tpair = .TRUE.
@@ -94,6 +113,8 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   IF(riftm1 == 0D0) riftm1 = riftm  !new
   IF(itest>0) WRITE(6,*) 'ipair,v0prot,v0neut,pairstab,rho0pr=',&
     ipair,pairfc,pairstab,rho0pr  
+
+
   
 !**********************************************************************
 !                                                                     *
@@ -111,6 +132,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   END IF
   
   IF(itest>0) WRITE(6,*)  'Grids: ',tsym,sym,nr,nz,dr,dz,idrtyp
+FLUSH(6)
 
 !**********************************************************************
 !                                                                     *
@@ -125,6 +147,9 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   anumb  = npart(1)+npart(2) 
   IF(tvaryx0) x0invmin=x0inv
   IF(tvaryx0) x0inv=x0inv*2.0
+  blnneut = (MOD(npart(2),2)==1)
+  blnprot = (MOD(npart(1),2)==1)
+
 !**********************************************************************
 !                                                                     *
 !     read namelist constraint                                        *
@@ -149,7 +174,6 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   IF(itpfix==0) itpfix=itmax+1
 
                                ! force parameters
-  istblo = 0
   IF(b4p == zero) b4p = t4*oh
   
   CALL prep_qsoll(nmass*1D0) !Also sets grid size
@@ -197,6 +221,8 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
        STOP ' MMAX too small for given DEOCC for protons'
   IF(2*eocc(2) > mmax(2)+3.0)  &
       STOP ' MMAX too small for given DEOCC for neutrons'
+  IF(iternat>0 .AND. tregpair) STOP "HFB accelerator not yet for regularized pairing"
+!  IF(iternat>0) STOP 'HFB accelerator not yet properly working'
   CALL init_grid            ! grid and derivative matrices
   CALL idanuc               ! nucleon damping
   CALL idames               ! coulomb damping
@@ -205,6 +231,8 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
     CALL ssetup                     ! the wavefunctions
     IF(ipair>0) CALL inipai(nmass)
   END IF
+  IF(thfbfold) CALL init_Gaussfolding()
+  IF(tcoulfold) CALL init_protonfolding()
 
 !**********************************************************************
 !                                                                     *
@@ -214,7 +242,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
   
   iqact0o=0;iqact2o=0;iqact3o=0;iqact4o=0;
   itert  = 0                         ! set counter for total iterations
-  DO  iqact0=0,nqmax0; qact0=iqact0*qw0+qmin0
+  outer_loop : DO  iqact0=0,nqmax0; qact0=iqact0*qw0+qmin0
   DO  iqact2=0,nqmax2; qact2=iqact2*qw2+qmin2
   DO  iqact3=0,nqmax3; qact3=iqact3*qw3+qmin3
   DO  iqact4=0,nqmax4; qact4=iqact4*qw4+qmin4
@@ -229,6 +257,7 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
       qlambi0=0D0;qlambi2=0D0;qlambi3=0D0;qlambi4=0D0 
     END IF
     iqact0o=iqact0;iqact2o=iqact2;iqact3o=iqact3;iqact4o=iqact4;
+
 
     qsoll0=qact0; qsoll2=qact2; qsoll3=qact3; qsoll4=qact4
     IF(tfixcon0) qlamb0=qact0
@@ -295,139 +324,26 @@ NAMELIST /thermal/ tempmn,tempmx,tempw
 
     CALL ini_files()
       
-!**********************************************************************
-!                                                                     *
-!     the static iteration                                            *
-!                                                                     *
-!**********************************************************************
-      
-      eold   = energy
-      istblo = 0
-      itmaxact=itmax
-!      IF(iflmb0==1) itmaxact=itcons2     ! prepare for later direct iteration
-      iterations: DO iter=0,itmaxact
-        oldoct=beta3
-        IF(MOD(iter,iprint)==1) THEN
-          WRITE(6,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm x0inv'
-          WRITE(7,*)' Iter, Energy,  beta2,   beta3,log(D^2E),log(dE/dIt),log(dQ/dIt), zcm  x0inv'
-        END IF
-        IF(iter /= 0) THEN
-          WRITE(6,5050)  &
-              iter,energy,beta2,beta3, LOG10(MAX(devh2,smal)),&
-              LOG10(MAX(ABS(econ),smal)),LOG10(MAX(ABS(qcon),smal)), zcm,x0inv
-          WRITE(7,5050)  &
-              iter,energy,beta2,beta3, LOG10(MAX(devh2,smal)),&
-              LOG10(MAX(ABS(econ),smal)),LOG10(MAX(ABS(qcon),smal)), zcm,x0inv
-          IF(check_border_density()) WRITE(6,*)'***WARNING: Grid might be too small. Density at border >1E-6!'
-          CALL flush(7)
-          5050 FORMAT(i5,X,f9.2,2(X,f8.3),3(3X,f7.3),X,1pg12.4,0pf7.3)
-        END IF
-        
-!     set addition-weights for mixing density and potential,
-!     first iteration needs a refresh
-        
-        IF(iter <= 3) THEN
-          adyrho = one
-          adypot = one
-        ELSE
-          adyrho = addrho
-          adypot = addpot
+    WRITE(7,*) 'before ITERATION_LOOP: ',blnprot,blnneut
+    CALL  iteration_loop()    ! the static iteration
+    WRITE(7,*) 'after ITERATION_LOOP: ',blnprot,blnneut
 
-        END IF
-        
-        CALL sstep(iter)
-        CALL sinfo(iter)
-        
-        dnewoct=beta3
-        
-        IF(econ < 10.0*errenr .AND. kblock > 0 .AND. istblo <= 0)  &
-            CALL comp_block
-        itert  = itert+1
-        IF(iter > itpini+3 .AND. tswicon) THEN
-          IF (econ < errenr .AND. devh2 < errvar .AND. &
-              ABS(qcon) < qerr .AND. ABS(zcm) < 1E-3  .AND. &
-              ABS(oldoct-dnewoct) < 1E-3) EXIT iterations
-        ELSE IF (.NOT.tswicon) THEN
-          IF(econ < errenr .AND. devh2 < errvar) EXIT iterations
-        END IF
-        
-        IF(tvaryx0) THEN
-          IF(energy<econprev .AND. devh2<(devh2prev*(1.0d0-1.0d-5))) THEN
-             x0inv=x0inv*1.005
-          ELSE
-             x0inv=x0inv*0.9
-          END IF
-          IF(x0inv<x0invmin) x0inv=x0invmin
-          econprev=energy
-          devh2prev=devh2
-       END IF
-        
-        IF(iter > itcons0) THEN
-          qlamb0  = zero
-          tswicon0 = .FALSE.
-        END IF
-        IF(iter > itcons2) THEN
-          qlamb2  = zero
-          tswicon2 = .FALSE.
-        END IF
-        IF(iter > itcons3) THEN
-          qlamb3  = zero
-          tswicon3 = .FALSE.
-        END IF
-        IF(iter > itcons4) THEN
-          qlamb4  = zero
-          tswicon4 = .FALSE.
-        END IF
-         
-      END DO iterations
-      
-!**********************************************************************
-!                                                                     *
-!     end of static iteration                                         *
-!                                                                     *
-!**********************************************************************
-      
-!     one more iteration to put observables up to date
-      
-!      IF(tafter .AND. iflmb0 /= 1) THEN
-      IF(tafter) THEN
-        ipold  = iprint
-        iprint = 1
-        iplold = ipri_fields
-        itesto = itest
-        IF(ipri_fields>0) ipri_fields  = 1
-        itest  = 0
-        econs  = econ
-        qconsav  = qcon
-        devh2s = devh2
-        adyrho = 1.0
-        adypot = 1.0
-        CALL sstep(iter)                       ! "afterburn"
-        CALL sinfo(itmax)
-        iprint = ipold
-        ipri_fields  = iplold
-        itest  = itesto
-        econ   = econs
-        qcon   = qconsav
-        devh2  = devh2s
-      END IF
-      IF(tpri_2d)  CALL plot_2d()
-      CALL occ_lz()
-      
-      CALL user_interface_1()        ! user defined corrections
-      
-!     optionally compute localization criterion
-      
-      IF(klocal == 1) CALL localize()
-      
-      CALL write_ensurf(iter)
+    IF( (blnprot .OR. blnneut) .AND. SUM(istblo)==0) THEN
+
+      CALL scan_block()
+      WRITE(7,*) 'after SCAN_BLOCK: istblo=',istblo
+      IF(SUM(istblo)>0) EXIT outer_loop   ! scan blocking not for series of constrained calculations
+
+    END IF
 
     END DO       ! temperature loop
     
   END DO       ! L=4 loop
   END DO       ! L=3 loop
   END DO       ! L=2 loop
-  END DO       ! L=0 loop
+  END DO outer_loop      ! L=0 loop
+
+  CALL clean_com()
   
 !**********************************************************************
 !                                                                     *
@@ -446,7 +362,7 @@ CONTAINS
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: write_headers
 !> @brief
-!! Writes input parameters and conditions of actrual run on unit 7
+!! Writes input parameters and conditions of actual run on unit 7
 !> @details
 !!
 !--------------------------------------------------------------------------- 
@@ -460,8 +376,11 @@ SUBROUTINE write_headers()
   !$OMP END PARALLEL
   
   WRITE(7,'(/,10X,a,i3,a)')'SkyAx runs with ',number_threads,' OMP threads.'
+  WRITE(6,'(/,10X,a,i3,a)')'SkyAx runs with ',number_threads,' OMP threads.'
 
   WRITE(7,5001) title,outnam,nmass,nchg,nz,nzd-1,nr,nrd-1,dz,dr
+  WRITE(6,5001) title,outnam,nmass,nchg,nz,nzd-1,nr,nrd-1,dz,dr
+
   5001  FORMAT(//,10X,'Title: ',a,///, 10X,'qualifier of output files=',a,/,  &
       10X,'mass number=',i5,/, 10X,'total charge=',i5,//,  &
       10X,'mesh dimensions',/, 10X,'nz =',i5,'  maximum allowed =',i5,/,  &
@@ -469,8 +388,10 @@ SUBROUTINE write_headers()
       10X,'dz =',f5.3,'  fm',/, 10X,'dr =',f5.3,'  fm',/)
   IF(tsym) THEN
     WRITE(7,'(10x,a)') 'z-reflection symmetric calculation'
+    WRITE(6,'(10x,a)') 'z-reflection symmetric calculation'
   ELSE
     WRITE(7,'(10x,a)') 'calculations without z-reflection symmetry'
+    WRITE(6,'(10x,a)') 'calculations without z-reflection symmetry'
   END IF
   IF(idrtyp == 0) THEN
     WRITE(7,'(10x,a,2i5)') 'd/dr & d/dz from fourier.'
@@ -492,6 +413,11 @@ SUBROUTINE write_headers()
     WRITE(7,5003) avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
          fxi,h1xi,hgradxi,delfxi,isovectormodel,c0nabj,c1nabj,c0tau,c1tau,hcoul, &
          e2,h2m,ifzpe,ifex
+    WRITE(6,5003) avp,h1vp,h2vp,avm,h1vm,h2vm,asp,hsp,hgradp,asm,hsm,hgradm, &
+         fxi,h1xi,hgradxi,delfxi,isovectormodel,c0nabj,c1nabj,c0tau,c1tau,hcoul, &
+         e2,h2m,ifzpe,ifex
+
+
     5003  FORMAT(/, 10X,'avp    =',f10.3,10X,'h1vp   =',f10.3,10X,'h2vp   =',f10.3,/, &
       10X,'avm    =',f10.3,10X,'h1vm   =',f10.3,10X,'h2vm   =',f10.3,/, &
       10X,'asp    =',f10.6,10X,'hsp    =',f10.6,10X,'hgradp =',f10.6,/, &
@@ -503,7 +429,8 @@ SUBROUTINE write_headers()
       10X,'hcoul  =',f10.6,10X,'e2     =',f10.3,/,  &
       10X,'h2m    =',2F12.6,/,10X,'ifzpe  =',i5,15X,'ifex   =',i5)
   ELSE
-    WRITE(7,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm
+    WRITE(7,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm,istsym
+    WRITE(6,5002) t0,t1,t2,t3,t4,x0,x1,x2,x3,b4p,power,e2,h2m,ifzpe,riftm,istsym
     5002  FORMAT(/, 10X,'t0     =',f10.3,'  mev*fm^3',6X,/,  &
       10X,'t1     =',f10.3,'  mev*fm^5',6X,/,  &
       10X,'t2     =',f10.3,'  mev*fm^5',6X,/,  &
@@ -513,15 +440,28 @@ SUBROUTINE write_headers()
       10X,'x3     =',f10.6,/, 10X,'b4p    =',f10.6,/,  &
       10X,'power  =',f10.6,/, 10X,'e2     =',f10.3,/,  &
       10X,'h2m    =',2F10.3,/, 10X,'ifzpe  =',i5,/,  &
-      10X,'riftm  =',f10.3)
-  WRITE(7,5005) pairfc,rho0pr,pairstab
+      10X,'riftm  =',f10.3,/, 10X,'istsym =',i5,'   level of including spin terms')
+  pcutact=pair_cutoff
+  IF(tcutoff_WS) pcutact=-pcutact
+  WRITE(7,5005) pairfc,rho0pr
+  WRITE(6,5005) pairfc,rho0pr
   5005 FORMAT(10X,'pairfc  =',f12.3,'  strength for p',' (mev)',/,  &
       10X,'pairfc  =',f12.3,'  strength for n',' (mev)',/,  &
-      10X,'rho0pr  =',1pg12.4,'  density parameter in DDDI',/,  &
-      10X,'pairstab=',f12.3,'  BCS stabilizing pairing energy'/)
+      10X,'rho0pr  =',1pg12.4,'  density parameter in DDDI',/)
+  END IF
+  WRITE(7,5015) pairstab,pcutact
+  5015 FORMAT(10X,'pairstab=',0pf12.3,'  BCS stabilizing pairing energy'/, &
+      10X,'cutoff  =',0pf12.3,'  pairing cutoff '/)
+  IF(tcutoff_uvspace) THEN
+    WRITE(7,'(10x,a)') 'cutoff in u*v space'
+    WRITE(6,'(10x,a)') 'cutoff in u*v space'
+  ELSE
+    WRITE(7,'(10x,a)') 'cutoff in v**2 space'
+    WRITE(6,'(10x,a)') 'cutoff in v**2 space'
   END IF
   
   WRITE(7,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
+  WRITE(6,5017) colerr,irepc,ndrun,nqrun,norun,nhrun,cmssqr
   5017  FORMAT(//,10X,'laplace equation parameters',//,  &
       10X,'colerr = ',g10.2,'  error for col iter',/,  &
       10X,'irepc  = ',i10,'  no. of iterations  ',/,  &
@@ -539,6 +479,7 @@ SUBROUTINE write_headers()
   END IF
   
   WRITE(7,5007) chg,chgx,e0inv,x0inv,addrho,addpot,addocc,tvaryX0
+  WRITE(6,5007) chg,chgx,e0inv,x0inv,addrho,addpot,addocc,tvaryX0
   5007  FORMAT(/,  &
       10X,'chg    =',f5.1,'  effective charge for direct field',/,  &
       10X,'chgx   =',f5.1,'  effective charge for exchange field',///,  &
@@ -551,6 +492,7 @@ SUBROUTINE write_headers()
       10X,'tvaryX0 =',L6,4x,'  dynamical tuning of step size x0inv',/)
  
   WRITE(7,5004) ipair,npiter,itpini
+  WRITE(6,5004) ipair,npiter,itpini
   5004 FORMAT(//,10X,'bcs pairing model parameters',//,  &
       10X,'ipair   =',i12,'  ipair=-1 nopairing',/,  &
       31X,                '  ipair=4 temperature CHF',/,  &
@@ -561,8 +503,19 @@ SUBROUTINE write_headers()
       10X,'npiter  =',i12,'  no. of pairing iterations',//,  &
       10X,'itpini  =',i12,'  no. iterations before pairing')
   WRITE(7,5014)    addocc
+  WRITE(6,5014)    addocc
   5014  FORMAT(  &
       10X,'addocc  =',f12.3,'  mixing of new and old occ. numbers')
+  IF(ipair==6 .OR. ipair==8) &
+  WRITE(7,'(/10x,a,4(/10x,a,i12),/10x,a,f10.2/2(10x,a,1pg13.5/),10x,a,l)') 'HFB parameters',&
+     'iterbcs  =',iterbcs, &
+     'iterhfb  =',iterhfb, &
+     'iternat  =',iternat, &
+     'modnat   =',modnat, &
+     'pairenh. =',pairenhance, &
+     'v2limh   =',v2limh, &
+     'delmix   =',delmix, &
+     'tnobcs   =',tnobcs
   
   IF(nr > nrd-1) THEN
     WRITE(7,6001) nr,nrd
@@ -576,7 +529,7 @@ SUBROUTINE write_headers()
     STOP 'dimension in setup'
   END IF
   
-  IF((ipair == 5.OR.ipair == 7)) THEN
+  IF(ipair.GE.5 .AND. ipair.LE.8) THEN
     IF (pairstab > 0.0D0) THEN
       WRITE(7,6003) pairstab
       6003    FORMAT(' BCS stabilizing energy must not be positive - pairstab=',  &
@@ -587,6 +540,15 @@ SUBROUTINE write_headers()
     WRITE(7,6004)
     6004    FORMAT(' stabilized BCS only allowed for ipair=5,7')
     STOP 'wrong setup for stabilized BCS'
+  END IF
+
+  IF((blnprot .OR. blnneut) .AND. SUM(istblo)==0) THEN
+    WRITE(7,'(10x,a,f6.2,a,i5)') &
+      'Scan blocked configurations up to exc. energy ',maxexenerg,' MeV'
+    WRITE(7,'(10x,a,f6.2,a,i5)') &
+      'Scan blocked configurations up a.m. difference',maxamomdiff
+    WRITE(6,'(a,f6.2,a)') &
+      'Scan blocked configurations up to exc. energy',maxexenerg,' MeV'
   END IF
   
 ! switch 'iflmb0' presently only for L=2
@@ -610,12 +572,13 @@ SUBROUTINE write_headers()
   5009  FORMAT(/10X,'errenr  =',1pg12.4,'  error in energy convergence',//,  &
       10X,'errvar  =',1pg12.4,'  error in s.p. variance',//,  &
       10X,'erra    =',1pg13.4,'  error in particle number (pairing)')
-  WRITE(7,5010) itmax,iprint,ipri_fields,itest
+  WRITE(7,5010) itmax,iprint,ipri_fields,itest,inodiag
   5010  FORMAT(/,  &
       10X,'itmax      =',i10,'  maximum no. of static iterations',/,  &
       10X,'iprint     =',i10,'  iteration modulus for printing',/,  &
       10X,'ipri_fields=',i10,'  iteration modulus for 1D density plot'/,  &
-      10X,'itest      =',i10,'  level for testprints')
+      10X,'itest      =',i10,'  level for testprints'/,&
+      10X,'inodiag    =',i10,'  nr. steps without H-diagonalization')
   IF(ABS(dipin)>0D0) WRITE(7,'(/a,1pg12.4/)') &
     ' external isovector dipole field dipin=',dipin
   IF (ABS(swicon0)+ABS(swicon2)+ABS(swicon3)+ABS(swicon4) > 0.5D0) THEN
