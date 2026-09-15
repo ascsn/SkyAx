@@ -19,3 +19,5 @@ for005_*
 *.out
 *.job
 Applications
+doc-doxygen/html
+doc-doxygen/latex
