@@ -3,3 +3,15 @@ test_cases_Fayans/*
 !for005*
 !README
 !*.bat
+.history/
+.venv/
+doc-doxygen/html/
+doc-doxygen/latex/
+.vscode/
+Applications/
+source_f90/*.mod
+source_f90/*.o
+*.exe
+*.omp
+source_odd/
+testHFB/
