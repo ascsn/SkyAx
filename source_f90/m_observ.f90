@@ -648,6 +648,8 @@ END SUBROUTINE sinfo
 !> INTEGER, takes the current iteration number.
 !---------------------------------------------------------------------------  
 SUBROUTINE write_ensurf(iter)
+USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY : IEEE_VALUE, &
+                                          IEEE_QUIET_NAN
 
 USE paramr
 USE grid
@@ -656,10 +658,19 @@ USE dynpar
 USE fields, ONLY: rho
 USE levels, ONLY: npart
 
+USE hdf5_skyax, only : observables_t, &
+                       write_observables
+
+! Valid for epair, fer, gap
+INTEGER, PARAMETER :: PROTON_IDX  = 1
+INTEGER, PARAMETER :: NEUTRON_IDX = 2
+
 INTEGER, INTENT(IN) :: iter
 !LOGICAL :: topen173
 
 REAL(8) :: efree
+
+TYPE(observables_t) :: observables
 
   OPEN(90,STATUS='unknown',FORM='formatted',FILE='ensurf.'//outnam,  &
           POSITION='APPEND')
@@ -704,6 +715,25 @@ REAL(8) :: efree
     CLOSE(76)
   END IF
 
+  ! TODO: I am guessing at these.   Many were taken because they are printed out
+  ! in ensurf.out and the docs seem to suggest that this mapping is correct for
+  ! those.  We need confirmation from experts.
+  !
+  ! I do not have the slightest clue how to get the proton and neutron
+  ! single-level energies, so set to NaNs for now.  I suspect that these will
+  ! need to be treated differently from how FaNDF manages them anyway.
+  observables%binding_energy_MeV = energy
+  observables%diffraction_r_fm   = rdmsc
+  observables%charge_r_rms_fm    = rmsc
+  observables%r_N_fm             = rmsn
+  observables%skin_thickness_fm  = surfc
+  observables%proton_gap_MeV     = epair(PROTON_IDX)
+  observables%neutron_gap_MeV    = epair(NEUTRON_IDX)
+  observables%e_ls_p_MeV         = IEEE_VALUE(REAL(1.0), IEEE_QUIET_NAN)
+  observables%e_ls_n_MeV         = IEEE_VALUE(REAL(1.0), IEEE_QUIET_NAN)
+  observables%e_ls_n2_208Pb_MeV  = IEEE_VALUE(REAL(1.0), IEEE_QUIET_NAN)
+  observables%beta2_deformation  = beta2
+  CALL write_observables(observables, iter)
 
   RETURN
 
