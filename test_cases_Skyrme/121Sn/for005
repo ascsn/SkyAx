@@ -1,0 +1,23 @@
+w&main outnam='sk2',title='test 121Sn',ipri_fields=2000,iprint=1000,itmax=1000,tpri_conver=.T.,tpri_2d=F, itest=0, 
+ iterbcs=100, iterhfb=600,pairenhance=1D0,
+iternat=0,modnat=99999,  
+/  
+&force  
+ name='SV-min', tFayans=.FALSE., ipair=7, ex=1, zpe=1, HFBwidth=0D0, 
+ pair_cutoff=1.65,tcutoff_uvspace=.TRUE.,pairstab=-0.0,tcoulfold=F,
+ istsym=2
+/  
+&grids tsym=.T.,nz=25,nr=25,dr=0.7D0,dz=0.7D0,idrtyp=0, 
+/  
+&static nprot=50,nneut=71,e0inv=100D0,addrho=0.15D0,
+x0inv=0.3D0,addocc=0.2D0, 
+deocc(1)=3.1D0,deocc(2)=3.1D0,errenr=1D-11,errvar=0.01,colerr=1D-9,itpini=0, 
+tvaryx0=F,inodiag=99999,irepc=100,  
+istblo=0,398,
+/  
+&constraint 
+/  
+&thermal  
+/  
+
+

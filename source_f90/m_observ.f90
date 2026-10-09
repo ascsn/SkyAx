@@ -17,6 +17,9 @@ REAL(8) :: tempw=1D0     !<Step width for temperature loop.
 REAL(8) :: tempac=1D0    !<Actual temperature for current step.
 INTEGER :: itmax=1000    !<Maximum number of iterations for one deformation.
 INTEGER :: iprint=1000   !<Modulus for printing output.
+!NEW ODD
+INTEGER, PARAMETER :: mod_upd_conjstates=1000  !< Modulus for updating table of conjugated states. 
+!END NEW ODD
 
 REAL(8) :: atnum    !<Mass number for nucleus.
 REAL(8) :: apnum    !<Proton number.
@@ -49,7 +52,7 @@ REAL(8) :: beta1n   !<Neutron dipole deformation parameter.
 REAL(8) :: beta2    !<Quadrupole deformation parameter.
 REAL(8) :: beta2p   !<Proton quadrupole deformation parameter.
 REAL(8) :: beta2n   !<Neutron quadrupole deformation parameter.
-REAL(8) :: beta3    !<Octupole deformation parameter.
+REAL(8) :: beta3=0D0    !<Octupole deformation parameter.
 REAL(8) :: beta3p   !<Proton octupole deformation parameter.
 REAL(8) :: beta3n   !<Neutron octupole deformation parameter.
 REAL(8) :: beta4    !<Hexadecupole deformation parameter.
@@ -115,11 +118,14 @@ REAL(8) :: qq2      !<Variance of quarupole moment
 REAL(8) :: qq3      !<Variance of octupole moment
 REAL(8) :: qq4      !<Variance of hexadecupole moment
 REAL(8) :: qdh      !<Element <Q D h> for L=2
+REAL(8) :: symcondiso(2) !< HFB symmetry conditions for protons and neutrons
+REAL(8) :: symcondi(2)   !< initial HFB symmetry condition in 'hfb_natural'
+REAL(8) :: symcondf(2)   !< final HFB symmetry condition in 'hfb_natural'
 
 REAL(8),ALLOCATABLE,SAVE :: rmsfield(:,:) ! field containing r**2
 
 
-INTEGER,PARAMETER,PRIVATE :: isign_rso=1  !< +-1 to switch new/old magnetic contribution
+INTEGER,PARAMETER,PRIVATE :: isign_rso=1  !< +-1 to switch new/old magnetic contribution to radii
 INTEGER,PARAMETER,PRIVATE :: kfrm=512     !<Maximum dimension of formfactor fields.
 
 ! parameters for nucleon contribution to charge rms radius
@@ -165,9 +171,10 @@ USE paramr
 USE dynpar
 USE grid, ONLY: nr,nz,icm,tsym,sr,sz,f1int
 USE constr
-USE wavefr, ONLY: psi
+USE wavefr, ONLY: psi,psifold
 USE fields
 USE levels
+!USE steputil, ONLY: cpairpot
 
 
 IMPLICIT NONE
@@ -180,20 +187,31 @@ CHARACTER(LEN=40) :: format_conver
 
 REAL(8) :: dipout,z,v2,uv,epairtestn,epairtestp,etot1,fac,occ,occd,qs,&
            qsn,qsp,qsqn,qsqp,r2h,r2t,rmsb,rmsbn,rmsbp,r,qsq
-INTEGER :: ind,ir,iq,ist,iz,jst,nstm,ine
+INTEGER :: ind,ir,iq,ist,iz,jst,nstm,ine,lst
 LOGICAL :: topened
 
 INTEGER,SAVE :: lconp(0:4)     ! pointer to active constraints
 INTEGER,SAVE :: maxcon       ! max. nr. of active constraints
 REAL(8) :: qval(4)           ! storage for actual multipole mooments
 REAL(8),ALLOCATABLE ::  work(:,:)
+REAL(8), ALLOCATABLE :: paircrtest(:,:,:),pairpttest(:,:,:)
+REAL(8) :: densint0,densintfold,densintdiff, epairtestnfold
+REAL(8) :: DelQ2(-2:2)
+LOGICAL, PARAMETER :: testfolding=.FALSE.
 
 !**********************************************************************
 !         block to compute the shell energy, the field energy         *
 !         and the rearrangement energy                                *
 !**********************************************************************
 
+! repair possibly wrong signs between pairing conjugated states
+! here as an occasional safety measure
+IF(toddterms .AND. iter==iterbcs+1 .AND. iter==iterhfb+1)&
+  CALL testconj_all('in SINFO')
+
+
 ALLOCATE(work(0:nz,0:nr))
+IF(testfolding) ALLOCATE(paircrtest(0:nz,0:nr,kqm),pairpttest(0:nz,0:nr,kqm))
 !  constraint energy
 
 work=0D0
@@ -229,7 +247,7 @@ END IF
 
 IF(ipair == 4) THEN                         ! compute entropy
   epair(1:2) = zero
-  DO ist=1,lst
+  DO ist=1,nst(1)+nst(2)
     iq   = icharg(ist)
     occ  = MAX(vsqf(ist),smal)
     occd = MAX(one-occ,smal)
@@ -239,39 +257,98 @@ IF(ipair == 4) THEN                         ! compute entropy
   epair(2) = gap(2)*epair(2)
 END IF
 
-paircr(0:nz,0:nr,1:2)  = zero
+paircr(0:nz,0:nr,1:2)  = 0D0
+IF(testfolding) paircrtest(0:nz,0:nr,1:2)  = 0D0
 !     accumulate new pair-density
-DO jst=1,nst(1)+nst(2)
-  iq    = icharg(jst)
-  v2    = vsqf(jst)
-  uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
-  CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
-END DO
-!c     now multiply with strength to obtain local pair-potential
-IF(ipair <= 6 .OR. ipair == 9) THEN
-  pairpt(0:nz,0:nr,1)  = -pairfc(1) * paircr(0:nz,0:nr,1)
-  pairpt(0:nz,0:nr,2)  = -pairfc(2) * paircr(0:nz,0:nr,2)
+!NEW ODD
+IF(thfbfold) THEN
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE    !NEW ODD
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
+!    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
+    IF(testfolding) CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircrtest(0:nz,0:nr,iq),uv,jst)
+    IF(toddterms) THEN
+      IF(mpsi(jst).lt.0) uv = -uv
+      CALL cpairpot(psifold(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
+    ELSE
+      CALL sdenti(psifold(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    END IF
+  END DO
 ELSE
-  work(0:nz,0:nr)=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
-  pairpt(0:nz,0:nr,1)  = -pairfc(1) * work * paircr(0:nz,0:nr,1)
-  pairpt(0:nz,0:nr,2)  = -pairfc(2) * work * paircr(0:nz,0:nr,2)
+  DO jst=1,nst(1)+nst(2)
+    iq    = icharg(jst)
+    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE    !NEW ODD
+    v2    = vsqf(jst)
+    uv    = wtpair_uv(jst)*wtpair_v2(jst)*SQRT(MAX(v2-v2*v2,1D-11))*0.5
+    IF(toddterms) THEN
+      IF(mpsi(jst).lt.0) uv = -uv
+      CALL cpairpot(psi(0:nz,0:nr,1:2,jst),psi(0:nz,0:nr,1:2,itpartn(jst)),paircr(0,0,iq),uv,jst)
+    ELSE
+      CALL sdenti(psi(0:nz,0:nr,1:2,jst),paircr(0:nz,0:nr,iq),uv,jst)
+    END IF
+  END DO
+END IF
+!END NEW ODD
+
+!c     now multiply with strength to obtain local pair-potential
+IF(.NOT.tFayans) THEN
+  IF(ipair <= 6 .OR. ipair == 9) THEN
+    pairpt(0:nz,0:nr,1)  = -pairfc(1) * paircr(0:nz,0:nr,1)
+    pairpt(0:nz,0:nr,2)  = -pairfc(2) * paircr(0:nz,0:nr,2)
+  ELSE
+    work(0:nz,0:nr)=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
+    pairpt(0:nz,0:nr,1)  = -pairfc(1) * work * paircr(0:nz,0:nr,1)
+    pairpt(0:nz,0:nr,2)  = -pairfc(2) * work * paircr(0:nz,0:nr,2)
+    IF(testfolding) THEN
+      pairpttest(:,:,1)  = -pairfc(1) * work * paircrtest(:,:,1)
+      pairpttest(:,:,2)  = -pairfc(2) * work * paircrtest(:,:,2)
+    END IF
+  END IF
+
+  IF(ipair <= 6 .OR. ipair == 9) THEN
+    work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)
+    epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
+    work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)
+    epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ? 
+  ELSE
+    work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
+    work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)* work
+    epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
+    work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
+    work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)* work
+    epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
+  END IF
+  etpair= epairtestp+ epairtestn
+  epair(1) = epairtestp
+  epair(2) = epairtestn
+  IF(ipair <= 4)  etpair=epair(1)+epair(2)
 END IF
 
-IF(ipair <= 6 .OR. ipair == 9) THEN
-  work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)
-  epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
-  work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)
-  epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ? 
-ELSE
-  work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
-  work=-pairfc(1)* paircr(0:nz,0:nr,1)* paircr(0:nz,0:nr,1)* work
-  epairtestp=f1int(work)  !0.25 oder 0.5,was ist v0 ?
-  work=one-(rho(0:nz,0:nr,1)+rho(0:nz,0:nr,2))/rho0pr
-  work=-pairfc(2)* paircr(0:nz,0:nr,2)* paircr(0:nz,0:nr,2)* work
-  epairtestn = f1int(work)  !0.25 oder 0.5,was ist v0 ?
+IF(testfolding) THEN
+  densint0 = f1int(paircrtest(:,:,2))
+  densintfold = f1int(paircr(:,:,2))
+  work(:,:)=paircrtest(:,:,2)*pairpttest(:,:,2)
+  epairtestnfold = f1int(work)  
+  pairpttest = (pairpt-pairpttest)**2
+  paircrtest = (paircr-paircrtest)**2
+  densintdiff = SQRT(f1int(paircrtest(:,:,2)))
+  WRITE(6,'(a,8(1pg15.7))') 'COMPOBS densities:', &
+     densint0,densintfold,densintdiff,densint0-densintfold, &
+     epairtestn,epairtestnfold,epairtestn-epairtestnfold, &
+     f1int(pairpttest(:,:,2))
+  OPEN(317,file='pairpttest')
+    WRITE(317,'(a)') '# paipttest observ:'
+    DO ir=0,nr
+      DO iz=0,nz
+        WRITE(317,'(2i3,2(1pg13.5))') iz,ir,pairpttest(iz,ir,2),paircrtest(iz,ir,2)
+      END DO
+      WRITE(317,'(1x)')
+    END DO
+  CLOSE(317)
+  DEALLOCATE(paircrtest,pairpttest)
 END IF
-etpair= epairtestp+ epairtestn
-IF(ipair <= 4)  etpair=epair(1)+epair(2)
 
 
 !**********************************************************************
@@ -286,23 +363,25 @@ IF(tFayans) THEN
   ekin   = h2meff(1)*f1int(tau(:,:,1))+h2meff(2)*f1int(tau(:,:,2))
   etot1  = ekin+energyFy+ecoul/2D0
   energy = ekin+energyFy+ecoul/2D0-ezp+etpair
-  IF(itest>0) WRITE(7,'(a,i5,6(1pg13.5))') &
-      'energyFy=',iter,etot1,ekin,energyFy,epair,ezp,f1int(rho(:,:,1))
+!  IF(itest>0) WRITE(7,'(a,i5,6(1pg13.5))') &
+!  WRITE(7,'(a,i5,6(1pg13.5))') &
+!      'energyFy=',iter,etot1,ekin,energyFy,epair,ezp,f1int(rho(:,:,1))
 ELSE
   CALL energ()           ! energy directly from density
   etot1  = energy
   energy = energy-ezp+etpair
 END IF
 IF(itest >= 1 .OR. iter==itmax) THEN
-  WRITE(6,'(a,i5,a,2f12.4)') ' iter=',iter,  &
+  WRITE(6,'(a,i5,a,2f14.4)') ' iter=',iter,  &
       ', energies: from rearr. vs. from densities=',energr,energy
-  WRITE(7,'(a,2f12.4/a,4(1pg12.5)/a,2(1pg12.5)/a,i5,1pg13.5)')  &
+  WRITE(7,'(a,2f12.4/a,4(1pg12.5)/a,5(1pg12.5)/a,i5,1pg13.5)')  &
       '  energies: from rearr. vs. from densities=',energr,energy,  &
       '  ekin,epot,etot=',ekin,epot,etot1,energy,  &
-      '  epair-direct  =',epairtestp,epairtestn, &
+      '  epair-direct  =',epairtestp,epairtestn,etpair,epair, &
       '  sum_s.p.energ.=',iter,SUM(spenrg(1:nst(1))*wate(1:nst(1))*vsqf(1:nst(1)))
 END IF
 !Copy previous s.p. energies to speold
+lst = nst(1)+nst(2)
 speold(1:lst) = spenrg(1:lst)
 
 !**********************************************************************
@@ -324,6 +403,7 @@ qval(2) = q
 qval(3) = o
 qval(4) = h
 !WRITE(*,*) 'd,q,o,h=',d,q,o,h
+!WRITE(7,'(a,3f6.1,3f7.4)') 'rms:',apnum,annum,atnum,rmsp,rmsn,rms
 IF(itest > 0) THEN
    WRITE(6,'(a,7(1pg12.4))')  &
     'pr: Z,rms,d,q,o,h=',apnum,rmsp,dp,qp,op,hp
@@ -403,7 +483,8 @@ IF(iter == 0 .AND. tpri_conver) THEN
   IF(.NOT.tswicon) THEN
     WRITE(71,'(a,7x,a)')  &
         ' iter   energy    variance  difference    qtotal',  &
-        '   devoc2    devmf2     devgap    x0inv'
+        '   devoc2    devmf2      rmsp     x0inv   epair(1:2)'
+!        '   devoc2    devmf2     devgap    x0inv   epair(1:2)'
   ELSE
     ! prepare pointers for printing
     lconp = 0
@@ -433,8 +514,9 @@ IF(iter == 0 .AND. tpri_conver) THEN
   END IF
 ELSE IF(tpri_conver) THEN
   IF(.NOT.tswicon) THEN
-    WRITE(71,'(i5,f11.4,7(1pg12.5))')  &
-        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv
+    IF(MOD(iter,itzpe).NE.1) WRITE(71,'(i5,f11.4,9(1pg13.5))')  &
+        iter,energy,devh2,econ,q,devoc2,devmf2,rmsp,x0inv,epair
+!        iter,energy,devh2,econ,q,devoc2,devmf2,SQRT(ABS(devgap)),x0inv,epair
   ELSE
     IF(maxcon==1) format_conver='(i5,f11.4,3(1pg10.3),4(X,4(1pg12.3)))'
     IF(maxcon==2) format_conver='(i5,f11.4,3(1pg10.3),8(X,8(1pg12.3)))'
@@ -446,7 +528,9 @@ ELSE IF(tpri_conver) THEN
          qcons(lconp(ir)),ir=1,maxcon)
   END IF
 END IF
-IF(energy /= zero) econ   = ABS((energy-eold)/energy)
+!IF(energy /= zero) econ   = ABS((energy-eold)/energy)
+IF(energy /= zero .AND. iter<itmax) econ   = ABS((energy-eold)/energy)
+
 !copy total energy to storage for previous iteration
 eold   = energy
 
@@ -454,16 +538,17 @@ eold   = energy
 !**********************************************************************
 !        only write full information every iprint iterations          *
 !**********************************************************************
-IF(iter == 0 .OR. iprint == 0 .OR. MOD(iter,iprint) /= 0) RETURN
+IF((iter == 0 .OR. iprint == 0 .OR. MOD(iter,iprint) /= 0) &
+   .AND. iter.NE.itmax) RETURN
 WRITE(7,25010) iter,energy,energy/MAX(atnum,smal),eshell,ecoul/2D0,ecolex,erearr,  &
-    ezp,epot,ekin,etpair,equad,econ
-25010 FORMAT('1'/,' iteration no. = ',i10, /,' binding energy (mev) = ',  &
-    f10.3,' binding energy per nucleon (mev) = ',f10.3,/, '   eshell = ',f10.3,  &
+    ezp,epot,ekin,etpair,equad,econ,symcondiso
+25010 FORMAT('1'/,' iteration no. = ',i10, /,' binding energy (MeV) = ',  &
+    f10.3,' binding energy per nucleon (MeV) = ',f10.3,/, '   eshell = ',f10.3,  &
     '   ecoul  = ',f10.3, '   ecolex = ',f10.3,/,  &
     '   erearr = ',f10.3, '   ezp    = ',f10.3,  &
     '   epot   = ',f10.3,/, '   ekin   = ',f10.3,  &
     '   epair  = ',f10.3, '   equad  = ',f10.3,/,  &
-    '   de/e   = ',1PG12.4)
+    '   de/e   = ',1PG12.4,' symcond =',2(1pg12.4))
 IF(ipair >= 0) WRITE(7,'(3(a,2(1pg10.3)))')  &
     '   gap(1/2)=',gap,'   fer(1/2)=',fer
 IF (tswicon0)  WRITE(7,'(a,1pg14.6)')' L=0 Lagrange parameter:',qlamb0
@@ -483,7 +568,8 @@ WRITE(7,'(a,2f8.3,5(1pg12.4))') '  proton:',apnum,rmsp,dp,qsp,op,hp,qp
 WRITE(7,'(a,2f8.3,5(1pg12.4))') ' neutron:',annum,rmsn,dn,qsn,on,hn,qn
 WRITE(7,'(a,2f8.3,5(1pg12.4))') '   total:',atnum,rms,d,qs,o,h,q
 WRITE(7,'(a,8x,(1pg12.4))') '   diff:',rmsn-rmsp
-WRITE(7,'(/a,2i4,3(1pg20.12))') ' dipoles:  Z,N,cm,isovector,polariz=',  &
+IF(ABS(dipin)>0D0) &
+  WRITE(7,'(/a,2i4,3(1pg20.12))') ' dipoles:  Z,N,cm,isovector,polariz=',  &
     npart(1),npart(2),zcm,dipout,-e2*dipout/dipin
 WRITE(7,'(/a)') '            beta_1      beta_2      beta_3      beta_4  '
 WRITE(7,'(a,4(1pg12.4))') '  proton:',beta1p,beta2p,beta3p,beta4p
@@ -528,13 +614,13 @@ DO  iq=1,2
       ine    = iokk(iq)+ist-1
       ind    = iorder(ine)+iokk(iq)-1
       IF(tcutoff_uvspace) THEN
-        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3)')  &
+        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
-          nparz(1,ind),wtpair_uv(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind)
+          nparz(1,ind),wtpair_uv(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind),itpartn(ind)
       ELSE
-        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3)')  &
+        WRITE(7,'(i5,i4,f6.1,3i5,2f8.5,2f5.2,f9.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
-          nparz(1,ind),wtpair_v2(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind)
+          nparz(1,ind),wtpair_v2(ind), vsqf(ind),cmpn(1,ind),cmpn(2,ind),spenrg(ind),itpartn(ind)
       END IF
       IF(spenrg(ind)<0D0) boundnum(iq)=boundnum(iq)+vsqf(ind)*wate(ind)
     END DO
@@ -543,23 +629,27 @@ DO  iq=1,2
   ELSE
     WRITE(7,'(/10x,a,16x,a/a,a)') 'parities','components',  &
         '   Nr Iso j_z tot r z  wtpair  v^2      uv  delta',&
-        '   energy  energy-variances'
+        '   energy  E-variance  ang.mom.  s.p.radius conj.state'
     boundnum(iq) = 0D0
     DO ist=1,nstm
       ine    = iokk(iq)+ist-1
       ind    = iorder(ine)+iokk(iq)-1
+!      WRITE(6,'(a,3i5,1pg13.5)') 'testconj:',ind,itpartn(ind),mpsi(ind), &
+!       testconj(psi(:,:,:,ind),psi(:,:,:,itpartn(ind)))*SIGN(1D0,mpsi(ind)+0.5D0)
       IF(tcutoff_uvspace) THEN
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,1pg12.4,0pf6.3,f8.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_uv(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
-          deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind),spevhh(ind)
+          deltaf(ind)*wtpair_uv(ind),spenrg(ind),spevar(ind), &
+          angularmom(ind), spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       ELSE
-        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,2(1pg12.4))')  &
+        WRITE(7,'(i5,i2,f5.1,3i3,2f8.5,2f6.2,f9.3,1pg12.4,0pf6.3,f8.3,i5)')  &
           ind,icharg(ind),mpsi(ind)+0.5,npar(ind),nrpar(ind),  &
           nparz(1,ind),wtpair_v2(ind),  &
           vsqf(ind),SQRT(MAX(ABS(vsqf(ind)-vsqf(ind)**2),smal)),  &
-          deltaf(ind),spenrg(ind),spevar(ind),spevhh(ind)
+          deltaf(ind),spenrg(ind),spevar(ind),  &
+          angularmom(ind),spradius(psi(:,:,:,ind)),itpartn(ind) !spevhh(ind)
       END IF
       IF(spenrg(ind)<0D0) boundnum(iq)=boundnum(iq)+vsqf(ind)*wate(ind)
     END DO
@@ -568,6 +658,25 @@ DO  iq=1,2
   END IF
   
 END DO
+
+! compute and print Q variance
+CALL Qvariance(DelQ2)
+rmsb = 0.929516003D0*atnum**0.333333333333D0
+WRITE(6,'(a,5(1pg13.5))') 'Delta Q^2:',DelQ2
+WRITE(7,'(a,5(1pg13.5))') 'Delta Q^2:',DelQ2
+!WRITE(7,'(a,1pg13.5)') 'atnum=',atnum
+DelQ2 = DelQ2*(4D0*pi/MAX(5D0*rmsb*rmsb*atnum,smal))**2  ! convert to dimensionless
+DO ind=6,7
+  WRITE(ind,'(a,f7.3,5(1pg13.5),5x,1pg13.5)') 'Delta_beta^2:  ',beta2,DelQ2,SUM(DelQ2)
+  qsq = SQRT(SUM(DelQ2)+beta2**2)
+  WRITE(ind,'(a,f7.3,5(1pg13.5),5x,2(1pg13.5))') 'SQRT(D_beta^2):',&
+     beta2,SQRT(DelQ2),SQRT(SUM(DelQ2)),qsq
+!  WRITE(ind,'(a,f7.3,6(1pg13.5))') 'Delta_SQRT(sum_beta^2):',beta2,SQRT(SUM(DelQ2)),qsq
+!  WRITE(ind,'(a,f7.3,5(1pg13.5))') 'Delta_SQRT(tot_beta^2):',beta2,SQRT(SUM(DelQ2))
+END DO
+
+
+
 !     optionally save occupation numbers
 IF(ifoccs == 1 .AND. ifocsv == 0) THEN
   DO iq=1,2
@@ -599,7 +708,7 @@ USE grid
 USE dynpar
 !USE constr, ONLY: iflmb0
 USE fields, ONLY: rho
-USE levels, ONLY: npart
+USE levels, ONLY: npart,kblock,angblock
 
 INTEGER, INTENT(IN) :: iter
 !LOGICAL :: topen173
@@ -610,14 +719,14 @@ REAL(8) :: efree
           POSITION='APPEND')
   IF(ipair /= 4) THEN
     IF(.NOT.tsym) THEN
-      WRITE(90,'(12f7.3,f18.11,2f7.1,2f7.2,i5,4f8.4,3f11.6)')  &
+      WRITE(90,'(12f8.3,f18.11,2f7.1,2f7.2,2f9.3,i6,2f5.1,2f6.2,f16.12,3f8.4,2f11.6,2(1pg12.4))')  &
           beta1,beta1p,beta1n,beta2,beta2p,beta2n,  &
           beta3,beta3p,beta3n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,kblock*0.5D0,angblock,rmsc,rms,rmsp,rmsn,boundnum,devh2,econ
     ELSE
-      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,i5,4f8.4,3f11.6)') &
+      WRITE(90,'(6f7.3,f18.11,2f7.1,2f7.2,2f9.3,i6,2f5.1,2f6.2,f16.12,3f8.4,2f11.6,2(1pg12.4))') &
           beta2,beta2p,beta2n,beta4,beta4p,beta4n,  &
-          energy,epair,fer,iter,rmsc,rms,rmsp,rmsn,boundnum,ezp
+          energy,epair,fer,gap,iter,kblock*0.5D0,angblock,rmsc,rms,rmsp,rmsn,boundnum,devh2,econ
     END IF
     IF(ABS(apnum-npart(1)) > 1.0E-5  &
         .OR. ABS(annum-npart(2)) > 1.0E-5 ) WRITE(90,'(35x,a,2(1pg14.6))')  &
@@ -949,6 +1058,7 @@ REAL(8),ALLOCATABLE,SAVE :: dfield(:,:),qfield(:,:),ofield(:,:),&
                             hfield(:,:),qsqfield(:,:)
 INTEGER :: ir,iz
 
+!REAL(8) ::asum,r2sum,zact,ract,rvol,r2
 
 !Prepare helper fields if called for the first time
 IF(.NOT.ALLOCATED(rmsfield)) THEN
@@ -988,7 +1098,35 @@ ELSE
   o    = f1int(rhoini(0:nz,0:nr)*ofield)* oh * oh * SQRT(seven/pi)
 END IF
 
-!WRITE(*,*) 'OBS: zcm,d=',zcm,d
+!! check
+!asum=0D0
+!r2sum=0D0
+!DO ir=0,nr
+!  ract = dr*ir
+!  IF(ir>0) THEN
+!    rvol=dr*ir
+!  ELSE
+!    rvol = dr*drezw
+!  END IF
+!  DO iz=0,nz
+!   zact = dz*iz
+!   r2 = ract**2+zact**2
+!   IF(iz>0) THEN
+!     asum = asum + rvol*rhoini(iz,ir)
+!     r2sum = r2sum + r2*rvol*rhoini(iz,ir)
+!   ELSE
+!     asum = asum + rvol*rhoini(iz,ir)/2D0
+!     r2sum = r2sum + r2*rvol*rhoini(iz,ir)/2D0
+!   END IF
+!  END DO
+!END DO
+!asum=2D0*3.1415926D0*asum
+!r2sum=2D0*3.1415926D0*r2sum
+!
+!
+!WRITE(*,'(a,5(1pg14.6))') 'OBS: nr.,rms(2)=',asum/2D0,SQRT(r2sum/asum),rms
+!WRITE(*,'(a,5(1pg14.6))') 'OBS: zcm,d=',zcm,d/atnum
+
 RETURN
 END SUBROUTINE obs
 
@@ -1325,23 +1463,27 @@ USE fields, ONLY: drhols
 IMPLICIT NONE
 
 REAL(8), PARAMETER :: delrad=0.3D0    ! assumed spherical grid spacing
-REAL(8), PARAMETER :: cutk=4D0,cutdel=0.4D0    ! soft cutoff in k space
+!REAL(8), PARAMETER :: cutk=4D0,cutdel=0.4D0    ! soft cutoff in k space
+REAL(8), PARAMETER :: cutk=3.5D0,cutdel=0.3D0    ! soft cutoff in k space
 
 REAL(8) :: foc(kfrm),fop(kfrm),fon(kfrm),fo(kfrm),foc0(kfrm)
 REAL(8) :: rhoback(kfrm),fob(kfrm)   ! auxiliary arrays for back transformation
-REAL(8) :: r4back                    ! fourth radial moment from Fourier back transform
+!REAL(8) :: r4back                    ! fourth radial moment from Fourier back transform
 REAL(8) :: cmwid,delk,delrac,q1,qr,rleng,rmax,zmax,zpeact
-REAL(8) :: r2lsp,r2lsn,r2mcor,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
+!REAL(8) :: r2lsp,r2lsn,r2mcor,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
+REAL(8) :: r2lsp,r2lsn,r2intrnact,rlsmomp2,rlsmomn2,darcor,r2cmcor
+REAL(8) :: rmspback,rmsnback,rmsback
 INTEGER :: iq,ikmax
 
 !     determine grid in spherical coordinate space from backward F.B. trafo
 zmax   = ((nz)+sz-icm)*dz-zcm
 rmax   = (nr+sr)*dr
 rleng  = MIN(zmax,rmax)
+!ikmax  = 2*INT(rleng/delrad)+1
 ikmax  = INT(rleng/delrad)+1
-IF(ikmax > kfrm) STOP ' in RADIUS: KFRM too small'
 delrac = rleng/ikmax
-delk   =  pi/rleng
+delk   =  pi/rleng  !/2D0
+IF(ikmax > kfrm) STOP ' in RADIUS: KFRM too small'
 
 !     width parameter for c.m. correction
 IF(ifzpe == 0) THEN
@@ -1394,18 +1536,18 @@ IF(tpri_formf) THEN
     WRITE(176,'(5(1pg13.5))')  delrac*(iq-1),rhoback(iq)
   END DO
 END IF
-CALL rms_back(fo,rms,r4)
-CALL rms_back(fop,rmsp,r4p)
-CALL rms_back(fon,rmsn,r4n)
+CALL rms_back(fo,rmsback,r4)
+CALL rms_back(fop,rmspback,r4p)
+CALL rms_back(fon,rmsnback,r4n)
 CALL rms_back(foc0,rmsc0,r4c0)
 
-WRITE(7,'(a,4(1pg13.5))') ' from formfactors:    r_c,r_tot,r_prot,r_neutr=',&
-    rmsc,rms,rmsp,rmsn
-WRITE(7,'(a,4(1pg13.5))') '                  r4_c,r4_tot,r4_prot,r4_neutr=',&
+WRITE(7,'(a,4(1pg13.5))') ' from formfactors(incl.c.m.):r_c,r_tot,r_prot,r_neutr=',&
+    rmsc,rmsback,rmspback,rmsnback
+WRITE(7,'(a,4(1pg13.5))') '                         r4_c,r4_tot,r4_prot,r4_neutr=',&
     r4c,r4,r4p,r4n
-WRITE(7,'(a,4(1pg13.5))') ' from charge formfactor:  r,R,sigma,r_unsafe=',  &
+WRITE(7,'(a,4(1pg13.5))') ' from charge formfactor:           r,R,sigma,r_unsafe=',  &
     rmsc,rdmsc,surfc,r4c
-WRITE(7,'(a,12f8.4)') 'FF:',rmsc,rdmsc,surfc,r4c,rmsc0,rdmsc0,surfc0,r4c0,rmsp,rdmsp,surfp,r4p
+WRITE(7,'(a,12f8.4)') 'FF:',rmsc,rdmsc,surfc,r4c,rmsc0,rdmsc0,surfc0,r4c0,rmspback,rdmsp,surfp,r4p
 
 
 ! the block to compute the nucleon corrections to rms radii directly
@@ -1419,16 +1561,18 @@ r2lsp = -(xmgpr-isign_rso*d4m)*rlsmomp2/nprot
 r2lsn = -xmgne*rlsmomn2/nprot
 r2cmcor = -6D0*cmwid
 WRITE(6,'(a,9(1pg13.5))') 'rms_C^2:', &
-   rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
-   rmsp*rmsp-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
+   rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
+   rmspback*rmspback-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
 WRITE(6,'(a,7(1pg13.5))') '  rms_C:', &
-   SQRT(rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
 !WRITE(7,'(a,9(1pg13.5))') 'rms_C^2:', &
 WRITE(7,'(a,9f9.4)') 'rms_C^2:', &
-   rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
-   rmsp*rmsp-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
+   rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn, &
+   rmspback*rmspback-r2cmcor,r2intrp,r2intrnact,darcor,r2lsp,r2lsn,r2cmcor,rmsc**2
 WRITE(7,'(a,7(1pg13.5))') '  rms_C:', &
-   SQRT(rmsp*rmsp+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor+r2lsp+r2lsn),rmsc, &
+   SQRT(rmspback*rmspback+r2intrp+r2intrnact+darcor)
+!   SQRT(6D0*(foc(1)-foc(2))/(delk**2)/foc(1))
 
 
 RETURN
@@ -1454,7 +1598,7 @@ DO iq=2,ikmax
   fob(iq)=foa(iq)/(1D0+EXP(((qa-cutk)/cutdel)))
 END DO
 !                                                         r=0.0 separately
-IF(tprint) WRITE(78,'(a)') '# teest density from back Fourier'
+IF(tprint) WRITE(78,'(a)') '# test density from back Fourier'
 acc    = 0D0
 DO iq=2,ikmax
   qa     = delk*iq-delk
@@ -1629,6 +1773,9 @@ IF(ifrso) THEN
   END DO
   sumsp  = f1int(wrk1)
   sumsn  = f1int(wrk2)
+ELSE
+  sumsp  = 0D0
+  sumsn  = 0D0
 END IF
 
 !      isoscalar and isovector electrical formactors on 'schses'
@@ -1645,7 +1792,7 @@ sumc   = sump*schsep+sumn*schsen
 
 schsm  = ( gp1/(one+qa/gm1)+gp2/(one+qa/gm2)+gp3/(one+qa/gm3)+gp4/(one+qa/gm4) )
 schsmp = -schsm*xmgpr + isign_rso*schsep*d4m   ! +  for correct scheme
-schsmn = -schsm*xmgne !- schsen*d4m
+schsmn = -schsm*xmgne + isign_rso*schsen*d4m
 
 
 !      factor for darwin correction 'darfac'
@@ -1894,9 +2041,12 @@ DO ist=1,nst(1)+nst(2)
     IF(mm == 1) THEN
       psip(0:nz,ir,is) = 0D0
       psin(0:nz,ir,is) = 2D0*psi1(0:nz,ir,is)
+    ELSE IF(mm == -1) then
+      psin(0:nz,ir,is) = 0D0
+      psip(0:nz,ir,is) = 2D0*psi1(0:nz,ir,is)
     ELSE
-      psip(0:nz,ir,is) = psi1(0:nz,ir,is)
-      psin(0:nz,ir,is) = psip(0:nz,ir,is)
+      psip(0:nz,ir,is) = 0D0 !psi1(0:nz,ir,is)
+      psin(0:nz,ir,is) = 0D0 !psip(0:nz,ir,is)
     END IF
     DO ir=1,nr
       psip(0:nz,ir,is) = psi1(0:nz,ir,is)-mm/r(ir)*psi(0:nz,ir,is,ist)
@@ -1907,6 +2057,7 @@ DO ist=1,nst(1)+nst(2)
   npist  = nparz(1,ist)
   vi    = sqrtb(vsqf(ist))
   ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
   deltai = deltaf(ist)*wtpair_uv(ist)
   edifi  = spenrg(ist)-eferm
   equasi = SQRT(edifi*edifi+deltai*deltai)
@@ -1916,22 +2067,27 @@ DO ist=1,nst(1)+nst(2)
   IF(intest == 1) WRITE(7,'(a,i3,1pg12.4)')  &
       ' test: ist, <Nabla**2>=',ist,tstovl
   DO jst=jstmin,jstmax
-    IF((npist == nparz(1,jst) .AND.  &
-          (mist+1 == mpsi(jst) .OR. mist-1 == mpsi(jst)) ) .OR.  &
-          (npist == nparz(2,jst) .AND.  &
-          (mist == 0 .AND. mpsi(jst) == 0))            ) THEN
+    IF( ( npist == nparz(1,jst) .AND.  &
+          (mist+1 == mpsi(jst) .OR. mist-1 == mpsi(jst)) )  &
+        .OR.  &
+        ( npist == nparz(2,jst) .AND.  &
+          ( (mist == 0 .AND. mpsi(jst) == 0)  &
+           .OR.(mist.eq.-1 .and. mpsi(jst).eq.-1)))      ) then
       vj    = sqrtb(vsqf(jst))
       uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
       deltaj = deltaf(jst)*wtpair_uv(jst)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
-      IF(mist == 0 .AND. mpsi(jst) == 0) THEN
+      IF(isTsym.LE.0 .AND. mist == 0 .AND. mpsi(jst) == 0) THEN
         pij    = wfovoc(psi(0:nz,0:nr,1,jst),psin(0:nz,0:nr,2))  &
             + wfovoc(psi(0:nz,0:nr,2,jst),psin(0:nz,0:nr,1))
       ELSE IF(mist+1 == mpsi(jst)) THEN
         pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
       ELSE IF(mist-1 == mpsi(jst)) THEN
         pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psin)
+      ELSE
+        pij = 0D0
       END IF
       sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
       IF(intest == 1) WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
@@ -1939,9 +2095,14 @@ DO ist=1,nst(1)+nst(2)
           ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij, pij*(vj*ui-uj*vi)
       IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
           ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+!               pij    = pij*(vj*ui-uj*vi)
+!               pij    = pij*pij
+!               sumexy = pij/(equasi+equasj) + sumexy
+!               sumwxy  = pij + sumwxy
     END IF
   END DO
 END DO
+IF(isTsym>0) sumdir=sumdir/2D0
 widdxy = sumdir/2.0
 
 !     2. loop to accumulate c.m. width along z
@@ -1967,6 +2128,7 @@ DO ist=1,nst(1)+nst(2)
   npist  = nparz(1,ist)
   vi    = sqrtb(vsqf(ist))
   ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
   deltai = deltaf(ist)*wtpair_uv(ist)
   edifi  = spenrg(ist)-eferm
   equasi = SQRT(edifi*edifi+deltai*deltai)
@@ -1979,6 +2141,7 @@ DO ist=1,nst(1)+nst(2)
     IF(npist == nparz(2,jst) .AND. mist == mpsi(jst)) THEN
       vj    = sqrtb(vsqf(jst))
       uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
       deltaj = deltaf(jst)*wtpair_uv(jst)
       edifj  = spenrg(jst)-eferm
       equasj = SQRT(edifj*edifj+deltaj*deltaj)
@@ -1993,6 +2156,7 @@ DO ist=1,nst(1)+nst(2)
     END IF
   END DO
 END DO
+IF(isTsym>0) sumdir=sumdir/2D0
 widdz  = sumdir
 
 
@@ -2008,7 +2172,8 @@ IF(ifzpe == 1) THEN
 ELSE
   ezp = 0.0D0
 END IF
-IF(itest>=0) WRITE(7,'(a,3(1pg12.4))') ' total ZPE: ',ezp
+IF(itest>=0) WRITE(7,'(a,3(1pg12.4))') ' total ZPE: ',ezp,widdz,widdxy
+WRITE(7,'(a,3(1pg12.4))') ' total ZPE: ',ezp,widdz,widdxy
 
 DEALLOCATE(psi1,psin,psip)
 
@@ -2283,6 +2448,16 @@ IF(mm == 0) THEN
 ELSE IF(mm == 1) THEN
   wrk1(0:nz,0) = (fpair+fpair) * ( psip(0:nz,0,1)**2 )               ! save that for spin-orbit
   taud(0:nz,0) = wrk1(0:nz,0) + taud(0:nz,0)
+!NEW ODD
+ELSE IF(mm == (-1)) THEN
+    rhod(0:nz,0) = fpair * psiw(0:nz,0,2)*psiw(0:nz,0,2) + rhod(0:nz,0)
+    wrk1(0:nz,0) = fpair * ( psin(0:nz,0,2)*psin(0:nz,0,2)  &
+        + 2.0*psip(0:nz,0,1)*psip(0:nz,0,1) )              ! save that for spin-orbit               
+    taud(0:nz,0) = wrk1(0:nz,0)  + taud(0:nz,0)
+ELSE IF(mm == (-2)) THEN
+    wrk1(0:nz,0) = (fpair+fpair) * ( psip(0:nz,0,2)*psip(0:nz,0,2) )           ! save that for spin-orbit                
+    taud(0:nz,0) = wrk1(0:nz,0) + taud(0:nz,0)
+!END NEW ODD
 END IF
 
 !---- all other 'r'
@@ -2336,6 +2511,282 @@ DEALLOCATE(psip,psin,wrk1,wrk2)
 RETURN
 END SUBROUTINE densit
 
+!NEW ODD
+SUBROUTINE densitodd(psiw,weight,ist,  &
+    rrotj,zrotj,rotsig,rsig,zsig,slarsig,slazsig, curr,spdenkinr,spdenkinz)
+
+! DESCRIPTION: densitodd
+!> @brief
+!!Accumulates the time-odd densities \c rotj, \c curr, \c sigma, calculated for the 
+!!state in wave function \c psiw with the occupation probability \c weight.
+
+
+!**********************************************************************
+!                                                                     *
+!        accumulates the time-odd densities
+!                                                                     *
+!**********************************************************************
+
+USE paramr
+USE dynpar
+USE levels
+USE grid
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)     :: psiw(0:nz,0:nr,nsd)
+REAL(8), INTENT(IN)     :: weight
+INTEGER, INTENT(IN)     :: ist
+REAL(8), INTENT(IN OUT)    :: rrotj(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: zrotj(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: rotsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: rsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: zsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: slarsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: slazsig(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: curr(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: spdenkinr(0:nz,0:nr)
+REAL(8), INTENT(IN OUT)    :: spdenkinz(0:nz,0:nr)
+
+REAL(8),ALLOCATABLE :: psip(:,:,:),psin(:,:,:)
+REAL(8),ALLOCATABLE :: psipp(:,:,:),psinn(:,:,:)
+
+REAL(8) :: fpair,fpair2,rinv,xmlow,fup,flow,xm2,xm2l,xmup
+REAL(8) :: sigism,f,add
+INTEGER :: iz,ir,mm,nparrc,nparr,ism
+
+!-----------------------------------------------------------
+
+ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+ALLOCATE(psipp(0:nz,0:nr,nsd),psinn(0:nz,0:nr,nsd))
+
+
+!  in case of calculating one the half spectrum, set
+!  time-odd densitys to zero
+
+!WRITE(6,*) 'CUR in SUBR:',ist,SUM(curr**2)
+IF(toddterms)THEN
+  fpair  = weight*wate(ist)
+ELSE
+  fpair = 0D0
+END IF
+
+
+!---- some combinations of <j_z>
+
+mm     = mpsi(ist)
+xm2    = mm*mm
+xm2l   = (mm+1)*(mm+1)
+nparr  = 1+MOD(mm,2)
+nparrc = 3-nparr
+
+!---- calculate derivatives of psiw
+
+CALL nablaz_spin(psiw,psin,nparz(1,ist),1,1D0)
+CALL nablar_spin(psiw,psip,   mpsi(ist),1,1D0)
+CALL nablaz_spin(psin,psinn,nparz(1,ist),1,1D0)
+CALL nablar_spin(psip,psipp,   mpsi(ist),1,1D0)
+
+!**********************************************************************
+!       rrotj r-comp of rot j
+!       zrotj z-comp of rot j
+!**********************************************************************
+
+!----- r = 0
+
+!      fpair = (-1.0)*fpair
+! only z-comp changes
+IF(mm == 0) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) + 2*fpair*psip(iz,0,2)*psip(iz,0,2)
+  END DO
+ELSE IF(mm == 1) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) + 2*fpair*psip(iz,0,1)*psip(iz,0,1)
+  END DO
+ELSE IF(mm == (-1)) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) - 2*fpair*psip(iz,0,1)*psip(iz,0,1)
+  END DO
+ELSE IF(mm == (-2)) THEN
+  DO iz=0,nz
+    zrotj(iz,0)=zrotj(iz,0) - 2*fpair*psip(iz,0,2)*psip(iz,0,2)
+  END DO
+END IF
+
+!---- all other 'r'
+
+DO ir=1,nr
+  rinv  = 1D0/((sr+ir)*dr)
+  xmup  = 2*mm*rinv
+  xmlow = 2*( mm+1)*rinv
+  DO iz=0,nz
+    zrotj(iz,ir)=zrotj(iz,ir) + fpair*(xmup*psiw(iz,ir,1)*psip(iz,ir,1)+  &
+        xmlow*psiw(iz,ir,2)*psip(iz,ir,2))
+    rrotj(iz,ir)=rrotj(iz,ir) - fpair*(xmup*psiw(iz,ir,1)*psin(iz,ir,1)+  &
+        xmlow*psiw(iz,ir,2)*psin(iz,ir,2))
+  END DO
+END DO
+
+!      fpair = (-1.0)*fpair
+
+!**********************************************************************
+!                Current j
+!  curr = phi-comp. Current
+!**********************************************************************
+!IF(ist==80 .OR. ist==23) THEN
+!WRITE(6,*) SUM(curr**2)
+!---- r=0
+! nothing has to be done
+DO iz=0,nz
+  curr(iz,0)=zero
+END DO
+
+!---- all other r
+DO ir=1,nr
+  rinv  = 1D0/((sr+ir)*dr)
+  fup  = mm*rinv
+  flow = (mm+1D0)*rinv
+  DO iz=0,nz
+    add = fpair*(fup*psiw(iz,ir,1)*psiw(iz,ir,1) &
+                 + flow*psiw(iz,ir,2)*psiw(iz,ir,2))
+    curr(iz,ir)= curr(iz,ir)+add
+  END DO
+END DO
+!WRITE(6,*) 'CURR:',ist,mm,itpartn(ist),mpsi(itpartn(ist)),mm+1,fpair,SUM(curr**2),SUM(psiw**2)
+!END IF
+
+!**********************************************************************
+
+!              sigma
+!             rsig = r-comp of sigma
+!             zsig = z-comp of sigma
+
+!**********************************************************************
+fpair2= (1D0)*fpair/1D0
+DO ir=0,nr
+  DO iz=0,nz
+    rsig(iz,ir)=rsig(iz,ir)+fpair2*2*psiw(iz,ir,1)*psiw(iz,ir,2)
+    zsig(iz,ir)=zsig(iz,ir)+fpair2*(  &
+        psiw(iz,ir,1)*psiw(iz,ir,1) - psiw(iz,ir,2)*psiw(iz,ir,2))
+  END DO
+END DO
+
+
+
+
+!**********************************************************************
+
+!             rot sigma
+!             rotsig = phi-comp of rot sigma
+
+!**********************************************************************
+
+DO ir=0,nr
+  DO iz=0,nz
+    rotsig(iz,ir)= rotsig(iz,ir) + 2*fpair*(psiw(iz,ir,1)*  &
+        psin(iz,ir,2) + psiw(iz,ir,2)*psin(iz,ir,1)  &
+        -psiw(iz,ir,1)*psip(iz,ir,1) + psiw(iz,ir,2)*psip(iz,ir,2))
+  END DO
+END DO
+
+!**********************************************************************
+
+!             Laplace sigma
+!             larsig = r-comp of Laplace sigma
+!             lazsig = z-comp of Laplace sigma
+
+!**********************************************************************
+
+!----- r = 0
+
+
+! only z-comp changes
+ir=0
+IF((mm == 0).OR.(mm == (-2))) THEN
+  DO iz=0,nz
+    slazsig(iz,ir)=slazsig(iz,ir) - 4*fpair*psip(iz,ir,2)*psip(iz,ir,2)
+  END DO
+END IF
+IF((mm == 1).OR.(mm == (-1))) THEN
+  DO iz=0,nz
+    slazsig(iz,ir)=slazsig(iz,ir) + 4*fpair*psip(iz,ir,1)*psip(iz,ir,1)
+  END DO
+END IF
+
+! now all other r
+DO ir=1,nr
+  rinv  = 1D0/((sr+ir)*dr)
+  DO iz=0,nz
+    slarsig(iz,ir)=slarsig(iz,ir)+fpair*(2*  &
+        (psiw(iz,ir,1)*psipp(iz,ir,2) +psiw(iz,ir,2)*psipp(iz,ir,1)  &
+        + 2*psip(iz,ir,1)*psip(iz,ir,2)) + rinv*2*  &
+        (psip(iz,ir,1)*psiw(iz,ir,2) + psip(iz,ir,2)*psiw(iz,ir,1))  &
+        - rinv*rinv*2*psiw(iz,ir,1)*psiw(iz,ir,2)  &
+        + 2*(psiw(iz,ir,1)*psinn(iz,ir,2) + psiw(iz,ir,2)*psinn(iz,ir,1)  &
+        + 2*psin(iz,ir,1)*psin(iz,ir,2)))
+    
+    slazsig(iz,ir)=slazsig(iz,ir) + 2*fpair*(  &
+        psip(iz,ir,1)*psip(iz,ir,1) -psip(iz,ir,2)*psip(iz,ir,2)  &
+        +psiw(iz,ir,1)*psipp(iz,ir,1)-psiw(iz,ir,2)*psipp(iz,ir,2)  &
+        +rinv*(psiw(iz,ir,1)*psip(iz,ir,1)-psiw(iz,ir,2)*psip(iz,ir,2))  &
+        +psinn(iz,ir,1)*psiw(iz,ir,1)-psinn(iz,ir,2)*psiw(iz,ir,2)  &
+        +psin(iz,ir,1)*psin(iz,ir,1)-psin(iz,ir,2)*psin(iz,ir,2))
+    
+  END DO
+END DO
+
+
+!*********************************************************************
+!                kinetic spin density
+!********************************************************************
+
+! r = 0
+IF((mm == 0).OR.(mm == (-1)))  THEN
+  ism = ABS(mm)+1
+  sigism = 3 -2*ism
+  DO iz=0,nz
+! perhaps spdenkinr = 0
+    spdenkinz(iz,0)=spdenkinz(iz,0)+sigism*fpair*(  &
+        psin(iz,0,ism)*psin(iz,0,ism))
+  END DO
+END IF
+IF((mm == 0).OR.(mm == (-2))) THEN
+  DO iz=0,nz
+    spdenkinz(iz,0)=spdenkinz(iz,0)-2*fpair* psin(iz,0,2)*psin(iz,0,2)
+  END DO
+ELSE IF((mm == 1).OR.(mm == (-1))) THEN
+  DO iz=0,nz
+    spdenkinz(iz,0)=spdenkinz(iz,0)+2*fpair* psin(iz,0,1)*psin(iz,0,1)
+  END DO
+END IF
+
+! now all other r
+DO ir=1,nr
+  rinv  = 1D0/((sr+ir)*dr)
+  f = mm*(mm+1)*(rinv*rinv)
+  fup = mm*rinv
+  flow = (mm+1)*rinv
+  DO iz=0,nz
+    spdenkinr(iz,ir)= spdenkinr(iz,ir)+2*fpair*(psip(iz,ir,1)*  &
+        psip(iz,ir,2) + f*psiw(iz,ir,1)*psiw(iz,ir,2)+  &
+        psin(iz,ir,2)*psin(iz,ir,1))
+    spdenkinz(iz,ir)=spdenkinz(iz,ir)+fpair*(psip(iz,ir,1)*  &
+        psip(iz,ir,1)+fup*fup*psiw(iz,ir,1)*psiw(iz,ir,1)  &
+        + psin(iz,ir,1)*psin(iz,ir,1) - (  &
+        psip(iz,ir,2)*psip(iz,ir,2)+flow*flow*psiw(iz,ir,2)*  &
+        psiw(iz,ir,2) + psin(iz,ir,2)*psin(iz,ir,2) ) )
+    
+  END DO
+END DO
+
+DEALLOCATE(psip,psin,psipp,psinn)
+
+
+RETURN
+END SUBROUTINE densitodd
+!END NEW ODD
+
+
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: sdenti
 !> @brief
@@ -2379,6 +2830,102 @@ rhoacc(0:nz,0:nr) = fpair * (psiw(:,:,1)**2+psiw(:,:,2)**2) + rhoacc(0:nz,0:nr)
 
 RETURN
 END SUBROUTINE sdenti
+
+
+!NEW ODD
+SUBROUTINE cpairpot(psiw1,psiw2,rhoacc,addwgt,ist)
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: cpairpot
+!> @brief
+!!Accumulates pairing density in case of broken Cramer' degeneracy
+
+USE levels, ONLY: wate
+USE grid, ONLY: nz,nr
+USE wavefr, ONLY: wfovoc,wfovpc
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)      :: psiw1(0:nz,0:nr,2)
+REAL(8), INTENT(IN)      :: psiw2(0:nz,0:nr,2)
+REAL(8), INTENT(OUT)     :: rhoacc(0:nz,0:nr)
+REAL(8), INTENT(IN)      :: addwgt
+INTEGER, INTENT(IN)      :: ist
+
+REAL(8), PARAMETER :: lowadd=1D-9
+
+IF(ABS(addwgt)<lowadd) RETURN
+
+rhoacc(0:nz,0:nr) = wate(ist)*addwgt * &
+      (psiw1(0:nz,0:nr,1)*psiw2(0:nz,0:nr,2)  &
+     -psiw1(0:nz,0:nr,2)*psiw2(0:nz,0:nr,1)) + rhoacc(0:nz,0:nr)
+
+
+RETURN
+END SUBROUTINE cpairpot
+!END NEW ODD
+
+
+SUBROUTINE testconj_all(commentin)
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: cpairpot
+!> @brief
+!!Accumulates pairing density in case of broken Cramer' degeneracy
+
+USE levels, ONLY: nst,mpsi,itpartn
+USE grid, ONLY: nz,nr
+USE wavefr, ONLY: psi
+
+
+IMPLICIT NONE
+
+CHARACTER(*),INTENT(IN) :: commentin
+
+INTEGER :: ist
+REAL(8) :: overconj,kval1,kval2
+
+DO ist=1,nst(1)+nst(2)
+  overconj = testconj(psi(:,:,:,ist),psi(:,:,:,itpartn(ist)))
+  kval1 = mpsi(ist)+0.5D0
+  kval2 = mpsi(itpartn(ist))+0.5D0
+  IF(kval1*overconj<0D0) THEN
+    WRITE(6,'(a,2i5,2f5.1,1pg13.5)') commentin//', sign CONJ repaired:',&
+      ist,itpartn(ist),kval1,kval2,overconj
+    psi(:,:,:,itpartn(ist)) = -psi(:,:,:,itpartn(ist))
+  END IF
+END DO
+
+RETURN
+END SUBROUTINE testconj_all
+
+REAL(8) FUNCTION testconj(psiw1,psiw2)
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: testconj
+!> @brief
+!!Tests the overlap between conjugates states
+
+USE grid, ONLY: nz,nr,f1int
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN) :: psiw1(0:nz,0:nr,2)
+REAL(8), INTENT(IN) :: psiw2(0:nz,0:nr,2)
+
+REAL(8), ALLOCATABLE :: rho1(:,:)
+
+ALLOCATE(rho1(0:nz,0:nr))
+
+  rho1(0:nz,0:nr) =  (psiw1(0:nz,0:nr,1)*psiw2(0:nz,0:nr,2)  &
+                      -psiw1(0:nz,0:nr,2)*psiw2(0:nz,0:nr,1)) 
+  testconj = f1int(rho1)
+
+DEALLOCATE(rho1)
+
+RETURN
+END FUNCTION testconj
+
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: zcmobs
 !> @brief
@@ -2441,5 +2988,421 @@ rhot=rho(:,:,1)+rho(:,:,2)
 check_border_density = (MAXVAL(rhot,MASK=mask)>1D-6)
 
 END FUNCTION check_border_density
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: spradius
+!> @brief
+!!This routine computes the single-particle radius for the given
+!!s.p. wavefunction. It serves for testing purposes. Printing is
+!!done inside the routine.
+!> @details
+!!The properties are evaluated as integrals.
+!>
+!> @param[in] psiin
+!> REAL(8), array, takes the input spinor wavefunction.
+!!computed.
+!--------------------------------------------------------------------------- 
+!SUBROUTINE spradius(psiin)
+REAL(8) FUNCTION spradius(psiin)
+
+USE paramr
+USE grid
+
+IMPLICIT NONE
+
+REAL(8), INTENT(IN)                         :: psiin(0:nz,0:nr,1:2)
+
+REAL(8),ALLOCATABLE :: auxrho(:,:),auxz(:,:),auxr2(:,:)
+
+INTEGER :: ir,iz,is
+REAL(8) :: spnum,zcm,rms2
+
+!Prepare helper fields if called for the first time
+ALLOCATE(auxrho(0:nz,0:nr),auxz(0:nz,0:nr),auxr2(0:nz,0:nr))
+ 
+
+!DO is=1,2
+  auxrho(:,:) = psiin(:,:,1)**2+psiin(:,:,2)**2
+!  auxrho(:,:) = psiin(:,:,is)
+  DO ir=0,nr; DO iz=0,nz
+    auxr2(iz,ir)=auxrho(iz,ir)*(r(ir)**2+z(iz)**2)
+    auxz(iz,ir)=auxrho(iz,ir)*z(iz)
+  END DO; END DO
+
+
+!Execute integrals
+  spnum= f1int(auxrho(0:nz,0:nr))
+  IF(tsym) THEN
+    zcm=0D0
+  ELSE
+    zcm  = f1int(auxz(0:nz,0:nr))/spnum
+  END IF
+  rms2 = f1int(auxr2(0:nz,0:nr))/spnum
+  rms2 = rms2-zcm**2
+
+!  WRITE(6,'(a,i3,4(1pg13.5))') 'SPRADIUS: is,norm,zcm,rms=',is,spnum,zcm,SQRT(rms2),rms2
+!END DO
+spradius = SQRT(rms2)
+
+DEALLOCATE(auxrho,auxz,auxr2)
+RETURN
+END FUNCTION spradius
+!END SUBROUTINE spradius
+
+!------------calangularmomentum-------------
+
+!  
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: angularmom
+!> @brief
+!!This routine computes the total angular momentum of the
+!! s.p. wavefunction with label 'ist'.
+!--------------------------------------------------------------------------- 
+!SUBROUTINE calangularmomentum(ist,angularmom)
+REAL(8) FUNCTION angularmom(ist)
+
+USE paramr
+USE grid, ONLY: nz,nr,sr,sz,icm,dr,dz,nablaz_spin,nablar_spin
+USE wavefr
+USE levels
+
+IMPLICIT NONE
+
+INTEGER, INTENT(IN) :: ist
+!REAL(8), INTENT(OUT) :: angularmom
+!INCLUDE 'dynpar.inc'
+!INCLUDE 'fields.inc'
+!INCLUDE 'derivs.inc'
+
+REAL(8),ALLOCATABLE :: psi1(:,:,:),psi2(:,:,:),psi3(:,:,:),psi4(:,:,:) !,psip(:,:,:)
+REAL(8),ALLOCATABLE :: psin(:,:,:),psip(:,:,:)
+
+INTEGER :: iz,ir
+REAL(8) :: r,z,rinv,amom2
+
+
+ALLOCATE(psi1(0:nz,0:nr,2),psi2(0:nz,0:nr,2),psi3(0:nz,0:nr,2),psi4(0:nz,0:nr,2))
+ALLOCATE(psin(0:nz,0:nr,2),psip(0:nz,0:nr,2))
+
+! calculate derivatives
+CALL nablaz_spin(psi(:,:,:,ist),psin,nparz(1,ist),1,1D0)
+CALL nablar_spin(psi(:,:,:,ist),psip,  mpsi(ist),1,1D0)
+
+DO iz=0,nz
+  DO ir=0,nr
+    r = (ir+sr)*dr
+    z = (iz+sz-icm)*dz
+    IF(ir == 0)THEN
+      rinv = zero
+    ELSE
+      rinv = 1.0/r
+    END IF
+! psi1 = L_r|psi>
+    
+    IF(ir > 0)THEN
+      psi1(iz,ir,1)= rinv*z*mpsi(ist)*psi(iz,ir,1,ist)
+      psi1(iz,ir,2)= rinv*z*(mpsi(ist)+1)*psi(iz,ir,2,ist)
+    ELSE
+      IF(mpsi(ist) == 1) THEN
+        psi1(iz,ir,1)=z*psip(iz,ir,1)
+        psi1(iz,ir,2)=0
+      ELSE IF(mpsi(ist) == 0) THEN
+        psi1(iz,ir,1)=0
+        psi1(iz,ir,2)=z*psip(iz,ir,2)
+      ELSE
+        psi1(iz,ir,1)=0
+        psi1(iz,ir,2)=0
+      END IF
+    END IF
+! psi2 = L_phi|psi>
+    psi2(iz,ir,1)=r*psin(iz,ir,1) - z*psip(iz,ir,1)
+    psi2(iz,ir,2)=r*psin(iz,ir,2) - z*psip(iz,ir,2)
+    
+! psi3 = L_z|psi>
+    psi3(iz,ir,1)=mpsi(ist)*psi(iz,ir,1,ist)
+    psi3(iz,ir,2)=(mpsi(ist)+1)*psi(iz,ir,2,ist)
+    
+! psi4 = (L_r*s_r +L_phi*s_phi+L_z*s_z)|psi>
+    psi4(iz,ir,1)= + r*psin(iz,ir,2) - z*psip(iz,ir,2)  &
+        + mpsi(ist)*psi(iz,ir,1,ist)
+    psi4(iz,ir,2)= - r*psin(iz,ir,1) + z*psip(iz,ir,1)  &
+        - (mpsi(ist)+1)*psi(iz,ir,2,ist)
+    IF(ir > 0) THEN
+      psi4(iz,ir,1)=psi4(iz,ir,1) -z*rinv*psi(iz,ir,2,ist)*(mpsi(ist)+1)
+      psi4(iz,ir,2)=psi4(iz,ir,2) -z*rinv*psi(iz,ir,1,ist)*(mpsi(ist))
+    ELSE
+      IF(mpsi(ist) == 0) THEN
+        psi4(iz,ir,1)=psi4(iz,ir,1)-z*psip(iz,ir,2)
+      ELSE IF(mpsi(ist) == 1)THEN
+        psi4(iz,ir,2)=psi4(iz,ir,2)-z*psip(iz,ir,1)
+      END IF
+    END IF
+  END DO
+END DO
+amom2 = wfovlp(psi1,psi1)+wfovlp(psi2,psi2) +wfovlp(psi3,psi3)  &
+    +wfovlp(psi4,psi(:,:,:,ist))+0.75D0
+DEALLOCATE(psi1,psi2,psi3,psi4,psin,psip)
+
+
+angularmom = 0.5D0*(-1.0+ SQRT(1.0+4.0*(amom2)))
+
+
+RETURN
+END FUNCTION angularmom
+!END SUBROUTINE calangularmomentum
+
+!---------------------------------------------------------------------------  
+! DESCRIPTION: Qvariance
+!> @brief
+!! Variance of quadrupole momentum, presently only for istsym>0
+!--------------------------------------------------------------------------- 
+SUBROUTINE Qvariance(DelQ2)
+
+USE paramr
+USE dynpar
+USE wavefr
+USE levels
+USE grid
+USE fields, ONLY: rho
+
+IMPLICIT NONE
+
+REAL(8), INTENT(OUT) :: DelQ2(-2:2)
+
+INTEGER,PARAMETER :: itstpr=0
+REAL(8),PARAMETER :: fac20=SQRT(5D0/(16D0*pi))
+REAL(8),PARAMETER :: fac21=SQRT(15D0/(8D0*pi))
+REAL(8),PARAMETER :: fac22=SQRT(15D0/(32D0*pi))
+LOGICAL,PARAMETER :: tntest=.FALSE.
+
+REAL(8),ALLOCATABLE :: psi1(:,:,:),psin(:,:,:),psip(:,:,:)
+
+REAL(8) :: deltai,deltaj,edifi,edifj,eferm,equasi,equasj,pij,&
+          sumdir,tstovl,ui,uj,vi,vj,r2,sumdir0
+INTEGER :: iz,ir,is,ist,jst,jstmax,jstmin,mist,mm,nparr,npist
+
+
+IF(istsym.LE.0) THEN
+  DelQ2=0D0
+END IF
+
+ALLOCATE(psi1(0:nz,0:nr,nsd),psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+psi1=0D0;psip=0D0;psin=0D0
+
+!     1. double loop to accumulate Q_20 width
+IF(tntest) WRITE(7,'(a)') ' Q_20:'
+sumdir = zero
+sumdir0 = zero
+DO ist=1,nst(1)+nst(2)
+  mist   = mpsi(ist)
+  IF(ist <= nst(1)) THEN
+    jstmax = nst(1)
+    jstmin = 1
+    eferm  = fer(1)
+  ELSE
+    jstmax = nst(1)+nst(2)
+    jstmin = nst(1)+1
+    eferm  = fer(2)
+  END IF
+  
+! apply Q_20
+  DO ir=0,nr
+    r2     = r(ir)**2 !(dr*(ir+sr))**2
+    DO iz=0,nz
+!      z     = ((iz)+sz-icm)*dz
+      psip(iz,ir,:) = fac20*(2D0*z(iz)**2-r2)*psi(iz,ir,:,ist)
+    END DO
+  END DO
+  
+!                                       auxiliary variables
+  npist  = nparz(1,ist)
+  vi    = sqrtb(vsqf(ist))
+  ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
+  deltai = deltaf(ist)*wtpair_uv(ist)
+  edifi  = spenrg(ist)-eferm
+  equasi = SQRT(edifi*edifi+deltai*deltai)
+!                                       the overlaps
+  tstovl = wfovlp(psip,psip)
+  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir  
+  sumdir0 =  2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir0  
+  IF(itstpr /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
+      ' test: ist, <sp|Q**2|sp>=',ist,tstovl
+  DO jst=jstmin,jstmax
+    IF(  npist == nparz(1,jst) .AND. mist == mpsi(jst) ) THEN
+      vj    = sqrtb(vsqf(jst))
+      uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
+      deltaj = deltaf(jst)*wtpair_uv(jst)
+      edifj  = spenrg(jst)-eferm
+      equasj = SQRT(edifj*edifj+deltaj*deltaj)
+      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(tntest .AND. vi*vj>0.5D0) &
+        WRITE(7,'(a,3i4,3(1pg13.5))') 'pij=',mist,ist,jst,vi,vj,pij**2
+      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
+      IF(itstpr /= 0) WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
+          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij, pij*(vj*ui-uj*vi)
+      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
+          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+!               pij    = pij*(vj*ui-uj*vi)
+!               pij    = pij*pij
+!               sumexy = pij/(equasi+equasj) + sumexy
+!               sumwxy  = pij + sumwxy
+    END IF
+  END DO
+END DO
+!IF(isTsym>0) sumdir=sumdir/2D0
+DelQ2(0) = sumdir/2.0
+IF(tntest) WRITE(7,'(a,1pg13.5)') 'diag.sum 20:',sumdir0/2D0
+
+
+!     2. loop to accumulate Q_21-variance
+IF(tntest) WRITE(7,'(a)') ' Q_21:'
+sumdir = zero
+sumdir0 = zero
+DO ist=1,nst(1)+nst(2)
+  mist   = mpsi(ist)
+  IF(ist <= nst(1)) THEN
+    jstmax = nst(1)
+    jstmin = 1
+    eferm  = fer(1)
+  ELSE
+    jstmax = nst(1)+nst(2)
+    jstmin = nst(1)+1
+    eferm  = fer(2)
+  END IF
+  
+!  action of Q_21 operator
+  DO ir=0,nr
+!    r     = (dr*(ir+sr))
+    DO iz=0,nz
+!      z     = ((iz)+sz-icm)*dz
+      psip(iz,ir,:) = fac21*z(iz)*r(ir)*psi(iz,ir,:,ist)
+    END DO
+  END DO
+
+!                                       auxiliary variables
+  npist  = nparz(1,ist)
+  vi    = sqrtb(vsqf(ist))
+  ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
+  deltai = deltaf(ist)*wtpair_uv(ist)
+  edifi  = spenrg(ist)-eferm
+  equasi = SQRT(edifi*edifi+deltai*deltai)
+!                                       the overlaps
+  tstovl = wfovlp(psip,psip)
+  IF(itstpr /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
+      ' test: ist, <Delta_zr**2>=',ist,tstovl
+  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
+  sumdir0 = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir0
+  DO jst=jstmin,jstmax
+    IF(npist == nparz(2,jst) .AND. mist+1 == mpsi(jst)) THEN
+      vj    = sqrtb(vsqf(jst))
+      uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
+      deltaj = deltaf(jst)*wtpair_uv(jst)
+      edifj  = spenrg(jst)-eferm
+      equasj = SQRT(edifj*edifj+deltaj*deltaj)
+      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(itstpr /= 0)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
+          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
+          (pij*(vj*ui-uj*vi))**2
+      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
+          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
+    END IF
+  END DO
+END DO
+!IF(isTsym>0) sumdir=sumdir/2D0
+DelQ2(1) = sumdir/2.0
+DelQ2(-1) = sumdir/2.0
+IF(tntest) WRITE(7,'(a,1pg13.5)') 'diag.sum 21:',sumdir0/2D0
+
+
+
+!     3. loop to accumulate Q_22-variance
+IF(tntest) WRITE(7,'(a)') ' Q_22:'
+sumdir = zero
+sumdir0 = zero
+DO ist=1,nst(1)+nst(2)
+  mist   = mpsi(ist)
+  IF(ist <= nst(1)) THEN
+    jstmax = nst(1)
+    jstmin = 1
+    eferm  = fer(1)
+  ELSE
+    jstmax = nst(1)+nst(2)
+    jstmin = nst(1)+1
+    eferm  = fer(2)
+  END IF
+  
+!  action of Q_21 operator
+  DO ir=0,nr
+    r2     = r(ir)**2 !(dr*(ir+sr))**2
+    DO iz=0,nz
+!      z     = ((iz)+sz-icm)*dz
+      psip(iz,ir,:) = fac22*r2*psi(iz,ir,:,ist)
+    END DO
+  END DO
+
+!                                       auxiliary variables
+  npist  = nparz(1,ist)
+  vi    = sqrtb(vsqf(ist))
+  ui    = sqrtb(one-vi*vi)
+  IF(mist<0) ui=-ui
+  deltai = deltaf(ist)*wtpair_uv(ist)
+  edifi  = spenrg(ist)-eferm
+  equasi = SQRT(edifi*edifi+deltai*deltai)
+!                                       the overlaps
+  tstovl = wfovlp(psip,psip)
+  IF(itstpr /= 0) WRITE(7,'(a,i3,1pg12.4)')  &
+      ' test: ist, <Delta_zr**2>=',ist,tstovl
+  sumdir = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir
+  sumdir0 = 2.0*vi*vi*tstovl*wtpair_v2(ist) +sumdir0
+  DO jst=jstmin,jstmax
+    IF(npist == nparz(1,jst) .AND. mist+2 == mpsi(jst)) THEN
+      vj    = sqrtb(vsqf(jst))
+      uj    = sqrtb(one-vj*vj)
+      IF(mpsi(jst)<0) uj=-uj
+      deltaj = deltaf(jst)*wtpair_uv(jst)
+      edifj  = spenrg(jst)-eferm
+      equasj = SQRT(edifj*edifj+deltaj*deltaj)
+      pij    = wfovlp(psi(0:nz,0:nr,1:2,jst),psip)
+      IF(itstpr /= 0)   WRITE(7,'(a,3(2i2,1x),2(1pg12.4))')  &
+          ' ist,jst,nparzi,nparzj,mpsii,mpsij,pij=',  &
+          ist,jst,npist,nparz(1,jst),mist,mpsi(jst),pij*pij,  &
+          (pij*(vj*ui-uj*vi))**2
+      IF(itstpr /= 0) WRITE(6,'(a,2i4,2f8.2,4(1pg12.4))')  &
+          ' i,j,equasi/j,phase,pij=', ist,jst,equasi,equasj,(vj*ui-uj*vi),pij
+      sumdir = sumdir - 2.0*pij*pij*vi*vj*(vi*vj+ui*uj)*wtpair_v2(ist)*wtpair_v2(jst)
+    END IF
+  END DO
+END DO
+!IF(isTsym>0) sumdir=sumdir/2D0
+DelQ2(2) = sumdir/2.0
+DelQ2(-2) = sumdir/2.0
+IF(tntest) WRITE(7,'(a,1pg13.5)') 'diag.sum 22:',sumdir0/2D0
+
+
+! test versus r**4
+IF(tntest) THEN
+  DO ir=0,nr
+    r2     = (dr*(ir+sr))**2
+    DO iz=0,nz
+      psip(iz,ir,1) = (z(iz)**2+r2)**2*(rho(iz,ir,1)+rho(iz,ir,2))
+    END DO
+  END DO
+  WRITE(7,'(a,3(1pg13.5))') '<r^4>:',f1int(psip(:,:,1))/(4D0*pi) &
+     ,f1int(rho(:,:,1)),f1int(rho(:,:,2))
+END IF
+
+DEALLOCATE(psi1,psin,psip)
+
+RETURN
+END SUBROUTINE Qvariance
+
 
 END MODULE observ

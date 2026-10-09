@@ -16,24 +16,32 @@ USE observ
 USE wavefr
 USE levels
 USE grid
+!USE init, ONLY: ssetupc
+!USE util, ONLY: plot_2d
 USE hdiag
 USE pairin
 USE steputil
 !$ use omp_lib
 
 IMPLICIT NONE
-INTEGER, PUBLIC :: inodiag=50    !< Number of iterations without diagonalizing the Hamiltonian matrix
+INTEGER, PUBLIC :: inodiag=99999    !< Number of iterations without diagonalizing the Hamiltonian matrix
 INTEGER, PUBLIC :: iterstat      !< to communicate actual iteration number
+REAL(8), PUBLIC :: devhh2              !< counter for variance (h*h)
+REAL(8), PUBLIC :: hdh                 !< counter for <hD h>
+REAL(8), PUBLIC :: hddh                !< counter for <hD Dh>
+REAL(8), PUBLIC :: hdhdh               !< counter for <hD h Dh>
+REAL(8), PUBLIC :: qh0,qh1,qh2,qh3,qh4 !< counter for <Q h>
+REAL(8), PUBLIC :: qhdig               !< counter for diagonal part of <Q h>, only L=2
 
 LOGICAL, PUBLIC,PARAMETER :: tshiftcm=.TRUE.   !< shift c.m. to z=0
-
+PUBLIC sstep
 
 PRIVATE
 
 !*************************************************************************
 !  Parameter settings
 !*************************************************************************
-REAL(8) :: caugmlagrb=50D0   !< Curvature parameter for augmented Lagrangian method, to be used in connection with 'itypco=-1'. Curvature here with respect to dimensionless deformation.
+REAL(8) :: caugmlagrb=20D0  !50D0   !< Curvature parameter for augmented Lagrangian method, to be used in connection with 'itypco=-1'. Curvature here with respect to dimensionless deformation.
 
 INTEGER,PARAMETER :: ifqqpr=1     !< switch for detailed protocol of <QQ> etc (experienced users only)
 INTEGER,PARAMETER :: ioccmx=1     !< switch for propagation of occ.number
@@ -43,7 +51,6 @@ LOGICAL,PARAMETER :: tcstp=.FALSE. !< protocol of constraint step
 REAL(8),PARAMETER :: v2lim=1D-7   !< lower limit for inclusion in 'rho' sum
 
 
-LOGICAL, PARAMETER :: tcoulfold=.false. !< switch for proton folding in Coulomb
 LOGICAL,SAVE       :: tvarfile=.false.  !< switch to write out a file containing variances.
 
 REAL(8),ALLOCATABLE :: hmatr(:,:)    !< Hamiltonian matrix
@@ -59,19 +66,13 @@ LOGICAL :: tdiag            !< switch for diagonalization of Hamiltonian matrix
 INTEGER :: jst              !< Variable for current wf
 
 REAL(8) :: caugmlagr0=0D0   !< Parameter for augmented Lagrangian method  L=0
-REAL(8) :: caugmlagr1=0D0   !< Parameter for augmented Lagrangian method  L=1
+!REAL(8) :: caugmlagr1=0D0   !< Parameter for augmented Lagrangian method  L=1
 REAL(8) :: caugmlagr2=0D0   !< Parameter for augmented Lagrangian method  L=2
 REAL(8) :: caugmlagr3=0D0   !< Parameter for augmented Lagrangian method  L=3
 REAL(8) :: caugmlagr4=0D0   !< Parameter for augmented Lagrangian method  L=4
 REAL(8),SAVE :: qc          !< auxiliary storage for actual deformation
 
 !REAL(8) :: ebin                !< offset in s.p. energy
-REAL(8) :: devhh2              !< counter for variance (h*h)
-REAL(8) :: hdh                 !< counter for <hD h>
-REAL(8) :: hddh                !< counter for <hD Dh>
-REAL(8) :: hdhdh               !< counter for <hD h Dh>
-REAL(8) :: qh0,qh1,qh2,qh3,qh4 !< counter for <Q h>
-REAL(8) :: qhdig               !< counter for diagonal part of <Q h>, only L=2
 
 ! The following are already defined in 'm_observ.f90':
 !    devh2               ! counter for variance
@@ -82,16 +83,15 @@ REAL(8) :: qhdig               !< counter for diagonal part of <Q h>, only L=2
 !    qq                  ! counter for <Q Q>  
 
 
-REAL(8),PRIVATE,ALLOCATABLE :: psin(:,:,:) !< temporal storage for wave functions
-REAL(8),PRIVATE,ALLOCATABLE :: psip(:,:,:) !< temporal storage for wave functions
 
 INTEGER, PRIVATE :: num_threads                !< number of OMP threads
 INTEGER, PRIVATE :: mythread                   !< OMP thread number of current thread
 INTEGER,ALLOCATABLE,PRIVATE :: load_m(:,:)     !< array for load balancing 
 REAL(8),ALLOCATABLE,PRIVATE :: loadweight(:)   !< array to measure load of mblocks
-PUBLIC sstep
 
 CONTAINS
+
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: sstep
@@ -117,29 +117,35 @@ SUBROUTINE sstep(iter)
 
 USE coulomb, ONLY: wcolt
 USE util, ONLY: protfold
+USE fields
 
 IMPLICIT NONE
 
 INTEGER, INTENT(IN)           :: iter
 
-REAL(8) :: aopt,fac,qh,redfac,width,rmsb,v2act
-INTEGER :: im,iq,is,kpsic,nadd
+REAL(8) :: aopt,fac,qh,redfac,width,rmsb,v2act,symcond
+INTEGER :: im,iq,is,kpsic,nadd,ir,iz
 INTEGER :: nlo,nhi,i
 !$ REAL(8) :: wtime1,wtime2
 LOGICAL :: topened
 
-REAL(8), ALLOCATABLE :: temp(:,:,:,:)
+REAL(8), POINTER :: psipointer(:,:,:,:)
+REAL(8), POINTER :: temp(:,:,:,:)
 REAL(8),ALLOCATABLE :: wrk1(:,:),wrk2(:,:),wrk4(:,:)
 REAL(8),ALLOCATABLE :: rhot(:,:,:), taut(:,:,:), drholst(:,:,:),rholsrt(:,:,:),rholszt(:,:,:)
+REAL(8),ALLOCATABLE :: psin(:,:,:), psip(:,:,:)
 
+!CALL testconj_all('before STEP')
 
 ALLOCATE(wrk1(0:nz,0:nr),wrk2(0:nz,0:nr),wrk4(0:nz,0:nr))
-ALLOCATE(hmatr(1:npsi(2),1:npsi(2)),psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
-ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
-wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0;psip=0D0;psin=0D0;rhot=0D0;taut=0D0;drholst=0D0;rholsrt=0D0;rholszt=0D0
-
+ALLOCATE(hmatr(1:npsi(2),1:npsi(2)))
+wrk1=0D0;wrk2=0D0;wrk4=0D0;hmatr=0D0
+!psip=0D0;psin=0D0;
 !IF(ifqq==1 .AND. inodiag<itmax) &
 !  STOP "option IFQQ=1 incompatible with mean-field diagonalization"
+
+
+! WRITE(*,*) 'ENTRY:',SUM(psi(0:nr,0:nz,1:2,1:nst(1))**2)
 
 
 IF(tcstp .AND. tswicon) THEN
@@ -208,6 +214,20 @@ tau(0:nz,0:nr,1:2)     = redfac*tau(0:nz,0:nr,1:2)
 drhols(0:nz,0:nr,1:2)  = redfac*drhols(0:nz,0:nr,1:2)
 rholsr(0:nz,0:nr,1:2)  = redfac*rholsr(0:nz,0:nr,1:2)
 rholsz(0:nz,0:nr,1:2)  = redfac*rholsz(0:nz,0:nr,1:2)
+!NEW ODD
+IF(toddterms) THEN
+  rotjr(0:nz,0:nr,1:2)  = redfac*rotjr(0:nz,0:nr,1:2)
+  rotjz(0:nz,0:nr,1:2)  = redfac*rotjz(0:nz,0:nr,1:2)
+  rotspden(0:nz,0:nr,1:2)  = redfac*rotspden(0:nz,0:nr,1:2)
+  spdenr(0:nz,0:nr,1:2)  = redfac*spdenr(0:nz,0:nr,1:2)
+  spdenz(0:nz,0:nr,1:2)  = redfac*spdenz(0:nz,0:nr,1:2)
+  d2spdenr(0:nz,0:nr,1:2)  = redfac*d2spdenr(0:nz,0:nr,1:2)
+  d2spdenz(0:nz,0:nr,1:2)  = redfac*d2spdenz(0:nz,0:nr,1:2)
+  curphi(0:nz,0:nr,1:2)  = redfac*curphi(0:nz,0:nr,1:2)
+  spdenkr(0:nz,0:nr,1:2)  = redfac*spdenkr(0:nz,0:nr,1:2)
+  spdenkz(0:nz,0:nr,1:2)  = redfac*spdenkz(0:nz,0:nr,1:2)
+END IF
+!END NEW ODD
 IF(tswicon) rhoti(0:nz,0:nr,1:2) = redfac*rhoti(0:nz,0:nr,1:2)  ! for CHF
 IF(tstab) rhosur(0:nz,0:nr,1:2)=0D0   ! for stabilizing wall
 
@@ -227,26 +247,78 @@ hdh   = 0D0; hddh  = 0D0; hdhdh = 0D0;
 qq0=0D0;qq1=0D0;qq2=0D0;qq3=0D0;qq4=0D0;
 qh0=0D0;qh1=0D0;qh2=0D0;qh3=0D0;qh4=0D0;
 qh = 0D0; qdh = 0D0; qhdig = 0D0
+symcondiso = 0D0
+IF(istsym>0 .AND. tfindconj) THEN
+  CALL findconjpart(1)
+  CALL findconjpart(2)
+!  CALL comp_block()
+END IF
+
+IF(thfb .AND. 1==2) THEN
+  nlo=nst(1)+1
+  nhi=nst(1)+nst(2)
+  WRITE(6,'(a,i6,1pg13.5)') 'SUMUV1:',iter,SUM(SQRT(vsqf(nlo:nhi)-vsqf(nlo:nhi)**2))
+END IF
+
+
+
+IF(1>2) WRITE(6,*) 'odd dens. before:' &
+  ,SQRT(SUM(rotjr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotjz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotspden(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(curphi(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkz(:,:,1:2)**2)/(nr+1)/(nz+1)) 
+
+!  DO jst=1,nst(1)+nst(2)
+!    iq    = icharg(jst)
+!    IF(jst==istblo(iq) .OR. jst==istcblo(iq)) CYCLE  
+!    CALL Gaussfolding_spin(psi(0:nz,0:nr,1:2,jst),psifold(0:nz,0:nr,1:2,jst),nparz(1,jst),mpsi(jst),1)
+!  END DO
+!  DO jst=1,nst(1)+nst(2)
+!        WRITE(*,'(a,4i5,5(1pg13.5))') 'jst,conjgover:',jst,itpartn(jst), &
+!          mpsi(jst),mpsi(itpartn(jst)), &
+!          conjg_wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst))), &
+!          wfovlp(psifold(:,:,:,jst),psifold(:,:,:,itpartn(jst))), &
+!          wfovlp(psifold(:,:,:,jst),psifold(:,:,:,jst)), &
+!          wfovlp(psifold(:,:,:,itpartn(jst)),psifold(:,:,:,itpartn(jst)))
+!  END DO
 
 IF(.NOT.ALLOCATED(load_m)) CALL init_load()
 !$OMP PARALLEL DEFAULT(SHARED) &
-!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,temp,wtime1,wtime2,v2act) &
-!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh)
-!$ mythread=OMP_GET_THREAD_NUM()
+!$OMP PRIVATE(mythread,i,im,nhi,nlo,nadd,kpsic,iq,jst,psin,psip,rhot,taut,drholst,rholsrt,rholszt,wtime1,wtime2,v2act,psipointer) &
+!$OMP REDUCTION(+: devhh2,qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,qh4,qhdig,devmf2,devgap,devh2,devoc2,qdh,hdh,hddh,hdhdh,symcond, &
+!$OMP           rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)
+!!!$ mythread=OMP_GET_THREAD_NUM()
+ALLOCATE(psip(0:nz,0:nr,nsd),psin(0:nz,0:nr,nsd))
+ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
 DO  i=1,nom         ! loop over all blocks
+!$  mythread=OMP_GET_THREAD_NUM()
   im=load_m(mythread,i)
   IF(im==0) CYCLE
   nhi=mhi(im)        ! uppermost state for given 'im'
+  IF(nhi<1) CYCLE
   nlo=mlo(im)        ! lowest state for given 'im''
   nadd=nhi-nlo+1     ! number of states in 'im' block
   kpsic=mim(im)      ! actual 'm' value for 'im,'
   iq=miq(im)         ! actual isospin 'iq' for given 'im'
+!  IF(thfb) WRITE(6,'(6(a,i4)/)') 'mythread=',mythread,' mblock=',im,  &
+!       ' nlo=',nlo,' nhi=',nhi, ' lz=',kpsic,' chg=',iq
   IF(itest >= 2)  WRITE(7,'(6(a,i4)/)') 'mblock=',im,  &
        '          nlo=',nlo,'   nhi=',nhi, '   lz=',kpsic,'   chg=',iq
   !$ wtime1 = OMP_GET_WTIME()
   IF(iter > 0) THEN
-    IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
-    DO  jst=nlo,nhi
+!    WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt:',iter,pairpt(1,1,1:2)
+    IF(thfb) THEN
+      CALL hfbstep(temp,symcond,nlo,nhi,iter,.TRUE.)
+!      WRITE(6,'(a,4i4,1pg13.5)') 'HFB:',mythread,i,nlo,nhi,symcond
+      symcondiso(iq) = symcondiso(iq) + symcond
+      CALL schmit(temp(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
+    ELSE
+      IF(tdiag) temp(0:nz,0:nr,1:nsd,nlo:nhi) = psi(0:nz,0:nr,1:nsd,nlo:nhi)
+      DO  jst=nlo,nhi
       
 !**********************************************************************
 !                                                                     *
@@ -254,24 +326,25 @@ DO  i=1,nom         ! loop over all blocks
 !                                                                     *
 !**********************************************************************
       
-      ! action of Hamiltonian on wf
-      CALL hpsi(psi(0:nz,0:nr,1:2,jst),psin(0:nz,0:nr,1:2),jst)        !IN:psi,jst OUT: psin
-      IF(tdiag) CALL collmatr(hmatr,temp(0:nz,0:nr,1:nsd,:),&
-                              psin(0:nz,0:nr,1:2),nlo,nhi,jst,npsi(2))
+        ! action of Hamiltonian on wf
+        CALL hpsi(psi(0:nz,0:nr,1:2,jst),psin(0:nz,0:nr,1:2),jst)        !IN:psi,jst OUT: psin
+        IF(tdiag) CALL collmatr(hmatr,temp(0:nz,0:nr,1:nsd,:),&
+                                psin(0:nz,0:nr,1:2),nlo,nhi,jst,npsi(2))
 !      IF(tdiag) CALL collmatr(hmatr(nlo:nhi,nlo:nhi),temp(0:nz,0:nr,1:nsd,nlo:nhi),&
 !                              psin(0:nz,0:nr,1:2),nlo,jst,nadd)
-      CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,nlo,nhi,&
-           spevar(jst),spenrg(jst),&     !s.p. properties
-           qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&      !accumulated properties
-                                  qh4,qhdig,devmf2,devgap,devh2,devoc2)
-      ! apply damping
-      CALL damnuc(psin(0:nz,0:nr,1:2),psip(0:nz,0:nr,1:2),jst)!INPUT:psin, OUTPUT:psip
-        
-      CALL accumulate_variances_2(jst,nlo,nhi,psip,qdh,hdh,hddh,hdhdh)!INPUT:jst,nlo,nhi OUTPUT:qdh,hdh,hddh,hdhdh
+        CALL accumulate_variances_1(psi(0:nz,0:nr,1:2,jst),psin,iq,jst,nlo,nhi,&
+             spevar(jst),spenrg(jst),&     !s.p. properties
+             qq0,qq1,qq2,qq3,qq4,qh0,qh1,qh2,qh3,&      !accumulated properties
+                                    qh4,qhdig,devmf2,devgap,devh2,devoc2)
+        ! apply damping
+        CALL damnuc(psin(0:nz,0:nr,1:2),psip(0:nz,0:nr,1:2),jst)!INPUT:psin, OUTPUT:psip
+          
+        CALL accumulate_variances_2(jst,nlo,nhi,psip,qdh,hdh,hddh,hdhdh)!INPUT:jst,nlo,nhi OUTPUT:qdh,hdh,hddh,hdhdh
 
 !      IF(tcstp) WRITE(*,*) 'QQ-test1:',qq2,qq3,qh2,qh3
       ! the key iteration step
-      psi(0:nz,0:nr,1:nsd,jst) = psi(0:nz,0:nr,1:nsd,jst)-psip(0:nz,0:nr,1:nsd)
+        psi(0:nz,0:nr,1:nsd,jst) = psi(0:nz,0:nr,1:nsd,jst)-psip(0:nz,0:nr,1:nsd)
+!        IF(mpsi(jst).GE.0) CALL testconj_all('after DAMNUC')
 
        
 !        CALL hpsi(psi(0:nz,0:nr,1:2,jst),psin(0:nz,0:nr,1:2),jst)
@@ -285,34 +358,59 @@ DO  i=1,nom         ! loop over all blocks
 
 
 !      end of inner loop over states within a block of same 'm'
-    END DO
-    
-    IF(tdiag) CALL diag_wf(hmatr(nlo:nhi,nlo:nhi),nlo,nhi-nlo+1)
+      END DO
+
+      IF(tdiag) CALL diag_wf(hmatr(nlo:nhi,nlo:nhi),nlo,nhi-nlo+1)
+      CALL schmit(psi(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
+
+    END IF
     
 !   Schmidt orthonormmalization of the states  ( needed after "diag_wf")
-    CALL schmit(psi(0:nz,0:nr,1:2,nlo:nhi),nlo-1,nadd)
+!    IF(thfb) WRITE(6,*) 'BEFORE SCHMIT:',mythread,SUM(psi(0:nz,0:nr,1:2,nlo:nhi)**2)
   END IF
+!???  IF(thfb) psi=temp
   
 !   begin loop to compute the new density and s.p.energies.
 !   within a block of same 'm'
+
+!  ALLOCATE(psipointer(0:nr,0:nz,1:2,nlo:nhi))
+ IF(thfb .AND. iter>0) THEN
+!    temp => psipointer
+    psipointer => temp
+  ELSE
+!    psi => psipointer 
+    psipointer => psi
+  END IF
   rhot=0.0d0; taut=0.0d0; drholst=0.0d0; rholsrt=0.0d0; rholszt=0.0d0
   DO jst=nlo,nhi
     iq = icharg(jst)
     v2act=adyrho*vsqf(jst)*wtpair_v2(jst)
     IF(v2act > v2lim) THEN
       IF(tswicon .AND.iter > 0.AND.iter <= itcons) THEN
-        CALL sdenti(psi(0:nz,0:nr,1:2,jst),rhot(0:nz,0:nr,iq),v2act,jst)
+        CALL sdenti(psipointer(0:nz,0:nr,1:2,jst),rhot(0:nz,0:nr,iq),v2act,jst)
       ELSE
-        CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
+        CALL densit(psipointer(0:nz,0:nr,1:2,jst),v2act,jst,  &
                     rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq),  &
                     rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
+!NEW ODD
+        IF(toddterms) THEN
+!        IF(toddterms .AND. istsym>2) THEN
+!          WRITE(6,*) 'CUR before call:',jst,SUM(curphi(:,:,iq)**2)
+          CALL densitodd(psipointer(:,:,:,jst),v2act,jst,  &
+              rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
+              spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
+              d2spdenz(:,:,iq),curphi(:,:,iq),spdenkr(:,:,iq), spdenkz(:,:,iq))
+        END IF
+!END NEW ODD
       END IF
     END IF
   END DO
+  NULLIFY(psipointer)
   !$omp critical 
   IF(tswicon .AND.iter > 0.AND.iter <= itcons) THEN
     rhoti=rhoti+rhot
   ELSE
+!    IF(thfb) WRITE(6,'(a,2i4,1pg13.5)') 'HFB 4:',mythread,jst,SUM(rhot)
     rho=rho+rhot
     tau=tau+taut
     drhols=drhols+drholst
@@ -329,7 +427,29 @@ DO  i=1,nom         ! loop over all blocks
   !$ wtime2 = OMP_GET_WTIME()
   !$ loadweight(im)=wtime2-wtime1
 END DO
+DEALLOCATE(psip,psin)
+DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 !$OMP END PARALLEL
+
+
+!IF(thfb .AND. iter>0) psi=temp    ! <<-- this does not work do it explicitely
+IF(thfb .AND. iter>0) THEN
+  DO im=1,npsi(2); DO is=1,2; DO ir=0,nr; DO iz=0,nz
+    psi(iz,ir,is,im) = temp(iz,ir,is,im)
+  END DO; END DO; END DO; END DO
+END IF
+IF(tdiag) CALL testconj_all('after HDIAG')
+
+
+IF(1>2) WRITE(6,*) 'odd dens. after:'  &
+  ,SQRT(SUM(rotjr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotjz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(rotspden(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenz(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(curphi(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkr(:,:,1:2)**2)/(nr+1)/(nz+1)) &
+  ,SQRT(SUM(spdenkz(:,:,1:2)**2)/(nr+1)/(nz+1)) 
 
 IF(loadweight(1)>0.0d0.AND.num_threads>1.AND.MOD(iter,10)==1) CALL loadbalancing()
 
@@ -342,6 +462,7 @@ ELSE
   devmf2 = SQRT(ABS(devmf2))
   devh2  = devmf2
 END IF
+IF(thfb) devh2=SUM(symcondiso)
 devhh2 = SQRT(devhh2)
 
 ! some protocol prints
@@ -350,6 +471,7 @@ IF(ifopts == 1) THEN
   WRITE(7,'(a,2g12.4)') ' optimal stepsize=',aopt
   WRITE(6,'(a,2g12.4)') ' optimal stepsize=',aopt
 END IF
+!IF(thfb) WRITE(7,'(a,i5,2(1pg13.5))') '#HFB symmetry condition:',iter,symcondiso
 ! testprint, presently restricted to constraint L=2
 IF(tswicon2 .AND. tqq .AND. tcstp) &
   WRITE(66,'(a,i4,6g12.4)') 'iter,qh,qdh,qq,qhdig,qh/qq,qlam=',  &
@@ -395,8 +517,8 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
 !**********************************************************************
 !$OMP PARALLEL DEFAULT(SHARED) &
 !$OMP PRIVATE(i,mythread,im,nhi,nlo,nadd,iq,is,jst,psin,width,fac,rhot,taut,drholst,rholsrt,rholszt) &
-!$OMP REDUCTION(+: rhosur)  
-
+!$OMP REDUCTION(+: rhosur,rotjr,rotjz,rotspden,spdenr,spdenz,d2spdenr,d2spdenz,curphi,spdenkr,spdenkz)
+ALLOCATE(rhot(0:nz,0:nr,nsd),taut(0:nz,0:nr,nsd),drholst(0:nz,0:nr,nsd),rholsrt(0:nz,0:nr,nsd),rholszt(0:nz,0:nr,nsd))
 !$ mythread=OMP_GET_THREAD_NUM()
   DO  i=1,nom         ! loop over all blocks
     im=load_m(mythread,i)
@@ -405,7 +527,7 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
     nlo=mlo(im)
     nadd=nhi-nlo+1
     iq=miq(im)
-    ! Multirupole correction and ortho-normalization
+    ! Multipole correction and ortho-normalization
     DO jst=nlo,nhi
       DO is=1,2
         psi(0:nz,0:nr,is,jst) = wrk4(0:nz,0:nr)*psi(0:nz,0:nr,is,jst)
@@ -417,10 +539,20 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
     DO jst=nlo,nhi
       iq = icharg(jst)
       v2act=adyrho*vsqf(jst)*wtpair_v2(jst)
-      IF(v2act > v2lim)  &
+      IF(v2act > v2lim)  THEN
           CALL densit(psi(0:nz,0:nr,1:2,jst),v2act,jst,  &
           rhot(0:nz,0:nr,iq),taut(0:nz,0:nr,iq),drholst(0:nz,0:nr,iq), &
           rholsrt(0:nz,0:nr,iq),rholszt(0:nz,0:nr,iq) )
+!NEW ODD
+        IF(toddterms) THEN
+!        IF(toddterms .AND. istsym>2) THEN
+          CALL densitodd(psi(:,:,1,jst),v2act,jst,  &
+              rotjr(:,:,iq), rotjz(:,:,iq), rotspden(:,:,iq),  &
+              spdenr(:,:,iq),spdenz(:,:,iq),d2spdenr(:,:,iq),  &
+              d2spdenz(:,:,iq),curphi(:,:,iq),spdenkr(:,:,iq), spdenkz(:,:,iq))
+        END IF
+!END NEW ODD
+      END IF
       IF(tstab) THEN
         width = stwid/SQRT(anumb)
         fac   = EXP(-((spenrg(jst)-fer(iq))/width)**2)
@@ -433,8 +565,9 @@ IF (tswicon .AND. iter>0 .AND. iter<=itcons) THEN
     drhols=drhols+drholst
     rholsr=rholsr+rholsrt
     rholsz=rholsz+rholszt
-    !$omp end critical 
+    !$omp end critical
   END DO
+DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 !$OMP END PARALLEL
 !IF(tcstp) THEN
 !  WRITE(*,*) ' RHOT:',f1int(rhot(0:nz,0:nr,1)),f1int(rhot(0:nz,0:nr,2))
@@ -459,7 +592,9 @@ END IF
 !**********************************************************************
 
 
+! WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt before:',iter,pairpt(1,1,1:2)
 CALL update_occupations(iter)
+! WRITE(7,'(a,i4,2(1pg13.5))') 'pairpt after:',iter,pairpt(1,1,1:2)
 
 
 !**********************************************************************
@@ -470,7 +605,10 @@ CALL update_occupations(iter)
 
 !     save coulomb density
 IF(tcoulfold) THEN
-  CALL protfold(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
+!  WRITE(6,*) 'before PROTFOLD:',f1int(rho)
+  CALL protonfolding(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
+!  CALL protfold(rho(0:nz,0:nr,1),crho(0:nz,0:nr))
+!  WRITE(6,*) 'after PROTFOLD:',f1int(rho),f1int(crho)
 ELSE
   crho(0:nz,0:nr) = rho(0:nz,0:nr,1)
 END IF
@@ -499,13 +637,15 @@ END IF
 CALL mfhmlt(iter)
 !CALL user_interface_6()    ! to replace 'mfhmlt' for alternative mean-field
 
-DEALLOCATE(psin,psip,hmatr)
-IF(tdiag) DEALLOCATE(temp)
+DEALLOCATE(hmatr)
+DEALLOCATE(temp)
 DEALLOCATE(wrk1,wrk2,wrk4)
-DEALLOCATE(rhot,taut,drholst,rholsrt,rholszt)
 
 RETURN
 END SUBROUTINE sstep
+
+include 'lagpar.f90'
+
 
 !---------------------------------------------------------------------------  
 ! DESCRIPTION: zcm_adjust
@@ -526,6 +666,7 @@ IMPLICIT NONE
     zcm = zcmobs(rho(0:nz,0:nr,:))
     DO jst=1,nst(1)+nst(2)
       CALL shiftcm(zcm,jst)
+!      CALL shiftcm(zcm/2D0,jst)
     END DO
   END IF
 !  zcm = zcmobs(rho(0:nz,0:nr,:))
@@ -560,8 +701,9 @@ REAL(8) :: qab0,qab1,qab2,qab3,qab4
 REAL(8) :: hab,offnor,offwgt,ua,ub,va,vb,vv2
 INTEGER :: is,jstp
 
-REAL(8),ALLOCATABLE :: psi0(:,:,:),psi1(:,:,:),psi2(:,:,:),psi3(:,:,:),&
-                       psi4(:,:,:),psip(:,:,:)
+!REAL(8),ALLOCATABLE :: psi0(:,:,:),psi1(:,:,:),psi2(:,:,:),psi3(:,:,:),&
+!                       psi4(:,:,:),psip(:,:,:)
+REAL(8),ALLOCATABLE :: psi0(:,:,:),psi2(:,:,:),psi3(:,:,:),psi4(:,:,:),psip(:,:,:)
 
 ALLOCATE(psip(0:nz,0:nr,nsd))
 
@@ -908,7 +1050,9 @@ END SUBROUTINE protocol_constr
 
 SUBROUTINE update_occupations(iter)
 
-IMPLICIT NONE     
+USE fyfunc, ONLY: fy_hfbpot
+
+IMPLICIT NONE 
 
 INTEGER, INTENT(IN) :: iter   ! actual iteration number
 
@@ -926,6 +1070,7 @@ IF(einitbubble /= 0D0 .AND. iter <= itpini) THEN
 END IF
 
 ! reorder and reoccupy states for output
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUVb:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
 IF(ipair==-1 .OR. (ipair>=0.AND.itert<=itpini)) THEN
   DO iq=1,2
     iofk=iokk(iq)
@@ -944,7 +1089,9 @@ IF(iter == itpfix) oc(1:nsttot) = vsqf(1:nsttot)
 
 IF(iter > itpfix) THEN
   vsqf(1:nsttot) = oc(1:nsttot)               ! restore frozen occupation
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUVoc:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
 ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
+!IF(thfb)  WRITE(6,'(a,i6,1pg13.5)') 'SUMUVa:',iter,SUM(SQRT(vsqf(nst(1)+1:nst(1)+nst(2))-vsqf(nst(1)+1:nst(1)+nst(2))**2))
   vsqfol(1:nsttot) = vsqf(1:nsttot)
   IF(ipair.GE.0 .AND. ipair.LE.3) THEN
     CALL user_interface_4()  ! switches to user defined pairing
@@ -954,24 +1101,49 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     ist2 = nst(1)+1
     CALL thermal_occ(tempac,spenrg(ist2),vsqf(ist2),wate(ist2),wtpair_uv(ist2),&
                      wtpair_v2(ist2),fer(2),one*npart(2),nst(2))
-  ELSE IF(ipair == 5 .OR. ipair == 7 .OR. ipair == 9  &
-        .OR. ipair == 11) THEN     ! BCS with zero-range pairing functional
-      CALL hfbpot()
-      IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
-        CALL respax(iter)
-        IF(itest > 0) WRITE(7,'(a,4g12.4)')  &
-            ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
-      END IF
-      itest = -1
-      CALL pairdn(spenrg,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
-          fer(1),epair(1),gap(1),feradd(1),  &
-          nst(1),nst(1),npiter,ipair,0,istblo,erra,itest-1)
-      ist2 = nst(1)+1
-      CALL pairdn(spenrg(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
-          wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
-          nst(2),nst(2),npiter,ipair,nst(1),istblo-nst(1), erra,itest-1)
-          
+!  ELSE IF(ipair == 5 .OR. ipair == 7 .OR. ipair == 9  &
+!        .OR. ipair == 11) THEN     ! HFB/BCS with zero-range pairing functional
+  ELSE IF(ipair>4 .AND. ipair.NE.10) THEN  ! HFB/BCS with zero-range pairing functional
+    CALL hfbpot(iter)
+    epairp=epair(1)
+    epairn=epair(2)
+!    WRITE(7,'(a,2(1pg13.5))') 'after HFBPOT:',epair
+    IF((ipair == 9 .OR. ipair == 11).AND. ilnrsp == 1 .AND. .NOT.tFayans) THEN
+      CALL respax(iter)
+      IF(itest > 0) WRITE(7,'(a,4g12.4)')  &
+          ' RESPAX: rspln(1/2),suv2r2(1/2)=',rspln,suv2rs
+    END IF
+    itest = -1
+!NEW ODD
+    CALL combine_spenergies(spenrg,speold,nst(1)+nst(2))
+    CALL pairdn(speold,deltaf,vsqf, wate,wtpair_uv,wtpair_v2,one*npart(1),  &
+        fer(1),epair(1),gap(1),feradd(1),  &
+        nst(1),nst(1),npiter,ipair,0,istblo(1),istcblo(1),erra,itest-1)
+    ist2 = nst(1)+1
+    CALL pairdn(speold(ist2),deltaf(ist2),vsqf(ist2),wate(ist2),  &
+        wtpair_uv(ist2),wtpair_v2(ist2),one*npart(2), fer(2),epair(2),gap(2),feradd(2),  &
+        nst(2),nst(2),npiter,ipair,nst(1),istblo(2)-nst(1),istcblo(2)-nst(1),erra,itest-1)
+!          WRITE(7,'(a,4(1pg13.5))') 'WTPAIR:',wtpair_uv(istblo(2)),wtpair_v2(istblo(2)), &
+!                   wtpair_uv(istcblo(2)),wtpair_v2(istcblo(2))
+!END NEW ODD
+!    WRITE(6,'(a,f9.5,200(/10f8.5))') 'neutron VSQF:',&
+!         SUM(vsqf(ist2:nsttot)),(vsqf(jst),jst=ist2,nsttot)
     vsqobs(1:nsttot) = vsqf(1:nsttot)
+!    IF(thfb .AND. iter>2*iterbcs .AND. MOD(iter,modnat)==0) THEN
+    IF(thfb .AND. iter>iterbcs .AND. MOD(iter,modnat)==0) THEN
+      IF(tFayans) THEN
+        CALL fy_hfbpot()
+        epairp=epair(1)
+        epairn=epair(2)
+      END IF
+      CALL hfb_natural(1,fer(1),1D0*npart(1))
+      CALL hfb_natural(2,fer(2),1D0*npart(2))
+!      vsqobs(1:nsttot) = vsqf(1:nsttot)
+    END IF
+    IF(tFayans) THEN
+      epair(1)=epairp
+      epair(2)=epairn
+    END IF
   ELSE
     STOP ' ipair outside -1..4 or 5, 7, 9 or 11 not active'
   END IF
@@ -979,7 +1151,7 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
   ! mixing old and new occupations
   IF(itert > itpini) THEN
   !                                      maximum distance in 'vsqf'
-    IF(ioccmx == 1) THEN
+     IF(ioccmx == 1) THEN
       distmx = 0D0
       DO jst=1,nst(1)+nst(2)
         distmx = MAX(ABS(vsqf(jst)-vsqfol(jst)),distmx)
@@ -989,13 +1161,19 @@ ELSE IF(ipair >= 0.AND.itert >= itpini) THEN
     ELSE
       addact = addocc
     END IF
-    conocc = one-addact
+    conocc = 1D0-addact
+!      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVunmix:',iter,SUM(SQRT(vsqf(ist2:nst(1)+nst(2))-vsqf(ist2:nst(1)+nst(2))**2))
+!      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVold:',iter,SUM(SQRT(vsqfol(ist2:nst(1)+nst(2))-vsqfol(ist2:nst(1)+nst(2))**2))
     DO jst=1,nst(1)+nst(2)
+      v2=vsqf(jst)
       vsqf(jst)   = addact*vsqf(jst)+conocc*vsqfol(jst)
+!      IF(iter>800 .AND. jst>nst(1)) WRITE(6,'(2i4,4(1pg13.5))') jst,iorder(jst)+nst(1),spenrg(jst),v2,vsqfol(jst),vsqf(jst)
     END DO
+!      WRITE(6,'(a,i6,1pg13.5)') 'SUMUVmix:',iter,SUM(SQRT(vsqf(ist2:nst(1)+nst(2))-vsqf(ist2:nst(1)+nst(2))**2))
     ! compute pairing energies from gaps and occupations
     ! (not best choice  --> replace by direct integration)
-    IF(ipair >= 5) THEN
+!    IF(ipair >= 5) THEN      ! disable: deltaf contains stabilization
+    IF(ipair >= 12) THEN
       epairp = 0.0
       epairn = 0.0
       DO na=1,nst(1)+nst(2)
@@ -1033,10 +1211,15 @@ num_threads=1
 ALLOCATE(load_m(0:num_threads-1,nom),loadweight(nom))
 load_m=0
 loadweight=-1.0d0
-WRITE(*,*)num_threads,nom
+WRITE(*,*) 'INIT_LOAD:',num_threads,nom
 DO i=1,nom
   CALL add_block(load_m,MOD(i-1,num_threads),i)
 END DO
+!WRITE(6,*) 'LOAD_M:'
+!DO i=1,nom
+!  WRITE(6,'(200i3)') load_m(:,i)
+!END DO
+
 END SUBROUTINE init_load
 
 !---------------------------------------------------------------------------  

@@ -1,0 +1,23 @@
+&main outnam='IVP',ipri_fields=4000, itmax=4000, iprint=1000, tpri_2d=F, itest=0,
+      iterbcs=500,iterhfb=1000,pairenhance=1D0,iternat=10,modnat=1,
+/
+&force name='', tFayans=.TRUE., ipair=8, pairstab=-0, ex=1, zpe=1,
+h2m(2)=20.72126,h2m(1)=20.74982,
+avp=-10.05903239,h1vp=0.6079313192,h2vp=0.2776243076,
+avm=47.20760687,h1vm=-0.3746093562,h2vm=54.42781346,
+asp=0.5283255600,hsp=0.0,hgradp=0.3274157900,c0nabj=0.1788187900,c1nabj=6.8951346000E-02,
+fxi=-4.519488100,h1xi=4.443955000,hgradxi=2.648612100,delfxi=-0.1881396400,
+pair_cutoff=-15D0,tcutoff_uvspace=.TRUE.
+isovectormodel=2
+/
+&grids tsym=.T.,nz=31,nr=31,dz=0.7,dr=0.7
+/
+&static nprot=50,nneut=70,x0inv=0.1,e0inv=110.0,addrho=0.15D0,addocc=0.3D0, 
+deocc(1)=3.1D0,deocc(2)=3.1D0,errenr=1D-10,errvar=0.05,colerr=1D-9,itpini=0,
+tvaryx0=F,inodiag=9999,irepc=100,
+/
+&constraint/
+&thermal
+/
+
+

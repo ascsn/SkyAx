@@ -1,0 +1,12 @@
+&main outnam='tst', ipri_fields=0, iprint=1000, tpri_2d=T
+/
+&force name="UNEDF1", ipair=5,
+/
+&grids tsym=T,nz=32,nr=32,dz=0.5,dr=0.5
+/
+&static nprot=50,nneut=70,e0inv=110D0,x0inv=0.3,tvaryx0=T 
+/
+&constraint 
+/
+&thermal
+/

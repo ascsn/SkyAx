@@ -71,6 +71,13 @@ ELSE IF(isovectormodel==2) THEN
   fxin=fxi-delfxi
   h1xin=h1xi
   hgradxin=hgradxi
+ELSE IF(isovectormodel==3) THEN
+  fxip=fxi+delfxi
+  h1xip=h1xi+delh1xi
+  hgradxip=hgradxi+delhgradxi
+  fxin=fxi-delfxi
+  h1xin=h1xi-delh1xi
+  hgradxin=hgradxi-delhgradxi
 ELSE IF(isovectormodel==1) THEN
   xipfac=(fxi+delfxi)/fxi
   fxip=fxi*xipfac
@@ -231,7 +238,7 @@ IF(chgx /= 0D0) THEN
   xplus=MAX(xplus,1D-90)
   excfac = 1.4179979
   hxpsigmac = hcoul*xplus**sigmacoul
-  add0 = -excfac*rc**0.333333333333D0
+  add0 = -excfac*MAX(rc,1D-99)**0.333333333333D0
   add = add0*(1D0-hxpsigmac)
   energd = 0.75D0*add*rc + energd
   potp = add - 0.75D0*sigmacoul*add0*hxpsigmac*rc*rho0inv/xplus + potp
@@ -262,6 +269,45 @@ END IF
 
 RETURN
 END SUBROUTINE fyfunc_local
+
+!NEW ODD
+SUBROUTINE fyfunc_odd(rotjrp,rotjrn,rotjzp,rotjzn,  &
+                      spdenrp,spdenrn,spdenzp,spdenzn,energd)
+
+!USE dynpar, ONLY:chgx,excfac
+IMPLICIT NONE
+
+REAL(8), INTENT(IN) :: rotjrp,rotjrn,rotjzp,rotjzn
+REAL(8), INTENT(IN) :: spdenrp,spdenrn,spdenzp,spdenzn
+REAL(8), INTENT(IN OUT) :: energd
+
+!     Energy contribution from minimal Galilean invariant  odd-odd terms.
+!     ! presently only for l*s
+!
+!        rotjrp/n  =    r-component of rotation of current, protons and neutrons
+!        rotjzp/n  =    z-component of rotation of current, protons and neutrons
+!        spdenrp/n  =   r-component of spin density, protons and neutrons
+!        spdenzp/n  =   r-component of spin density, protons and neutrons
+!
+
+REAL(8) :: rotjrs,rotjzs,rotjrd,rotjzd 
+REAL(8) :: spdenrs,spdenzs,spdenrd,spdenzd
+
+rotjrs = rotjrp+rotjrn
+rotjzs = rotjzp+rotjzn
+rotjrd = rotjrp-rotjrn
+rotjzd = rotjzp-rotjzn
+spdenrs = spdenrp+spdenrn
+spdenzs = spdenzp+spdenzn
+spdenrd = spdenrp-spdenrn
+spdenzd = spdenzp-spdenzn
+energd = energd - clsp*(spdenrs*rotjrs+spdenzs*rotjzs)  &
+                - clsm*(spdenrd*rotjrd+spdenzd*rotjzd)
+
+RETURN
+
+END SUBROUTINE fyfunc_odd
+!END NEW ODD
 
 !-----fyfunc_grad------------ part of the hartree-fock package -----------------
 
@@ -413,7 +459,7 @@ IF(ttest) THEN
   paircr(:,:,1)  = rho(:,:,1)
   paircr(:,:,2)  = rho(:,:,1)
   pairpt = 0D0
-  WRITE(6,*) 'FY_HFBPOT'
+!  WRITE(6,*) 'FY_HFBPOT'
 END IF
 !        r0fy = (0.375D0/(pi*rho0fy))**(1D0/3D0)
 !        r0fy2 = r0fy*r0fy
